@@ -8,7 +8,6 @@ from config.setting import ensure_path_sep
 from exceptions.exceptions import ValueNotFoundError
 from tools.read_files_tools.get_all_files_path import get_all_files
 from tools.read_files_tools.testcase_template import write_testcase_file
-from tools.read_files_tools.yaml_control import GetYamlData
 
 
 class TestCaseAutomaticGeneration:
@@ -17,7 +16,7 @@ class TestCaseAutomaticGeneration:
     @staticmethod
     def case_date_path() -> Text:
         """返回 yaml 用例文件路径"""
-        return ensure_path_sep("\\data")
+        return ensure_path_sep("\\case_api")
 
     @staticmethod
     def case_path() -> Text:
@@ -174,7 +173,7 @@ class TestCaseAutomaticGeneration:
 
     def get_case_automatic(self) -> None:
         """ 自动生成 测试代码"""
-        file_path = get_all_files(file_path=ensure_path_sep("\\data"), yaml_data_switch=True)
+        file_path = get_all_files(file_path=ensure_path_sep("\\case_api"), yaml_data_switch=True)
 
         for file in file_path:
             # 判断代理拦截的yaml文件，不生成test_case代码

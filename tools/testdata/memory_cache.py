@@ -13,7 +13,7 @@ class MemoryCache:
 
     @classmethod
     async def get(cls, key):
-        return await cls._cache.get(key)
+        return  cls._cache.get(key)
 
     @classmethod
     async def set(cls, key, value, ttl=None):

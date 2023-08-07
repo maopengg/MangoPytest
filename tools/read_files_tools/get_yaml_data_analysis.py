@@ -44,7 +44,7 @@ class CaseData:
                     'detail': self.get_case_detail(case_id=key, case_data=values),
                     'headers': self.get_headers(case_id=key, case_data=values),
                     'requestType': self.get_request_type(key, values),
-                    'data': self.get_case_dates(key, values),
+                    'case_api': self.get_case_dates(key, values),
                     'dependence_case': self.get_dependence_case(key, values),
                     'dependence_case_data': self.get_dependence_case_data(key, values),
                     "current_request_set_cache": self.get_current_request_set_cache(values),
@@ -185,7 +185,7 @@ class CaseData:
 
     def get_request_type(self, case_id: Text, case_data: Dict) -> Text:
         """
-        获取请求类型，params、data、json
+        获取请求类型，params、case_api、json
         :return:
         """
 
@@ -286,7 +286,7 @@ class CaseData:
         :return:
         """
         try:
-            _dates = case_data['data']
+            _dates = case_data['case_api']
             # # 处理请求参数中日期,没有加引号,导致数据不正确问题
             # if _dates is not None:
             #     def data_type(value):
@@ -302,7 +302,7 @@ class CaseData:
 
         except KeyError as exc:
             raise ValueNotFoundError(
-                self.raise_value_null_error(case_id=case_id, data_name="data")
+                self.raise_value_null_error(case_id=case_id, data_name="case_api")
             ) from exc
 
     # TODO 对 assert 中的值进行验证

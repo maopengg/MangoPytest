@@ -66,18 +66,18 @@ class SwaggerForYaml:
             if _parameters[0]['in'] == 'query':
                 return "params"
             else:
-                if 'application/x-www-form-urlencoded' or 'multipart/form-data' in headers:
-                    return "data"
+                if 'application/x-www-form-urlencoded' or 'multipart/form-case_api' in headers:
+                    return "case_api"
                 elif 'application/json' in headers:
                     return "json"
                 elif 'application/octet-stream' in headers:
                     return "file"
                 else:
-                    return "data"
+                    return "case_api"
 
     @classmethod
     def get_case_data(cls, value):
-        """ 处理 data 数据 """
+        """ 处理 case_api 数据 """
         _dict = {}
         if jsonpath(obj=value, expr="$.parameters") is not False:
             _parameters = value['parameters']
@@ -99,7 +99,7 @@ class SwaggerForYaml:
         :return:
         """
 
-        _file_path = ensure_path_sep("\\data\\" + file_path[1:].replace("/", os.sep) + '.yaml')
+        _file_path = ensure_path_sep("\\case_api\\" + file_path[1:].replace("/", os.sep) + '.yaml')
         _file = _file_path.split(os.sep)[:-1]
         _dir_path = ''
         for i in _file:
@@ -137,7 +137,7 @@ class SwaggerForYaml:
                     self.get_case_id(key): {
                         "host": "${{host()}}", "url": key, "method": k, "detail": self.get_detail(v),
                         "headers": self.get_headers(v), "requestType": self.get_request_type(v, self.get_headers(v)),
-                        "is_run": None, "data": self.get_case_data(v), "dependence_case": False,
+                        "is_run": None, "case_api": self.get_case_data(v), "dependence_case": False,
                         "assert": {"status_code": 200}, "sql": None}}
                 self.yaml_cases(yaml_data, file_path=key)
 

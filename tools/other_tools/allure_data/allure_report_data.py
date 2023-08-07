@@ -22,7 +22,7 @@ class AllureFileClean:
         """ 获取所有 allure 报告中执行用例的情况"""
         # 将所有数据都收集到files中
         files = []
-        for i in get_all_files(ensure_path_sep("\\report\\html\\data\\test-cases")):
+        for i in get_all_files(ensure_path_sep("\\report\\html\\case_api\\test-cases")):
             with open(i, 'r', encoding='utf-8') as file:
                 date = json.load(file)
                 files.append(date)

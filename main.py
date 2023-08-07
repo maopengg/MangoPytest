@@ -6,9 +6,9 @@ import os
 import traceback
 
 import pytest
-from models.models import NotificationType
 
-from tools import config
+from models.models import NotificationType
+from tools.files.read_yml import YAMLReader
 from tools.logging_tool.log_control import INFO
 from tools.notify.send_mail import SendEmail
 from tools.notify.wechat_send import WeChatSend
@@ -16,7 +16,9 @@ from tools.other_tools.allure_data.allure_report_data import AllureFileClean
 from tools.other_tools.allure_data.error_case_excel import ErrorCaseExcel
 
 
-def run():
+def run(environment):
+    environment_data = YAMLReader.get_environment(environment)
+
     # 从配置文件中获取项目名称
     try:
         INFO.logger.info(
@@ -28,7 +30,7 @@ def run():
              \\__,_| .__/|_/_/   \\_\\__,_|\\__\\___/|_|\\___||___/\\__|
                   |_|
                   开始执行{}项目...
-                """.format(config.project_name)
+                """.format(environment_data.project_name)
         )
 
         # 判断现有的测试用例，如果未生成测试代码，则自动生成
@@ -56,13 +58,14 @@ def run():
             NotificationType.WECHAT.value: WeChatSend(allure_data).send_wechat_notification,
             NotificationType.EMAIL.value: SendEmail(allure_data).send_main,
         }
+        if environment_data.notification_type != NotificationType.DEFAULT.value:
+            if isinstance(environment_data.notification_type, list):
+                for i in environment_data.notification_type:
+                    notification_mapping.get(i.lstrip(""))()
+            else:
+                notification_mapping.get(environment_data.notification_type)()
 
-        if config.notification_type != NotificationType.DEFAULT.value:
-            notify_type = config.notification_type.split(",")
-            for i in notify_type:
-                notification_mapping.get(i.lstrip(""))()
-
-        if config.excel_report:
+        if environment_data.excel_report:
             ErrorCaseExcel().write_case()
 
         # 程序运行之后，自动启动报告，如果不想启动报告，可注释这段代码
@@ -77,4 +80,4 @@ def run():
 
 
 if __name__ == '__main__':
-    run()
+    run('pre')
