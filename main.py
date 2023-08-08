@@ -24,60 +24,59 @@ def run(environment):
     CacheData.set('host', environment_data.host)
     CacheData.set('header', environment_data.header)
     # 从配置文件中获取项目名称
-    try:
-        INFO.logger.info(
-            """
-                             _    _         _      _____         _
-              __ _ _ __ (_)  / \\  _   _| |_ __|_   _|__  ___| |_
-             / _` | '_ \\| | / _ \\| | | | __/ _ \\| |/ _ \\/ __| __|
-            | (_| | |_) | |/ ___ \\ |_| | || (_) | |  __/\\__ \\ |_
-             \\__,_| .__/|_/_/   \\_\\__,_|\\__\\___/|_|\\___||___/\\__|
-                  |_|
-                  开始执行{}项目...
-                """.format(environment_data.project_name)
-        )
-
-        pytest.main(['-s', '-W', 'ignore:Module already imported:pytest.PytestWarning',
-                     '--alluredir', './report/tmp', "--clean-alluredir"])
-
+    INFO.logger.info(
         """
-                   --reruns: 失败重跑次数
-                   --count: 重复执行次数
-                   -v: 显示错误位置以及错误的详细信息
-                   -s: 等价于 pytest --capture=no 可以捕获print函数的输出
-                   -q: 简化输出信息
-                   -m: 运行指定标签的测试用例
-                   -x: 一旦错误，则停止运行
-                   --maxfail: 设置最大失败次数，当超出这个阈值时，则不会在执行测试用例
-                    "--reruns=3", "--reruns-delay=2"
-                   """
+                         _    _         _      _____         _
+          __ _ _ __ (_)  / \\  _   _| |_ __|_   _|__  ___| |_
+         / _` | '_ \\| | / _ \\| | | | __/ _ \\| |/ _ \\/ __| __|
+        | (_| | |_) | |/ ___ \\ |_| | || (_) | |  __/\\__ \\ |_
+         \\__,_| .__/|_/_/   \\_\\__,_|\\__\\___/|_|\\___||___/\\__|
+              |_|
+              开始执行{}项目...
+            """.format(YAMLReader.get_project_name())
+    )
 
-        os.system(r"allure generate ./report/tmp -o ./report/html --clean")
+    pytest.main(['-s', '-W', 'ignore:Module already imported:pytest.PytestWarning',
+                 '--alluredir', './report/tmp', "--clean-alluredir"])
 
-        allure_data = AllureFileClean().get_case_count()
-        notification_mapping = {
-            NotificationType.WECHAT.value: WeChatSend(allure_data).send_wechat_notification,
-            NotificationType.EMAIL.value: SendEmail(allure_data).send_main,
-        }
-        if environment_data.notification_type != NotificationType.DEFAULT.value:
-            if isinstance(environment_data.notification_type, list):
-                for i in environment_data.notification_type:
-                    notification_mapping.get(i.lstrip(""))()
-            else:
-                notification_mapping.get(environment_data.notification_type)()
+    """
+               --reruns: 失败重跑次数
+               --count: 重复执行次数
+               -v: 显示错误位置以及错误的详细信息
+               -s: 等价于 pytest --capture=no 可以捕获print函数的输出
+               -q: 简化输出信息
+               -m: 运行指定标签的测试用例
+               -x: 一旦错误，则停止运行
+               --maxfail: 设置最大失败次数，当超出这个阈值时，则不会在执行测试用例
+                "--reruns=3", "--reruns-delay=2"
+               """
 
-        if environment_data.excel_report:
-            ErrorCaseExcel().write_case()
+    os.system(r"allure generate ./report/tmp -o ./report/html --clean")
 
-        # 程序运行之后，自动启动报告，如果不想启动报告，可注释这段代码
-        os.system(f"allure serve ./report/tmp -h 127.0.0.1 -p 9999")
+    allure_data = AllureFileClean().get_case_count()
+    notification_mapping = {
+        NotificationType.WECHAT.value: WeChatSend(allure_data).send_wechat_notification,
+        NotificationType.EMAIL.value: SendEmail(allure_data).send_main,
+    }
+    if environment_data.notification_type != NotificationType.DEFAULT.value:
+        if isinstance(environment_data.notification_type, list):
+            for i in environment_data.notification_type:
+                notification_mapping.get(i.lstrip(""))()
+        else:
+            notification_mapping.get(environment_data.notification_type)()
 
-    except Exception:
-        # 如有异常，相关异常发送邮件
-        e = traceback.format_exc()
-        send_email = SendEmail(AllureFileClean.get_case_count())
-        send_email.error_mail(e)
-        raise
+    if environment_data.excel_report:
+        ErrorCaseExcel().write_case()
+
+    # 程序运行之后，自动启动报告，如果不想启动报告，可注释这段代码
+    os.system(f"allure serve ./report/tmp -h 127.0.0.1 -p 9999")
+
+    # except Exception:
+    #     # 如有异常，相关异常发送邮件
+    #     e = traceback.format_exc()
+    #     send_email = SendEmail(AllureFileClean.get_case_count())
+    #     send_email.error_mail(e)
+    #     raise
 
 
 if __name__ == '__main__':
