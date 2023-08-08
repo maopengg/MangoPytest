@@ -1,12 +1,8 @@
-#!/usr/bin/python3
 # -*- coding: utf-8 -*-
-"""
-# @Time    : 2022/5/8 21:37
-# @Author  : 余少琪
-# @Email   : 1603453211@qq.com
-# @File    : error_case_excel
-# @describe:
-"""
+# @Project: auto_test
+# @Description:
+# @Time   : 2023-03-07 8:24
+# @Author : 毛鹏
 
 import ast
 import json
@@ -25,7 +21,7 @@ class ErrorTestCase:
     """ 收集错误的excel """
 
     def __init__(self):
-        self.test_case_path = ensure_path_sep("\\report\\html\\case_api\\test-cases\\")
+        self.test_case_path = ensure_path_sep("\\report\\html\\module\\test-cases\\")
 
     def get_error_case_data(self):
         """
@@ -109,7 +105,7 @@ class ErrorTestCase:
         else:
             # 如果用例请求成功，则从allure附件中获取请求头部信息
             _headers_attachment = self.get_test_stage(test_case)[-5]['attachments'][0]['source']
-            path = ensure_path_sep("\\report\\html\\case_api\\attachments\\" + _headers_attachment)
+            path = ensure_path_sep("\\report\\html\\module\\attachments\\" + _headers_attachment)
             with open(path, 'r', encoding='utf-8') as file:
                 _headers = json.load(file)
         return _headers
@@ -129,10 +125,10 @@ class ErrorTestCase:
         @return:
         """
         if test_case['testStage']['status'] == 'broken':
-            _case_data = self.get_parameters(test_case)['case_api']
+            _case_data = self.get_parameters(test_case)['module']
         else:
             _case_data_attachments = self.get_test_stage(test_case)[-4]['attachments'][0]['source']
-            path = ensure_path_sep("\\report\\html\\case_api\\attachments\\" + _case_data_attachments)
+            path = ensure_path_sep("\\report\\html\\module\\attachments\\" + _case_data_attachments)
             with open(path, 'r', encoding='utf-8') as file:
                 _case_data = json.load(file)
         return _case_data
@@ -177,7 +173,7 @@ class ErrorTestCase:
             try:
                 res_data_attachments = \
                     test_case['testStage']['steps'][-1]['attachments'][0]['source']
-                path = ensure_path_sep("\\report\\html\\case_api\\attachments\\" + res_data_attachments)
+                path = ensure_path_sep("\\report\\html\\module\\attachments\\" + res_data_attachments)
                 with open(path, 'r', encoding='utf-8') as file:
                     _res_date = json.load(file)
             except FileNotFoundError:

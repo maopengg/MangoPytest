@@ -27,4 +27,4 @@ def ensure_path_sep(path: Text) -> Text:
 
 
 if __name__ == '__main__':
-    ensure_path_sep(r"")
+    print(root_path())

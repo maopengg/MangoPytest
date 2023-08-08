@@ -16,3 +16,4 @@ urllib3==1.26.16
 DingtalkChatbot==1.5.7
 xlwings==0.30.10
 pydantic==2.1.1
+diskcache==5.6.1

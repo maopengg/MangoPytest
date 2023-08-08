@@ -3,9 +3,9 @@
 # @Description: 
 # @Time   : 2023-03-07 8:24
 # @Author : 毛鹏
-from tools.testdata.async_json_utils import AsyncJsonUtils
 from tools.testdata.data_cleaning import DataCleaning
+from tools.testdata.json_util import JsonUtils
 
 
-class GetOrSetTestData(AsyncJsonUtils, DataCleaning):
+class GetOrSetTestData(JsonUtils, DataCleaning):
     pass

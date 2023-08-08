@@ -60,4 +60,4 @@ email:
   # 自己到QQ邮箱中配置stamp_key
   stamp_key: 'haha'
   # 收件人改成自己的邮箱
-  send_list: [haha,haha]
+  send_list: [ haha,haha ]

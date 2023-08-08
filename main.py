@@ -10,15 +10,19 @@ import pytest
 from models.models import NotificationType
 from tools.files.read_yml import YAMLReader
 from tools.logging_tool.log_control import INFO
+from tools.mysql_tool.mysql_control import MySQLHelper
 from tools.notify.send_mail import SendEmail
 from tools.notify.wechat_send import WeChatSend
 from tools.other_tools.allure_data.allure_report_data import AllureFileClean
 from tools.other_tools.allure_data.error_case_excel import ErrorCaseExcel
+from tools.testdata.memory_cache import CacheData
 
 
 def run(environment):
     environment_data = YAMLReader.get_environment(environment)
-
+    MySQLHelper(environment)
+    CacheData.set('host', environment_data.host)
+    CacheData.set('header', environment_data.header)
     # 从配置文件中获取项目名称
     try:
         INFO.logger.info(

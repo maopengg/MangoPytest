@@ -9,37 +9,29 @@ class MyBaseFailure(Exception):
     pass
 
 
-class JsonpathExtractionFailed(MyBaseFailure):
-    pass
+class CacheIsNone(Exception):
+    def __init__(self, msg):
+        self.code = 301
+        self.msg = msg
 
 
-class NotFoundError(MyBaseFailure):
-    pass
+class SendMessageError(Exception):
+    def __init__(self, msg):
+        self.code = 301
+        self.msg = msg
 
 
-class FileNotFound(FileNotFoundError, NotFoundError):
-    pass
-
-
-class SqlNotFound(NotFoundError):
-    pass
-
-
-class AssertTypeError(MyBaseFailure):
-    pass
-
-
-class DataAcquisitionFailed(MyBaseFailure):
-    pass
-
-
-class ValueTypeError(MyBaseFailure):
-    pass
-
-
-class SendMessageError(MyBaseFailure):
-    pass
+class ValueTypeError(Exception):
+    def __init__(self, msg):
+        self.code = 301
+        self.msg = msg
 
 
 class ValueNotFoundError(MyBaseFailure):
     pass
+
+
+class AssertionFailure(Exception):
+    def __init__(self, msg):
+        self.code = 301
+        self.msg = msg

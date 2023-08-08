@@ -1,10 +1,8 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""
-# @Time   : 2022/3/28 15:44
-# @Author : 余少琪
-描述: 收集 allure 报告
-"""
+# @Project: auto_test
+# @Description:
+# @Time   : 2023-03-07 8:24
+# @Author : 毛鹏
 
 import json
 from typing import List, Text
@@ -22,7 +20,7 @@ class AllureFileClean:
         """ 获取所有 allure 报告中执行用例的情况"""
         # 将所有数据都收集到files中
         files = []
-        for i in get_all_files(ensure_path_sep("\\report\\html\\case_api\\test-cases")):
+        for i in get_all_files(ensure_path_sep("\\report\\html\\module\\test-cases")):
             with open(i, 'r', encoding='utf-8') as file:
                 date = json.load(file)
                 files.append(date)

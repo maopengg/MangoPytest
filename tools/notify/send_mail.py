@@ -1,11 +1,12 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-
+# @Project: auto_test
+# @Description:
+# @Time   : 2023-03-07 8:24
+# @Author : 毛鹏
 import smtplib
 from email.mime.text import MIMEText
 
-from tools import config
+from tools.files.read_yml import YAMLReader
 from tools.other_tools.allure_data.allure_report_data import TestMetrics, AllureFileClean
 
 
@@ -16,9 +17,9 @@ class SendEmail:
         self.metrics = metrics
         self.allure_data = AllureFileClean()
         self.CaseDetail = self.allure_data.get_failed_cases_detail()
+        self.config = YAMLReader.get_email()
 
-    @classmethod
-    def send_mail(cls, user_list: list, sub, content: str) -> None:
+    def send_mail(self, user_list: list, sub, content: str) -> None:
         """
 
         @param user_list: 发件人邮箱
@@ -26,14 +27,14 @@ class SendEmail:
         @param content: 发送内容
         @return:
         """
-        user = "余少琪" + "<" + config.email.send_user + ">"
+        user = "余少琪" + "<" + self.config.send_user + ">"
         message = MIMEText(content, _subtype='plain', _charset='utf-8')  # 设置发送的内容
         message['Subject'] = sub  # 邮件的主题
         message['From'] = user  # 设置发送人
         message['To'] = ";".join(user_list)  # 设置收件人
         server = smtplib.SMTP()
-        server.connect(config.email.email_host)
-        server.login(config.email.send_user, config.email.stamp_key)
+        server.connect(self.config.email_host)
+        server.login(self.config.send_user, self.config.stamp_key)
         server.sendmail(user, user_list, message.as_string())
         server.close()
 
@@ -43,10 +44,9 @@ class SendEmail:
         @param error_message: 报错信息
         @return:
         """
-        email = config.email.send_list
-        user_list = email.split(',')  # 多个邮箱发送，config文件中直接添加  '806029174@qq.com'
+        user_list = self.config.send_list
 
-        sub = config.project_name + "接口自动化执行异常通知"
+        sub = YAMLReader.get_project_name() + "接口自动化执行异常通知"
         content = f"自动化测试执行完毕，程序中发现异常，请悉知。报错信息如下：\n{error_message}"
         self.send_mail(user_list, sub, content)
 
@@ -55,10 +55,9 @@ class SendEmail:
         发送邮件
         :return:
         """
-        email = config.email.send_list
-        user_list = email.split(',')  # 多个邮箱发送，yaml文件中直接添加  '806029174@qq.com'
+        user_list = self.config.send_list
 
-        sub = config.project_name + "接口自动化报告"
+        sub = self.config.project_name + "接口自动化报告"
         content = f"""
         各位同事, 大家好:
             自动化用例执行完成，执行结果如下:
