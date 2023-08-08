@@ -15,7 +15,7 @@ from tools.notify.send_mail import SendEmail
 from tools.notify.wechat_send import WeChatSend
 from tools.other_tools.allure_data.allure_report_data import AllureFileClean
 from tools.other_tools.allure_data.error_case_excel import ErrorCaseExcel
-from tools.testdata.memory_cache import CacheData
+from tools.testdata.cache_data import CacheData
 
 
 def run(environment):
@@ -53,17 +53,17 @@ def run(environment):
 
     os.system(r"allure generate ./report/tmp -o ./report/html --clean")
 
-    allure_data = AllureFileClean().get_case_count()
-    notification_mapping = {
-        NotificationType.WECHAT.value: WeChatSend(allure_data).send_wechat_notification,
-        NotificationType.EMAIL.value: SendEmail(allure_data).send_main,
-    }
-    if environment_data.notification_type != NotificationType.DEFAULT.value:
-        if isinstance(environment_data.notification_type, list):
-            for i in environment_data.notification_type:
-                notification_mapping.get(i.lstrip(""))()
-        else:
-            notification_mapping.get(environment_data.notification_type)()
+    # allure_data = AllureFileClean().get_case_count()
+    # notification_mapping = {
+    #     NotificationType.WECHAT.value: WeChatSend(allure_data).send_wechat_notification,
+    #     NotificationType.EMAIL.value: SendEmail(allure_data).send_main,
+    # }
+    # if environment_data.notification_type != NotificationType.DEFAULT.value:
+    #     if isinstance(environment_data.notification_type, list):
+    #         for i in environment_data.notification_type:
+    #             notification_mapping.get(i.lstrip(""))()
+    #     else:
+    #         notification_mapping.get(environment_data.notification_type)()
 
     if environment_data.excel_report:
         ErrorCaseExcel().write_case()

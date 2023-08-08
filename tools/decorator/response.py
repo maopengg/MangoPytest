@@ -6,7 +6,6 @@
 from requests.models import Response
 
 from exceptions.exceptions import AssertionFailure
-from tools.assertion.public_assertion import PublicAssertion
 
 
 def response_data(set_type):

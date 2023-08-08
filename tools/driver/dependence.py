@@ -4,8 +4,7 @@
 # @Time   : 2022-11-10 21:24
 # @Author : 毛鹏
 
-import aiohttp
-from tools.mysql.mysql_control import MysqlDB
+from tools.mysql_tool.mysql_control import MySQLHelper
 
 from models.api_model import RequestModel
 from tools.logging_tool.log_control import INFO
