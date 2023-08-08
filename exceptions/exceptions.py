@@ -31,7 +31,7 @@ class ValueNotFoundError(MyBaseFailure):
     pass
 
 
-class AssertionFailure(Exception):
+class AssertionFailure(AssertionError):
     def __init__(self, msg):
         self.code = 301
         self.msg = msg

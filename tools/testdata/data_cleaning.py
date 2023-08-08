@@ -3,6 +3,7 @@
 # @Description: 
 # @Time   : 2023-04-07 21:47
 # @Author : 毛鹏
+import hashlib
 import re
 
 from exceptions.exceptions import CacheIsNone
@@ -59,3 +60,13 @@ class DataCleaning(RandomData, CacheData):
                     data1 = re.sub(pattern=r"\${}".format("{" + res2 + "}"), repl=value, string=data1)
                 else:
                     raise CacheIsNone("缓存中的值是null，请检查依赖")
+
+    @classmethod
+    def md5_encrypt(cls, string):
+        # 创建一个MD5对象
+        md5 = hashlib.md5()
+        # 将字符串转换为字节流并进行加密
+        md5.update(string.encode('utf-8'))
+        # 获取加密后的结果
+        encrypted_string = md5.hexdigest()
+        return encrypted_string

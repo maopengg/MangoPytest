@@ -37,9 +37,6 @@ def run(environment):
                 """.format(environment_data.project_name)
         )
 
-        # 判断现有的测试用例，如果未生成测试代码，则自动生成
-        # TestCaseAutomaticGeneration().get_case_automatic()
-
         pytest.main(['-s', '-W', 'ignore:Module already imported:pytest.PytestWarning',
                      '--alluredir', './report/tmp', "--clean-alluredir"])
 

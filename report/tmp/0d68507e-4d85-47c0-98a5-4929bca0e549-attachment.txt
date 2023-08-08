@@ -1,0 +1,11 @@
+INFO     D:\GitCode\ExerciseCode\pytest-auto-api2-master\logs\info-2023-08-08.log:log_decorator.py:40 
+======================================================
+用例标题: 正常获取个人身份信息
+请求路径: https://www.wanandroid.com/user/lg/userinfo/json
+请求方式: GET
+请求头:   {'User-Agent': 'python-requests/2.26.0', 'Accept-Encoding': 'gzip, deflate, br', 'Accept': '*/*', 'Connection': 'keep-alive', 'Content-Type': 'multipart/form-data;', 'cookie': 'JSESSIONID=CADD40FCC44B9DBBB36D959E01469A74;'}
+请求内容: None
+接口响应内容: {"errorCode":-1001,"errorMsg":"请先登录！"}
+接口响应时长: 150 ms
+Http状态码: 200
+=====================================================

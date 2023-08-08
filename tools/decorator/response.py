@@ -20,12 +20,8 @@ def response_data(set_type):
         def wrapper(*args, **kwargs) -> set_type:
             response: Response = func(*args, **kwargs)
             data = response.json()
-            try:
-                # PublicAssertion.is_equal_to(response.status_code, 200)
-                # PublicAssertion.is_not_equal_to(response.status_code, 300)
-                PublicAssertion.is_equal_to(data.get('status'), 0)
-            except AssertionError as e:
-                raise AssertionFailure(f"公共断言失败{e}")
+            if response.status_code != 200 and response.status_code != 300:
+                raise AssertionFailure(f"公共断言失败，请求失败，code码：{response.status_code}")
             response = set_type(code=response.status_code,
                                 headers=response.headers,
                                 url=response.url,
