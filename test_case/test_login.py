@@ -31,7 +31,7 @@ class TestLogin:
 
     @allure.story("错误的账号，错误的密码，进行登录")
     @pytest.mark.parametrize("username, password", [("admin1", "123456")])
-    def test_login02(self, username, password):
+    def test_login03(self, username, password):
         result: ResponseModel = Login.api_login(username, password)
         assert result.status == '1'
         assert result.message == "请输入有效的登录账号或密码"
