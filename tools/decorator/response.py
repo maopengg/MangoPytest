@@ -8,7 +8,7 @@ from requests.models import Response
 from exceptions.exception import AssertionFailure
 
 
-def response_data(set_type):
+def around():
     """
     转换类型装饰器
     @param set_type:
@@ -16,17 +16,11 @@ def response_data(set_type):
     """
 
     def decorator(func):
-        def wrapper(*args, **kwargs) -> set_type:
+        def wrapper(*args, **kwargs):
             response: Response = func(*args, **kwargs)
-            data = response.json()
-            if response.status_code != 200 and response.status_code != 300:
-                raise AssertionFailure(f"公共断言失败，请求失败，code码：{response.status_code}")
-            response = set_type(code=response.status_code,
-                                headers=response.headers,
-                                url=response.url,
-                                data=data.get('data'),
-                                status=data.get('status'),
-                                message=data.get('message'))
+            # assert response.status_code != 500
+            # if response.status_code != 200 and response.status_code != 300:
+            #     raise AssertionFailure(f"公共断言失败，请求失败，code码：{response.status_code}")
 
             return response
 

@@ -4,17 +4,17 @@
 # @Time   : 2023-08-08 11:25
 # @Author : 毛鹏
 import requests
+from requests.models import Response
 
-from modules.login.model import ResponseModel
-from tools.decorator.response import response_data
+from tools.decorator.response import around
 from tools.testdata import GetOrSetTestData
 
 
 class Login(GetOrSetTestData):
 
     @classmethod
-    @response_data(ResponseModel)
-    def api_login(cls, username, password):
+    @around()
+    def api_login(cls, username, password) -> Response:
         """
         登录接口
         :return:
@@ -29,7 +29,8 @@ class Login(GetOrSetTestData):
         return requests.post(url=url, headers=headers)
 
     @classmethod
-    def api_reset_password(cls):
+    @around()
+    def api_reset_password(cls) -> Response:
         """
         重置密码
         :return:

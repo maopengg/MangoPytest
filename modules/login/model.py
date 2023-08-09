@@ -18,6 +18,9 @@ class ResponseModel(BaseModel):
     data: LoginModel | None
     status: int | str
     message: str
-    code: int
-    headers: dict
-    url: str
+
+    @classmethod
+    def get_obj(cls, result: dict):
+        return cls(status=result.get('status'),
+                   message=result.get('message'),
+                   data=result.get('data'))
