@@ -5,7 +5,7 @@
 # @Author : 毛鹏
 from requests.models import Response
 
-from exceptions.exceptions import AssertionFailure
+from exceptions.exception import AssertionFailure
 
 
 def response_data(set_type):

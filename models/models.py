@@ -7,11 +7,8 @@ from pydantic import BaseModel
 
 class NotificationType(Enum):
     """ 自动化通知方式 """
-    DEFAULT = 0
-    DING_TALK = 1
-    WECHAT = 2
-    EMAIL = 3
-    FEI_SHU = 4
+    EMAIL = 0
+    WECHAT = 1
 
 
 @dataclass

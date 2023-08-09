@@ -3,7 +3,6 @@
 # @Time   : 2023/08/07 11:01
 # @Author : 毛鹏
 import os
-import traceback
 
 import pytest
 
@@ -53,30 +52,18 @@ def run(environment):
 
     os.system(r"allure generate ./report/tmp -o ./report/html --clean")
 
-    # allure_data = AllureFileClean().get_case_count()
-    # notification_mapping = {
-    #     NotificationType.WECHAT.value: WeChatSend(allure_data).send_wechat_notification,
-    #     NotificationType.EMAIL.value: SendEmail(allure_data).send_main,
-    # }
-    # if environment_data.notification_type != NotificationType.DEFAULT.value:
-    #     if isinstance(environment_data.notification_type, list):
-    #         for i in environment_data.notification_type:
-    #             notification_mapping.get(i.lstrip(""))()
-    #     else:
-    #         notification_mapping.get(environment_data.notification_type)()
-
+    allure_data = AllureFileClean().get_case_count()
+    notification_mapping = {
+        NotificationType.WECHAT.value: WeChatSend(allure_data, environment).send_wechat_notification,
+        NotificationType.EMAIL.value: SendEmail(allure_data).send_main,
+    }
+    for i in environment_data.notification_type_list:
+        notification_mapping.get(i)()
     if environment_data.excel_report:
         ErrorCaseExcel().write_case()
 
     # 程序运行之后，自动启动报告，如果不想启动报告，可注释这段代码
     os.system(f"allure serve ./report/tmp -h 127.0.0.1 -p 9999")
-
-    # except Exception:
-    #     # 如有异常，相关异常发送邮件
-    #     e = traceback.format_exc()
-    #     send_email = SendEmail(AllureFileClean.get_case_count())
-    #     send_email.error_mail(e)
-    #     raise
 
 
 if __name__ == '__main__':

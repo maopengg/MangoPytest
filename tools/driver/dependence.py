@@ -4,8 +4,6 @@
 # @Time   : 2022-11-10 21:24
 # @Author : 毛鹏
 
-from tools.mysql_tool.mysql_control import MySQLHelper
-
 from models.api_model import RequestModel
 from tools.logging_tool.log_control import INFO
 from tools.testdata import GetOrSetTestData

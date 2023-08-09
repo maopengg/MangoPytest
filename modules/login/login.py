@@ -5,7 +5,7 @@
 # @Author : 毛鹏
 import requests
 
-from module.login.model import ResponseModel
+from modules.login.model import ResponseModel
 from tools.decorator.response import response_data
 from tools.testdata import GetOrSetTestData
 

@@ -6,7 +6,7 @@
 import hashlib
 import re
 
-from exceptions.exceptions import CacheIsNone
+from exceptions.exception import CacheIsNone
 from tools.testdata.cache_data import CacheData
 from tools.testdata.random_data import RandomData
 

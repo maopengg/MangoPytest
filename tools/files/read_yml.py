@@ -22,6 +22,7 @@ class YAMLReader:
     @classmethod
     def get_environment(cls, environment) -> TestEnvironmentModel:
         data = cls.read_yaml().get(environment)
+
         return TestEnvironmentModel(**data)
 
     @classmethod

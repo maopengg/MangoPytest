@@ -9,3 +9,5 @@ jsonpath==0.82
 xlwings==0.30.10
 diskcache==5.6.1
 Faker==19.3.0
+allure-pytest==2.9.45
+allure-python-commons==2.9.45

@@ -5,11 +5,11 @@
 # @Author : 毛鹏
 from diskcache import Cache
 
-from config.setting import root_path
+from config.setting import ensure_path_sep
 
 
 class CacheData:
-    cache = Cache(root_path())
+    cache = Cache(ensure_path_sep("/config"))
 
     @classmethod
     def get(cls, key):

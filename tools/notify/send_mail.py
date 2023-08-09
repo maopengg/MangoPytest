@@ -8,6 +8,7 @@ from email.mime.text import MIMEText
 
 from tools.files.read_yml import YAMLReader
 from tools.other_tools.allure_data.allure_report_data import TestMetrics, AllureFileClean
+from tools.read_files_tools.get_local_ip import get_host_ip
 
 
 class SendEmail:
@@ -27,7 +28,7 @@ class SendEmail:
         @param content: 发送内容
         @return:
         """
-        user = "余少琪" + "<" + self.config.send_user + ">"
+        user = f"APIAutoTest <{self.config.send_user}>"
         message = MIMEText(content, _subtype='plain', _charset='utf-8')  # 设置发送的内容
         message['Subject'] = sub  # 邮件的主题
         message['From'] = user  # 设置发送人
@@ -57,7 +58,7 @@ class SendEmail:
         """
         user_list = self.config.send_list
 
-        sub = self.config.project_name + "接口自动化报告"
+        sub = YAMLReader.get_project_name() + "接口自动化报告"
         content = f"""
         各位同事, 大家好:
             自动化用例执行完成，执行结果如下:
@@ -72,6 +73,7 @@ class SendEmail:
 
         **********************************
         jenkins地址：https://121.xx.xx.47:8989/login
+        结果查看地址：http://{get_host_ip()}:9999/
         详细情况可登录jenkins平台查看，非相关负责人员可忽略此消息。谢谢。
         """
         self.send_mail(user_list, sub, content)
