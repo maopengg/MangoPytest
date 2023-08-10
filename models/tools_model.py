@@ -16,7 +16,7 @@ class MysqlDBModel(BaseModel):
 
 class TestEnvironmentModel(BaseModel):
     host: str
-    header: dict
+    headers: dict
     mysql_db: MysqlDBModel
     notification_type_list: list
     excel_report: bool

@@ -47,8 +47,8 @@ def run(environment):
                -m: 运行指定标签的测试用例
                -x: 一旦错误，则停止运行
                --maxfail: 设置最大失败次数，当超出这个阈值时，则不会在执行测试用例
-                "--reruns=3", "--reruns-delay=2"
-               """
+               "--reruns=3", "--reruns-delay=2"
+    """
 
     os.system(r"allure generate ./report/tmp -o ./report/html --clean")
 

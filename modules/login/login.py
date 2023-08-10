@@ -10,7 +10,11 @@ from tools.decorator.response import around
 from tools.testdata import GetOrSetTestData
 
 
-class Login(GetOrSetTestData):
+class LoginAPI(GetOrSetTestData):
+    headers = {
+        'Authorization': 'Basic d2ViQXBwOndlYkFwcA==',
+        'Accept': 'application/json, text/plain, */*',
+    }
 
     @classmethod
     @around()
@@ -22,11 +26,8 @@ class Login(GetOrSetTestData):
         password = cls.md5_encrypt(password)
         url = cls.get(
             'host') + f'/backend/api-auth/oauth/token?username={username}&password={password}&grant_type=password_code'
-        headers = {
-            'Authorization': 'Basic d2ViQXBwOndlYkFwcA==',
-            'Accept': 'application/json, text/plain, */*',
-        }
-        return requests.post(url=url, headers=headers)
+
+        return requests.post(url=url, headers=cls.headers)
 
     @classmethod
     @around()

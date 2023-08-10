@@ -9,6 +9,7 @@ from tools.files.read_yml import YAMLReader
 
 
 class MySQLHelper:
+
     def __init__(self, environment: str):
         environment = YAMLReader.get_environment(environment)
         self.connection = pymysql.connect(
