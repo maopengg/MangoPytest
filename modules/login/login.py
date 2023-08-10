@@ -39,6 +39,6 @@ class LoginAPI(GetOrSetTestData):
 
 
 if __name__ == '__main__':
-    l = Login()
+    l = LoginAPI()
     l.set('host', 'https://cdxptest.zalldata.cn/')
     print(l.api_login("", ""))
