@@ -11,12 +11,11 @@ def get_host_ip():
     查询本机ip地址
     :return:
     """
-    _s = None
-    try:
-        _s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        _s.connect(('8.8.8.8', 80))
-        l_host = _s.getsockname()[0]
-    finally:
-        _s.close()
+    # 获取主机名
+    hostname = socket.gethostname()
+    # 获取主机的IP地址
+    ip_address = socket.gethostbyname(hostname)
+    return ip_address
 
-    return l_host
+if __name__ == '__main__':
+    print(get_host_ip())

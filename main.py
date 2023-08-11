@@ -14,14 +14,14 @@ from tools.notify.send_mail import SendEmail
 from tools.notify.wechat_send import WeChatSend
 from tools.other_tools.allure_data.allure_report_data import AllureFileClean
 from tools.other_tools.allure_data.error_case_excel import ErrorCaseExcel
-from tools.testdata.cache_data import CacheData
+from tools.get_or_set_test_data.cache_tool import CacheTool
 
 
 def run(environment):
     environment_data = YAMLReader.get_environment(environment)
     MySQLHelper(environment)
-    CacheData.set('host', environment_data.host)
-    CacheData.set('header', environment_data.header)
+    CacheTool.cache_set('host', environment_data.host)
+    CacheTool.cache_set('headers', environment_data.headers)
     # 从配置文件中获取项目名称
     INFO.logger.info(
         """

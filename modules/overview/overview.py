@@ -7,7 +7,7 @@ import requests
 from requests.models import Response
 
 from tools.decorator.response import around
-from tools.testdata import GetOrSetTestData
+from tools.get_or_set_test_data import GetOrSetTestData
 
 
 class OverviewAPI(GetOrSetTestData):
@@ -44,3 +44,4 @@ if __name__ == '__main__':
         'currentProject': 'precheck',
         'userId': '201'})
     print(l.api_check_state().json())
+

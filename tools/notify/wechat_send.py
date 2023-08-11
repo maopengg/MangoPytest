@@ -12,7 +12,7 @@ from tools.files.read_yml import YAMLReader
 from tools.logging_tool.log_control import ERROR
 from tools.other_tools.allure_data.allure_report_data import AllureFileClean
 from tools.read_files_tools.get_local_ip import get_host_ip
-from tools.times_tool.time_control import now_time
+from tools.get_or_set_test_data.time_tool import TimeTools
 
 
 class WeChatSend:
@@ -99,7 +99,7 @@ class WeChatSend:
                                     >异常用例数：`{self.metrics.broken}个`
                                     >跳过用例数：<font color=\"warning\">{self.metrics.skipped}个</font>
                                     >用例执行时长：<font color=\"warning\">{self.metrics.time} s</font>
-                                    >时间：<font color=\"comment\">{now_time()}</font>
+                                    >时间：<font color=\"comment\">{TimeTools.now_time()}</font>
                                     >
                                     >非相关负责人员可忽略此消息。
                                     >测试报告，点击查看>>[测试报告入口](http://{get_host_ip()}:9999/index.html)"""

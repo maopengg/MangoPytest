@@ -7,7 +7,7 @@ import requests
 from requests.models import Response
 
 from tools.decorator.response import around
-from tools.testdata import GetOrSetTestData
+from tools.get_or_set_test_data import GetOrSetTestData
 
 
 class LoginAPI(GetOrSetTestData):

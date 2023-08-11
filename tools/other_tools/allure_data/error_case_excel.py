@@ -10,7 +10,7 @@ import shutil
 
 import xlwings
 
-from config.setting import ensure_path_sep
+from config.get_path import ensure_path_sep
 from tools.notify.wechat_send import WeChatSend
 from tools.other_tools.allure_data.allure_report_data import AllureFileClean
 from tools.read_files_tools.get_all_files_path import get_all_files
@@ -207,7 +207,7 @@ class ErrorCaseExcel:
     """ 收集运行失败的用例，整理成excel报告 """
 
     def __init__(self):
-        _excel_template = ensure_path_sep("\\utils\\other_tools\\allure_data\\自动化异常测试用例.xlsx")
+        _excel_template = ensure_path_sep("\\tools\\other_tools\\allure_data\\自动化异常测试用例.xlsx")
         self._file_path = ensure_path_sep("\\Files\\" + "自动化异常测试用例.xlsx")
         # if os.path.exists(self._file_path):
         #     os.remove(self._file_path)
@@ -313,4 +313,6 @@ class ErrorCaseExcel:
 
 
 if __name__ == '__main__':
-    ErrorCaseExcel().write_case()
+    da = ErrorTestCase().get_error_case_data()
+    print(da)
+    print(ErrorTestCase.get_response(da))

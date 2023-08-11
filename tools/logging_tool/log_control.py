@@ -9,7 +9,7 @@ from logging import handlers
 
 import colorlog
 
-from config.setting import ensure_path_sep
+from config.get_path import ensure_path_sep
 
 
 class LogHandler:
@@ -51,21 +51,6 @@ class LogHandler:
         self.logger.addHandler(time_rotating)
         self.log_path = ensure_path_sep(f"\\logs\\log.log")
 
-    # @classmethod
-    # def log_color(cls):
-    #     """ 设置日志颜色 """
-    #     log_colors_config = {
-    #         'DEBUG': 'cyan',
-    #         'INFO': 'green',
-    #         'WARNING': 'yellow',
-    #         'ERROR': 'red',
-    #         'CRITICAL': 'red',
-    #     }
-    #     formatter = colorlog.ColoredFormatter(
-    #         '%(log_color)s[%(asctime)s] [%(filename)s-->line:%(lineno)d]] [%(levelname)s]: %(message)s',
-    #         log_colors=log_colors_config
-    #     )
-    #     return formatter
     @classmethod
     def log_format(cls, level):
         """ 设置日志格式 """
@@ -75,8 +60,7 @@ class LogHandler:
             fmt = "%(log_color)s[%(asctime)s] [%(filename)s-->line:%(lineno)d]] [%(levelname)s]: %(message)s"
         format_str = colorlog.ColoredFormatter(
             fmt,
-            log_colors=cls.log_color()
-        )
+            log_colors=cls.log_color())
         return format_str
 
     @classmethod

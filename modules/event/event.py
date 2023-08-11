@@ -10,7 +10,7 @@ from requests import Response
 
 from modules.event.model import TrackModel, TrackSignup, ProfileSetModel
 from tools.decorator.response import around
-from tools.testdata import GetOrSetTestData
+from tools.get_or_set_test_data import GetOrSetTestData
 
 
 class EventAPI(GetOrSetTestData):
@@ -23,6 +23,5 @@ class EventAPI(GetOrSetTestData):
         :param data:
         :return:
         """
-        data = base64.b64encode(cls.dumps(data).encode('utf-8')).decode('utf-8')
         response = requests.post(url=cls.get('event_url'), data=data)
         return response

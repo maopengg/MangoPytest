@@ -8,8 +8,8 @@ import requests
 from requests.models import Response
 
 from tools.logging_tool.log_control import INFO
-from tools.testdata import DataCleaning
-from tools.testdata.cache_data import CacheData
+from tools.get_or_set_test_data import DataCleaning
+from tools.get_or_set_test_data.cache_tool import CacheData
 
 
 def api_login(username, password):

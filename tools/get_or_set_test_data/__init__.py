@@ -1,24 +1,35 @@
 # -*- coding: utf-8 -*-
 # @Project: auto_test
 # @Description: 
-# @Time   : 2023-04-07 21:47
+# @Time   : 2023-03-07 8:24
 # @Author : 毛鹏
-import hashlib
 import re
 
 from exceptions.exception import CacheIsNone
-from tools.testdata.cache_data import CacheData
-from tools.testdata.random_data import RandomData
+from tools.get_or_set_test_data.cache_tool import CacheTool
+from tools.get_or_set_test_data.encryption_or_encoding_tool import EncryptionOrEncodingTool
+from tools.get_or_set_test_data.json_tool import JsonTool
+from tools.get_or_set_test_data.random_tool import RandomTool
+from tools.get_or_set_test_data.time_tool import TimeTools
 
 
-class DataCleaning(RandomData, CacheData):
+class GetOrSetTestData(JsonTool, RandomTool, CacheTool, EncryptionOrEncodingTool, TimeTools):
+    """
+    测试数据处理类汇总
+    """
 
     @classmethod
-    def case_input_data(cls, obj, ope_value: str, key: str = None):
-        """ 取出缓存或写入 """
+    def case_input_data(cls, obj, ope_value: str, key: str = None) -> str:
+        """
+        取出缓存或写入
+        :param obj:
+        :param ope_value:
+        :param key:
+        :return:
+        """
         if key:
             key_value = str(id(obj)) + str(key)
-            value = cls.get(key_value)
+            value = cls.cache_get(key_value)
         else:
             key_value = str(id(obj))
             value = None
@@ -26,11 +37,11 @@ class DataCleaning(RandomData, CacheData):
         if value is None:
             if ope_value:
                 if "()" in ope_value:
-                    value = cls.regular(ope_value)
+                    value = cls.random_regular(ope_value)
                 elif ope_value:
                     value = ope_value
             if key:
-                cls.set(key_value, value)
+                cls.cache_set(key_value, value)
         return value
 
     @classmethod
@@ -49,24 +60,14 @@ class DataCleaning(RandomData, CacheData):
             res2 = res1.replace("}", "")
             # 获取随机数据，完成替换
             if "()" in res2:
-                value = cls.regular(res2)
+                value = cls.random_regular(res2)
                 res3 = res2.replace("()", "")
                 data1 = re.sub(pattern=r"\${}".format("{" + res3 + r"\(\)" + "}"), repl=value, string=data1)
             # 获取缓存数据，完成替换
             else:
                 # value = Cache().read_data_from_cache(res2)
-                value = cls.get(res2)
+                value = cls.cache_get(res2)
                 if value:
                     data1 = re.sub(pattern=r"\${}".format("{" + res2 + "}"), repl=value, string=data1)
                 else:
                     raise CacheIsNone("缓存中的值是null，请检查依赖")
-
-    @classmethod
-    def md5_encrypt(cls, string):
-        # 创建一个MD5对象
-        md5 = hashlib.md5()
-        # 将字符串转换为字节流并进行加密
-        md5.update(string.encode('utf-8'))
-        # 获取加密后的结果
-        encrypted_string = md5.hexdigest()
-        return encrypted_string
