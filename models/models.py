@@ -1,14 +1,7 @@
 from dataclasses import dataclass
-from enum import Enum, unique
 from typing import Text, Dict, Union, Optional, List
 
 from pydantic import BaseModel
-
-
-class NotificationType(Enum):
-    """ 自动化通知方式 """
-    EMAIL = 0
-    WECHAT = 1
 
 
 @dataclass
@@ -21,18 +14,6 @@ class TestMetrics:
     total: int
     pass_rate: float
     time: Text
-
-
-class RequestType(Enum):
-    """
-    request请求发送，请求参数的数据类型
-    """
-    JSON = "JSON"
-    PARAMS = "PARAMS"
-    DATA = "DATA"
-    FILE = 'FILE'
-    EXPORT = "EXPORT"
-    NONE = "NONE"
 
 
 class DependentData(BaseModel):
@@ -154,54 +135,3 @@ class Config(BaseModel):
     real_time_update_test_cases: bool = False
     host: Text
     app_host: Union[Text, None]
-
-
-@unique
-class AllureAttachmentType(Enum):
-    """
-    allure 报告的文件类型枚举
-    """
-    TEXT = "txt"
-    CSV = "csv"
-    TSV = "tsv"
-    URI_LIST = "uri"
-
-    HTML = "html"
-    XML = "xml"
-    JSON = "json"
-    YAML = "yaml"
-    PCAP = "pcap"
-
-    PNG = "png"
-    JPG = "jpg"
-    SVG = "svg"
-    GIF = "gif"
-    BMP = "bmp"
-    TIFF = "tiff"
-
-    MP4 = "mp4"
-    OGG = "ogg"
-    WEBM = "webm"
-
-    PDF = "pdf"
-
-
-@unique
-class AssertMethod(Enum):
-    """断言类型"""
-    equals = "=="
-    less_than = "lt"
-    less_than_or_equals = "le"
-    greater_than = "gt"
-    greater_than_or_equals = "ge"
-    not_equals = "not_eq"
-    string_equals = "str_eq"
-    length_equals = "len_eq"
-    length_greater_than = "len_gt"
-    length_greater_than_or_equals = 'len_ge'
-    length_less_than = "len_lt"
-    length_less_than_or_equals = 'len_le'
-    contains = "contains"
-    contained_by = 'contained_by'
-    startswith = 'startswith'
-    endswith = 'endswith'

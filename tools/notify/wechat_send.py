@@ -8,11 +8,11 @@ import requests
 
 from exceptions.exception import SendMessageError, ValueTypeError
 from models.models import TestMetrics
-from tools.files.read_yml import YAMLReader
+from tools.data_processor.time_tool import TimeTools
+from tools.files.read_yml import YmlReader
 from tools.logging_tool.log_control import ERROR
 from tools.other_tools.allure_data.allure_report_data import AllureFileClean
 from tools.read_files_tools.get_local_ip import get_host_ip
-from tools.get_or_set_test_data.time_tool import TimeTools
 
 
 class WeChatSend:
@@ -24,7 +24,7 @@ class WeChatSend:
         self.environment = environment
         self.metrics = metrics
         self.headers = {"Content-Type": "application/json"}
-        self.webhook = YAMLReader.get_wechat()
+        self.webhook = YmlReader.get_wechat()
 
     def send_text(self, content, mentioned_mobile_list=None):
         """
@@ -87,9 +87,9 @@ class WeChatSend:
 
     def send_wechat_notification(self):
         """ 发送企业微信通知 """
-        text = f"""【{YAMLReader.get_project_name()}自动化通知】
+        text = f"""【{YmlReader.get_project_name()}自动化通知】
                                     >测试环境：<font color=\"info\">{self.environment}</font>
-                                    >测试负责人：@{YAMLReader.get_tester_name()}
+                                    >测试负责人：@{YmlReader.get_tester_name()}
                                     >
                                     > **执行结果**
                                     ><font color=\"info\">成  功  率  : {self.metrics.pass_rate}%</font>

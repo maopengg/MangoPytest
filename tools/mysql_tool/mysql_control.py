@@ -5,13 +5,13 @@
 # @Author : 毛鹏
 import pymysql
 
-from tools.files.read_yml import YAMLReader
+from tools.files.read_yml import YmlReader
 
 
 class MySQLHelper:
 
     def __init__(self, environment: str):
-        environment = YAMLReader.get_environment(environment)
+        environment = YmlReader.get_environment(environment)
         self.connection = pymysql.connect(
             host=environment.mysql_db.host,
             port=environment.mysql_db.port,

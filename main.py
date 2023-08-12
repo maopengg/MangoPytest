@@ -6,19 +6,19 @@ import os
 
 import pytest
 
-from models.models import NotificationType
-from tools.files.read_yml import YAMLReader
+from enums.tools_enum import NotificationType
+from tools.files.read_yml import YmlReader
 from tools.logging_tool.log_control import INFO
 from tools.mysql_tool.mysql_control import MySQLHelper
 from tools.notify.send_mail import SendEmail
 from tools.notify.wechat_send import WeChatSend
 from tools.other_tools.allure_data.allure_report_data import AllureFileClean
 from tools.other_tools.allure_data.error_case_excel import ErrorCaseExcel
-from tools.get_or_set_test_data.cache_tool import CacheTool
+from tools.data_processor.cache_tool import CacheTool
 
 
-def run(environment):
-    environment_data = YAMLReader.get_environment(environment)
+def run(environment: str):
+    environment_data = YmlReader.get_environment(environment)
     MySQLHelper(environment)
     CacheTool.cache_set('host', environment_data.host)
     CacheTool.cache_set('headers', environment_data.headers)
@@ -32,7 +32,7 @@ def run(environment):
          \\__,_| .__/|_/_/   \\_\\__,_|\\__\\___/|_|\\___||___/\\__|
               |_|
               开始执行{}项目...
-            """.format(YAMLReader.get_project_name())
+            """.format(YmlReader.get_project_name())
     )
 
     pytest.main(['-s', '-W', 'ignore:Module already imported:pytest.PytestWarning',

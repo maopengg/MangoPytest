@@ -7,6 +7,8 @@ from config.get_path import ensure_path_sep
 
 # 缓存文件路径
 CACHE_PATH = ensure_path_sep("/static")
+# 配置文件路径
+CONFING_PATH = ensure_path_sep("/project/cdxp/config.yml")
 
 # 域名名称
 HOST = 'host'

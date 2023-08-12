@@ -6,7 +6,7 @@
 import smtplib
 from email.mime.text import MIMEText
 
-from tools.files.read_yml import YAMLReader
+from tools.files.read_yml import YmlReader
 from tools.other_tools.allure_data.allure_report_data import TestMetrics, AllureFileClean
 from tools.read_files_tools.get_local_ip import get_host_ip
 
@@ -18,7 +18,7 @@ class SendEmail:
         self.metrics = metrics
         self.allure_data = AllureFileClean()
         self.CaseDetail = self.allure_data.get_failed_cases_detail()
-        self.config = YAMLReader.get_email()
+        self.config = YmlReader.get_email()
 
     def send_mail(self, user_list: list, sub, content: str) -> None:
         """
@@ -47,7 +47,7 @@ class SendEmail:
         """
         user_list = self.config.send_list
 
-        sub = YAMLReader.get_project_name() + "接口自动化执行异常通知"
+        sub = YmlReader.get_project_name() + "接口自动化执行异常通知"
         content = f"自动化测试执行完毕，程序中发现异常，请悉知。报错信息如下：\n{error_message}"
         self.send_mail(user_list, sub, content)
 
@@ -58,7 +58,7 @@ class SendEmail:
         """
         user_list = self.config.send_list
 
-        sub = YAMLReader.get_project_name() + "接口自动化报告"
+        sub = YmlReader.get_project_name() + "接口自动化报告"
         content = f"""
         各位同事, 大家好:
             自动化用例执行完成，执行结果如下:

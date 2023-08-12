@@ -17,5 +17,6 @@ def get_host_ip():
     ip_address = socket.gethostbyname(hostname)
     return ip_address
 
+
 if __name__ == '__main__':
     print(get_host_ip())
