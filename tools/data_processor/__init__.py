@@ -71,3 +71,7 @@ class DataProcessor(JsonTool, RandomTool, CacheTool, EncryptionOrEncodingTool, T
                     data1 = re.sub(pattern=r"\${}".format("{" + res2 + "}"), repl=value, string=data1)
                 else:
                     raise CacheIsNone("缓存中的值是null，请检查依赖")
+
+    # @classmethod
+    # def replace(cls, data: str, old: str, new: str) -> str:
+    #     return data.replace(old, new)

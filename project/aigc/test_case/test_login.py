@@ -38,3 +38,9 @@ class TestLogin:
         result_dict = ResponseModel.get_obj(result.json())
         assert result_dict.status == 1
         assert result_dict.message == "用户名或密码错误！"
+
+    @allure.story("登录之后退出登录")
+    def test_login04(self):
+        result = LoginAPI.api_login_out()
+        result_dict = ResponseModel.get_obj(result.json())
+        assert result_dict.status == 0

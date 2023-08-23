@@ -5,9 +5,11 @@
 # @Author : 毛鹏
 from config.settings import AIGC_CONFING_PATH
 from enums.tools_enum import ProjectEnum
+from project.aigc.aigc_data_model import AIGCDataModel
 from tools.data_processor import CacheTool
 from tools.files.read_yml import YmlReader
 from tools.logging_tool.log_control import ERROR
+
 
 project = ProjectEnum.AIGC.value
 
@@ -15,10 +17,10 @@ project = ProjectEnum.AIGC.value
 def preparation():
     file = YmlReader(CacheTool.cache_get(f'{project}_environment'), AIGC_CONFING_PATH)
     environment = file.get_environment()
-    CacheTool.cache_set(f'{project}_host', environment.host)
-    CacheTool.cache_set(f'{project}_headers', environment.headers)
-    CacheTool.cache_set(f'{project}_mysql_db', environment.mysql_db)
-    CacheTool.cache_set(f'{project}_headers', environment.notification_type_list)
+    AIGCDataModel(host=environment.host,
+                  headers=environment.headers,
+                  mysql_db=environment.mysql_db)
+
 
 
 try:

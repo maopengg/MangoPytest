@@ -18,7 +18,7 @@ def preparation():
     CacheTool.cache_set(f'{project}_host', environment.host)
     CacheTool.cache_set(f'{project}_headers', environment.headers)
     CacheTool.cache_set(f'{project}_mysql_db', environment.mysql_db)
-    CacheTool.cache_set(f'{project}_headers', environment.notification_type_list)
+    CacheTool.cache_set(f'{project}_notification_type_list', environment.notification_type_list)
 
 
 try:

@@ -6,18 +6,18 @@
 import allure
 import requests
 from requests.models import Response
-from enums.tools_enum import ProjectEnum
+
+from project.aigc import AIGCDataModel
 from tools.data_processor import DataProcessor
 from tools.decorator.response import around
 
 
 class LoginAPI(DataProcessor):
-    project = ProjectEnum.AIGC.value
-    headers = {
-        'Authorization': 'Bearer null',
-        'Accept': 'application/json, text/plain, */*',
-        'Content-Type': 'application/json;charset=UTF-8',
-    }
+    data_model: AIGCDataModel = AIGCDataModel()
+
+    headers = {'Authorization': 'Bearer null',
+               'Accept': 'application/json, text/plain, */*',
+               'Content-Type': 'application/json;charset=UTF-8'}
 
     @classmethod
     @around()
@@ -27,11 +27,12 @@ class LoginAPI(DataProcessor):
         :return:
         """
         password = cls.md5_encrypt(password)
-        url = cls.cache_get(f'{cls.project}_host') + 'api/login'
+        json = {"username": username, "password": password}
+        url = cls.data_model.host + 'api/login'
 
         allure.attach(str(url), "请求url")
         allure.attach(str(cls.headers), "请求headers")
-        json = {"username": username, "password": password}
+
         response = requests.post(url=url, headers=cls.headers, json=json)
         return response
 
@@ -42,6 +43,21 @@ class LoginAPI(DataProcessor):
         重置密码
         :return:
         """
+
+    @classmethod
+    @around()
+    def api_login_out(cls) -> Response:
+        """
+        退出登录
+        :return:
+        """
+        url = cls.data_model.host + 'api/logout'
+        headers = cls.data_model.headers
+
+        allure.attach(str(url), "请求url")
+        allure.attach(str(headers), "请求headers")
+
+        return requests.get(url=url, headers=headers)
 
 
 if __name__ == '__main__':
