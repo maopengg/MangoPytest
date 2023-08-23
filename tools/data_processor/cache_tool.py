@@ -6,6 +6,7 @@
 from diskcache import Cache
 
 from config.settings import CACHE_PATH
+from models.tools_model import MysqlDBModel
 
 
 class CacheTool:
@@ -22,7 +23,7 @@ class CacheTool:
         return cls.cache.get(key)
 
     @classmethod
-    def cache_set(cls, key: str, value: str | list | dict) -> None:
+    def cache_set(cls, key: str, value: str | list | dict | MysqlDBModel) -> None:
         """
         设置缓存键的值
         :param key: 缓存键

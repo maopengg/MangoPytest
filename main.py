@@ -6,65 +6,76 @@ import os
 
 import pytest
 
+from config.settings import AIGC_PATH
+from config.settings import CDXP_PATH
 from enums.tools_enum import NotificationType
-from tools.files.read_yml import YmlReader
+from enums.tools_enum import ProjectEnum
 from tools.logging_tool.log_control import INFO
-from tools.mysql_tool.mysql_control import MySQLHelper
 from tools.notify.send_mail import SendEmail
 from tools.notify.wechat_send import WeChatSend
 from tools.other_tools.allure_data.allure_report_data import AllureFileClean
 from tools.other_tools.allure_data.error_case_excel import ErrorCaseExcel
 from tools.data_processor.cache_tool import CacheTool
 
-
-def run(environment: str):
-    environment_data = YmlReader.get_environment(environment)
-    MySQLHelper(environment)
-    CacheTool.cache_set('host', environment_data.host)
-    CacheTool.cache_set('headers', environment_data.headers)
-    # 从配置文件中获取项目名称
-    INFO.logger.info(
+class Run:
+    def __init__(self, data: dict):
+        self.data = data
+        self.pytest_command = ['-s', '-W', 'ignore:Module already imported:pytest.PytestWarning',
+                               '--alluredir', './report/tmp', "--clean-alluredir", ]
         """
-                         _    _         _      _____         _
-          __ _ _ __ (_)  / \\  _   _| |_ __|_   _|__  ___| |_
-         / _` | '_ \\| | / _ \\| | | | __/ _ \\| |/ _ \\/ __| __|
-        | (_| | |_) | |/ ___ \\ |_| | || (_) | |  __/\\__ \\ |_
-         \\__,_| .__/|_/_/   \\_\\__,_|\\__\\___/|_|\\___||___/\\__|
-              |_|
-              开始执行{}项目...
-            """.format(YmlReader.get_project_name())
-    )
+            --reruns: 失败重跑次数
+            --count: 重复执行次数
+            -v: 显示错误位置以及错误的详细信息
+            -s: 等价于 pytest --capture=no 可以捕获print函数的输出
+            -q: 简化输出信息
+            -m: 运行指定标签的测试用例
+            -x: 一旦错误，则停止运行
+            --maxfail: 设置最大失败次数，当超出这个阈值时，则不会在执行测试用例
+            "--reruns=3", "--reruns-delay=2"
+        """
+        self.run()
 
-    pytest.main(['-s', '-W', 'ignore:Module already imported:pytest.PytestWarning',
-                 '--alluredir', './report/tmp', "--clean-alluredir"])
+    def run(self):
+        project_str = ""
+        for project, environment in self.data.items():
+            if project == ProjectEnum.AIGC.value:
+                self.pytest_command.append(AIGC_PATH)
+                CacheTool.cache_set(f'{ProjectEnum.AIGC.value}_environment', environment)
+                project_str += project + '+'
+            elif project == ProjectEnum.CDXP.value:
+                # self.pytest_command.append(CDXP_PATH)
+                CacheTool.cache_set(f'{ProjectEnum.CDXP.value}_environment', environment)
+                project_str += project
+        # 从配置文件中获取项目名称
+        INFO.logger.info(f"""
+                                         _    _         _      _____         _
+                          __ _ _ __ (_)  / \\  _   _| |_ __|_   _|__  ___| |_
+                         / _` | '_ \\| | / _ \\| | | | __/ _ \\| |/ _ \\/ __| __|
+                        | (_| | |_) | |/ ___ \\ |_| | || (_) | |  __/\\__ \\ |_
+                         \\__,_| .__/|_/_/   \\_\\__,_|\\__\\___/|_|\\___||___/\\__|
+                              |_|
+                              开始执行{project_str}项目...
+                        """)
 
-    """
-               --reruns: 失败重跑次数
-               --count: 重复执行次数
-               -v: 显示错误位置以及错误的详细信息
-               -s: 等价于 pytest --capture=no 可以捕获print函数的输出
-               -q: 简化输出信息
-               -m: 运行指定标签的测试用例
-               -x: 一旦错误，则停止运行
-               --maxfail: 设置最大失败次数，当超出这个阈值时，则不会在执行测试用例
-               "--reruns=3", "--reruns-delay=2"
-    """
+        pytest.main(self.pytest_command)
 
-    os.system(r"allure generate ./report/tmp -o ./report/html --clean")
+        os.system(r"allure generate ./report/tmp -o ./report/html --clean")
+        # self.notice()
+        # 程序运行之后，自动启动报告，如果不想启动报告，可注释这段代码
+        os.system(f"allure serve ./report/tmp -h 127.0.0.1 -p 9999")
 
-    allure_data = AllureFileClean().get_case_count()
-    notification_mapping = {
-        NotificationType.WECHAT.value: WeChatSend(allure_data, environment).send_wechat_notification,
-        NotificationType.EMAIL.value: SendEmail(allure_data).send_main,
-    }
-    for i in environment_data.notification_type_list:
-        notification_mapping.get(i)()
-    if environment_data.excel_report:
-        ErrorCaseExcel().write_case()
-
-    # 程序运行之后，自动启动报告，如果不想启动报告，可注释这段代码
-    os.system(f"allure serve ./report/tmp -h 127.0.0.1 -p 9999")
+    def notice(self):
+        allure_data = AllureFileClean().get_case_count()
+        notification_mapping = {
+            NotificationType.WECHAT.value: WeChatSend(allure_data, self.environment,
+                                                      self.file.get_wechat()).send_wechat_notification,
+            NotificationType.EMAIL.value: SendEmail(allure_data, self.environment, self.file.get_email()).send_main,
+        }
+        for i in self.project_data.notification_type_list:
+            notification_mapping.get(i)()
+        if self.project_data.excel_report:
+            ErrorCaseExcel().write_case()
 
 
 if __name__ == '__main__':
-    run('pre')
+    Run({'aigc': 'test', 'cdxp': 'pre'})

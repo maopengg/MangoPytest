@@ -5,18 +5,17 @@
 # @Author : 毛鹏
 import pymysql
 
-from tools.files.read_yml import YmlReader
+from models.tools_model import MysqlDBModel
 
 
 class MySQLHelper:
 
-    def __init__(self, environment: str):
-        environment = YmlReader.get_environment(environment)
+    def __init__(self, db_data: MysqlDBModel):
         self.connection = pymysql.connect(
-            host=environment.mysql_db.host,
-            port=environment.mysql_db.port,
-            user=environment.mysql_db.user,
-            password=environment.mysql_db.password
+            host=db_data.mysql_db.host,
+            port=db_data.mysql_db.port,
+            user=db_data.mysql_db.user,
+            password=db_data.mysql_db.password
         )
 
     def execute_query(self, query):

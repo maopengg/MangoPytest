@@ -1,0 +1,70 @@
+# 项目名称
+project_name: 'GrowKnows'
+# 测试人员名称
+tester_name: '毛鹏'
+
+# 测试环境
+test:
+  # 域名
+  host: 'https://aigc-dev.growknows.cn/'
+  # 默认请求头
+  headers: {
+    'Authorization': 'Basic d2ViQXBwOndlYkFwcA==',
+    'Accept': 'application/json, text/plain, */*'}
+  # 报告通知类型：0、邮箱通知 1、企微
+  notification_type_list: [ 0, 1 ]
+  # 收集失败的用例开关，整理成excel报告的形式，自动发送，目前只支持返送企业微信通知
+  excel_report: True
+  mysql_db:
+    host: '61.183.9.60'
+    port: 13307
+    user: 'root'
+    password: 'zALL_mysql1'
+
+# 预发环境
+pre:
+  host: 'https://cdxppre.zalldata.cn/'
+  headers: {
+    'Authorization': 'Basic d2ViQXBwOndlYkFwcA==',
+    'Accept': 'application/json, text/plain, */*',
+  }
+  # 报告通知类型：0、邮箱通知 1、企微
+  notification_type_list: [ 0, 1 ]
+  # 收集失败的用例开关，整理成excel报告的形式，自动发送，目前只支持返送企业微信通知
+  excel_report: False
+  mysql_db:
+    host: '61.183.9.60'
+    port: 23306
+    user: 'zall'
+    password: 'zALL@123'
+
+#线上环境
+pro:
+  host: 'https://cdxp.growknows.cn/'
+  headers: {
+    'Authorization': 'Basic d2ViQXBwOndlYkFwcA==',
+    'Accept': 'application/json, text/plain, */*',
+  }
+  # 报告通知类型：0、邮箱通知 1、企微
+  notification_type_list: [ 0, 1 ]
+  # 收集失败的用例开关，整理成excel报告的形式，自动发送，目前只支持返送企业微信通知
+  excel_report: False
+  mysql_db:
+    host: '123456'
+    port: 3306
+    user: 'root'
+    password: '123456'
+
+
+# 企业通知的相关配置
+wechat:
+  webhook: 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=11491e1a-11db-4b17-8eff-dd5a4c6ccdf2'
+
+# 邮箱
+email:
+  send_user: '729164035@qq.com'
+  email_host: 'smtp.qq.com'
+  # 自己到QQ邮箱中配置stamp_key
+  stamp_key: 'lqfzvjbpfcwtbecg'
+  # 收件人改成自己的邮箱
+  send_list: [ maopeng@zalldigital.com,729164035@qq.com ]

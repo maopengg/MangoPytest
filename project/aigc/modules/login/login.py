@@ -6,15 +6,17 @@
 import allure
 import requests
 from requests.models import Response
-
+from enums.tools_enum import ProjectEnum
 from tools.data_processor import DataProcessor
 from tools.decorator.response import around
 
 
 class LoginAPI(DataProcessor):
+    project = ProjectEnum.AIGC.value
     headers = {
-        'Authorization': 'Basic d2ViQXBwOndlYkFwcA==',
+        'Authorization': 'Bearer null',
         'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json;charset=UTF-8',
     }
 
     @classmethod
@@ -25,11 +27,12 @@ class LoginAPI(DataProcessor):
         :return:
         """
         password = cls.md5_encrypt(password)
-        url = cls.cache_get(
-            'cdxp_host') + f'/backend/api-auth/oauth/token?username={username}&password={password}&grant_type=password_code'
+        url = cls.cache_get(f'{cls.project}_host') + 'api/login'
+
         allure.attach(str(url), "请求url")
         allure.attach(str(cls.headers), "请求headers")
-        response = requests.post(url=url, headers=cls.headers)
+        json = {"username": username, "password": password}
+        response = requests.post(url=url, headers=cls.headers, json=json)
         return response
 
     @classmethod
@@ -43,5 +46,5 @@ class LoginAPI(DataProcessor):
 
 if __name__ == '__main__':
     l = LoginAPI()
-    l.cache_set('cdxp_host', 'https://cdxptest.zalldata.cn/')
-    print(l.api_login("", ""))
+    l.cache_set('host', 'https://aigc-dev.growknows.cn/')
+    print(l.api_login("maopeng", "123456").json())

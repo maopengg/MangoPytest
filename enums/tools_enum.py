@@ -6,6 +6,11 @@
 from enum import Enum, unique
 
 
+class ProjectEnum(Enum):
+    CDXP = 'cdxp'
+    AIGC = 'aicg'
+
+
 class NotificationType(Enum):
     """ 自动化通知方式 """
     EMAIL = 0

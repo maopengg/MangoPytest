@@ -8,11 +8,10 @@ from config.get_path import ensure_path_sep
 # 缓存文件路径
 CACHE_PATH = ensure_path_sep("/static")
 # 配置文件路径
-CONFING_PATH = ensure_path_sep("/project/cdxp/config.yml")
+CDXP_CONFING_PATH = ensure_path_sep("/project/cdxp/config.yml")
+AIGC_CONFING_PATH = ensure_path_sep("/project/aigc/config.yml")
+# 用例路径
+AIGC_PATH = ensure_path_sep("/project/aigc/test_case")
+CDXP_PATH = ensure_path_sep("/project/cdxp/test_case")
 
-# 域名名称
-HOST = 'host'
-# 路径
-url = 'url'
-headers = 'headers'
 

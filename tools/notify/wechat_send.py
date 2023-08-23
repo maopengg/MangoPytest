@@ -20,11 +20,11 @@ class WeChatSend:
     企业微信消息通知
     """
 
-    def __init__(self, metrics: TestMetrics, environment: str):
+    def __init__(self, metrics: TestMetrics, environment: str, webhook):
         self.environment = environment
         self.metrics = metrics
         self.headers = {"Content-Type": "application/json"}
-        self.webhook = YmlReader.get_wechat()
+        self.webhook = webhook
 
     def send_text(self, content, mentioned_mobile_list=None):
         """
@@ -87,9 +87,9 @@ class WeChatSend:
 
     def send_wechat_notification(self):
         """ 发送企业微信通知 """
-        text = f"""【{YmlReader.get_project_name()}自动化通知】
+        text = f"""【{self.environment}自动化通知】
                                     >测试环境：<font color=\"info\">{self.environment}</font>
-                                    >测试负责人：@{YmlReader.get_tester_name()}
+                                    >测试负责人：@{self.environment}
                                     >
                                     > **执行结果**
                                     ><font color=\"info\">成  功  率  : {self.metrics.pass_rate}%</font>
@@ -104,7 +104,7 @@ class WeChatSend:
                                     >非相关负责人员可忽略此消息。
                                     >测试报告，点击查看>>[测试报告入口](http://{get_host_ip()}:9999/index.html)"""
 
-        WeChatSend(AllureFileClean().get_case_count(), self.environment).send_markdown(text)
+        WeChatSend(AllureFileClean().get_case_count(), self.environment, self.webhook).send_markdown(text)
 
 
 if __name__ == '__main__':

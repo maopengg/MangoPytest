@@ -20,6 +20,13 @@ class PropertiesModel(BaseModel):
     province: str = Field(alias='$province')
     city: str = Field(alias='$city')
 
+    @classmethod
+    def new_obj(cls):
+        return cls(lib="Java",
+                   os_version="",
+                   lib_version="1.0.0",
+                   )
+
 
 class TrackModel(BaseModel):
     distinct_id: str
