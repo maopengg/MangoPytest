@@ -16,9 +16,6 @@ def around():
     def decorator(func):
         def wrapper(*args, **kwargs):
             response: Response = func(*args, **kwargs)
-            # assert response.status_code != 500
-            # if response.status_code != 200 and response.status_code != 300:
-            #     raise AssertionFailure(f"公共断言失败，请求失败，code码：{response.status_code}")
             allure.attach(
                 f"args: {', '.join(str(arg) for arg in args[:1])},"
                 f" kwargs: {', '.join(f'{key}={val}' for key, val in kwargs.items())}",
