@@ -3,12 +3,10 @@
 # @Description: 
 # @Time   : 2023-08-11 11:12
 # @Author : 毛鹏
-import base64
 import hashlib
-import json
 
 
-class EncryptionOrEncodingTool:
+class EncryptionTool:
     """加密或编码类"""
 
     @classmethod
@@ -25,12 +23,3 @@ class EncryptionOrEncodingTool:
         # 获取加密后的结果
         encrypted_string = md5.hexdigest()
         return encrypted_string
-
-    @classmethod
-    def base64_encode(cls, data: str) -> str:
-        """
-        编码字符串
-        :param data: 需要进行编码的字符串
-        :return:
-        """
-        return base64.b64encode(json.dumps(data).encode('utf-8')).decode('utf-8')

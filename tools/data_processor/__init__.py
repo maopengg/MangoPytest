@@ -7,13 +7,14 @@ import re
 
 from exceptions.exception import CacheIsNone
 from tools.data_processor.cache_tool import CacheTool
-from tools.data_processor.encryption_or_encoding_tool import EncryptionOrEncodingTool
+from tools.data_processor.coding_tool import CodingTool
+from tools.data_processor.encryption_tool import EncryptionTool
 from tools.data_processor.json_tool import JsonTool
 from tools.data_processor.random_tool import RandomTool
 from tools.data_processor.time_tool import TimeTools
 
 
-class DataProcessor(JsonTool, RandomTool, CacheTool, EncryptionOrEncodingTool, TimeTools):
+class DataProcessor(JsonTool, RandomTool, CacheTool, EncryptionTool, TimeTools, CodingTool):
     """
     测试数据处理类汇总
     """
