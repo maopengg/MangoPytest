@@ -19,7 +19,6 @@ class YmlReader:
 
     def get_environment(self) -> TestEnvironmentModel:
         data = self.data.get(self.environment)
-
         return TestEnvironmentModel(**data)
 
     def get_wechat(self) -> str:

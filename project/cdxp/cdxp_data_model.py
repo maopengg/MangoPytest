@@ -20,12 +20,11 @@ def singleton(cls):
 
 
 @singleton
-class AIGCDataModel(BaseModel):
+class CDXPDataModel(BaseModel):
     host: str
-    headers: dict = {'Accept': 'application/json, text/plain, */*',
-                     'Content-Type': 'application/json;charset=UTF-8'}
-    # 'Sec-Ch-Ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-    # 'Sec-Ch-Ua-Platform': '"Windows"'
+    headers: dict = {
+        'Authorization': 'Basic d2ViQXBwOndlYkFwcA==',
+        'Accept': 'application/json, text/plain, */*'}
     mysql_db: MysqlDBModel | None
-    username: str = 'maopeng'
-    password: str = '123456'
+    username: str = 'maopeng@zalldigital.com'
+    password: str = 'maopeng123'

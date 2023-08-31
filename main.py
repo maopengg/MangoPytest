@@ -7,15 +7,15 @@ import os
 import pytest
 
 from config.settings import AIGC_PATH
-from config.settings import CDXP_PATH
 from enums.tools_enum import NotificationType
 from enums.tools_enum import ProjectEnum
+from tools.data_processor.cache_tool import CacheTool
 from tools.logging_tool.log_control import INFO
 from tools.notify.send_mail import SendEmail
 from tools.notify.wechat_send import WeChatSend
 from tools.other_tools.allure_data.allure_report_data import AllureFileClean
 from tools.other_tools.allure_data.error_case_excel import ErrorCaseExcel
-from tools.data_processor.cache_tool import CacheTool
+
 
 class Run:
     def __init__(self, data: dict):
@@ -40,11 +40,12 @@ class Run:
         for project, environment in self.data.items():
             if project == ProjectEnum.AIGC.value:
                 self.pytest_command.append(AIGC_PATH)
-                CacheTool.cache_set(f'{ProjectEnum.AIGC.value}_environment', environment)
+                CacheTool.set_cache(f'{ProjectEnum.AIGC.value}_environment', environment)
+                print(CacheTool.get_cache(f'{ProjectEnum.AIGC.value}_environment'))
                 project_str += project + '+'
             elif project == ProjectEnum.CDXP.value:
                 # self.pytest_command.append(CDXP_PATH)
-                CacheTool.cache_set(f'{ProjectEnum.CDXP.value}_environment', environment)
+                CacheTool.set_cache(f'{ProjectEnum.CDXP.value}_environment', environment)
                 project_str += project
         # 从配置文件中获取项目名称
         INFO.logger.info(f"""

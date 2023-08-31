@@ -7,6 +7,7 @@ import allure
 import requests
 from requests.models import Response
 
+from project.cdxp.cdxp_data_model import CDXPDataModel
 from tools.data_processor import DataProcessor
 from tools.decorator.response import around
 
@@ -16,24 +17,26 @@ class LoginAPI(DataProcessor):
         'Authorization': 'Basic d2ViQXBwOndlYkFwcA==',
         'Accept': 'application/json, text/plain, */*',
     }
+    cdxp_data_model: CDXPDataModel = CDXPDataModel()
 
     @classmethod
-    @around()
+    @around('登录接口')
     def api_login(cls, username, password) -> Response:
         """
         登录接口
         :return:
         """
+        api_name = '登录接口'
+
         password = cls.md5_encrypt(password)
-        url = cls.cache_get(
-            'cdxp_host') + f'/backend/api-auth/oauth/token?username={username}&password={password}&grant_type=password_code'
-        allure.attach(str(url), "请求url")
-        allure.attach(str(cls.headers), "请求headers")
-        response = requests.post(url=url, headers=cls.headers)
-        return response
+        url = f'{cls.cdxp_data_model.host}/backend/api-auth/oauth/token?username={username}&password={password}&grant_type=password_code'
+        allure.attach(str(url), f'{api_name}->请求url')
+        allure.attach(str(cls.headers), f'{api_name}->请求headers')
+
+        return requests.post(url=url, headers=cls.headers)
 
     @classmethod
-    @around()
+    @around('重置密码')
     def api_reset_password(cls) -> Response:
         """
         重置密码
@@ -42,6 +45,5 @@ class LoginAPI(DataProcessor):
 
 
 if __name__ == '__main__':
-    l = LoginAPI()
-    l.cache_set('cdxp_host', 'https://cdxptest.zalldata.cn/')
-    print(l.api_login("", ""))
+    r = LoginAPI()
+    print(r.api_login("", ""))

@@ -16,7 +16,7 @@ from project.aigc.modules.login.model import ResponseModel
 class TestLogin:
 
     @allure.story("正确的账号，正确的密码，进行登录")
-    @pytest.mark.parametrize("username, password", [("maopeng", "123456")])
+    @pytest.mark.parametrize("username, password", [("zhouchong", "123456")])
     def test_login01(self, username, password):
         result = LoginAPI.api_login(username, password)
         result_dict = ResponseModel.get_obj(result.json())
@@ -30,6 +30,7 @@ class TestLogin:
         result_dict = ResponseModel.get_obj(result.json())
         assert result_dict.status == 1
         assert result_dict.message == "用户名或密码错误！"
+        if
 
     @allure.story("错误的账号，错误的密码，进行登录")
     @pytest.mark.parametrize("username, password", [("maopeng1", "123456")])
@@ -39,8 +40,14 @@ class TestLogin:
         assert result_dict.status == 1
         assert result_dict.message == "用户名或密码错误！"
 
+
     @allure.story("登录之后退出登录")
-    def test_login04(self):
-        result = LoginAPI.api_login_out()
+    @pytest.mark.parametrize("username, password", [("zhouchong", "123456")])
+    def test_login04(self, username, password):
+        response = LoginAPI.api_login(username, password)
+        token = response.json().get('data').get('token')
+        header = LoginAPI.headers
+        header['Authorization'] = 'Bearer ' + token
+        result = LoginAPI.api_login_out(header)
         result_dict = ResponseModel.get_obj(result.json())
         assert result_dict.status == 0

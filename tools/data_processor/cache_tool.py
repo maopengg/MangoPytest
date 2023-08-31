@@ -10,22 +10,22 @@ class CacheTool:
     cache: LRUCache = LRUCache(maxsize=100)
 
     @classmethod
-    def get(cls, key: str) -> any:
+    def get_cache(cls, key: str) -> any:
         return cls.cache.get(key)
 
     @classmethod
-    def set(cls, key: str, value: any) -> None:
+    def set_cache(cls, key: str, value: any) -> None:
         cls.cache[key] = value
 
     @classmethod
-    def delete(cls, key: str) -> None:
+    def delete_cache(cls, key: str) -> None:
         if key in cls.cache:
             del cls.cache[key]
 
     @classmethod
-    def clear(cls) -> None:
+    def clear_cache(cls) -> None:
         cls.cache.clear()
 
     @classmethod
-    def has(cls, key: str) -> bool:
+    def has_cache(cls, key: str) -> bool:
         return key in cls.cache

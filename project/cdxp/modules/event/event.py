@@ -3,12 +3,11 @@
 # @Description: 
 # @Time   : 2023-08-10 10:26
 # @Author : 毛鹏
-import uuid
 
 import requests
 from requests import Response
 
-from project.cdxp.modules.event.model import TrackModel, TrackSignup, ProfileSetModel, PropertiesModel
+from project.cdxp.modules.event.model import TrackModel, TrackSignup, ProfileSetModel
 from tools.data_processor import DataProcessor
 from tools.decorator.response import around
 

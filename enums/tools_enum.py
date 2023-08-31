@@ -8,7 +8,7 @@ from enum import Enum, unique
 
 class ProjectEnum(Enum):
     CDXP = 'cdxp'
-    AIGC = 'aicg'
+    AIGC = 'aigc'
 
 
 class NotificationType(Enum):

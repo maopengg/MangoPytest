@@ -9,12 +9,12 @@ from project.aigc.modules.creating_templates.creating_templates import CreatingT
 from project.aigc.modules.creating_templates.model import ResponseModel
 
 
-@allure.epic("AIGC")
-@allure.feature("创作模板")
-class TestCreatingTemplates:
+@allure.epic('AIGC')
+@allure.feature('创作模板-小红书日报')
+class TestDaily:
 
-    @allure.story("日报-小红书日报-列表接口")
-    def test_creating_templates_list(self):
+    @allure.story('日报-小红书日报-列表接口')
+    def test_daily_list(self):
         response = CreatingTemplatesAPI.api_daily_list()
         result = ResponseModel(**response.json())
         assert result.status == 0

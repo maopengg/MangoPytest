@@ -8,20 +8,21 @@ import requests
 from requests.models import Response
 
 from enums.tools_enum import ProjectEnum
+from project.cdxp import CDXPDataModel
 from tools.data_processor import DataProcessor
 from tools.logging_tool.log_control import ERROR, INFO
 
 project = ProjectEnum.CDXP.value
+data_model: CDXPDataModel = CDXPDataModel()
 
 
-def api_login(username, password):
+def cdxp_login(username, password) -> Response:
     """
     登录接口
     :return:
     """
     password = DataProcessor.md5_encrypt(password)
-    url = DataProcessor.cache_get(
-        f'{project}_host') + f'/backend/api-auth/oauth/token?username={username}&password={password}&grant_type=password_code'
+    url = f'{data_model.host}/backend/api-auth/oauth/token?username={username}&password={password}&grant_type=password_code'
     headers = {
         'Authorization': 'Basic d2ViQXBwOndlYkFwcA==',
         'Accept': 'application/json, text/plain, */*',
@@ -30,8 +31,12 @@ def api_login(username, password):
 
 
 try:
-    response: Response = api_login("admin", "admin")
-    DataProcessor.cache_set(f'{project}_token', response.json().get('data').get('access_token'))
-    INFO.logger.info(f"{project}token设置成功：{DataProcessor.cache_get(f'{project}_token')}")
+    response: Response = cdxp_login("admin", "admin")
+    token = response.json().get('data').get('access_token')
+    data_model.headers['Authorization'] = 'Bearer ' + token
+    data_model.headers['Currentproject'] = 'precheck'
+    data_model.headers['Service'] = 'zall'
+    data_model.headers['Userid'] = '201'
+    INFO.logger.info(f'{project}请求头设置成功！{data_model.headers}')
 except Exception as e:
     ERROR.logger.error(f"设置{project}的token失败，请重新设置{e}")
