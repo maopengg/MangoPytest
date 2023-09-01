@@ -9,6 +9,7 @@ from requests import Response
 from config.settings import AIGC_CONFING_PATH
 from enums.tools_enum import ProjectEnum
 from project.aigc.aigc_data_model import AIGCDataModel
+from project.aigc.modules.login.model import ResponseModel
 from tools.data_processor import CacheTool
 from tools.data_processor import DataProcessor
 from tools.files.read_yml import YmlReader
@@ -24,11 +25,10 @@ def preparation():
 
 
 try:
-    # CacheTool.set_cache(f'{project}_environment', 'test')
+    CacheTool.set_cache(f'{project}_environment', 'test')
     preparation()
 except Exception as e:
     ERROR.logger.error(f'{project}缓存设置失败:{e}')
-
 
 data_model: AIGCDataModel = AIGCDataModel()
 
@@ -51,11 +51,12 @@ def aigc_login() -> Response:
 
 try:
     response: Response = aigc_login()
-    user_id = response.json().get('data').get('userId')
-    token = response.json().get('data').get('token')
-    data_model.headers['Authorization'] = 'Bearer ' + token
-    data_model.headers['User'] = data_model.username
-    data_model.headers['userId'] = str(user_id)
+    login_model = ResponseModel.get_obj(response.json())
+
+    data_model.headers['Authorization'] = f'Bearer {login_model.data.token}'
+    data_model.headers['User'] = login_model.data.userName
+    data_model.headers['userId'] = str(login_model.data.userId)
+
     INFO.logger.info(f'{project}请求头设置成功！{data_model.headers}')
 except Exception as e:
-    ERROR.logger.error(f"设置{project}的token失败，请重新设置:{e}")
+    ERROR.logger.error(f"设置{project}的token失败! {e}")

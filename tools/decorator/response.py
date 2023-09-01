@@ -12,18 +12,23 @@ from requests.models import Response
 def around(api_name: str):
     """
     响应统一处理
-    @return:
+    :param api_name: 接口名称
+    :return:
     """
 
     def decorator(func):
-        def wrapper(*args, **kwargs):
-            response: Response = func(*args, **kwargs)
-            allure.attach(
-                f"args: {', '.join(str(arg) for arg in args[:1])},"
-                f"kwargs: {', '.join(f'{key}={val}' for key, val in kwargs.items())}",
-                f'{api_name}->请求参数')
+        def wrapper(*args, **kwargs) -> Response:
+            res_args: tuple[Response, str, dict] = func(*args, **kwargs)
+            response: Response = res_args[0]
+
+            allure.attach(str(res_args[1]), f'{api_name}->url')
+            allure.attach(str(res_args[2]), f'{api_name}->请求头')
+            allure.attach(f"参数A: {', '.join(str(arg) for arg in args[1:])}\n"
+                          f"参数B: {', '.join(f'{key}={val}' for key, val in kwargs.items())}",
+                          f'{api_name}->请求参数')
             allure.attach(str(response.status_code), f'{api_name}->响应状态码')
             allure.attach(str(json.dumps(response.json(), ensure_ascii=False)), f'{api_name}->响应结果')
+
             return response
 
         return wrapper

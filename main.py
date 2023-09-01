@@ -6,7 +6,7 @@ import os
 
 import pytest
 
-from config.settings import AIGC_PATH
+from config.settings import AIGC_PATH, CDXP_PATH
 from enums.tools_enum import NotificationType
 from enums.tools_enum import ProjectEnum
 from tools.data_processor.cache_tool import CacheTool
@@ -41,25 +41,14 @@ class Run:
             if project == ProjectEnum.AIGC.value:
                 self.pytest_command.append(AIGC_PATH)
                 CacheTool.set_cache(f'{ProjectEnum.AIGC.value}_environment', environment)
-                print(CacheTool.get_cache(f'{ProjectEnum.AIGC.value}_environment'))
                 project_str += project + '+'
             elif project == ProjectEnum.CDXP.value:
-                # self.pytest_command.append(CDXP_PATH)
+                self.pytest_command.append(CDXP_PATH)
                 CacheTool.set_cache(f'{ProjectEnum.CDXP.value}_environment', environment)
                 project_str += project
         # 从配置文件中获取项目名称
-        INFO.logger.info(f"""
-                                         _    _         _      _____         _
-                          __ _ _ __ (_)  / \\  _   _| |_ __|_   _|__  ___| |_
-                         / _` | '_ \\| | / _ \\| | | | __/ _ \\| |/ _ \\/ __| __|
-                        | (_| | |_) | |/ ___ \\ |_| | || (_) | |  __/\\__ \\ |_
-                         \\__,_| .__/|_/_/   \\_\\__,_|\\__\\___/|_|\\___||___/\\__|
-                              |_|
-                              开始执行{project_str}项目...
-                        """)
-
+        INFO.logger.info(f"开始执行{project_str}项目...")
         pytest.main(self.pytest_command)
-
         os.system(r"allure generate ./report/tmp -o ./report/html --clean")
         # self.notice()
         # 程序运行之后，自动启动报告，如果不想启动报告，可注释这段代码

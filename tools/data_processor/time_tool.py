@@ -13,7 +13,7 @@ class TimeTools:
     """时间处理类"""
 
     @classmethod
-    def count_milliseconds(cls) -> str:
+    def count_milliseconds(cls) -> int:
         """
         计算时间
         :return:

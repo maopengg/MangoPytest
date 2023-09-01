@@ -3,7 +3,6 @@
 # @Description: 
 # @Time   : 2023-08-08 11:25
 # @Author : 毛鹏
-import allure
 import requests
 from requests.models import Response
 
@@ -21,23 +20,19 @@ class LoginAPI(DataProcessor):
 
     @classmethod
     @around('登录接口')
-    def api_login(cls, username, password) -> Response:
+    def api_login(cls, username, password) -> tuple[Response, str, dict] | Response:
         """
         登录接口
         :return:
         """
-        api_name = '登录接口'
-
         password = cls.md5_encrypt(password)
         url = f'{cls.cdxp_data_model.host}/backend/api-auth/oauth/token?username={username}&password={password}&grant_type=password_code'
-        allure.attach(str(url), f'{api_name}->请求url')
-        allure.attach(str(cls.headers), f'{api_name}->请求headers')
-
-        return requests.post(url=url, headers=cls.headers)
+        response = requests.post(url=url, headers=cls.headers)
+        return response, url, cls.headers
 
     @classmethod
     @around('重置密码')
-    def api_reset_password(cls) -> Response:
+    def api_reset_password(cls) -> tuple[Response, str, dict] | Response:
         """
         重置密码
         :return:

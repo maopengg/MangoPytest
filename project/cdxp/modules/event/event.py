@@ -15,12 +15,12 @@ from tools.decorator.response import around
 class EventAPI(DataProcessor):
 
     @classmethod
-    @around()
-    def api_send_event(cls, data: TrackModel | TrackSignup | ProfileSetModel) -> Response:
+    @around('事件上报接口')
+    def api_send_event(cls, data: TrackModel | TrackSignup | ProfileSetModel) -> tuple[Response, str, dict] | Response:
         """
         事件上报接口
         :param data:
         :return:
         """
-        response = requests.post(url=cls.cache_get('event_url'), data=data)
-        return response
+        response = requests.post(url=cls.get_cache('event_url'), data=data)
+        return response, '', {}
