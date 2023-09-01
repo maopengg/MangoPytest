@@ -6,6 +6,8 @@
 
 from pydantic import BaseModel
 
+from models.models import TestMetrics
+
 
 class MysqlDBModel(BaseModel):
     host: str
@@ -16,9 +18,10 @@ class MysqlDBModel(BaseModel):
 
 class TestEnvironmentModel(BaseModel):
     host: str
-    mysql_db: MysqlDBModel
-    notification_type_list: list
+    notification_type_list: list | None
     excel_report: bool
+    database_assertion: bool
+    mysql_db: MysqlDBModel
 
 
 class EmailModel(BaseModel):
@@ -28,3 +31,18 @@ class EmailModel(BaseModel):
     stamp_key: str
     # 收件人改成自己的邮箱
     send_list: list
+
+
+class WeChatSendModel(BaseModel):
+    metrics: TestMetrics
+    environment: str
+    project: str
+    webhook: str
+    tester_name: str
+
+
+class EmailSendModel(BaseModel):
+    metrics: TestMetrics
+    environment: str
+    project: str
+    config: EmailModel
