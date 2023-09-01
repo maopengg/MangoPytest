@@ -5,7 +5,7 @@
 # @Author : 毛鹏
 import allure
 
-from project.aigc.modules.creating_templates.creating_templates import CreatingTemplatesAPI
+from project.aigc.modules.creating_templates.daily import CreatingTemplatesAPI
 from project.aigc.modules.creating_templates.model import ResponseModel
 
 

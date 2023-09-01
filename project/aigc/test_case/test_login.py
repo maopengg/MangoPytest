@@ -6,14 +6,14 @@
 
 import allure
 import pytest
-
+from tools.assertion.public_assertion import PublicAssertion
 from project.aigc.modules.login.login import LoginAPI
 from project.aigc.modules.login.model import ResponseModel
 
 
 @allure.epic("AIGC")
 @allure.feature("登录模块")
-class TestLogin:
+class TestLogin(PublicAssertion):
 
     @allure.story("正确的账号，正确的密码，进行登录")
     @pytest.mark.parametrize("username, password", [("zhouchong", "123456")])

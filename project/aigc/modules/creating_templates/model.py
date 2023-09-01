@@ -24,11 +24,18 @@ class CreatingTemplatesModel(BaseModel):
     status: int
 
 
-class SonMoteModel(BaseModel):
+class SonMote2Model(BaseModel):
     id: int
     name: str
     preset: int
-    children: list[dict] | None
+    pid: int
+
+
+class SonMote1Model(BaseModel):
+    id: int
+    name: str
+    preset: int
+    children: list[SonMote2Model] | None
     pid: int
 
 
@@ -36,12 +43,12 @@ class MoteModel(BaseModel):
     id: int
     name: str
     preset: int
-    children: list[SonMoteModel] | None
+    children: list[SonMote1Model] | None
     pid: int
 
 
 class ResponseModel(BaseModel):
-    data: list[CreatingTemplatesModel | MoteModel] | None
+    data: list[CreatingTemplatesModel | MoteModel] | None | str
     status: int
     message: str | None
 

@@ -7,7 +7,7 @@ class PublicAssertion:
 
     @classmethod
     def is_not_none(cls, value):
-        """是null"""
+        """不是null"""
         assert_that(value).is_not_none()
 
     @classmethod

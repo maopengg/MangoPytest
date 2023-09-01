@@ -23,7 +23,10 @@ def singleton(cls):
 class AIGCDataModel(BaseModel):
     host: str
     headers: dict = {'Accept': 'application/json, text/plain, */*',
-                     'Content-Type': 'application/json;charset=UTF-8'}
+                     'Content-Type': 'application/json;charset=UTF-8',
+                     'User': '',
+                     'Authorization': '',
+                     'userId': ''}
     # 'Sec-Ch-Ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
     # 'Sec-Ch-Ua-Platform': '"Windows"'
     mysql_db: MysqlDBModel | None

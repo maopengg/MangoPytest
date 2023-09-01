@@ -17,3 +17,7 @@ class CodingTool:
         :return:
         """
         return base64.b64encode(json.dumps(data).encode('utf-8')).decode('utf-8')
+
+    @classmethod
+    def response_decoding(cls, data) -> str:
+        return data.encode('latin-1').decode('unicode_escape').encode('utf-8', 'ignore').decode('utf-8')

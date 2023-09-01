@@ -6,24 +6,32 @@
 import allure
 import pytest
 
-from project.aigc.modules.creating_templates.creating_templates import CreatingTemplatesAPI
 from project.aigc.modules.creating_templates.model import ResponseModel
+from project.aigc.modules.creating_templates.note import NoteAPI
 from tools.logging_tool.log_control import INFO
 
 
 @allure.epic('AIGC')
 @allure.feature('创作模板-小红书笔记')
-class TestNote:
+class TestNote(NoteAPI):
 
     @allure.story('服饰达人列表接口')
     def test_note_01(self):
-        response = CreatingTemplatesAPI.api_note_dress()
+        response = self.api_note_dress(2)
         result = ResponseModel(**response.json())
-        name = result.data[0].name
-        INFO.logger.info(f'name:{name}')
         assert result.status == 0
         assert result.data is not None
         assert result.data[0].name == '主题方向'
+        theme_directionr = result.data[0].children[0].name  # 选购攻略
+        plant = [result.data[1].children[0].children[0].dict()]
+        target = [result.data[2].children[2].dict()]
+        selling = [result.data[3].children[2].dict()]
+        keyword = [result.data[4].children[1].children[2].dict()]
+        nete_response = self.api_note_dress_title(theme_directionr, plant, target, selling, keyword)
+        nete_result = ResponseModel(**nete_response.json())
+        INFO.logger.info(self.response_decoding(nete_result.data))
+        assert nete_result.data is not None
+        assert nete_result.status == 0
 
 
 if __name__ == '__main__':

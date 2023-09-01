@@ -5,10 +5,6 @@
 # @Author : 毛鹏
 
 
-class MyBaseFailure(Exception):
-    pass
-
-
 class CacheIsNone(Exception):
     def __init__(self, msg):
         self.code = 301
@@ -25,10 +21,6 @@ class ValueTypeError(Exception):
     def __init__(self, msg):
         self.code = 301
         self.msg = msg
-
-
-class ValueNotFoundError(MyBaseFailure):
-    pass
 
 
 class AssertionFailure(AssertionError):
