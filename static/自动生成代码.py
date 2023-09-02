@@ -11,7 +11,7 @@ def batch_test():
     for root, dirs, files in os.walk(file_dir):
         for str_filename in files:
             # Full.txt fiddler保存下来的所有txt文件，需要Full.txt后缀格式，可以自己手动修改后缀格式
-            if str_filename.endswith('2_Full.txt'):
+            if str_filename.endswith('375_Full.txt'):
                 return_list.append(str_filename)
         # print(return_list)
         return return_list
