@@ -3,15 +3,15 @@
 # @Description: 
 # @Time   : 2023-09-01 14:55
 # @Author : 毛鹏
-import requests
 from requests.models import Response
 
 from project.aigc import AIGCDataModel
 from tools.data_processor import DataProcessor
 from tools.decorator.response import around
+from tools.request_tool.request_tool import RequestTool
 
 
-class NoteAPI(DataProcessor):
+class NoteAPI(DataProcessor, RequestTool):
     """ 小红书笔记 """
     data_model: AIGCDataModel = AIGCDataModel()
 
@@ -23,7 +23,7 @@ class NoteAPI(DataProcessor):
         :return:
         """
         url = f'{cls.data_model.host}api/note/getKeyword?id={_type}'
-        response = requests.get(url=url, headers=cls.data_model.headers)
+        response = cls.http_get(url=url, headers=cls.data_model.headers)
         return response, url, cls.data_model.headers
 
     @classmethod
@@ -57,7 +57,7 @@ class NoteAPI(DataProcessor):
                                        "selling": selling,
                                        "keyword": keyword})
         }
-        response = requests.post(url, headers=cls.data_model.headers, json=json)
+        response = cls.http_post(url, headers=cls.data_model.headers, json=json)
         return response, url, cls.data_model.headers
 
     @classmethod
@@ -68,7 +68,7 @@ class NoteAPI(DataProcessor):
         :return:
         """
         url = f'{cls.data_model.host}api/note/getKeyword?id={3}'
-        response = requests.get(url=url, headers=cls.data_model.headers)
+        response = cls.http_get(url=url, headers=cls.data_model.headers)
         return response, url, cls.data_model.headers
 
     @classmethod
@@ -79,7 +79,7 @@ class NoteAPI(DataProcessor):
         :return:
         """
         url = f'{cls.data_model.host}api/note/getKeyword?id={7}'
-        response = requests.get(url=url, headers=cls.data_model.headers)
+        response = cls.http_get(url=url, headers=cls.data_model.headers)
         return response, url, cls.data_model.headers
 
     @classmethod
@@ -90,7 +90,7 @@ class NoteAPI(DataProcessor):
         :return:
         """
         url = f'{cls.data_model.host}api/note/getKeyword?id={8}'
-        response = requests.get(url=url, headers=cls.data_model.headers)
+        response = cls.http_get(url=url, headers=cls.data_model.headers)
         return response, url, cls.data_model.headers
 
 

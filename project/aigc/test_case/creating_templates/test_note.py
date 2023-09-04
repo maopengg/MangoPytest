@@ -16,7 +16,7 @@ from tools.logging_tool.log_control import INFO
 @allure.story('小红书笔记')
 class TestNote(NoteAPI):
 
-    @allure.title('服饰达人列表接口')
+    @allure.title('服饰达人生成')
     def test_note_01(self):
         """服饰达人的获取文章名称和文章内容"""
         with allure.step('1.从创作模板进入到服饰达人中'):
@@ -36,7 +36,6 @@ class TestNote(NoteAPI):
             INFO.logger.info(self.response_decoding(nete_result.data))
             assert nete_result.data is not None
             assert nete_result.status == 0
-        allure.tag('哈哈')
 
 
 if __name__ == '__main__':

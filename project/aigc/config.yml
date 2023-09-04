@@ -8,7 +8,7 @@ test:
   # 域名
   host: 'https://aigc-test.growknows.cn/'
   # 报告通知类型：0、邮箱通知 1、企微  空则不通知
-  notification_type_list: []
+  notification_type_list: [ ]
   # 收集失败的用例开关，整理成excel报告的形式，自动发送，目前只支持返送企业微信通知
   excel_report: False
   # 是否开启数据库断言

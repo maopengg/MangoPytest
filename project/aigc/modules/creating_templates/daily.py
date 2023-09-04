@@ -3,15 +3,15 @@
 # @Description: 
 # @Time   : 2023-08-08 11:25
 # @Author : 毛鹏
-import requests
 from requests.models import Response
 
 from project.aigc import AIGCDataModel
 from tools.data_processor import DataProcessor
 from tools.decorator.response import around
+from tools.request_tool.request_tool import RequestTool
 
 
-class CreatingTemplatesAPI(DataProcessor):
+class CreatingTemplatesAPI(DataProcessor, RequestTool):
     data_model: AIGCDataModel = AIGCDataModel()
 
     @classmethod
@@ -22,7 +22,7 @@ class CreatingTemplatesAPI(DataProcessor):
         :return: 响应结果，请求url，请求头
         """
         url = f'{cls.data_model.host}api/brands/list?user={cls.data_model.username}'
-        response = requests.get(url=url, headers=cls.data_model.headers)
+        response = cls.http_get(url=url, headers=cls.data_model.headers)
         return response, url, cls.data_model.headers
 
 

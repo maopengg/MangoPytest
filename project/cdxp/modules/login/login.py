@@ -3,15 +3,15 @@
 # @Description: 
 # @Time   : 2023-08-08 11:25
 # @Author : 毛鹏
-import requests
 from requests.models import Response
 
 from project.cdxp.cdxp_data_model import CDXPDataModel
 from tools.data_processor import DataProcessor
 from tools.decorator.response import around
+from tools.request_tool.request_tool import RequestTool
 
 
-class LoginAPI(DataProcessor):
+class LoginAPI(DataProcessor, RequestTool):
     headers = {
         'Authorization': 'Basic d2ViQXBwOndlYkFwcA==',
         'Accept': 'application/json, text/plain, */*',
@@ -27,7 +27,7 @@ class LoginAPI(DataProcessor):
         """
         password = cls.md5_encrypt(password)
         url = f'{cls.cdxp_data_model.host}/backend/api-auth/oauth/token?username={username}&password={password}&grant_type=password_code'
-        response = requests.post(url=url, headers=cls.headers)
+        response = cls.http_post(url=url, headers=cls.headers)
         return response, url, cls.headers
 
     @classmethod

@@ -10,10 +10,11 @@ from project.aigc.modules.creating_templates.model import ResponseModel
 
 
 @allure.epic('AIGC')
-@allure.feature('创作模板-小红书日报')
+@allure.feature('创作模板')
+@allure.story('小红书笔记')
 class TestDaily:
 
-    @allure.story('日报-小红书日报-列表接口')
+    @allure.title('日报-小红书日报-列表接口')
     def test_daily_list(self):
         response = CreatingTemplatesAPI.api_daily_list()
         result = ResponseModel(**response.json())

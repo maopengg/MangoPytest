@@ -6,9 +6,10 @@
 
 import allure
 import pytest
-from tools.assertion.public_assertion import PublicAssertion
+
 from project.aigc.modules.login.login import LoginAPI
 from project.aigc.modules.login.model import ResponseModel
+from tools.assertion.public_assertion import PublicAssertion
 
 
 @allure.epic("AIGC")

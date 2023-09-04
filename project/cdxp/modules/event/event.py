@@ -4,15 +4,15 @@
 # @Time   : 2023-08-10 10:26
 # @Author : 毛鹏
 
-import requests
 from requests import Response
 
 from project.cdxp.modules.event.model import TrackModel, TrackSignup, ProfileSetModel
 from tools.data_processor import DataProcessor
 from tools.decorator.response import around
+from tools.request_tool.request_tool import RequestTool
 
 
-class EventAPI(DataProcessor):
+class EventAPI(DataProcessor, RequestTool):
 
     @classmethod
     @around('事件上报接口')
@@ -22,5 +22,5 @@ class EventAPI(DataProcessor):
         :param data:
         :return:
         """
-        response = requests.post(url=cls.get_cache('event_url'), data=data)
+        response = cls.http_post(url=cls.get_cache('event_url'), data=data)
         return response, '', {}
