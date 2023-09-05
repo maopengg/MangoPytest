@@ -20,4 +20,9 @@ class CodingTool:
 
     @classmethod
     def response_decoding(cls, data) -> str:
+        """
+        解码字符串
+        :param data:
+        :return:
+        """
         return data.encode('latin-1').decode('unicode_escape').encode('utf-8', 'ignore').decode('utf-8')

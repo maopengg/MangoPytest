@@ -6,7 +6,17 @@
 import json
 
 import allure
+from pydantic import BaseModel
 from requests.models import Response
+
+from tools.logging_tool.log_control import INFO
+
+
+def is_args_contain_base_model(*args):
+    for arg in args:
+        if isinstance(arg, BaseModel):
+            return True
+    return False
 
 
 def around(api_name: str):
@@ -23,7 +33,14 @@ def around(api_name: str):
 
             allure.attach(str(res_args[1]), f'{api_name}->url')
             allure.attach(str(res_args[2]), f'{api_name}->请求头')
-            allure.attach(f"参数A: {', '.join(str(arg) for arg in args[1:])}\n"
+            arg1 = ''
+            arg2 = ''
+            for arg in args[1:]:
+                if isinstance(arg, BaseModel):
+                    arg1 += str(arg.json())
+                else:
+                    arg2 += ', '.join(str(arg))
+            allure.attach(f"参数A: {arg1+arg2}\n"
                           f"参数B: {', '.join(f'{key}={val}' for key, val in kwargs.items())}",
                           f'{api_name}->请求参数')
             allure.attach(str(response.status_code), f'{api_name}->响应状态码')

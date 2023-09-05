@@ -12,6 +12,7 @@ from enums.tools_enum import ProjectEnum
 from models.tools_model import EmailSendModel, WeChatSendModel
 from tools.data_processor.cache_tool import CacheTool
 from tools.files.read_yml import YmlReader
+from tools.files.zip_files import zip_files
 from tools.logging_tool.log_control import INFO
 from tools.notify.send_mail import SendEmail
 from tools.notify.wechat_send import WeChatSend
@@ -36,6 +37,7 @@ class Run:
             --maxfail: 设置最大失败次数，当超出这个阈值时，则不会在执行测试用例
             "--reruns=3", "--reruns-delay=2"
         """
+        zip_files()
         self.run()
 
     def run(self):

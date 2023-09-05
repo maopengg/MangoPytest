@@ -13,5 +13,8 @@ AIGC_CONFING_PATH = ensure_path_sep("/project/aigc/config.yml")
 # 用例路径
 AIGC_PATH = ensure_path_sep("/project/aigc/test_case")
 CDXP_PATH = ensure_path_sep("/project/cdxp/test_case")
-
+# 每次报告存放地
+REPORT_PATH = ensure_path_sep("/report")
+# 压缩报告存放地
+ZIP_REPORT_PATH = ensure_path_sep("/reports")
 

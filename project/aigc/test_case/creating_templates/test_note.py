@@ -6,7 +6,7 @@
 import allure
 import pytest
 
-from project.aigc.modules.creating_templates.model import ResponseModel
+from project.aigc.modules.creating_templates.model import ResponseModel, NoteRequestModel
 from project.aigc.modules.creating_templates.note import NoteAPI
 from tools.logging_tool.log_control import INFO
 
@@ -25,15 +25,37 @@ class TestNote(NoteAPI):
             assert result.status == 0
             assert result.data is not None
             assert result.data[0].name == '主题方向'
-        with allure.step('2.选择下拉框的值点击生成文章'):
+        with allure.step('2.选择下拉框的值点击生成标题'):
             theme_directionr = result.data[0].children[0].name  # 选购攻略
             plant = [result.data[1].children[0].children[0].dict()]
             target = [result.data[2].children[2].dict()]
             selling = [result.data[3].children[2].dict()]
             keyword = [result.data[4].children[1].children[2].dict()]
-            nete_response = self.api_note_dress_title(theme_directionr, plant, target, selling, keyword)
+            note_data = NoteRequestModel(first_type='服饰配饰',
+                                         user=self.data_model.headers.get('User'),
+                                         user_id=self.data_model.headers.get('userId'),
+                                         second_type='服饰',
+                                         theme_direction=theme_directionr,
+                                         product_names=[obj.get('name') for obj in plant],
+                                         target_populations=[obj.get('name') for obj in target],
+                                         selling_points=[obj.get('name') for obj in selling],
+                                         other_keywords=[obj.get('name') for obj in keyword],
+                                         details=self.json_dumps({"subject": theme_directionr,
+                                                                  "plant": plant,
+                                                                  "target": target,
+                                                                  "selling": selling,
+                                                                  "keyword": keyword}), )
+            nete_response = self.api_note_dress_title(note_data)
             nete_result = ResponseModel(**nete_response.json())
-            INFO.logger.info(self.response_decoding(nete_result.data))
+            data: str = self.response_decoding(nete_result.data)
+            INFO.logger.info(f'获取文章接口的msg内容：{data}')
+            assert nete_result.data is not None
+            assert nete_result.status == 0
+        with allure.step('3.选择标题后生成文章'):
+            note_data.title = self.json_loads(data).get('message').get('1')
+            _response = self.api_note_article(note_data)
+            _result = ResponseModel(**_response.json())
+            INFO.logger.info(f'获取文章接口的msg内容：{self.response_decoding(_result.data)}')
             assert nete_result.data is not None
             assert nete_result.status == 0
 

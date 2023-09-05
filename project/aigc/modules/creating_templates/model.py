@@ -6,6 +6,21 @@
 from pydantic import BaseModel
 
 
+class NoteRequestModel(BaseModel):
+    """小红书笔记模型"""
+    first_type: str
+    user: str
+    user_id: int
+    second_type: str
+    theme_direction: str
+    product_names: list[str]
+    target_populations: list[str]
+    selling_points: list[str]
+    other_keywords: list[str]
+    details: str
+    title: str | None
+
+
 class CreatingTemplatesModel(BaseModel):
     createTime: str
     updateTime: str

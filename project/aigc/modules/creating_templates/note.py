@@ -6,6 +6,7 @@
 from requests.models import Response
 
 from project.aigc import AIGCDataModel
+from project.aigc.modules.creating_templates.model import NoteRequestModel
 from tools.data_processor import DataProcessor
 from tools.decorator.response import around
 from tools.request_tool.request_tool import RequestTool
@@ -28,36 +29,26 @@ class NoteAPI(DataProcessor, RequestTool):
 
     @classmethod
     @around('服装达人-生成小红书标题')
-    def api_note_dress_title(cls, theme_direction: str, plant: list[dict], target: list[dict], selling: list[dict],
-                             keyword: list[dict]) -> tuple[Response, str, dict] | Response:
+    def api_note_dress_title(cls, note_data: NoteRequestModel) -> tuple[Response, str, dict] | Response:
         """
         生成小红书标题
-        :param theme_direction:主体方向
-        :param plant:种草产品
-        :param target:目标人群
-        :param selling:卖点效果
-        :param keyword:其他关键词(季节、场景、材质、色系、风格等)
+        :param note_data:
         :return:
         """
-
         url = f'{cls.data_model.host}api/ai/generateNotesTitle'
-        json = {
-            "first_type": "服饰配饰",
-            "user": cls.data_model.headers.get('User'),
-            "user_id": cls.data_model.headers.get('userId'),
-            "second_type": "服饰",
-            "theme_direction": theme_direction,
-            "product_names": [obj.get('name') for obj in plant],
-            "target_populations": [obj.get('name') for obj in target],
-            "selling_points": [obj.get('name') for obj in selling],
-            "other_keywords": [obj.get('name') for obj in keyword],
-            "details": cls.json_dumps({"subject": theme_direction,
-                                       "plant": plant,
-                                       "target": target,
-                                       "selling": selling,
-                                       "keyword": keyword})
-        }
-        response = cls.http_post(url, headers=cls.data_model.headers, json=json)
+
+        response = cls.http_post(url, headers=cls.data_model.headers, json=note_data.dict())
+        return response, url, cls.data_model.headers
+
+    @classmethod
+    @around('小红书笔记-配饰达人')
+    def api_note_article(cls, note_data: NoteRequestModel) -> tuple[Response, str, dict] | Response:
+        """
+        小红书笔记
+        :return:
+        """
+        url = f'{cls.data_model.host}api/ai/generateNotesContent'
+        response = cls.http_post(url, headers=cls.data_model.headers, json=note_data.dict())
         return response, url, cls.data_model.headers
 
     @classmethod
