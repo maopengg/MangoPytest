@@ -28,7 +28,43 @@ def around(api_name: str):
 
     def decorator(func):
         def wrapper(*args, **kwargs) -> Response:
+
             res_args: tuple[Response, str, dict] = func(*args, **kwargs)
+            response: Response = res_args[0]
+
+            allure.attach(str(res_args[1]), f'{api_name}->url')
+            allure.attach(str(res_args[2]), f'{api_name}->请求头')
+            arg1 = ''
+            arg2 = ''
+            for arg in args[1:]:
+                if isinstance(arg, BaseModel):
+                    arg1 += str(arg.json())
+                else:
+                    arg2 += ', '.join(str(arg))
+            allure.attach(f"参数A: {arg1+arg2}\n"
+                          f"参数B: {', '.join(f'{key}={val}' for key, val in kwargs.items())}",
+                          f'{api_name}->请求参数')
+            allure.attach(str(response.status_code), f'{api_name}->响应状态码')
+            allure.attach(str(json.dumps(response.json(), ensure_ascii=False)), f'{api_name}->响应结果')
+
+            return response
+
+        return wrapper
+
+    return decorator
+
+
+def testdata(case_id: id):
+    """
+    响应统一处理
+    :param api_name: 接口名称
+    :return:
+    """
+
+    def decorator(func):
+        def wrapper(*args, **kwargs) -> Response:
+            case_id = ''
+            res_args: tuple[Response, str, dict] = func(case_id)
             response: Response = res_args[0]
 
             allure.attach(str(res_args[1]), f'{api_name}->url')

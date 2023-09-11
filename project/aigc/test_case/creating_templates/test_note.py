@@ -45,7 +45,7 @@ class TestNote(NoteAPI):
                                                                   "target": target,
                                                                   "selling": selling,
                                                                   "keyword": keyword}), )
-            nete_response = self.api_note_dress_title(note_data)
+            nete_response = self.api_note_dress_title(note_data.json())
             nete_result = ResponseModel(**nete_response.json())
             data: str = self.response_decoding(nete_result.data)
             INFO.logger.info(f'获取文章接口的msg内容：{data}')

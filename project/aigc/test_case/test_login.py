@@ -17,7 +17,6 @@ from tools.assertion.public_assertion import PublicAssertion
 class TestLogin(PublicAssertion):
 
     @allure.story("正确的账号，正确的密码，进行登录")
-    @pytest.mark.parametrize("username, password", [("zhouchong", "123456")])
     def test_login01(self, username, password):
         result = LoginAPI.api_login(username, password)
         result_dict = ResponseModel.get_obj(result.json())
@@ -25,7 +24,6 @@ class TestLogin(PublicAssertion):
         assert result_dict.data.token is not None
 
     @allure.story("正确的账号，错误的密码，进行登录")
-    @pytest.mark.parametrize("username, password", [("maopeng", "1234561")])
     def test_login02(self, username, password):
         result = LoginAPI.api_login(username, password)
         result_dict = ResponseModel.get_obj(result.json())
@@ -33,7 +31,6 @@ class TestLogin(PublicAssertion):
         assert result_dict.message == "用户名或密码错误！"
 
     @allure.story("错误的账号，错误的密码，进行登录")
-    @pytest.mark.parametrize("username, password", [("maopeng1", "123456")])
     def test_login03(self, username, password):
         result = LoginAPI.api_login(username, password)
         result_dict = ResponseModel.get_obj(result.json())
@@ -41,7 +38,6 @@ class TestLogin(PublicAssertion):
         assert result_dict.message == "用户名或密码错误！"
 
     @allure.story("登录之后退出登录")
-    @pytest.mark.parametrize("username, password", [("zhouchong", "123456")])
     def test_login04(self, username, password):
         response = LoginAPI.api_login(username, password)
         login_dict = ResponseModel.get_obj(response.json())

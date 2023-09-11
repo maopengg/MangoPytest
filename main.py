@@ -11,7 +11,6 @@ from enums.tools_enum import NotificationType
 from enums.tools_enum import ProjectEnum
 from models.tools_model import EmailSendModel, WeChatSendModel
 from tools.data_processor.cache_tool import CacheTool
-from tools.files.read_yml import YmlReader
 from tools.files.zip_files import zip_files
 from tools.logging_tool.log_control import INFO
 from tools.notify.send_mail import SendEmail
@@ -22,7 +21,7 @@ from tools.read_files_tools.get_local_ip import get_host_ip
 
 
 class Run:
-    def __init__(self, data: dict):
+    def __init__(self, data: list[dict]):
         self.data = data
         self.pytest_command = ['-s', '-W', 'ignore:Module already imported:pytest.PytestWarning',
                                '--alluredir', './report/tmp', "--clean-alluredir", ]
@@ -42,25 +41,29 @@ class Run:
 
     def run(self):
         project_str = ""
-        for project, environment in self.data.items():
-            if project == ProjectEnum.AIGC.value:
-                self.pytest_command.append(AIGC_PATH)
-                CacheTool.set_cache(f'{ProjectEnum.AIGC.value}_environment', environment)
-                project_str += project + '+'
-            elif project == ProjectEnum.CDXP.value:
-                self.pytest_command.append(CDXP_PATH)
-                CacheTool.set_cache(f'{ProjectEnum.CDXP.value}_environment', environment)
-                project_str += project
-        # 从配置文件中获取项目名称
-        INFO.logger.info(f"开始执行{project_str}项目...")
-        pytest.main(self.pytest_command)
-        os.system(r"allure generate ./report/tmp -o ./report/html --clean")
+        # 循环准备开始执行用例
+        for project_obj in self.data:
+            for project, environment in project_obj.items():
+                if project == ProjectEnum.AIGC.value:
+                    self.pytest_command.append(AIGC_PATH)
+                    CacheTool.set_cache(f'{ProjectEnum.AIGC.value}_environment', environment)
+                    project_str += project + '+'
+                elif project == ProjectEnum.CDXP.value:
+                    self.pytest_command.append(CDXP_PATH)
+                    CacheTool.set_cache(f'{ProjectEnum.CDXP.value}_environment', environment)
+                    project_str += project
+            # 执行用例
+            INFO.logger.info(f"开始执行{project_str}项目...")
+            pytest.main(self.pytest_command)
+            os.system(r"allure generate ./report/tmp -o ./report/html --clean")
 
-        for project, environment in self.data.items():
-            if project == ProjectEnum.AIGC.value:
-                self.send(project, environment, AIGC_CONFING_PATH)
-            elif project == ProjectEnum.CDXP.value:
-                self.send(project, environment, CDXP_CONFING_PATH)
+        # 是否发送通知
+        for project_obj in self.data:
+            for project, environment in project_obj.items():
+                if project == ProjectEnum.AIGC.value:
+                    self.send(project, environment, AIGC_CONFING_PATH)
+                elif project == ProjectEnum.CDXP.value:
+                    self.send(project, environment, CDXP_CONFING_PATH)
 
         # 程序运行之后，自动启动报告，如果不想启动报告，可注释这段代码
         os.system(f"allure serve ./report/tmp -h {get_host_ip()} -p 9998")
@@ -89,4 +92,4 @@ class Run:
 
 
 if __name__ == '__main__':
-    Run({'aigc': 'test', 'cdxp': 'pre'})
+    Run([{'project': 'cdxp', 'testing_environment': 'pre'}, {'project': 'aigc', 'testing_environment': 'test'}])
