@@ -14,7 +14,7 @@ from tools.request_tool.request_tool import RequestTool
 
 
 def request_(*args, api_id: int, headers: dict = None, ) -> Response:
-    sql = f'select * from SELECT * FROM `api_info` WHERE id = {api_id};'
+    sql = f'SELECT * FROM `api_info` WHERE id = {api_id};'
     query: dict = TEST_PROJECT_MYSQL.execute_query(sql)[0]
     api_info = ApiInfoModel(**query)
 
