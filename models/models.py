@@ -55,25 +55,25 @@ class CurrentRequestSetCache(BaseModel):
     name: Text
 
 
-class TestCase(BaseModel):
-    url: Text
-    method: Text
-    detail: Text
-    # assert_data: Union[Dict, Text] = Field(..., alias="assert")
-    assert_data: Union[Dict, Text]
-    headers: Union[None, Dict, Text] = {}
-    requestType: Text
-    is_run: Union[None, bool] = None
-    data: Union[Dict, None, Text, List] = None
-    dependence_case: Union[None, bool] = False
-    dependence_case_data: Optional[Union[None, List["DependentCaseData"], Text]] = None
-    sql: List = None
-    setup_sql: List = None
-    status_code: Optional[int] = None
-    teardown_sql: Optional[List] = None
-    teardown: Union[List["TearDown"], None] = None
-    current_request_set_cache: Optional[List["CurrentRequestSetCache"]]
-    sleep: Optional[Union[int, float]]
+# class TestCase(BaseModel):
+#     url: Text
+#     method: Text
+#     detail: Text
+#     # assert_data: Union[Dict, Text] = Field(..., alias="assert")
+#     assert_data: Union[Dict, Text]
+#     headers: Union[None, Dict, Text] = {}
+#     requestType: Text
+#     is_run: Union[None, bool] = None
+#     data: Union[Dict, None, Text, List] = None
+#     dependence_case: Union[None, bool] = False
+#     dependence_case_data: Optional[Union[None, List["DependentCaseData"], Text]] = None
+#     sql: List = None
+#     setup_sql: List = None
+#     status_code: Optional[int] = None
+#     teardown_sql: Optional[List] = None
+#     teardown: Union[List["TearDown"], None] = None
+#     current_request_set_cache: Optional[List["CurrentRequestSetCache"]]
+#     sleep: Optional[Union[int, float]]
 
 
 class ResponseData(BaseModel):

@@ -3,8 +3,8 @@
 /target/
 /.idea/
 /bin/
-/report/
-/reports/
+/report/*
+/reports/*
 !index.pyc
 *.pyc
 .classpath
@@ -50,4 +50,4 @@ Thumbs.db
 /.mvn/
 /mvnw.cmd
 /mvnw
-/logs/
+/logs/*

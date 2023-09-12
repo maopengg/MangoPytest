@@ -30,7 +30,7 @@ class DataProcessor(JsonTool, RandomTool, CacheTool, EncryptionTool, TimeTools, 
         """
         if key:
             key_value = str(id(obj)) + str(key)
-            value = cls.cache_get(key_value)
+            value = cls.get_cache(key_value)
         else:
             key_value = str(id(obj))
             value = None
@@ -42,7 +42,7 @@ class DataProcessor(JsonTool, RandomTool, CacheTool, EncryptionTool, TimeTools, 
                 elif ope_value:
                     value = ope_value
             if key:
-                cls.cache_set(key_value, value)
+                cls.set_cache(key_value, value)
         return value
 
     @classmethod
@@ -67,7 +67,7 @@ class DataProcessor(JsonTool, RandomTool, CacheTool, EncryptionTool, TimeTools, 
             # 获取缓存数据，完成替换
             else:
                 # value = Cache().read_data_from_cache(res2)
-                value = cls.cache_get(res2)
+                value = cls.get_cache(res2)
                 if value:
                     data1 = re.sub(pattern=r"\${}".format("{" + res2 + "}"), repl=value, string=data1)
                 else:

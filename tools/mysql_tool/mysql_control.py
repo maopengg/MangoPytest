@@ -12,10 +12,13 @@ class MySQLHelper:
 
     def __init__(self, db_data: MysqlDBModel):
         self.connection = pymysql.connect(
-            host=db_data.mysql_db.host,
-            port=db_data.mysql_db.port,
-            user=db_data.mysql_db.user,
-            password=db_data.mysql_db.password
+            host=db_data.host,
+            port=db_data.port,
+            user=db_data.user,
+            password=db_data.password,
+            database=db_data.database,
+            cursorclass=pymysql.cursors.DictCursor
+
         )
 
     def execute_query(self, query):

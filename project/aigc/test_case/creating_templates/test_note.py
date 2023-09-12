@@ -6,8 +6,10 @@
 import allure
 import pytest
 
+from models.api_model import TestCaseModel
 from project.aigc.modules.creating_templates.model import ResponseModel, NoteRequestModel
 from project.aigc.modules.creating_templates.note import NoteAPI
+from tools.decorator.response import testdata
 from tools.logging_tool.log_control import INFO
 
 
@@ -17,7 +19,8 @@ from tools.logging_tool.log_control import INFO
 class TestNote(NoteAPI):
 
     @allure.title('服饰达人生成')
-    def test_note_01(self):
+    @testdata(5)
+    def test_note_01(self, test_data: TestCaseModel):
         """服饰达人的获取文章名称和文章内容"""
         with allure.step('1.从创作模板进入到服饰达人中'):
             response = self.api_note_dress(2)
@@ -45,7 +48,7 @@ class TestNote(NoteAPI):
                                                                   "target": target,
                                                                   "selling": selling,
                                                                   "keyword": keyword}), )
-            nete_response = self.api_note_dress_title(note_data.json())
+            nete_response = self.api_note_dress_title(note_data)
             nete_result = ResponseModel(**nete_response.json())
             data: str = self.response_decoding(nete_result.data)
             INFO.logger.info(f'获取文章接口的msg内容：{data}')

@@ -23,6 +23,12 @@ class ValueTypeError(Exception):
         self.msg = msg
 
 
+class TestEnvironmentNotObtainedError(Exception):
+    def __init__(self, msg):
+        self.code = 301
+        self.msg = msg
+
+
 class AssertionFailure(AssertionError):
     def __init__(self, msg):
         self.code = 301

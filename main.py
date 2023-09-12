@@ -6,21 +6,17 @@ import os
 
 import pytest
 
-from config.settings import AIGC_PATH, CDXP_PATH, CDXP_CONFING_PATH, AIGC_CONFING_PATH
-from enums.tools_enum import NotificationType
+from config.settings import AIGC_PATH, CDXP_PATH
 from enums.tools_enum import ProjectEnum
-from models.tools_model import EmailSendModel, WeChatSendModel
+from project import notify_send
 from tools.data_processor.cache_tool import CacheTool
 from tools.files.zip_files import zip_files
 from tools.logging_tool.log_control import INFO
-from tools.notify.send_mail import SendEmail
-from tools.notify.wechat_send import WeChatSend
-from tools.other_tools.allure_data.allure_report_data import AllureFileClean
-from tools.other_tools.allure_data.error_case_excel import ErrorCaseExcel
 from tools.read_files_tools.get_local_ip import get_host_ip
 
 
 class Run:
+
     def __init__(self, data: list[dict]):
         self.data = data
         self.pytest_command = ['-s', '-W', 'ignore:Module already imported:pytest.PytestWarning',
@@ -36,6 +32,7 @@ class Run:
             --maxfail: 设置最大失败次数，当超出这个阈值时，则不会在执行测试用例
             "--reruns=3", "--reruns-delay=2"
         """
+        # 压缩上一次执行结果，并且保存起来，方便后面查询
         zip_files()
         self.run()
 
@@ -43,53 +40,26 @@ class Run:
         project_str = ""
         # 循环准备开始执行用例
         for project_obj in self.data:
-            for project, environment in project_obj.items():
-                if project == ProjectEnum.AIGC.value:
-                    self.pytest_command.append(AIGC_PATH)
-                    CacheTool.set_cache(f'{ProjectEnum.AIGC.value}_environment', environment)
-                    project_str += project + '+'
-                elif project == ProjectEnum.CDXP.value:
-                    self.pytest_command.append(CDXP_PATH)
-                    CacheTool.set_cache(f'{ProjectEnum.CDXP.value}_environment', environment)
-                    project_str += project
-            # 执行用例
-            INFO.logger.info(f"开始执行{project_str}项目...")
-            pytest.main(self.pytest_command)
-            os.system(r"allure generate ./report/tmp -o ./report/html --clean")
-
-        # 是否发送通知
-        for project_obj in self.data:
-            for project, environment in project_obj.items():
-                if project == ProjectEnum.AIGC.value:
-                    self.send(project, environment, AIGC_CONFING_PATH)
-                elif project == ProjectEnum.CDXP.value:
-                    self.send(project, environment, CDXP_CONFING_PATH)
-
+            project = project_obj.get('project')
+            environment = project_obj.get('testing_environment')
+            if project == ProjectEnum.AIGC.value:
+                self.pytest_command.append(AIGC_PATH)
+                CacheTool.set_cache(f'{ProjectEnum.AIGC.value}_environment', environment)
+                project_str += project + '+'
+            elif project == ProjectEnum.CDXP.value:
+                self.pytest_command.append(CDXP_PATH)
+                CacheTool.set_cache(f'{ProjectEnum.CDXP.value}_environment', environment)
+                project_str += project
+        # 执行用例
+        INFO.logger.info(f"开始执行{project_str}项目...")
+        pytest.main(self.pytest_command)
+        os.system(r"allure generate ./report/tmp -o ./report/html --clean")
+        # 发送通知
+        notify_send(self.data)
         # 程序运行之后，自动启动报告，如果不想启动报告，可注释这段代码
         os.system(f"allure serve ./report/tmp -h {get_host_ip()} -p 9998")
 
-    def send(self, project, _environment, path):
-        allure_data = AllureFileClean().get_case_count()
-
-        reader = YmlReader(_environment, path)
-        email = EmailSendModel(metrics=allure_data,
-                               project=project,
-                               environment=_environment,
-                               config=reader.get_email())
-        wechat = WeChatSendModel(metrics=allure_data,
-                                 project=project,
-                                 environment=_environment,
-                                 webhook=reader.get_wechat(),
-                                 tester_name=reader.get_tester_name())
-        notification_mapping = {
-            NotificationType.WECHAT.value: WeChatSend(wechat).send_wechat_notification,
-            NotificationType.EMAIL.value: SendEmail(email).send_main}
-        test_environment = reader.get_environment()
-        for i in test_environment.notification_type_list:
-            notification_mapping.get(i)()
-        if test_environment.excel_report:
-            ErrorCaseExcel().write_case()
-
 
 if __name__ == '__main__':
+    # Run([ {'project': 'aigc', 'testing_environment': 'test'}])
     Run([{'project': 'cdxp', 'testing_environment': 'pre'}, {'project': 'aigc', 'testing_environment': 'test'}])

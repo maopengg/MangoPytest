@@ -32,12 +32,14 @@ class JsonTool:
         json.dump(data, json_file)
 
     @classmethod
-    def json_loads(cls, data: str) -> list | dict:
+    def json_loads(cls, data: str) -> list | dict | None:
         """
         将json字符串转换为list或dict
         :param data:
         :return:
         """
+        if data is None:
+            return None
         return json.loads(data)
 
     @classmethod

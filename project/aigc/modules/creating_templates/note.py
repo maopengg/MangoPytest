@@ -5,6 +5,7 @@
 # @Author : 毛鹏
 from requests.models import Response
 
+from models.api_model import ApiInfoModel
 from project.aigc import AIGCDataModel
 from project.aigc.modules.creating_templates.model import NoteRequestModel
 from tools.data_processor import DataProcessor
@@ -17,72 +18,73 @@ class NoteAPI(DataProcessor, RequestTool):
     data_model: AIGCDataModel = AIGCDataModel()
 
     @classmethod
-    @around('服装达人-进入接口')
-    def api_note_dress(cls, _type) -> tuple[Response, str, dict] | Response:
+    @around(4)
+    def api_note_dress(cls, _type, api_info: ApiInfoModel = None) -> tuple[Response, str, dict] | Response:
         """
         小红书笔记
         :return:
         """
-        url = f'{cls.data_model.host}api/note/getKeyword?id={_type}'
+        url = f'{cls.data_model.host}{api_info.url}{_type}'
         response = cls.http_get(url=url, headers=cls.data_model.headers)
         return response, url, cls.data_model.headers
 
     @classmethod
-    @around('服装达人-生成小红书标题')
-    def api_note_dress_title(cls, note_data: NoteRequestModel) -> tuple[Response, str, dict] | Response:
+    @around(5)
+    def api_note_dress_title(cls, note_data: NoteRequestModel, api_info: ApiInfoModel = None) -> tuple[
+                                                                                                     Response, str, dict] | Response:
         """
         生成小红书标题
         :param note_data:
         :return:
         """
-        url = f'{cls.data_model.host}api/ai/generateNotesTitle'
-
+        url = f'{cls.data_model.host}{api_info.url}'
         response = cls.http_post(url, headers=cls.data_model.headers, json=note_data.dict())
         return response, url, cls.data_model.headers
 
     @classmethod
-    @around('小红书笔记-配饰达人')
-    def api_note_article(cls, note_data: NoteRequestModel) -> tuple[Response, str, dict] | Response:
+    @around(6)
+    def api_note_article(cls, note_data: NoteRequestModel, api_info: ApiInfoModel = None) -> tuple[
+                                                                                                 Response, str, dict] | Response:
         """
         小红书笔记
         :return:
         """
-        url = f'{cls.data_model.host}api/ai/generateNotesContent'
+        url = f'{cls.data_model.host}{api_info.url}'
         response = cls.http_post(url, headers=cls.data_model.headers, json=note_data.dict())
         return response, url, cls.data_model.headers
 
-    @classmethod
-    @around('小红书笔记-配饰达人')
-    def api_note_accessories(cls) -> tuple[Response, str, dict] | Response:
-        """
-        小红书笔记
-        :return:
-        """
-        url = f'{cls.data_model.host}api/note/getKeyword?id={3}'
-        response = cls.http_get(url=url, headers=cls.data_model.headers)
-        return response, url, cls.data_model.headers
-
-    @classmethod
-    @around('小红书笔记-家具达人')
-    def api_note_furniture(cls) -> tuple[Response, str, dict] | Response:
-        """
-        小红书笔记
-        :return:
-        """
-        url = f'{cls.data_model.host}api/note/getKeyword?id={7}'
-        response = cls.http_get(url=url, headers=cls.data_model.headers)
-        return response, url, cls.data_model.headers
-
-    @classmethod
-    @around('小红书笔记-建材达人')
-    def api_note_building_materials(cls) -> tuple[Response, str, dict] | Response:
-        """
-        小红书笔记
-        :return:
-        """
-        url = f'{cls.data_model.host}api/note/getKeyword?id={8}'
-        response = cls.http_get(url=url, headers=cls.data_model.headers)
-        return response, url, cls.data_model.headers
+    # @classmethod
+    # @around('小红书笔记-配饰达人')
+    # def api_note_accessories(cls) -> tuple[Response, str, dict] | Response:
+    #     """
+    #     小红书笔记
+    #     :return:
+    #     """
+    #     url = f'{cls.data_model.host}api/note/getKeyword?id={3}'
+    #     response = cls.http_get(url=url, headers=cls.data_model.headers)
+    #     return response, url, cls.data_model.headers
+    #
+    # @classmethod
+    # @around('小红书笔记-家具达人')
+    # def api_note_furniture(cls) -> tuple[Response, str, dict] | Response:
+    #     """
+    #     小红书笔记
+    #     :return:
+    #     """
+    #     url = f'{cls.data_model.host}api/note/getKeyword?id={7}'
+    #     response = cls.http_get(url=url, headers=cls.data_model.headers)
+    #     return response, url, cls.data_model.headers
+    #
+    # @classmethod
+    # @around('小红书笔记-建材达人')
+    # def api_note_building_materials(cls) -> tuple[Response, str, dict] | Response:
+    #     """
+    #     小红书笔记
+    #     :return:
+    #     """
+    #     url = f'{cls.data_model.host}api/note/getKeyword?id={8}'
+    #     response = cls.http_get(url=url, headers=cls.data_model.headers)
+    #     return response, url, cls.data_model.headers
 
 
 if __name__ == '__main__':

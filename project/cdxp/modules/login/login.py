@@ -5,6 +5,7 @@
 # @Author : 毛鹏
 from requests.models import Response
 
+from models.api_model import ApiInfoModel
 from project.cdxp.cdxp_data_model import CDXPDataModel
 from tools.data_processor import DataProcessor
 from tools.decorator.response import around
@@ -16,22 +17,22 @@ class LoginAPI(DataProcessor, RequestTool):
         'Authorization': 'Basic d2ViQXBwOndlYkFwcA==',
         'Accept': 'application/json, text/plain, */*',
     }
-    cdxp_data_model: CDXPDataModel = CDXPDataModel()
+    data_model: CDXPDataModel = CDXPDataModel()
 
     @classmethod
-    @around('登录接口')
-    def api_login(cls, username, password) -> tuple[Response, str, dict] | Response:
+    @around(7)
+    def api_login(cls, username, password, api_info: ApiInfoModel = None) -> tuple[Response, str, dict] | Response:
         """
         登录接口
         :return:
         """
         password = cls.md5_encrypt(password)
-        url = f'{cls.cdxp_data_model.host}/backend/api-auth/oauth/token?username={username}&password={password}&grant_type=password_code'
+        url = f'{cls.data_model.host}{api_info.url}?username={username}&password={password}&grant_type=password_code'
         response = cls.http_post(url=url, headers=cls.headers)
         return response, url, cls.headers
 
     @classmethod
-    @around('重置密码')
+    @around(0)
     def api_reset_password(cls) -> tuple[Response, str, dict] | Response:
         """
         重置密码

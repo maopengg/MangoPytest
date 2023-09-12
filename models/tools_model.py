@@ -14,6 +14,7 @@ class MysqlDBModel(BaseModel):
     port: int
     user: str
     password: str
+    database: str | None
 
 
 class TestEnvironmentModel(BaseModel):

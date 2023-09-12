@@ -17,7 +17,7 @@ test:
     host: '61.183.9.60'
     port: 13307
     user: 'root'
-      password: 'zALL_mysql1'
+    password: 'zALL_mysql1'
 
 # 预发环境
 pre:
