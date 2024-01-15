@@ -9,7 +9,7 @@ import requests
 
 from enums.tools_enum import ProjectEnum
 from exceptions.exception import LoginError
-from models.models import CDXPDataModel, ProjectRunModel, CaseRunModel
+from models.models import CDXPDataModel, ProjectRunModel
 from models.tools_model import MysqlConingModel
 from project import TEST_PROJECT_MYSQL
 from tools.data_processor import DataProcessor
@@ -35,10 +35,10 @@ def cdxp_login():
     query: dict = TEST_PROJECT_MYSQL.execute_query(sql)[0]
     mysql_dict = json.loads(query.get('mysql_db'))
     mysql_db = MysqlConingModel(host=mysql_dict.get('host'),
-                            port=mysql_dict.get('port'),
-                            user=mysql_dict.get('user'),
-                            password=mysql_dict.get('password'),
-                            database=mysql_dict.get('database'))
+                                port=mysql_dict.get('port'),
+                                user=mysql_dict.get('user'),
+                                password=mysql_dict.get('password'),
+                                database=mysql_dict.get('database'))
     mysql_obj = MySQLHelper(mysql_db)
     data_model = CDXPDataModel(host=query.get('host'),
                                mysql_db=json.loads(query.get('mysql_db')),
