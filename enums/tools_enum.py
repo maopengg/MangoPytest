@@ -9,6 +9,8 @@ from enum import Enum
 class ProjectEnum(Enum):
     CDXP = 'cdxp'
     AIGC = 'aigc'
+    AIGCSAAS = 'aigc-saas'
+    key = 'case_run'
 
 
 class NotificationType(Enum):
@@ -27,3 +29,12 @@ class RequestType(Enum):
     FILE = 'FILE'
     EXPORT = "EXPORT"
     NONE = "NONE"
+
+
+class AssEnum(Enum):
+    response = 0
+    sql = 1
+
+
+class AfterHandleEnum(Enum):
+    sql = 1

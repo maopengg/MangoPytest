@@ -3,10 +3,12 @@
 # @Description: 
 # @Time   : 2023-08-08 11:25
 # @Author : 毛鹏
+import json
+
 from requests.models import Response
 
-from models.api_model import ApiInfoModel
-from project.cdxp.cdxp_data_model import CDXPDataModel
+from models.api_model import ApiDataModel
+from models.models import CDXPDataModel
 from tools.data_processor import DataProcessor
 from tools.decorator.response import around
 from tools.request_tool.request_tool import RequestTool
@@ -21,19 +23,25 @@ class LoginAPI(DataProcessor, RequestTool):
 
     @classmethod
     @around(7)
-    def api_login(cls, username, password, api_info: ApiInfoModel = None) -> tuple[Response, str, dict] | Response:
+    def api_login(cls, data: ApiDataModel) -> ApiDataModel:
         """
         登录接口
-        :return:
+        @param data: ApiDataModel
+        @return: ApiDataModel
         """
+        password = data.test_case_data.case_data.get('password')
+        username = data.test_case_data.case_data.get('username')
+        group = data.requests_list[data.step]
+        url = group.api_data.url
         password = cls.md5_encrypt(password)
-        url = f'{cls.data_model.host}{api_info.url}?username={username}&password={password}&grant_type=password_code'
-        response = cls.http_post(url=url, headers=cls.headers)
-        return response, url, cls.headers
+        group.request.url = f'{cls.data_model.host}{url}?username={username}&password={password}&grant_type=password_code'
+        group.request.headers = cls.headers
+        response: ApiDataModel = cls.http_request(data)
+        return response
 
     @classmethod
     @around(0)
-    def api_reset_password(cls) -> tuple[Response, str, dict] | Response:
+    def api_reset_password(cls) -> tuple[Response, int or float, ApiDataModel] | ApiDataModel:
         """
         重置密码
         :return:
@@ -41,5 +49,8 @@ class LoginAPI(DataProcessor, RequestTool):
 
 
 if __name__ == '__main__':
-    r = LoginAPI()
-    print(r.api_login("", ""))
+    data1 = {'Authorization': 'Bearer null',
+             'Accept': 'application/json, text/plain, */*',
+             'Content-Type': 'application/json;charset=UTF-8'}
+    d = json.dumps(data1)
+    print(d)

@@ -3,49 +3,42 @@
 # @Description: 
 # @Time   : 2023-08-08 11:25
 # @Author : 毛鹏
-import requests
-from requests.models import Response
 
-from models.api_model import ApiInfoModel
-from project.aigc import AIGCDataModel
+from models.api_model import ApiDataModel
+from models.models import AIGCDataModel
 from tools.data_processor import DataProcessor
 from tools.decorator.response import around
+from tools.request_tool.request_tool import RequestTool
 
 
-class LoginAPI(DataProcessor):
+class LoginAPI(DataProcessor, RequestTool):
     data_model: AIGCDataModel = AIGCDataModel()
-    headers = {'Authorization': 'Bearer null',
-               'Accept': 'application/json, text/plain, */*',
-               'Content-Type': 'application/json;charset=UTF-8'}
+    headers = {
+        'Authorization': 'Bearer null',
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json;charset=UTF-8'
+    }
 
     @classmethod
     @around(1)
-    def api_login(cls, username, password, api_info: ApiInfoModel = None) -> tuple[Response, str, dict] | Response:
+    def api_login(cls, data: ApiDataModel) -> ApiDataModel:
         """
         登录接口
         :return:
         """
-        json = {'username': username, 'password': cls.md5_encrypt(password)}
-        url = f'{cls.data_model.host}{api_info.url}'
-
-        response = requests.post(url=url, headers=cls.headers, json=json)
-        return response, url, cls.headers
-
-    @classmethod
-    def api_login2(cls, username, password, api_info):
-        """
-        登录接口
-        :return:
-        """
-        json = {'username': username, 'password': cls.md5_encrypt(password)}
-        url = f'{cls.data_model.host}{api_info.url}'
-
-        response = requests.post(url=url, headers=cls.headers, json=json)
-        return response, url, cls.headers
+        password = data.test_case_data.case_data.get('password')
+        username = data.test_case_data.case_data.get('username')
+        group = data.requests_list[data.step]
+        group.request.url = f'{cls.data_model.host}{group.api_data.url}'
+        group.request.headers = cls.headers
+        group.request.json_data = {'username': username,
+                                   'password': cls.md5_encrypt(password)}
+        response: ApiDataModel = cls.http_request(data)
+        return response
 
     @classmethod
     @around(0)
-    def api_reset_password(cls, api_info: ApiInfoModel = None) -> tuple[Response, str, dict] | Response:
+    def api_reset_password(cls, data: ApiDataModel) -> ApiDataModel:
         """
         重置密码
         :return:
@@ -53,15 +46,16 @@ class LoginAPI(DataProcessor):
 
     @classmethod
     @around(2)
-    def api_login_out(cls, header: dict, api_info: ApiInfoModel = None) -> tuple[Response, str, dict] | Response:
+    def api_login_out(cls, data: ApiDataModel) -> ApiDataModel:
         """
         退出登录
         :return:
         """
-        url = f'{cls.data_model.host}api/logout'
-
-        response = requests.get(url=url, headers=header)
-        return response, url, cls.headers
+        group = data.requests_list[data.step]
+        group.request.url = f'{cls.data_model.host}{group.api_data.url}'
+        group.request.headers = cls.get_cache('headers')
+        response: ApiDataModel = cls.http_request(data)
+        return response
 
 
 if __name__ == '__main__':

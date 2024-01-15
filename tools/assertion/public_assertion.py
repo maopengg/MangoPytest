@@ -6,6 +6,16 @@ class PublicAssertion:
     """公共断言"""
 
     @classmethod
+    def value_large_expect(cls, value, expect):
+        """实际大于预期"""
+        assert value > expect
+
+    @classmethod
+    def value_is_null(cls, value):
+        """实际为None"""
+        assert value is None
+
+    @classmethod
     def is_not_none(cls, value):
         """不是null"""
         assert_that(value).is_not_none()

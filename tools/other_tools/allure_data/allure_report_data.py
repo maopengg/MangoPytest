@@ -8,7 +8,7 @@ import json
 from typing import List, Text
 
 from config.get_path import ensure_path_sep
-from models.models import TestMetrics
+from models.tools_model import TestMetrics
 from tools.read_files_tools.get_all_files_path import get_all_files
 
 

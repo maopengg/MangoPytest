@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- coNoneing: utf-8 -*-
 # @Project: auto_test
 # @Description: 
 # @Time   : 2023-08-08 11:48
@@ -7,11 +7,10 @@ import json
 
 import allure
 from pydantic import BaseModel
-from requests.models import Response
 
-from models.api_model import ApiInfoModel
-from models.api_model import TestCaseModel
+from models.api_model import ApiInfoModel, TestCaseModel, ApiDataModel, CaseGroupModel
 from project import TEST_PROJECT_MYSQL
+from tools.logging_tool.log_control import ERROR
 
 
 def is_args_contain_base_model(*args):
@@ -29,75 +28,61 @@ def around(api_id: int):
     """
 
     def decorator(func):
-        def wrapper(*args, **kwargs) -> Response:
+        def wrapper(*args, **kwargs) -> ApiDataModel:
+            # 处理前置用例数据
             sql = f'select * FROM aigc_AutoTestPlatform.api_info WHERE id = {api_id};'
             query: dict = TEST_PROJECT_MYSQL.execute_query(sql)[0]
-            api_info = ApiInfoModel(**query)
-            res_args: tuple[Response, str, dict] = func(api_info=api_info, *args, **kwargs)
-            response: Response = res_args[0]
+            api_info = ApiInfoModel.get_obj(query)
+            data: ApiDataModel = args[1]
+            data.db_is_ass = args[0].data_model.db_is_ass
+            if len(data.requests_list) <= data.step:
+                data.requests_list.append(CaseGroupModel())
+            # 处理请求数据
+            group: CaseGroupModel = data.requests_list[data.step]
+            group.api_id, group.api_data = api_id, api_info
+            group.request.method = group.request.method_list[api_info.method]
+            res_args = func(*args, **kwargs)
 
+            # 处理后置allure报告
             allure.attach(str(sql), f'api_info')
-            allure.attach(str(res_args[1]), f'{api_info.name}->url')
-            allure.attach(str(res_args[2]), f'{api_info.name}->请求头')
-            arg1 = ''
-            arg2 = ''
-            for arg in args[1:]:
-                if isinstance(arg, BaseModel):
-                    arg1 += str(arg.json())
-                else:
-                    arg2 += f', {arg}'
-            allure.attach(f"参数A: {arg1 + arg2}\n"
-                          f"参数B: {', '.join(f'{key}={val}' for key, val in kwargs.items())}",
+            allure.attach(str(group.request.url), f'{api_info.name}->url')
+            allure.attach(str(group.request.headers), f'{api_info.name}->请求头')
+
+            allure.attach(f"参数A: {group.request.data}{group.request.params}{group.request.json_data}",
                           f'{api_info.name}->请求参数')
-            allure.attach(str(response.status_code), f'{api_info.name}->响应状态码')
-            allure.attach(str(json.dumps(response.json(), ensure_ascii=False)), f'{api_info.name}->响应结果')
-            return response
+            allure.attach(str(group.response.status_code), f'{api_info.name}->响应状态码')
+            allure.attach(str(json.dumps(group.response.response_json, ensure_ascii=False)),
+                          f'{api_info.name}->响应结果')
+
+            return res_args
 
         return wrapper
 
     return decorator
 
 
-def testdata(case_id: int, _is: bool = False):
+def case_data(case_id: int):
     """
-
     @param case_id: 用例ID或接口ID
-    @param _is: false=用例ID，true等于是接口ID
     @return:
     """
 
     def decorator(func):
         def wrapper(*args, **kwargs):
             sql = f'select * FROM test_case WHERE id = {case_id};'
-            if _is:
-                sql = f'select * FROM test_case WHERE api_id = {case_id};'
-            query: dict = TEST_PROJECT_MYSQL.execute_query(sql)
-            test_case = [TestCaseModel(**i) for i in query]
             allure.attach(str(sql), f'test_case')
-            func(*args, **kwargs, test_case=test_case)
+            query: dict = TEST_PROJECT_MYSQL.execute_query(sql)[0]
+            if len(query) < 1:
+                ERROR.logger.error('用例ID查询为空，请检查sql是否可以查到用例数据！')
+
+            return func(*args, **kwargs, data=ApiDataModel(
+                test_case_id=case_id,
+                project=query.get('project'),
+                test_case_data=TestCaseModel.get_obj(query)))
 
         return wrapper
 
     return decorator
 
-# def api_and_case(api_path: str):
-#     """
-#     统一处理用例数据
-#     :param api_path: apipath
-#     :return:
-#     """
-#
-#     def decorator(func):
-#         def wrapper(*args, **kwargs) -> Response:
-#             sql = f'select a.`name` as caseName,a.case_data as caseData,b.`name` as apiName, ' \
-#                   f'b.url,a.case_ass as caseAss,type,method,headers ' \
-#                   f'from test_case a INNER JOIN api_info b ON a.api_id=b.id where url="{api_path}";'
-#             query: list[dict] = TEST_PROJECT_MYSQL.execute_query(sql)
-#             api_and_case_info = listApiAndCaseInfo(case_list=query)
-#             # allure.attach(str(test_case.json()))
-#
-#             func(*args, **kwargs, api_and_case_info=api_and_case_info)
-#
-#         return wrapper
-#
-#     return decorator
+
+

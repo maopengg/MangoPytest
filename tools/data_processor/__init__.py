@@ -9,12 +9,13 @@ from exceptions.exception import CacheIsNone
 from tools.data_processor.cache_tool import CacheTool
 from tools.data_processor.coding_tool import CodingTool
 from tools.data_processor.encryption_tool import EncryptionTool
+from tools.data_processor.excel_tool import ExcelTools
 from tools.data_processor.json_tool import JsonTool
 from tools.data_processor.random_tool import RandomTool
 from tools.data_processor.time_tool import TimeTools
 
 
-class DataProcessor(JsonTool, RandomTool, CacheTool, EncryptionTool, TimeTools, CodingTool):
+class DataProcessor(JsonTool, RandomTool, CacheTool, EncryptionTool, TimeTools, CodingTool, ExcelTools):
     """
     测试数据处理类汇总
     """
@@ -69,10 +70,19 @@ class DataProcessor(JsonTool, RandomTool, CacheTool, EncryptionTool, TimeTools, 
                 # value = Cache().read_data_from_cache(res2)
                 value = cls.get_cache(res2)
                 if value:
-                    data1 = re.sub(pattern=r"\${}".format("{" + res2 + "}"), repl=value, string=data1)
+                    data1 = re.sub(pattern=r"\${}".format("{" + res2 + "}"), repl=str(value), string=data1)
                 else:
                     raise CacheIsNone("缓存中的值是null，请检查依赖")
 
-    # @classmethod
-    # def replace(cls, data: str, old: str, new: str) -> str:
-    #     return data.replace(old, new)
+    @classmethod
+    def remove_parentheses(cls, data: str) -> str:
+        res1 = data.replace("${", "")
+        res2 = res1.replace("}", "")
+        return res2
+
+
+if __name__ == '__main__':
+    DataProcessor.set_cache('test_note_05_id', 109)
+    print(DataProcessor.get_cache('test_note_05_id'))
+    data = {"pid": "${test_note_05_id}", "classificationId": 2}
+    print(DataProcessor.replace_text(str(data)))

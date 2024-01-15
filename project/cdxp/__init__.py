@@ -8,11 +8,13 @@ import json
 import requests
 
 from enums.tools_enum import ProjectEnum
-from exceptions.exception import TestEnvironmentNotObtainedError
+from exceptions.exception import LoginError
+from models.models import CDXPDataModel, ProjectRunModel, CaseRunModel
+from models.tools_model import MysqlConingModel
 from project import TEST_PROJECT_MYSQL
-from project.cdxp.cdxp_data_model import CDXPDataModel
 from tools.data_processor import DataProcessor
-from tools.logging_tool.log_control import INFO
+from tools.logging_tool.log_control import INFO, WARNING
+from tools.mysql_tool.mysql_control import MySQLHelper
 
 
 def cdxp_login():
@@ -20,14 +22,29 @@ def cdxp_login():
     登录接口
     :return:
     """
-    q = DataProcessor.get_cache(f'{ProjectEnum.CDXP.value}_environment')
-    q = 'pre'
+    project_run: ProjectRunModel = ProjectRunModel()
+    testing_environment = None
+    if project_run.list_run:
+        testing_environment = next(
+            (i.testing_environment for i in project_run.list_run if i.project == ProjectEnum.CDXP.value), None)
 
-    if q is None:
-        raise TestEnvironmentNotObtainedError('未获取到测试环境变量，请检查！')
-    sql = f'SELECT `host`,mysql_db FROM aigc_AutoTestPlatform.project_config WHERE project_te = "{q}" AND project_name = "{ProjectEnum.CDXP.value}";'
+    if testing_environment is None:
+        testing_environment = 'pre'
+        WARNING.logger.warning(f'项目：{ProjectEnum.CDXP.value}未获取到测试环境变量，请检查！')
+    sql = f'SELECT `host`,mysql_db,is_ass FROM aigc_AutoTestPlatform.project_config WHERE project_te = "{testing_environment}" AND project_name = "{ProjectEnum.CDXP.value}";'
     query: dict = TEST_PROJECT_MYSQL.execute_query(sql)[0]
-    data_model = CDXPDataModel(host=query.get('host'), mysql_db=json.loads(query.get('mysql_db')))
+    mysql_dict = json.loads(query.get('mysql_db'))
+    mysql_db = MysqlConingModel(host=mysql_dict.get('host'),
+                            port=mysql_dict.get('port'),
+                            user=mysql_dict.get('user'),
+                            password=mysql_dict.get('password'),
+                            database=mysql_dict.get('database'))
+    mysql_obj = MySQLHelper(mysql_db)
+    data_model = CDXPDataModel(host=query.get('host'),
+                               mysql_db=json.loads(query.get('mysql_db')),
+                               mysql_obj=mysql_obj,
+                               testing_environment=testing_environment,
+                               db_is_ass=True if query.get('is_ass') == 1 else False)
 
     password = DataProcessor.md5_encrypt(data_model.password)
     url = f'{data_model.host}/backend/api-auth/oauth/token?username={data_model.username}&password={password}&grant_type=password_code'
@@ -36,7 +53,10 @@ def cdxp_login():
         'Accept': 'application/json, text/plain, */*',
     }
     response = requests.post(url=url, headers=headers)
-    token = response.json().get('data').get('access_token')
+    try:
+        token = response.json().get('data').get('access_token')
+    except AttributeError:
+        raise LoginError(f'登录接口异常，请先检查登录接口再进行自动化测试！登录接口响应结果：{response.json()}')
     data_model.headers['Authorization'] = 'Bearer ' + token
     data_model.headers['Currentproject'] = 'precheck'
     data_model.headers['Service'] = 'zall'

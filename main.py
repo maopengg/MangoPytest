@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # @Time   : 2023/08/07 11:01
-# @Author : 毛鹏
+# @Author :
 import os
 
 import pytest
 
-from config.settings import AIGC_PATH, CDXP_PATH
+from config.settings import *
 from enums.tools_enum import ProjectEnum
+from models.models import ProjectRunModel, CaseRunModel
 from project import notify_send
-from tools.data_processor.cache_tool import CacheTool
 from tools.files.zip_files import zip_files
 from tools.logging_tool.log_control import INFO
 from tools.read_files_tools.get_local_ip import get_host_ip
@@ -18,7 +18,7 @@ from tools.read_files_tools.get_local_ip import get_host_ip
 class Run:
 
     def __init__(self, data: list[dict]):
-        self.data = data
+        self.data: ProjectRunModel = ProjectRunModel(list_run=[CaseRunModel(**i) for i in data])
         self.pytest_command = ['-s', '-W', 'ignore:Module already imported:pytest.PytestWarning',
                                '--alluredir', './report/tmp', "--clean-alluredir", ]
         """
@@ -31,27 +31,23 @@ class Run:
             -x: 一旦错误，则停止运行
             --maxfail: 设置最大失败次数，当超出这个阈值时，则不会在执行测试用例
             "--reruns=3", "--reruns-delay=2"
+            -n 4: 代表使用多线程执行用例，4是线程数
         """
         # 压缩上一次执行结果，并且保存起来，方便后面查询
         zip_files()
         self.run()
 
     def run(self):
-        project_str = ""
         # 循环准备开始执行用例
-        for project_obj in self.data:
-            project = project_obj.get('project')
-            environment = project_obj.get('testing_environment')
-            if project == ProjectEnum.AIGC.value:
+        for project_obj in self.data.list_run:
+            if project_obj.project == ProjectEnum.AIGC.value:
                 self.pytest_command.append(AIGC_PATH)
-                CacheTool.set_cache(f'{ProjectEnum.AIGC.value}_environment', environment)
-                project_str += project + '+'
-            elif project == ProjectEnum.CDXP.value:
+            elif project_obj.project == ProjectEnum.CDXP.value:
                 self.pytest_command.append(CDXP_PATH)
-                CacheTool.set_cache(f'{ProjectEnum.CDXP.value}_environment', environment)
-                project_str += project
+            elif project_obj.project == ProjectEnum.AIGCSAAS.value:
+                self.pytest_command.append(AIGC_SAAS_PATH)
         # 执行用例
-        INFO.logger.info(f"开始执行{project_str}项目...")
+        INFO.logger.info(f"开始执行测试任务...")
         pytest.main(self.pytest_command)
         os.system(r"allure generate ./report/tmp -o ./report/html --clean")
         # 发送通知
@@ -61,5 +57,7 @@ class Run:
 
 
 if __name__ == '__main__':
-    # Run([ {'project': 'aigc', 'testing_environment': 'test'}])
-    Run([{'project': 'cdxp', 'testing_environment': 'pre'}, {'project': 'aigc', 'testing_environment': 'test'}])
+    # Run([{'project': 'aigc', 'testing_environment': 'test'}])
+    # Run([{'project': 'cdxp', 'testing_environment': 'pre'}])
+    # Run([{'project': 'aigc', 'testing_environment': 'test'}])
+    Run([{'project': 'aigc-saas', 'testing_environment': 'test'},{'project': 'aigc', 'testing_environment': 'test'},{'project': 'cdxp', 'testing_environment': 'pre'}])

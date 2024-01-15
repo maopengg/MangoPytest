@@ -7,42 +7,33 @@
 import allure
 import pytest
 
-from models.api_model import TestCaseModel
+from models.api_model import ApiDataModel
 from project.cdxp.modules.login.login import LoginAPI
-from project.cdxp.modules.login.model import ResponseModel
-from tools.decorator.response import testdata
+from tools.decorator.response import case_data
+from tools.request_tool.case_tool import CaseTool
 
 
 @allure.epic('CDXP')
 @allure.feature('登录模块')
-class TestLogin(LoginAPI):
+class TestLogin(LoginAPI, CaseTool):
 
-    @testdata(7)
-    def test_login01(self, test_case: list[TestCaseModel]):
-        allure.dynamic.story(test_case[0].name)
-        case_data = self.json_loads(test_case[0].case_data)
-        result = self.api_login(case_data.get('username'), case_data.get('password'))
-        result_dict = ResponseModel.get_obj(result.json())
-        assert result_dict.status == 0
-        assert result_dict.data.access_token is not None
+    @allure.title('正确的账号，正确的密码，进行登录')
+    @case_data(7)
+    def test_login01(self, data: ApiDataModel):
+        data, response_dict = self.case_run(self.api_login, data)
+        self.case_ass(response_dict, data.test_case_data, data.db_is_ass)
 
-    @testdata(8)
-    def test_login02(self, test_case: list[TestCaseModel]):
-        allure.dynamic.story(test_case[0].name)
-        case_data = self.json_loads(test_case[0].case_data)
-        result = self.api_login(case_data.get('username'), case_data.get('password'))
-        result_dict = ResponseModel.get_obj(result.json())
-        assert result_dict.status == 1
-        assert result_dict.message == '请输入有效的登录账号或密码'
+    @allure.title('正确的账号，错误的密码，进行登录')
+    @case_data(8)
+    def test_login02(self, data: ApiDataModel):
+        data, response_dict = self.case_run(self.api_login, data)
+        self.case_ass(response_dict, data.test_case_data, data.db_is_ass)
 
-    @testdata(9)
-    def test_login03(self, test_case: list[TestCaseModel]):
-        allure.dynamic.story(test_case[0].name)
-        case_data = self.json_loads(test_case[0].case_data)
-        result = self.api_login(case_data.get('username'), case_data.get('password'))
-        result_dict = ResponseModel.get_obj(result.json())
-        assert result_dict.status == 1
-        assert result_dict.message == '请输入有效的登录账号或密码'
+    @allure.title('错误的账号，错误的密码，进行登录')
+    @case_data(9)
+    def test_login03(self, data: ApiDataModel):
+        data, response_dict = self.case_run(self.api_login, data)
+        self.case_ass(response_dict, data.test_case_data, data.db_is_ass)
 
 
 if __name__ == '__main__':

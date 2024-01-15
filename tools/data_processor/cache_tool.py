@@ -7,7 +7,7 @@ from cachetools import LRUCache
 
 
 class CacheTool:
-    cache: LRUCache = LRUCache(maxsize=100)
+    cache: LRUCache = LRUCache(maxsize=500)
 
     @classmethod
     def get_cache(cls, key: str) -> any:

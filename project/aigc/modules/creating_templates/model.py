@@ -19,6 +19,7 @@ class NoteRequestModel(BaseModel):
     other_keywords: list[str]
     details: str
     title: str | None
+    request_id: str | None
 
 
 class CreatingTemplatesModel(BaseModel):
@@ -60,6 +61,11 @@ class MoteModel(BaseModel):
     preset: int
     children: list[SonMote1Model] | None
     pid: int
+
+
+class AccountModel(BaseModel):
+    accountId: str | None
+    accountName: str | None
 
 
 class ResponseModel(BaseModel):

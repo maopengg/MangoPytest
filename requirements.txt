@@ -11,3 +11,7 @@ Faker==19.3.0
 allure-pytest==2.9.45
 allure-python-commons==2.9.45
 cachetools==5.3.1
+jsonpath_ng==1.6.0
+pytest-xdist==3.3.1
+pytest-ordering==0.6
+openpyxl==3.1.2

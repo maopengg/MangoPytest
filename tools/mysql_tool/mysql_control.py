@@ -5,12 +5,12 @@
 # @Author : 毛鹏
 import pymysql
 
-from models.tools_model import MysqlDBModel
+from models.tools_model import MysqlConingModel
 
 
 class MySQLHelper:
 
-    def __init__(self, db_data: MysqlDBModel):
+    def __init__(self, db_data: MysqlConingModel):
         self.connection = pymysql.connect(
             host=db_data.host,
             port=db_data.port,
@@ -20,6 +20,9 @@ class MySQLHelper:
             cursorclass=pymysql.cursors.DictCursor
 
         )
+
+    def __del__(self):
+        self.close()
 
     def execute_query(self, query):
         """
@@ -44,6 +47,17 @@ class MySQLHelper:
         self.connection.commit()
         cursor.close()
 
+    def execute_delete(self, query):
+        """
+        删除数据
+        :param query: sql
+        :return:
+        """
+        cursor = self.connection.cursor()
+        cursor.execute(query)
+        self.connection.commit()
+        cursor.close()
+
     def close(self):
         """
         关闭连接
@@ -53,14 +67,6 @@ class MySQLHelper:
 
 
 if __name__ == '__main__':
-    helper = MySQLHelper('localhost', 3306, 'root', 'password', 'mydatabase')
-    insert_query = "INSERT INTO mytable (name, age) VALUES ('John', 25)"
-    helper.execute_update(insert_query)
-    select_query = "SELECT * FROM mytable"
-    result = helper.execute_query(select_query)
-    print(result)
-    update_query = "UPDATE mytable SET age = 30 WHERE name = 'John'"
-    helper.execute_update(update_query)
-    delete_query = "DELETE FROM mytable WHERE name = 'John'"
-    helper.execute_update(delete_query)
-    helper.close()
+    TEST_AIGC_MYSQL: MySQLHelper = MySQLHelper(
+        MysqlConingModel(host='61.183.9.60', port=23306, user='root', password='zALL_mysql1', database='aigc'))
+    print(TEST_AIGC_MYSQL.execute_query('select `status` from sync_log ORDER BY create_time DESC LIMIT 1;'))

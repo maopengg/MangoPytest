@@ -1,137 +1,89 @@
-from dataclasses import dataclass
-from typing import Text, Dict, Union, Optional, List
-
 from pydantic import BaseModel
 
-
-@dataclass
-class TestMetrics:
-    """ 用例执行数据 """
-    passed: int
-    failed: int
-    broken: int
-    skipped: int
-    total: int
-    pass_rate: float
-    time: Text
+from models.tools_model import MysqlConingModel
+from tools.mysql_tool.mysql_control import MySQLHelper
 
 
-class DependentData(BaseModel):
-    dependent_type: Text
-    jsonpath: Text
-    set_cache: Optional[Text]
-    replace_key: Optional[Text]
+def singleton(cls):
+    instances = {}
+
+    def _instance(*args, **kwargs):
+        if cls not in instances:
+            instances[cls] = cls(*args, **kwargs)
+        return instances[cls]
+
+    return _instance
 
 
-class DependentCaseData(BaseModel):
-    case_id: Text
-    # dependent_data: List[DependentData]
-    dependent_data: Union[None, List[DependentData]] = None
+class CaseRunModel(BaseModel):
+    project: str
+    testing_environment: str
 
 
-class ParamPrepare(BaseModel):
-    dependent_type: Text
-    jsonpath: Text
-    set_cache: Text
+@singleton
+class ProjectRunModel(BaseModel):
+    list_run: list[CaseRunModel] | None
 
 
-class SendRequest(BaseModel):
-    dependent_type: Text
-    jsonpath: Optional[Text]
-    cache_data: Optional[Text]
-    set_cache: Optional[Text]
-    replace_key: Optional[Text]
+@singleton
+class AIGCDataModel(BaseModel):
+    host: str
+    headers: dict = {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json;charset=UTF-8',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36'
+    }
+    headers2: dict = {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json;charset=UTF-8',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36'
+    }
+    username: str = 'auto_aigc'
+    password: str = '123456'
+    username2: str = 'maopeng'
+    password2: str = '123456'
+    mysql_db: MysqlConingModel
+    mysql_obj: MySQLHelper | None
+    testing_environment: str
+    db_is_ass: bool
+
+    class Config:
+        arbitrary_types_allowed = True
 
 
-class TearDown(BaseModel):
-    case_id: Text
-    param_prepare: Optional[List["ParamPrepare"]]
-    send_request: Optional[List["SendRequest"]]
+@singleton
+class CDXPDataModel(BaseModel):
+    host: str
+    headers: dict = {
+        'Authorization': 'Basic d2ViQXBwOndlYkFwcA==',
+        'Accept': 'application/json, text/plain, */*'
+    }
+    mysql_db: MysqlConingModel
+    mysql_obj: MySQLHelper | None
+    username: str = 'maopeng@zalldigital.com'
+    password: str = 'm729164035'
+    testing_environment: str
+    db_is_ass: bool
+
+    class Config:
+        arbitrary_types_allowed = True
 
 
-class CurrentRequestSetCache(BaseModel):
-    type: Text
-    jsonpath: Text
-    name: Text
+@singleton
+class AigcSaasDataModel(BaseModel):
+    host: str
+    headers: dict = {
+        'Authorization': 'Basic d2ViQXBwOndlYkFwcA==',
+        'Accept': 'application/json, text/plain, */*'
+    }
+    mysql_db: MysqlConingModel
+    mysql_obj: MySQLHelper | None
+    enterprise: str = 'yali005'
+    username: str = 'test005@yali005.com'
+    password: str = '123456'
+    verification_code: str = 'AIgc2023aiGC'
+    testing_environment: str
+    db_is_ass: bool
 
-
-# class TestCase(BaseModel):
-#     url: Text
-#     method: Text
-#     detail: Text
-#     # assert_data: Union[Dict, Text] = Field(..., alias="assert")
-#     assert_data: Union[Dict, Text]
-#     headers: Union[None, Dict, Text] = {}
-#     requestType: Text
-#     is_run: Union[None, bool] = None
-#     data: Union[Dict, None, Text, List] = None
-#     dependence_case: Union[None, bool] = False
-#     dependence_case_data: Optional[Union[None, List["DependentCaseData"], Text]] = None
-#     sql: List = None
-#     setup_sql: List = None
-#     status_code: Optional[int] = None
-#     teardown_sql: Optional[List] = None
-#     teardown: Union[List["TearDown"], None] = None
-#     current_request_set_cache: Optional[List["CurrentRequestSetCache"]]
-#     sleep: Optional[Union[int, float]]
-
-
-class ResponseData(BaseModel):
-    url: Text
-    is_run: Union[None, bool]
-    detail: Text
-    response_data: Text
-    request_body: Union[None, Dict, List]
-    method: Text
-    sql_data: Dict
-    yaml_data: "TestCase"
-    headers: Dict
-    cookie: Dict
-    assert_data: Dict
-    res_time: Union[int, float]
-    status_code: int
-    teardown: List["TearDown"] = None
-    teardown_sql: Union[None, List]
-    body: Union[Dict, None, List] = None
-
-
-class DingTalk(BaseModel):
-    webhook: Union[Text, None]
-    secret: Union[Text, None]
-
-
-class MySqlDB(BaseModel):
-    switch: bool = False
-    host: Union[Text, None] = None
-    user: Union[Text, None] = None
-    password: Union[Text, None] = None
-    port: Union[int, None] = 3306
-
-
-class Webhook(BaseModel):
-    webhook: Union[Text, None]
-
-
-class Email(BaseModel):
-    send_user: Union[Text, None]
-    email_host: Union[Text, None]
-    stamp_key: Union[Text, None]
-    # 收件人
-    send_list: Union[Text, None]
-
-
-class Config(BaseModel):
-    project_name: Text
-    env: Text
-    tester_name: Text
-    notification_type: int = 0
-    excel_report: bool
-    ding_talk: "DingTalk"
-    mysql_db: "MySqlDB"
-    mirror_source: Text
-    wechat: "Webhook"
-    email: "Email"
-    lark: "Webhook"
-    real_time_update_test_cases: bool = False
-    host: Text
-    app_host: Union[Text, None]
+    class Config:
+        arbitrary_types_allowed = True

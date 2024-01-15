@@ -4,6 +4,7 @@
 # @Time   : 2022-11-04 22:05
 # @Author : 毛鹏
 import random
+import string
 import time
 from datetime import date, timedelta, datetime
 
@@ -13,6 +14,13 @@ from faker import Faker
 class RandomTool:
     """随机数据类"""
     faker = Faker(locale='zh_CN')
+
+    @classmethod
+    def generate_random_string(cls, length):
+        """ 生成指定长度的字符串 """
+        chars = string.ascii_lowercase + string.ascii_uppercase + string.digits
+
+        return ''.join(random.choice(chars) for _ in range(length))
 
     @classmethod
     def random_regular(cls, func: str) -> str:
@@ -56,6 +64,12 @@ class RandomTool:
     def random_int():
         """小数"""
         return random.random()
+
+    @staticmethod
+    def random_str(length):
+        """小数"""
+        letters_and_digits = string.ascii_letters.lower() + string.digits
+        return ''.join(random.choice(letters_and_digits) for i in range(length))
 
     @staticmethod
     def random_goods_name() -> str:

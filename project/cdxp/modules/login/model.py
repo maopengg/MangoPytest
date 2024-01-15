@@ -15,12 +15,16 @@ class LoginModel(BaseModel):
 
 
 class ResponseModel(BaseModel):
+    error: str | None = None
+    error_description: str | None = None
     data: LoginModel | None
-    status: int | str
-    message: str
+    status: int | str | None
+    message: str | None
 
     @classmethod
     def get_obj(cls, result: dict):
         return cls(status=result.get('status'),
                    message=result.get('message'),
-                   data=result.get('data'))
+                   data=result.get('data'),
+                   error=result.get('error'),
+                   error_description=result.get('error_description'))

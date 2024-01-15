@@ -33,3 +33,21 @@ class AssertionFailure(AssertionError):
     def __init__(self, msg):
         self.code = 301
         self.msg = msg
+
+
+class ResponseError(Exception):
+    def __init__(self, msg):
+        self.code = 301
+        self.msg = msg
+
+
+class AfterHandleError(Exception):
+    def __init__(self, msg):
+        self.code = 301
+        self.msg = msg
+
+
+class LoginError(Exception):
+    def __init__(self, msg):
+        self.code = 301
+        self.msg = msg

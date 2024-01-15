@@ -5,7 +5,7 @@
 # @Author : 毛鹏
 
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Text
 
 
@@ -88,3 +88,13 @@ class TimeTools:
         @return: 当前时间戳
         """
         return int(time.time()) * 1000
+
+    @classmethod
+    def get_before_time(cls, days: int = 1) -> str:
+        """
+        获取当前时间戳, 整形
+        @return: 当前时间戳
+        """
+        yesterday = datetime.now() - timedelta(days=days)
+        yesterday_str = yesterday.strftime('%Y-%m-%d')
+        return yesterday_str
