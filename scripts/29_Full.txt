@@ -1,0 +1,47 @@
+POST https://app-test.growknows.cn/dev-api/auth/oauth2/token HTTP/1.1
+Host: app-test.growknows.cn
+Connection: keep-alive
+Content-Length: 187
+sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Microsoft Edge";v="120"
+Accept: application/json, text/plain, */*
+Content-Type: application/x-www-form-urlencoded;charset=UTF-8
+sec-ch-ua-mobile: ?0
+Authorization: Basic eHVleWk6eHVleWk=
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0
+sec-ch-ua-platform: "Windows"
+Origin: https://app-test.growknows.cn
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: cors
+Sec-Fetch-Dest: empty
+Referer: https://app-test.growknows.cn/
+Accept-Encoding: gzip, deflate, br
+Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6
+Cookie: SERVERID=5f2c27a2826e61a65f5771b981490dee|1704246750|1704246713; SERVERCORSID=5f2c27a2826e61a65f5771b981490dee|1704246750|1704246713
+
+enterpriseName=yali008&userName=test005%40yali006.com&password=123456&code=AIgc2023aiGC&uuid=6cc4b421edf545d8989f25220257af2e&mode=none&grant_type=password&account_type=admin&scope=server
+HTTP/1.1 200 OK
+Date: Wed, 03 Jan 2024 01:52:33 GMT
+Content-Type: application/json;charset=UTF-8
+Connection: keep-alive
+Vary: Accept-Encoding
+Access-Control-Allow-Headers: X-Requested-With, Content-Type, Authorization, credential, X-XSRF-TOKEN, token, Admin-Token, App-Token
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS,HEAD
+Access-Control-Allow-Origin: *
+Access-Control-Expose-Headers: *
+Access-Control-Max-Age: 18000L
+Access-Control-Allow-Credentials: true
+X-Content-Type-Options: nosniff
+X-XSS-Protection: 0
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Pragma: no-cache
+Expires: 0
+X-Frame-Options: DENY
+Referrer-Policy: no-referrer
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Headers: X-Requested-With
+Access-Control-Allow-Methods: GET,POST,OPTIONS
+Set-Cookie: SERVERID=5f2c27a2826e61a65f5771b981490dee|1704246753|1704246713;Path=/
+Set-Cookie: SERVERCORSID=5f2c27a2826e61a65f5771b981490dee|1704246753|1704246713;Path=/;SameSite=None;Secure
+Content-Length: 60
+
+{"msg":"用户名或密码错误","code":500,"type":"error"}
