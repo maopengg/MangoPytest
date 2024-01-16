@@ -5,7 +5,8 @@
     <orderEntry type="jdk" jdkName="Python 3.10 (APIAutoTest)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
-  <component name="PackageRequirementsSettings">
-    <option name="versionSpecifier" value="Strong equality (==x.y.z)" />
+  <component name="PyDocumentationSettings">
+    <option name="format" value="EPYTEXT" />
+    <option name="myDocStringFormat" value="Epytext" />
   </component>
 </module>

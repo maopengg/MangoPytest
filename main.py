@@ -60,6 +60,4 @@ if __name__ == '__main__':
     # Run([{'project': 'aigc', 'testing_environment': 'test'}])
     # Run([{'project': 'cdxp', 'testing_environment': 'pre'}])
     # Run([{'project': 'aigc', 'testing_environment': 'test'}])
-    Run([{'project': 'aigc-saas', 'testing_environment': 'test'},
-         {'project': 'aigc', 'testing_environment': 'test'},
-         {'project': 'cdxp', 'testing_environment': 'pre'}])
+    Run([{'project': 'aigc-saas', 'testing_environment': 'test'},{'project': 'aigc', 'testing_environment': 'test'},{'project': 'cdxp', 'testing_environment': 'pre'}])
