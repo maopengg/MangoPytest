@@ -64,3 +64,9 @@ class MySQLHelper:
         :return:
         """
         self.connection.close()
+
+
+if __name__ == '__main__':
+    TEST_AIGC_MYSQL: MySQLHelper = MySQLHelper(
+        MysqlConingModel(host='61.183.9.60', port=23306, user='root', password='zALL_mysql1', database='aigc'))
+    print(TEST_AIGC_MYSQL.execute_query('select `status` from sync_log ORDER BY create_time DESC LIMIT 1;'))
