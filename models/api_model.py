@@ -54,11 +54,6 @@ class AfterHandleModel(BaseModel):
     type: int
     after_handle: list[AfterHandleListModel]
 
-
-# class TestCaseParameterModel(BaseModel):
-#     case_step_name: dict
-
-
 class TestCaseModel(BaseModel):
     id: int
     project: str

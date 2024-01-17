@@ -10,8 +10,9 @@ from tools.decorator.response import around
 from tools.request_base.request_tool import RequestTool
 
 
-class LoginApi(DataProcessor, RequestTool):
+class LoginApi(RequestTool):
     data_model: AigcSaasDataModel = AigcSaasDataModel()
+    data_processor = None
 
     @classmethod
     @around(41)

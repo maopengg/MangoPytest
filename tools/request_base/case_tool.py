@@ -5,10 +5,10 @@
 # @Author : 毛鹏
 import copy
 import json
+import time
 from collections import Counter
 
 import allure
-import time
 
 from auto_test.get_project_config import get_project_config
 from config.config import PRINT_EXECUTION_RESULTS
@@ -21,16 +21,19 @@ from tools.decorator.case import log_decorator
 from tools.logging_tool.log_control import ERROR
 
 
-class CaseTool(Assertion, DataProcessor):
+class CaseTool(Assertion):
+    data_processor = None
 
     @log_decorator(PRINT_EXECUTION_RESULTS)
-    def case_run(self, func, data: ApiDataModel) -> tuple[ApiDataModel, dict]:
+    def case_run(self, func, data: ApiDataModel, data_processor) -> tuple[ApiDataModel, dict]:
         """
         公共请求方法
         @param func: 接口函数
         @param data: ApiDataModel
+        @param data_processor: ApiDataModel
         @return: 响应结果
         """
+        self.data_processor = data_processor
         res: ApiDataModel = func(data)
         response_dict: dict = res.requests_list[data.step].response.response_json
         return res, response_dict
@@ -89,7 +92,7 @@ class CaseTool(Assertion, DataProcessor):
         """
 
         for i in ass_data.expect_list:
-            actual = self.json_get_path_value(response_dict, i.actual)
+            actual = self.data_processor.json_get_path_value(response_dict, i.actual)
             if actual is False:
                 # jsonpath未取到值，直接断言错误，请检查表达式
                 assert False
@@ -125,13 +128,13 @@ class CaseTool(Assertion, DataProcessor):
         if expect is not None:
             if '${' in str(expect):
                 expect = DataProcessor.remove_parentheses(expect)
-                if DataProcessor.json_is_valid_jsonpath(expect):
-                    expect = DataProcessor.json_get_path_value(response_dict, expect)
+                if self.data_processor.json_is_valid_jsonpath(expect):
+                    expect = self.data_processor.json_get_path_value(response_dict, expect)
                     if expect is False:
                         # jsonpath未取到值，直接断言错误，请检查表达式
                         assert False
                 else:
-                    expect = DataProcessor.get_cache(expect)
+                    expect = self.data_processor.get_cache(expect)
             getattr(self, ass_method)(actual, expect)
         else:
             getattr(self, ass_method)(actual)
