@@ -4,14 +4,23 @@
 # @Time   : 2023-07-04 17:14
 # @Author : 毛鹏
 
-from dataclasses import dataclass
-from typing import Text
 
 from pydantic import BaseModel
 
+from tools.decorator.singleton import singleton
 
-@dataclass
-class TestMetrics:
+
+class CaseRunModel(BaseModel):
+    project: str
+    testing_environment: str
+
+
+@singleton
+class ProjectRunModel(BaseModel):
+    list_run: list[CaseRunModel] | None
+
+
+class TestMetrics(BaseModel):
     """ 用例执行数据 """
     passed: int
     failed: int
@@ -19,7 +28,7 @@ class TestMetrics:
     skipped: int
     total: int
     pass_rate: float
-    time: Text
+    time: str
 
 
 class MysqlConingModel(BaseModel):
@@ -51,8 +60,7 @@ class EmailModel(BaseModel):
         return cls(send_user=data.get('send_user'),
                    email_host=data.get('email_host'),
                    stamp_key=data.get('stamp_key'),
-                   send_list=eval(data.get('send_list')),
-                   )
+                   send_list=eval(data.get('send_list')))
 
 
 class WeChatSendModel(BaseModel):

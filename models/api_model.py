@@ -77,7 +77,7 @@ class TestCaseModel(BaseModel):
     def get_obj(cls, data: dict):
         return cls(id=data.get('id'),
                    project=data.get('project'),
-                   modules=data.get('modules'),
+                   modules=data.get('modules_api'),
                    api_name=data.get('api_name'),
                    case_name=data.get('case_name'),
                    case_step=eval(data.get('case_step')) if data.get('case_step') else None,
@@ -132,7 +132,7 @@ class ApiDataModel(BaseModel):
 
 
 if __name__ == '__main__':
-    d = {'id': 10, 'project': 'aigc', 'modules': '用户退出', 'api_name': None, 'api_id': '2', 'case_name': '未登录，直接退出',
+    d = {'id': 10, 'project': 'aigc', 'modules_api': '用户退出', 'api_name': None, 'api_id': '2', 'case_name': '未登录，直接退出',
          'case_step': None, 'case_data': None, 'case_ass': '{"status": 1, "message": null, "data": null}'}
 
     TestCaseModel.get_obj(d)

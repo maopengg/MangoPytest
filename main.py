@@ -6,13 +6,13 @@ import os
 
 import pytest
 
-from config.settings import *
-from enums.tools_enum import ProjectEnum
-from models.models import ProjectRunModel, CaseRunModel
-from project import notify_send
+from auto_test.api_project import notify_send
+from auto_test.project_enum import ProjectEnum
+from config.config import AIGC_PATH, AIGC_SAAS_PATH, CDP_PATH
+from models.tools_model import ProjectRunModel, CaseRunModel
 from tools.files.zip_files import zip_files
 from tools.logging_tool.log_control import INFO
-from tools.read_files_tools.get_local_ip import get_host_ip
+from tools.other_tools.native_ip import get_host_ip
 
 
 class Run:
@@ -42,9 +42,9 @@ class Run:
         for project_obj in self.data.list_run:
             if project_obj.project == ProjectEnum.AIGC.value:
                 self.pytest_command.append(AIGC_PATH)
-            elif project_obj.project == ProjectEnum.CDXP.value:
-                self.pytest_command.append(CDXP_PATH)
-            elif project_obj.project == ProjectEnum.AIGCSAAS.value:
+            elif project_obj.project == ProjectEnum.CDP.value:
+                self.pytest_command.append(CDP_PATH)
+            elif project_obj.project == ProjectEnum.AIGC_SAAS.value:
                 self.pytest_command.append(AIGC_SAAS_PATH)
         # 执行用例
         INFO.logger.info(f"开始执行测试任务...")
@@ -60,4 +60,6 @@ if __name__ == '__main__':
     # Run([{'project': 'aigc', 'testing_environment': 'test'}])
     # Run([{'project': 'cdxp', 'testing_environment': 'pre'}])
     # Run([{'project': 'aigc', 'testing_environment': 'test'}])
-    Run([{'project': 'aigc-saas', 'testing_environment': 'test'},{'project': 'aigc', 'testing_environment': 'test'},{'project': 'cdxp', 'testing_environment': 'pre'}])
+    Run([{'project': 'aigc-saas', 'testing_environment': 'test'},
+         {'project': 'aigc', 'testing_environment': 'test'},
+         {'project': 'cdxp', 'testing_environment': 'pre'}])

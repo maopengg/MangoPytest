@@ -3,10 +3,10 @@
 # @Description: 
 # @Time   : 2023-09-15 10:26
 # @Author : 毛鹏
-import time
 from functools import wraps
 from json import JSONDecodeError
 
+import time
 from requests.models import Response
 
 from models.api_model import ApiDataModel, ResponseDataModel, CaseGroupModel

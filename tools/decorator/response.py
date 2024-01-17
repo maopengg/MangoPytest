@@ -8,8 +8,8 @@ import json
 import allure
 from pydantic import BaseModel
 
+from auto_test.api_project import TEST_PROJECT_MYSQL
 from models.api_model import ApiInfoModel, TestCaseModel, ApiDataModel, CaseGroupModel
-from project import TEST_PROJECT_MYSQL
 from tools.logging_tool.log_control import ERROR
 
 
@@ -83,6 +83,3 @@ def case_data(case_id: int):
         return wrapper
 
     return decorator
-
-
-

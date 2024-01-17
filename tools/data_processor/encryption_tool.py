@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# @Project: auto_test
+# @Project: MangoActuator
 # @Description: 
 # @Time   : 2023-08-11 11:12
 # @Author : 毛鹏
@@ -7,7 +7,7 @@ import hashlib
 
 
 class EncryptionTool:
-    """加密或编码类"""
+    """ 加密 """
 
     @classmethod
     def md5_encrypt(cls, string: str) -> str:

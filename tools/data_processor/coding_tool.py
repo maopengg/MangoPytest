@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# @Project: auto_test
+# @Project: MangoActuator
 # @Description: 
 # @Time   : 2023-08-30 14:14
 # @Author : 毛鹏
@@ -8,6 +8,7 @@ import json
 
 
 class CodingTool:
+    """ 编码 """
 
     @classmethod
     def base64_encode(cls, data: str) -> str:

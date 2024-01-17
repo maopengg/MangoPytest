@@ -9,7 +9,7 @@ from logging import handlers
 
 import colorlog
 
-from config.get_path import ensure_path_sep
+from tools.initialization import InitializationPath
 
 
 class LogHandler:
@@ -22,13 +22,11 @@ class LogHandler:
         'critical': logging.CRITICAL
     }
 
-    def __init__(self, filename: str, level: str):
+    def __init__(self, file_name: str, level: str):
 
-        self.logger = logging.getLogger(filename)
+        self.logger = logging.getLogger(file_name)
 
         fmt = "%(levelname)-8s[%(asctime)s][%(filename)s:%(lineno)d] %(message)s"
-        # if level == "debug" or level == "info":
-        #     fmt = "%(levelname)-8s[%(asctime)s] %(message)s"
         # 设置日志格式
         format_str = logging.Formatter(fmt)
         # 设置日志级别
@@ -39,7 +37,7 @@ class LogHandler:
         screen_output.setFormatter(self.log_format(level))
         # 往文件里写入#指定间隔时间自动生成文件的处理器
         time_rotating = handlers.TimedRotatingFileHandler(
-            filename=filename,
+            filename=file_name,
             when="D",
             backupCount=3,
             encoding='utf-8'
@@ -49,7 +47,6 @@ class LogHandler:
         # 把对象加到logger里
         self.logger.addHandler(screen_output)
         self.logger.addHandler(time_rotating)
-        self.log_path = ensure_path_sep(f"\\logs\\log.log")
 
     @classmethod
     def log_format(cls, level):
@@ -60,27 +57,23 @@ class LogHandler:
             fmt = "%(log_color)s[%(asctime)s] [%(filename)s-->line:%(lineno)d]] [%(levelname)s]: %(message)s"
         format_str = colorlog.ColoredFormatter(
             fmt,
-            log_colors=cls.log_color())
+            log_colors={
+                'DEBUG': 'cyan',
+                'INFO': 'green',
+                'WARNING': 'yellow',
+                'ERROR': 'red',
+                'CRITICAL': 'red',
+            }
+        )
         return format_str
 
-    @classmethod
-    def log_color(cls):
-        """ 设置日志颜色 """
-        log_colors_config = {
-            'DEBUG': 'cyan',
-            'INFO': 'green',
-            'WARNING': 'yellow',
-            'ERROR': 'red',
-            'CRITICAL': 'red',
-        }
-        return log_colors_config
 
-
-DEBUG = LogHandler(ensure_path_sep(f"\\logs\\debug-log.log"), 'debug')
-INFO = LogHandler(ensure_path_sep(f"\\logs\\info-log.log"), 'info')
-WARNING = LogHandler(ensure_path_sep(f"\\logs\\warning-log.log"), 'warning')
-ERROR = LogHandler(ensure_path_sep(f"\\logs\\error-log.log"), 'error')
-CRITICAL = LogHandler(ensure_path_sep(f"\\logs\\critical-log.log"), 'critical')
+log_path = InitializationPath.logs_path()
+DEBUG = LogHandler(fr"{log_path}\debug-log.log", 'debug')
+INFO = LogHandler(fr"{log_path}\info-log.log", 'info')
+WARNING = LogHandler(fr"{log_path}\warning-log.log", 'warning')
+ERROR = LogHandler(fr"{log_path}\error-log.log", 'error')
+CRITICAL = LogHandler(fr"{log_path}\critical-log.log", 'critical')
 
 if __name__ == '__main__':
     DEBUG.logger.debug('DEBUG')

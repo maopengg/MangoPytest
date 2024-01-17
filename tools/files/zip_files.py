@@ -7,7 +7,7 @@ import datetime
 import os
 import zipfile
 
-from config.settings import REPORT_PATH, ZIP_REPORT_PATH
+from tools.initialization import InitializationPath
 
 
 def delete_directory_contents(directory):
@@ -22,16 +22,16 @@ def delete_directory_contents(directory):
 
 
 def zip_files():
-    file_list = os.listdir(REPORT_PATH)
+    file_list = os.listdir(InitializationPath.report_dir)
     if len(file_list) != 0:
         timestamp = datetime.datetime.now().strftime("%Y年%m月%d日%H时%M分%S秒")
-        output_path = os.path.join(ZIP_REPORT_PATH, f"{timestamp}.zip")
+        output_path = os.path.join(InitializationPath.reports_dir, f"{timestamp}.zip")
         with zipfile.ZipFile(output_path, 'w') as zipf:
-            for root, dirs, files in os.walk(REPORT_PATH):
+            for root, dirs, files in os.walk(InitializationPath.report_dir):
                 for file in files:
                     file_path = os.path.join(root, file)
-                    zipf.write(file_path, os.path.relpath(file_path, REPORT_PATH))
-        delete_directory_contents(REPORT_PATH)
+                    zipf.write(file_path, os.path.relpath(file_path, InitializationPath.report_dir))
+        delete_directory_contents(InitializationPath.report_dir)
 
 
 zip_files()
