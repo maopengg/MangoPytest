@@ -7,22 +7,24 @@ import json
 
 from requests.models import Response
 
-from auto_test.api_project.cdxp import CDXPDataModel
 from models.api_model import ApiDataModel
+from models.tools_model import DataModel
 from tools.data_processor import DataProcessor
-from tools.decorator.response import around
+from tools.decorator.response import request_data, log_decorator
 from tools.request_base.request_tool import RequestTool
 
 
-class LoginAPI(DataProcessor, RequestTool):
+class LoginAPI(RequestTool):
     headers = {
         'Authorization': 'Basic d2ViQXBwOndlYkFwcA==',
         'Accept': 'application/json, text/plain, */*',
     }
-    data_model: CDXPDataModel = CDXPDataModel()
+    data_processor: DataProcessor = None
+    data_model: DataModel = None
 
     @classmethod
-    @around(7)
+    @request_data
+    @log_decorator
     def api_login(cls, data: ApiDataModel) -> ApiDataModel:
         """
         登录接口
@@ -33,7 +35,7 @@ class LoginAPI(DataProcessor, RequestTool):
         username = data.test_case_data.case_data.get('username')
         group = data.requests_list[data.step]
         url = group.api_data.url
-        password = cls.md5_encrypt(password)
+        password = cls.data_processor.md5_encrypt(password)
         group.request.url = f'{cls.data_model.host}{url}?username={username}&password={password}&grant_type=password_code'
         group.request.headers = cls.headers
         response: ApiDataModel = cls.http_request(data)

@@ -86,7 +86,6 @@ class WeChatSend:
         """ 发送企业微信通知 """
         text = f"""【{self.wechat_data.project}自动化通知】
                                     >测试环境：<font color=\"info\">{self.wechat_data.environment}</font>
-                                    >测试负责人：@{self.wechat_data.tester_name}
                                     >
                                     > **执行结果**
                                     ><font color=\"info\">成  功  率  : {self.wechat_data.metrics.pass_rate}%</font>

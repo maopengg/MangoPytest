@@ -7,21 +7,26 @@ import json
 
 import requests
 
-from auto_test.api_project import TEST_PROJECT_MYSQL
-from auto_test.api_project.cdxp.data_model import CDXPDataModel
+from auto_test.api_project.cdxp.sql import test_sql01
 from auto_test.project_enum import ProjectEnum
 from exceptions.api_exception import LoginError
-from models.tools_model import MysqlConingModel, ProjectRunModel
+from models.tools_model import MysqlConingModel, ProjectRunModel, DataModel
 from tools.data_processor import DataProcessor
 from tools.database.mysql_control import MySQLHelper
+from tools.database.sqlite_handler import SQLiteHandler
 from tools.logging_tool.log_control import INFO, WARNING
 
 
-def cdxp_login():
+
+
+def cdp_login():
     """
     登录接口
     :return:
     """
+    username = ''
+    password = ''
+
     project_run: ProjectRunModel = ProjectRunModel()
     testing_environment = None
     if project_run.list_run:
@@ -31,8 +36,7 @@ def cdxp_login():
     if testing_environment is None:
         testing_environment = 'pre'
         WARNING.logger.warning(f'项目：{ProjectEnum.CDP.value}未获取到测试环境变量，请检查！')
-    sql = f'SELECT `host`,mysql_db,is_ass FROM aigc_AutoTestPlatform.project_config WHERE project_te = "{testing_environment}" AND project_name = "{ProjectEnum.CDP.value}";'
-    query: dict = TEST_PROJECT_MYSQL.execute_query(sql)[0]
+    query: dict = SQLiteHandler().execute_sql(test_sql01)[0]
     mysql_dict = json.loads(query.get('mysql_db'))
     mysql_db = MysqlConingModel(host=mysql_dict.get('host'),
                                 port=mysql_dict.get('port'),
@@ -40,14 +44,14 @@ def cdxp_login():
                                 password=mysql_dict.get('password'),
                                 database=mysql_dict.get('database'))
     mysql_obj = MySQLHelper(mysql_db)
-    data_model = CDXPDataModel(host=query.get('host'),
-                               mysql_db=json.loads(query.get('mysql_db')),
-                               mysql_obj=mysql_obj,
-                               testing_environment=testing_environment,
-                               db_is_ass=True if query.get('is_ass') == 1 else False)
+    data_model = DataModel(host=query.get('host'),
+                           mysql_db=json.loads(query.get('mysql_db')),
+                           mysql_obj=mysql_obj,
+                           testing_environment=testing_environment,
+                           db_is_ass=True if query.get('is_ass') == 1 else False)
 
-    password = DataProcessor.md5_encrypt(data_model.password)
-    url = f'{data_model.host}/backend/api-auth/oauth/token?username={data_model.username}&password={password}&grant_type=password_code'
+    password = DataProcessor().md5_encrypt(password)
+    url = f'{data_model.host}/backend/api-auth/oauth/token?username={username}&password={password}&grant_type=password_code'
     headers = {
         'Authorization': 'Basic d2ViQXBwOndlYkFwcA==',
         'Accept': 'application/json, text/plain, */*',
@@ -64,4 +68,4 @@ def cdxp_login():
     INFO.logger.info(f'{ProjectEnum.CDP.value}请求头设置成功！{data_model.headers}')
 
 
-cdxp_login()
+cdp_login()

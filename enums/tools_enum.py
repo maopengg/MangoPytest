@@ -31,3 +31,21 @@ class AssEnum(BaseEnum):
 
 class AfterHandleEnum(BaseEnum):
     sql = 1
+class StatusEnum(BaseEnum):
+    """状态枚举"""
+    SUCCESS = 1
+    FAIL = 0
+
+    @classmethod
+    def obj(cls):
+        return {0: "关闭&进行中&失败", 1: "启用&已完成&通过"}
+
+class NoticeEnum(BaseEnum):
+    """通知枚举"""
+    MAIL = 0
+    WECOM = 1
+    NAILING = 2
+
+    @classmethod
+    def obj(cls):
+        return {0: "邮箱", 1: "企微", 2: "钉钉-未测试"}

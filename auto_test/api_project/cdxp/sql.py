@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # @Project: auto_test
 # @Description: 
-# @Time   : 2023-12-05 10:16
+# @Time   : 2024-01-18 9:42
 # @Author : 毛鹏
+test_sql01 = f'SELECT * FROM project WHERE id = ?;'

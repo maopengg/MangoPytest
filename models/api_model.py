@@ -117,9 +117,9 @@ class CaseGroupModel(BaseModel):
 
 
 class ApiDataModel(BaseModel):
-    project: str
-    testing_environment: str | None
-    test_case_id: int
+    project_id: int
+    test_object_id: int
+    case_id: int
     test_case_data: TestCaseModel
     db_is_ass: bool | None = None
     step: int = 0
