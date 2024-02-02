@@ -17,7 +17,7 @@ from models.api_model import TestCaseModel, AssListModel, ApiDataModel
 from tools.assertion import Assertion
 from tools.data_processor import DataProcessor
 from tools.database.mysql_control import MySQLHelper
-from tools.decorator.case import log_decorator
+from tools.decorator.response import log_decorator
 from tools.logging_tool.log_control import ERROR
 
 

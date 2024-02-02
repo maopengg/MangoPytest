@@ -11,7 +11,7 @@ from requests.models import Response
 from auto_test.get_project_config import get_project_config
 from models.api_model import ApiDataModel, RequestDataModel
 from tools.data_processor import DataProcessor
-from tools.decorator.case import timer
+from tools.decorator.response import timer
 
 
 class RequestTool:

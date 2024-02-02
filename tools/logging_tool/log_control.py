@@ -9,7 +9,7 @@ from logging import handlers
 
 import colorlog
 
-from tools.initialization import InitializationPath
+from tools import InitializationPath
 
 
 class LogHandler:
