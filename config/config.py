@@ -14,3 +14,6 @@ AIGC_SAAS_PATH = Path.ensure_path_sep("auto_test/api_project/aigc_saas/test_case
 PRINT_EXECUTION_RESULTS = True
 # 请求超时失败时间
 REQUEST_TIMEOUT_FAILURE_TIME = 60
+SEND_USER: str
+EMAIL_HOST: str
+STAMP_KEY: str

@@ -3,52 +3,36 @@
 # @Description:
 # @Time   : 2023-07-07 10:14
 # @Author : 毛鹏
-from exceptions import AutoTestError
+from exceptions import PytestAutoTestError
 
 
-class CacheIsNone(AutoTestError):
-    def __init__(self, msg):
-        self.code = 301
-        self.msg = msg
+class CacheIsNone(PytestAutoTestError):
+    pass
 
 
-class SendMessageError(AutoTestError):
-    def __init__(self, msg):
-        self.code = 301
-        self.msg = msg
+class SendMessageError(PytestAutoTestError):
+    pass
 
 
-class ValueTypeError(AutoTestError):
-    def __init__(self, msg):
-        self.code = 301
-        self.msg = msg
+class ValueTypeError(PytestAutoTestError):
+    pass
 
 
-class TestEnvironmentNotObtainedError(AutoTestError):
-    def __init__(self, msg):
-        self.code = 301
-        self.msg = msg
+class TestEnvironmentNotObtainedError(PytestAutoTestError):
+    pass
 
 
-class AssertionFailure(AutoTestError):
-    def __init__(self, msg):
-        self.code = 301
-        self.msg = msg
+class AssertionFailure(PytestAutoTestError):
+    pass
 
 
-class ResponseError(AutoTestError):
-    def __init__(self, msg):
-        self.code = 301
-        self.msg = msg
+class ResponseError(PytestAutoTestError):
+    pass
 
 
-class AfterHandleError(AutoTestError):
-    def __init__(self, msg):
-        self.code = 301
-        self.msg = msg
+class AfterHandleError(PytestAutoTestError):
+    pass
 
 
-class LoginError(AutoTestError):
-    def __init__(self, msg):
-        self.code = 301
-        self.msg = msg
+class LoginError(PytestAutoTestError):
+    pass

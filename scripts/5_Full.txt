@@ -1,0 +1,47 @@
+POST https://www.jianguoyun.com/d/login HTTP/1.1
+Host: www.jianguoyun.com
+Connection: keep-alive
+Content-Length: 188
+Cache-Control: max-age=0
+sec-ch-ua: "Google Chrome";v="119", "Chromium";v="119", "Not?A_Brand";v="24"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Windows"
+Upgrade-Insecure-Requests: 1
+Origin: https://www.jianguoyun.com
+Content-Type: application/x-www-form-urlencoded
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Referer: https://www.jianguoyun.com/d/signup
+Accept-Encoding: gzip, deflate, br
+Accept-Language: zh-CN,zh;q=0.9,en;q=0.8
+Cookie: referrer=https://www.jianguoyun.com/; page_locale=zh
+
+login_email=729164035%40qq.com&login_password=m729164035&login_dest_uri=%2Fd%2Fhome&custom_ticket=ET_P5Js-RpyvINmdGCcZMg&exp=1706864710165&sig=zULwNawd07ro7isZTIDbl7TMK0I%3D&reusable=false
+HTTP/1.1 302 Moved Temporarily
+Server: nginx
+Date: Fri, 02 Feb 2024 08:50:10 GMT
+Content-Type: text/html; charset=UTF-8
+Content-Length: 191
+Connection: keep-alive
+Keep-Alive: timeout=60
+X-Frame-Options: SAMEORIGIN
+Set-Cookie: umn=729164035%40qq.com;Path=/;Secure;HttpOnly
+Set-Cookie: ta=oKbl495OGIF7htQDjQDSe2ccT%2BeqVk9yauqwWOMiptw%3D;Path=/;Secure;HttpOnly
+Location: /d/home
+Pragma: no-cache
+Cache-Control: no-cache
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>Nutstore</title>
+</head>
+
+<body>
+ 
+<a href="/d/home" title="redirecting">redirecting</a> 
+</body>
+</html>

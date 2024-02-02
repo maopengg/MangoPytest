@@ -3,37 +3,24 @@
 # @Description:
 # @Time   : 2023-07-07 10:14
 # @Author : 毛鹏
-from exceptions import AutoTestError
+from exceptions import PytestAutoTestError
 
 
-class CacheIsNone(AutoTestError):
-    def __init__(self, msg):
-        self.code = 301
-        self.msg = msg
+class CacheIsNone(PytestAutoTestError):
+    pass
 
 
-class CacheIsEmptyError(AutoTestError):
-    def __init__(self, msg):
-        self.code = 302
-        self.msg = msg
+class CacheIsEmptyError(PytestAutoTestError):
+    pass
 
 
-class JsonPathError(AutoTestError):
-
-    def __init__(self, msg):
-        self.code = 300
-        self.msg = msg
+class JsonPathError(PytestAutoTestError):
+    pass
 
 
-class FileDoesNotEexistError(AutoTestError):
-
-    def __init__(self, msg):
-        self.code = 300
-        self.msg = msg
+class FileDoesNotEexistError(PytestAutoTestError):
+    pass
 
 
-class ValueTypeError(AutoTestError):
-
-    def __init__(self, msg):
-        self.code = 300
-        self.msg = msg
+class ValueTypeError(PytestAutoTestError):
+    pass

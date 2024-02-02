@@ -4,11 +4,9 @@
 # @Time   : 2023-07-04 17:14
 # @Author : 毛鹏
 
-
 from pydantic import BaseModel
 
 from tools.database.mysql_control import MySQLHelper
-from tools.decorator.singleton import singleton
 
 
 class MysqlConingModel(BaseModel):
@@ -42,11 +40,6 @@ class CaseRunModel(BaseModel):
     testing_environment: str
 
 
-@singleton
-class ProjectRunModel(BaseModel):
-    list_run: list[CaseRunModel] | None
-
-
 class TestMetrics(BaseModel):
     """ 用例执行数据 """
     passed: int
@@ -66,24 +59,24 @@ class TestEnvironmentModel(BaseModel):
     mysql_db: MysqlConingModel
 
 
-class EmailModel(BaseModel):
-    send_user: str
-    email_host: str
-    # 自己到QQ邮箱中配置stamp_key
-    stamp_key: str
-    # 收件人改成自己的邮箱
-    send_list: list
+class TestReportModel(BaseModel):
+    test_suite_id: int
+    project_id: str
+    project_name: str
+    test_environment: str
+    case_sum: int
+    success: int
+    success_rate: float
+    warning: int
+    fail: int
+    execution_duration: int
+    test_time: str
+    ip: str
 
 
-class WeChatSendModel(BaseModel):
-    metrics: TestMetrics
-    environment: str
-    project: str
+class WeChatNoticeModel(BaseModel):
     webhook: str
 
 
-class EmailSendModel(BaseModel):
-    metrics: TestMetrics
-    environment: str
-    project: str
-    config: EmailModel
+class EmailNoticeModel(BaseModel):
+    send_list: list
