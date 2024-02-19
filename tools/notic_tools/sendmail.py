@@ -8,6 +8,8 @@ from email.mime.text import MIMEText
 from smtplib import SMTPException
 from socket import gaierror
 
+from models.tools_model import EmailNoticeModel, TestReportModel
+
 
 class SendEmail:
     """ 发送邮箱 """

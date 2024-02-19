@@ -3,34 +3,48 @@
 # @Description:
 # @Time   : 2023-07-04 13:42
 # @Author : 毛鹏
+from enum import unique
+
 from enums import BaseEnum
 
 
+class ClientNameEnum(BaseEnum):
+    """
+    端名称
+    """
+    PLATFORM_CHINESE = '芒果自动化测试平台'
+    PLATFORM_ENGLISH = 'MangoTestPlatform'
+
+
+class AutoTestTypeEnum(BaseEnum):
+    """自动测试类型"""
+    UI = 0
+    API = 1
+    PERF = 2
+
+    @classmethod
+    def obj(cls):
+        return {0: "界面", 1: "接口", 2: "性能"}
+
+
 class NotificationType(BaseEnum):
-    """ 自动化通知方式 """
-    EMAIL = 0
-    WECHAT = 1
+    """通知枚举"""
+    MAIL = 0
+    WECOM = 1
+    NAILING = 2
 
-
-class RequestType(BaseEnum):
-    """
-    request请求发送，请求参数的数据类型
-    """
-    JSON = "JSON"
-    PARAMS = "PARAMS"
-    DATA = "DATA"
-    FILE = 'FILE'
-    EXPORT = "EXPORT"
-    NONE = "NONE"
+    @classmethod
+    def obj(cls):
+        return {0: "邮箱", 1: "企微", 2: "钉钉-未测试"}
 
 
 class AssEnum(BaseEnum):
     response = 0
     sql = 1
 
-
-class AfterHandleEnum(BaseEnum):
-    sql = 1
+    @classmethod
+    def obj(cls):
+        return {0: "响应", 1: 'sql'}
 
 
 class StatusEnum(BaseEnum):
@@ -43,27 +57,31 @@ class StatusEnum(BaseEnum):
         return {0: "关闭&进行中&失败", 1: "启用&已完成&通过"}
 
 
-class NoticeEnum(BaseEnum):
-    """通知枚举"""
-    MAIL = 0
-    WECOM = 1
-    NAILING = 2
-
-    @classmethod
-    def obj(cls):
-        return {0: "邮箱", 1: "企微", 2: "钉钉-未测试"}
-
-
-class ClientNameEnum(BaseEnum):
+@unique
+class AllureAttachmentType(BaseEnum):
     """
-    端名称
+    allure 报告的文件类型枚举
     """
-    DRIVER = 'Mango Actuator'
-    SERVER = 'Mango Server'
-    WEB = 'mango-console'
-    PLATFORM_CHINESE = '芒果自动化测试平台'
-    PLATFORM_ENGLISH = 'MangoTestPlatform'
+    TEXT = "txt"
+    CSV = "csv"
+    TSV = "tsv"
+    URI_LIST = "uri"
 
-    @classmethod
-    def obj(cls):
-        return {'DRIVER': "Mango Actuator", 'SERVER': "Mango Server", 'WEB': "mango-console"}
+    HTML = "html"
+    XML = "xml"
+    JSON = "json"
+    YAML = "yaml"
+    PCAP = "pcap"
+
+    PNG = "png"
+    JPG = "jpg"
+    SVG = "svg"
+    GIF = "gif"
+    BMP = "bmp"
+    TIFF = "tiff"
+
+    MP4 = "mp4"
+    OGG = "ogg"
+    WEBM = "webm"
+
+    PDF = "pdf"

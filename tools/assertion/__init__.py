@@ -13,4 +13,3 @@ class Assertion(PublicAssertion):
     @classmethod
     def ass_response_whole(cls, response_dict, case_ass):
         assert Counter(response_dict) == Counter(case_ass)
-

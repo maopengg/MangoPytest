@@ -68,7 +68,7 @@ class LogHandler:
         return format_str
 
 
-log_path = InitializationPath.logs_path()
+log_path = InitializationPath.logs_dir
 DEBUG = LogHandler(fr"{log_path}\debug-log.log", 'debug')
 INFO = LogHandler(fr"{log_path}\info-log.log", 'info')
 WARNING = LogHandler(fr"{log_path}\warning-log.log", 'warning')

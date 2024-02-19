@@ -27,20 +27,8 @@ class InitializationPath:
     if not os.path.exists(reports_dir):
         os.makedirs(reports_dir)
 
-    @classmethod
-    def logs_path(cls):
-        return cls.logs_dir
-
-    @classmethod
-    def directory_path(cls):
-        return cls.project_root_directory
-
-    @classmethod
-    def cache_path(cls):
-        return cls.cache_dir
-
 
 if __name__ == '__main__':
-    print(InitializationPath.logs_path())
-    print(InitializationPath.directory_path())
-    print(InitializationPath.cache_path())
+    print(InitializationPath.logs_dir)
+    print(InitializationPath.project_root_directory)
+    print(InitializationPath.cache_dir)

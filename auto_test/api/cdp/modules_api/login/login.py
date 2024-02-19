@@ -1,38 +1,41 @@
 # -*- coding: utf-8 -*-
 # @Project: auto_test
 # @Description: 
-# @Time   : 2023-09-13 10:27
+# @Time   : 2023-08-08 11:25
 # @Author : 毛鹏
-import json
 
-import allure
+from requests.models import Response
 
-from auto_test.api.cdp.modules_api.login.login import LoginAPI
+from auto_test.api.cdp import CDPDataModel
 from models.api_model import ApiDataModel
-from tools.assertion import Assertion
-from tools.data_processor import DataProcessor
-from tools.decorator.response import log_decorator
+from tools.decorator.response import request_data
+from tools.request_base.request_tool import RequestTool
 
 
-class CaseTool(Assertion):
+class LoginAPI(RequestTool):
+    headers = {
+        'Authorization': 'Basic d2ViQXBwOndlYkFwcA==',
+        'Accept': 'application/json, text/plain, */*',
+    }
+    data_model: CDPDataModel = CDPDataModel()
 
-    @log_decorator
-    def case_run(self, func, data: ApiDataModel) -> ApiDataModel:
+    @request_data
+    def api_login(self, data: ApiDataModel) -> ApiDataModel:
         """
-        公共请求方法
-        @param func: 接口函数
+        登录接口
         @param data: ApiDataModel
-        @return: 响应结果
+        @return: ApiDataModel
         """
-        res: ApiDataModel = func(data=data)
-        self.assertion(res)
-        return res
+        # data.test_case.params['password'] = self.data_processor.md5_encrypt(data.test_case.params['password'])
+        data.request.headers = self.headers
+        data.request.url = f'{data.request.url}?username={data.test_case.other_data["username"]}&password={data.test_case.other_data["password"]}&grant_type=password_code'
+        return self.http(data)
 
-    def assertion(self, data: ApiDataModel):
-        allure.attach(str(json.dumps(data.response.response_dict, ensure_ascii=False)), '断言-实际值')
-        allure.attach(str(json.dumps(data.test_case.ass_response_whole, ensure_ascii=False)), '断言-期望值')
-        if data.test_case.ass_response_whole:
-            self.ass_response_whole(data.response.response_dict, data.test_case.ass_response_whole)
+    def api_reset_password(self) -> tuple[Response, int or float, ApiDataModel] | ApiDataModel:
+        """
+        重置密码
+        :return:
+        """
 
 
 if __name__ == '__main__':
@@ -45,13 +48,14 @@ if __name__ == '__main__':
                                        "Userid": "517", "Service": "zall"}, "is_database_assertion": False,
                            "mysql_config_model": None, "mysql_connect": None, "other_data": None},
              "test_case": {"id": 1, "project_id": 0, "name": "正确的账号，正确的密码，进行登录", "client_type": 0, "method": 0,
-                           "url": "/backend/api-auth/oauth/token", "params": None,
+                           "url": "/backend/api-auth/oauth/token", "params": {"username": "maopeng@zalldigital.com",
+                                                                              "password": "3e194ea226f139e1b8f281c90d349372",
+                                                                              "grant_type": "password_code"},
                            "data": None, "json_data": None,
                            "file": None, "other_data": {"username": "maopeng@zalldigital.com",
                                                         "password": "3e194ea226f139e1b8f281c90d349372",
                                                         "grant_type": "password_code"}, "ass_response_whole": None,
                            "ass_response_value": None, "ass_sql": None, "front_sql": None, "posterior_sql": None,
                            "posterior_response": None, "dump_data": None}, "request": None, "response": None}
-    r = LoginAPI()
-    r.data_processor = DataProcessor()
-    print(CaseTool().case_run(func=r.api_login, data=ApiDataModel(**data1)))
+
+    LoginAPI().api_login(data=ApiDataModel(**data1))

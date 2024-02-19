@@ -36,3 +36,7 @@ class AfterHandleError(PytestAutoTestError):
 
 class LoginError(PytestAutoTestError):
     pass
+
+
+class CaseParameterError(PytestAutoTestError):
+    pass

@@ -2,41 +2,42 @@ import os
 import sqlite3
 from typing import Union
 
-from tools.initialization import InitializationPath
+from tools import InitializationPath
 
 
 class SQLiteHandler:
+
     def __init__(self):
-        db_name = os.path.join(InitializationPath.cache_path(), 'cache.db')
+        db_name = os.path.join(InitializationPath.cache_dir, 'cache.db')
         self.conn = sqlite3.connect(db_name)
         self.cursor = self.conn.cursor()
 
     def execute_sql(self, sql_query: str, data: tuple = None) -> Union[list[dict], int]:
+        if data:
+            self.cursor.execute(sql_query, data)
+        else:
+            self.cursor.execute(sql_query)
         if sql_query.strip().split()[0].upper() == 'SELECT':
-            if data:
-                self.cursor.execute(sql_query, data)
-            else:
-                self.cursor.execute(sql_query)
             rows = self.cursor.fetchall()
             column_names = [description[0] for description in self.cursor.description]
             result_list = [dict(zip(column_names, row)) for row in rows]
             return result_list
         elif sql_query.strip().split()[0].upper() in ['INSERT', 'UPDATE']:
-            self.cursor.execute(sql_query)
             self.conn.commit()
             return self.cursor.rowcount
         elif sql_query.strip().split()[0].upper() == 'DELETE':
-            self.cursor.execute(sql_query)
             self.conn.commit()
             return self.cursor.rowcount
         elif sql_query.strip().split()[0].upper() == 'CREATE':
-            self.cursor.execute(sql_query)
             self.conn.commit()
             return self.cursor.rowcount
         else:
             raise Exception('sql语句错误')
 
     def close_connection(self) -> None:
+        self.conn.close()
+
+    def __del__(self):
         self.conn.close()
 
 
@@ -67,7 +68,7 @@ CREATE TABLE "notice_config" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT,
   "project_id" INTEGER NOT NULL, -- 项目id
   "type" INTEGER NOT NULL, -- 通知类型
-  "config" TEXT NOT NULL -- 通知配置
+  "settings" TEXT NOT NULL -- 通知配置
 );
 '''
 create_table_query4 = '''
@@ -77,7 +78,7 @@ CREATE TABLE "test_case" (
   "name" TEXT NOT NULL, -- 接口名称
   "client_type" INTEGER NOT NULL, -- 接口端类型
   "method" INTEGER NOT NULL, -- 接口请求方法
-  "url" INTEGER NOT NULL, -- url
+  "url" TEXT NOT NULL, -- url
   "params" TEXT, -- 接口参数
   "data" TEXT, -- 接口请求数据
   "json" TEXT, -- 接口请求json

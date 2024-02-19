@@ -8,7 +8,7 @@ import pymysql
 from models.tools_model import MysqlConingModel
 
 
-class MySQLHelper:
+class MySQLConnect:
 
     def __init__(self, db_data: MysqlConingModel):
         self.connection = pymysql.connect(

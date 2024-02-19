@@ -3,82 +3,64 @@
 # @Description: 
 # @Time   : 2023-09-04 17:23
 # @Author : 毛鹏
+
 from urllib.parse import urljoin
 
 import requests
 from requests.models import Response
 
-from auto_test.get_project_config import get_project_config
-from models.api_model import ApiDataModel, RequestDataModel
+from models.api_model import ApiDataModel
 from tools.data_processor import DataProcessor
 from tools.decorator.response import timer
 
 
 class RequestTool:
-    data_model = None
+    data_processor: DataProcessor = DataProcessor()
 
-    @classmethod
-    @timer(60)
-    def http_request(cls, data_: ApiDataModel) -> ApiDataModel | Response:
-        """
-        全局请求统一处理
-        @param data_: ApiDataModel
-        @return: ApiDataModel
-        """
-        request: RequestDataModel = data_.requests_list[data_.step].request
-        return requests.request(method=request.method,
-                                url=request.url,
-                                headers=request.headers,
-                                params=request.params,
-                                data=request.data,
-                                json=request.json_data,
-                                files=request.file
-                                )
-
-    @classmethod
-    def http(cls, data: ApiDataModel) -> ApiDataModel | Response:
+    def http(self, data: ApiDataModel) -> ApiDataModel | Response:
         """
         处理请求的数据，写入到request对象中
         @return:
         """
-        group = data.requests_list[data.step]
-        group.request.url = urljoin(cls.data_model.host, group.api_data.url)
-        group.request.headers = group.api_data.headers if group.api_data.headers else get_project_config(
-            data.project).headers
-        case_params = data.test_case_data.case_params
-        case_data = data.test_case_data.case_data
-        case_json = data.test_case_data.case_json
-        #
-        if data.test_case_data.case_step:
-            case_step_name = data.test_case_data.case_step[data.step]
-            if case_params:
-                case_json = cls.find_value(case_params, case_step_name)
-            elif case_data:
-                case_json = cls.find_value(case_data, case_step_name)
-            elif case_json:
-                case_json = cls.find_value(case_json, case_step_name)
-        # 解析params
-        if case_params is not None:
-            path = DataProcessor().replace_str(str(case_params))
-            group.request.params = eval(path)
-        # 解析 data
-        if case_data is not None:
-            data_ = DataProcessor().replace_str(str(case_data))
-            if type(case_data) == str:
-                group.request.data = case_data
-            else:
-                group.request.data = eval(data_)
+        return self.http_request(self.request_data(data))
 
-        # 解析 data
-        if case_json is not None:
-            json_data = DataProcessor().replace_str(str(case_json))
-            group.request.json_data = eval(json_data)
-        return cls.http_request(data)
+    @timer
+    def http_request(self, data: ApiDataModel) -> Response:
+        """
+        全局请求统一处理
+        @param data: RequestDataModel
+        @return: ApiDataModel
+        """
+        return requests.request(
+            method=data.request.method,
+            url=urljoin(data.base_data.host, data.request.url),
+            headers=data.request.headers,
+            params=data.request.params,
+            data=data.request.data,
+            json=data.request.json_data,
+            files=data.request.file
+        )
 
-    @classmethod
-    def find_value(cls, case_list, case_step_name):
-        for i in case_list:
-            for key, value in i.items():
-                if key == case_step_name:
-                    return value
-        return None
+    def request_data(self, data: ApiDataModel) -> ApiDataModel:
+        """
+        检查请求信息中是否存在变量进行替换
+        @param data:RequestModel
+        @return:
+        """
+        for key, value in data.request:
+            if value is not None and key != 'file':
+                value = self.data_processor.replace(value)
+                if key == 'headers' and isinstance(value, str):
+                    value = self.data_processor.replace(self.data_processor.loads(value))
+                setattr(data.request, key, value)
+            elif key == 'file':
+                if data.request.file:
+                    file = []
+                    for i in data.request.file:
+                        i: dict = i
+                        for k, v in i.items():
+                            file_name = self.data_processor.identify_parentheses(v)[0].replace('(', '').replace(')', '')
+                            path = self.data_processor.replace(v)
+                            file.append((k, (file_name, open(path, 'rb'))))
+                    data.request.file = file
+        return data

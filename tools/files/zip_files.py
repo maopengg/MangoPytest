@@ -7,7 +7,7 @@ import datetime
 import os
 import zipfile
 
-from tools.initialization import InitializationPath
+from tools import InitializationPath
 
 
 def delete_directory_contents(directory):
