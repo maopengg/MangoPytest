@@ -35,15 +35,15 @@ def cdp_login():
     登录接口，获取通用token
     :return:
     """
-    cdp_dict = project_type_paths[CDPEnum.CDP.value]
+    cdp_dict = project_type_paths[CDPEnum.NAME.value]
     if cdp_dict.get('test_environment') is None:
         test_environment = 'pre'
-        WARNING.logger.warning(f'项目：{CDPEnum.CDP.value}未获取到测试环境变量，请检查！')
+        WARNING.logger.warning(f'项目：{CDPEnum.NAME.value}未获取到测试环境变量，请检查！')
     else:
         test_environment = cdp_dict.get('test_environment')
 
     try:
-        project: dict = SQLiteHandler().execute_sql(test_sql01, data=(CDPEnum.CDP.value,))[0]
+        project: dict = SQLiteHandler().execute_sql(test_sql01, data=(CDPEnum.NAME.value,))[0]
     except IndexError:
         raise LoginError(*ERROR_MSG_0331)
 
@@ -97,7 +97,7 @@ def cdp_login():
             data_model.headers['Service'] = user_info_service_dict['data'][0]['serviceName']
             data_model.base_data_model.headers = data_model.headers
 
-    INFO.logger.info(f'{CDPEnum.CDP.value}的基础信息设置完成！')
+    INFO.logger.info(f'{CDPEnum.NAME.value}的基础信息设置完成！')
 
 
 cdp_login()

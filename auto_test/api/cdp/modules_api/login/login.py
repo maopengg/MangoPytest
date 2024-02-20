@@ -9,7 +9,7 @@ from requests.models import Response
 from auto_test.api.cdp import CDPDataModel
 from models.api_model import ApiDataModel
 from tools.decorator.response import request_data
-from tools.request_base.request_tool import RequestTool
+from tools.base_request.request_tool import RequestTool
 
 
 class LoginAPI(RequestTool):

@@ -10,34 +10,24 @@ from tools.other_tools.path import Path
 
 
 class CDPEnum(BaseEnum):
-    CDP = 'cdp'
+    NAME = 'cdp'
     UI_PATH = Path.ensure_path_sep(f"{InitializationPath.project_root_directory}/auto_test/ui/cdp/test_case")
     API_PATH = Path.ensure_path_sep("auto_test/api/cdp/test_case")
 
 
-class AIGCEnum(BaseEnum):
-    AIGC = 'aigc'
-    UI_PATH = Path.ensure_path_sep("auto_test/ui/aigc/test_case")
-    API_PATH = Path.ensure_path_sep("auto_test/api/aigc/test_case")
-
-
-class AIGCSAASEnum(BaseEnum):
-    AIGC_SAAS = 'aigc-saas'
-    UI_PATH = Path.ensure_path_sep("auto_test/ui/aigc_saas/test_case")
-    API_PATH = Path.ensure_path_sep("auto_test/api/aigc_saas/test_case")
+class WanAndroidEnum(BaseEnum):
+    NAME = 'WanAndroid'
+    UI_PATH = Path.ensure_path_sep("auto_test/ui/aigc_saas/wan_android")
+    API_PATH = Path.ensure_path_sep("auto_test/api/aigc_saas/wan_android")
 
 
 project_type_paths = {
-    CDPEnum.CDP.value: {
+    CDPEnum.NAME.value: {
         AutoTestTypeEnum.UI.value: CDPEnum.UI_PATH.value,
         AutoTestTypeEnum.API.value: CDPEnum.API_PATH.value
     },
-    AIGCEnum.AIGC.value: {
-        AutoTestTypeEnum.UI.value: AIGCEnum.UI_PATH.value,
-        AutoTestTypeEnum.API.value: AIGCEnum.API_PATH.value
-    },
-    AIGCSAASEnum.AIGC_SAAS.value: {
-        AutoTestTypeEnum.UI.value: AIGCSAASEnum.UI_PATH.value,
-        AutoTestTypeEnum.API.value: AIGCSAASEnum.API_PATH.value
+    WanAndroidEnum.NAME.value: {
+        AutoTestTypeEnum.UI.value: WanAndroidEnum.UI_PATH.value,
+        AutoTestTypeEnum.API.value: WanAndroidEnum.API_PATH.value
     }
 }

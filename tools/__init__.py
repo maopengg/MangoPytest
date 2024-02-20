@@ -27,6 +27,7 @@ class InitializationPath:
     if not os.path.exists(reports_dir):
         os.makedirs(reports_dir)
 
+
 InitializationPath()
 if __name__ == '__main__':
     print(InitializationPath.logs_dir)

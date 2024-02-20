@@ -10,7 +10,7 @@ import pytest
 from auto_test.api.cdp.modules_api.login.login import LoginAPI
 from models.api_model import ApiDataModel
 from tools.decorator.response import case_data
-from tools.request_base.case_tool import CaseTool
+from tools.base_request.case_tool import CaseTool
 
 
 @allure.epic('CDP')

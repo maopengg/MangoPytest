@@ -1,41 +1,42 @@
-# -*- coding: utf-8 -*-
-# @Project: auto_test
-# @Description: 
-# @Time   : 2023-10-07 15:27
-# @Author : 毛鹏
-import sqlite3
+import uiautomator2 as u2
+from time import sleep
 
-from test_run import TestRun  # 导入包含测试函数的模块
-from tools.initialization import InitializationPath
+dv = u2.connect_usb('10KDBX0U7200000')
+boss = 'com.hpbr.bosszhipin'
+zhi_lian = 'com.zhaopin.social'
 
+dv.app_start(boss)
+# 从boss最新的第一个开始
+sleep(2)
+# 点击最新
+dv.xpath(
+    '//*[@resource-id="com.hpbr.bosszhipin:id/ly_left"]/android.widget.FrameLayout[3]').click()
+# 点击第一个
+dv.xpath(
+    '//*[@resource-id="com.hpbr.bosszhipin:id/refresh_layout"]/androidx.recyclerview.widget.RecyclerView[1]/android.widget.LinearLayout[2]/android.view.ViewGroup[1]/android.widget.FrameLayout[1]').click()
+tou_num = 0
+for i in range(10):
+    # 获取职位信息，去除无用招聘
+    zhi_wei = dv.xpath('//*[@resource-id="com.hpbr.bosszhipin:id/tv_job_name"]').get_text()
 
-# 连接到SQLite数据库
-def connect_to_database():
-    conn = sqlite3.connect(f'{InitializationPath.cache_path()}test_cases.db')
-    return conn
-
-
-# 从数据库中获取所有测试用例数据
-def get_all_test_case_data(conn):
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM test_case")
-    rows = cursor.fetchall()
-    case_ids = [row[0] for row in rows]
-    return case_ids
-
-
-# 实例化TestRun类
-test_run = TestRun()
-
-# 连接到数据库
-conn = connect_to_database()
-
-# 获取所有测试用例数据
-all_test_case_ids = get_all_test_case_data(conn)
-
-# 循环执行测试函数，并生成测试报告
-for case_id in all_test_case_ids:
-    test_run.test_run(case_id, )
-
-# 关闭数据库连接
-conn.close()
+    if ('测试' in zhi_wei) or ('车载' in zhi_wei) or ('python' in zhi_wei):
+        sleep(1)
+        dv(text='立即沟通').click()
+        # 点击常用语
+        dv.xpath(
+            '//*[@resource-id="com.hpbr.bosszhipin:id/chat_functions"]/android.widget.LinearLayout[1]/android.widget.LinearLayout[1]'
+        ).click()
+        # 点击常用语第一个
+        dv.xpath('//*[@resource-id="com.hpbr.bosszhipin:id/mContentText"]').click()
+        # 点击发送
+        dv.xpath(
+            '//*[@resource-id="com.hpbr.bosszhipin:id/chat_functions"]/android.widget.LinearLayout[1]/android.widget.ImageView[1]').click()
+        print(f'已经投递{zhi_wei}')
+        # 点击返回
+        dv.xpath('//*[@resource-id="com.hpbr.bosszhipin:id/iv_back"]').click()
+        tou_num += 1
+    # 左滑切到下一个
+    sleep(1)
+    dv.swipe(601, 743, 46, 954)
+    sleep(1)
+print(f'共投递{tou_num}份')
