@@ -28,6 +28,8 @@ class ElementExpEnum(BaseEnum):
     TITLE = 6
     ROLE = 7
     AIT_TEXT = 8
+    IFRAME = 9
+    LOCATOR = 10
     # APP专属
     DESCRIPTION = 11
     BOUNDS = 12
@@ -43,6 +45,8 @@ class ElementExpEnum(BaseEnum):
                 6: "W_标题",
                 7: "W_ROLE",
                 8: "W_AIT_TEXT",
+                9: "W_iframe",
+                10: "locator",
                 11: "W_TITLE",
                 12: "A_BOUNDS",
                 13: "A_百分比坐标点击"}

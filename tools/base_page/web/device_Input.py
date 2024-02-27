@@ -5,13 +5,13 @@
 # @Author : 毛鹏
 import asyncio
 
-from playwright.sync_api import Locator
+from playwright.sync_api import Locator, FrameLocator
 from playwright.sync_api import Page, BrowserContext
 
-from enums.tools_enum import StatusEnum
 from enums.ui_enum import ElementExpEnum
-from exceptions.error_msg import ERROR_MSG_0041, ERROR_MSG_0042, ERROR_MSG_0043
-from exceptions.ui_exception import ReplaceElementLocatorError, LocatorError, ElementIsEmptyError
+from exceptions.error_msg import ERROR_MSG_0042, ERROR_MSG_0043
+from exceptions.ui_exception import LocatorError, ElementIsEmptyError
+from models.ui_model import ElementModel
 
 
 class PlaywrightDeviceInput:
@@ -46,71 +46,48 @@ class PlaywrightDeviceInput:
         # 移动鼠标到浏览器中心点
         self.page.mouse.move(center_x, center_y)
 
-    def w_find_element(self, element_model: str) -> Locator | list[Locator]:
+    def w_find_element(self, element_model: ElementModel) -> Locator:
         """
         基于playwright的元素查找
         @return:
         """
-        if self.data_processor.is_extract(ele_loc):
-            element_locator = self.element_model.ope_value.get('element_locator')
-            if element_locator:
-                ele_loc = self.data_processor.specify_replace(ele_loc, element_locator)
-            else:
-                raise ReplaceElementLocatorError(*ERROR_MSG_0041)
-        self.element_test_result.loc = ele_loc
 
-        def find_ele(page) -> Locator:
-            match self.element_model.ele_exp:
-                case ElementExpEnum.XPATH.value:
-                    ele = page.locator(f'xpath={ele_loc}')
-                case ElementExpEnum.TEST_ID.value:
-                    ele = page.get_by_test_id(ele_loc)
-                case ElementExpEnum.TEXT.value:
-                    ele = page.get_by_text(ele_loc, exact=True)
-                case ElementExpEnum.PLACEHOLDER.value:
-                    ele = page.get_by_placeholder(ele_loc)
-                case ElementExpEnum.LABEL.value:
-                    ele = page.get_by_label(ele_loc)
-                case ElementExpEnum.TITLE.value:
-                    ele = page.get_by_title(ele_loc)
-                case ElementExpEnum.ROLE.value:
-                    ele = page.get_by_role(ele_loc)
-                case ElementExpEnum.AIT_TEXT.value:
-                    ele = page.get_by_alt_text(ele_loc)
-                case _:
-                    raise LocatorError(*ERROR_MSG_0042)
-            if self.element_model.locator:
-                ele = ele.locator(self.element_model.locator)
+        def find_ele(page: Page, *args, **kwargs) -> Locator:
+            is_iframe = False
+            if element_model.method == ElementExpEnum.XPATH.value and is_iframe is False:
+                is_iframe = True
+                frame_locator: FrameLocator | Page = page
+                for loc in element_model.iframe:
+                    frame_locator = frame_locator.frame_locator(loc)
+                return find_ele(frame_locator)
+            elif element_model.method == ElementExpEnum.XPATH.value:
+                ele = page.locator(f'xpath={element_model.locator}')
+            elif element_model.method == ElementExpEnum.TEST_ID.value:
+                ele = page.get_by_text(*args, **kwargs)
+            elif element_model.method == ElementExpEnum.PLACEHOLDER.value:
+                ele = page.get_by_placeholder(*args, **kwargs)
+            elif element_model.method == ElementExpEnum.LABEL.value:
+                ele = page.get_by_label(*args, **kwargs)
+            elif element_model.method == ElementExpEnum.TITLE.value:
+                ele = page.get_by_title(*args, **kwargs)
+            elif element_model.method == ElementExpEnum.ROLE.value:
+                ele = page.get_by_role(*args, **kwargs)
+            elif element_model.method == ElementExpEnum.AIT_TEXT.value:
+                ele = page.get_by_alt_text(*args, **kwargs)
+            elif element_model.method == ElementExpEnum.AIT_TEXT.value:
+                ele = page.locator(*args, **kwargs)
+            else:
+                raise LocatorError(*ERROR_MSG_0042)
+            ele.filter(has_text=element_model.has_text, has=element_model.has)
+            if element_model.loc2:
+                ele = page.locator(element_model.loc2).filter(has_text=element_model.has_text, has=element_model.has)
             return ele
 
-        if self.element_model.is_iframe == StatusEnum.SUCCESS.value:
-            ele_list: list[Locator] = []
-            for i in self.page.frames:
-                locator: Locator = find_ele(i)
-                count = locator.count()
-                if count > 0:
-                    for nth in range(0, count):
-                        ele_list.append(locator.nth(nth))
-            self.element_test_result.ele_quantity = len(ele_list)
-            if len(ele_list) < 1:
-                if self.element_model.type == 0:
-                    raise ElementIsEmptyError(*ERROR_MSG_0043, value=(self.element_model.ele_name_a, ele_loc))
-            else:
-                if self.element_model.ele_sub == 10000:
-                    return ele_list
-            return ele_list[self.element_model.ele_sub - 1] if self.element_model.ele_sub else ele_list[0]
-        else:
-            locator: Locator = find_ele(self.page)
-            count = locator.count()
-            self.element_test_result.ele_quantity = count
-            if count < 1 or locator is None:
-                if self.element_model.type == 0:
-                    raise ElementIsEmptyError(*ERROR_MSG_0043, value=(self.element_model.ele_name_a, ele_loc))
-            else:
-                if self.element_model.ele_sub == 10000:
-                    return [locator.nth(i) for i in range(0, count)]
-
-            if self.element_model.ele_sub is None:
-                return locator
-            else:
-                return locator.nth(self.element_model.ele_sub - 1)
+        locator: Locator = find_ele(
+            self.page,
+            name=element_model.name,
+            exact=True if element_model.exact else False,
+        )
+        if locator.count() < 1 or locator is None:
+            raise ElementIsEmptyError(*ERROR_MSG_0043, value=(element_model.name, element_model.locator))
+        return locator.nth(element_model.nth) if element_model.nth else locator

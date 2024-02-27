@@ -36,15 +36,15 @@ class NewDrowser:
             self.web_config.browser_path = self.web_config.browser_path if self.web_config.browser_path else self.__search_path()
             if BROWSER_IS_MAXIMIZE:
                 return browser.launch(headless=self.web_config.is_headless == 1,
-                                      executable_path=self.web_config.browser_path,
-                                      args=['--start-maximized'])
+                                           executable_path=self.web_config.browser_path,
+                                           args=['--start-maximized'])
             else:
                 return browser.launch(headless=self.web_config.is_headless == 1,
-                                      executable_path=self.web_config.browser_path)
+                                           executable_path=self.web_config.browser_path)
         except Error as error:
             raise BrowserPathError(*ERROR_MSG_0040, error=error)
 
-    def new_context(self, browser: Browser) -> tuple[BrowserContext, Page]:
+    def new_context(self, browser) -> tuple[BrowserContext, Page]:
         context = browser.new_context(no_viewport=True)
         page = context.new_page()
         return context, page

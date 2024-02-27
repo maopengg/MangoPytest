@@ -98,26 +98,21 @@ create_table_query5 = '''
 CREATE TABLE "ui_element" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT,
   "project_id" INTEGER NOT NULL, -- 项目id
-  "name" TEXT NOT NULL, -- 元素名称
-  "method" INTEGER NOT NULL, -- 接口请求方法
-  "url" TEXT NOT NULL, -- url
-  "params" TEXT, -- 接口参数
-  "data" TEXT, -- 接口请求数据
-  "json" TEXT, -- 接口请求json
-  "file" TEXT, -- 接口请求文件
-  "other_data" TEXT, -- 其他请求数据
-  "ass_response_whole" TEXT, -- 请求全匹配断言
-
-  "ass_response_value" TEXT, -- 请求响应断言
-  "ass_sql" TEXT, -- sql断言
-  "front_sql" TEXT, -- 前置sql
-  "posterior_sql" TEXT, -- 后置sql
-  "posterior_response" TEXT, -- 后置响应结果提取
-  "dump_data" TEXT -- 后置数据清除
+  "ele_name" TEXT NOT NULL, -- 元素名称
+  "nth" INTEGER, -- 下标
+  "sleep" INTEGER, -- 等等时间
+  "iframe" TEXT, -- iframe列表
+  "method" INTEGER NOT NULL, -- method
+  "loc" TEXT NOT NULL, -- 选择器
+  "name" TEXT, -- name
+  "exact" INTEGER, -- 精准匹配
+  "has_text" TEXT, -- has_text
+  "has" TEXT, -- has
+  "loc2" TEXT -- 选择器2
 );
 '''
 db_handler = SQLiteHandler()
-for i in [create_table_query1, create_table_query2, create_table_query3, create_table_query4]:
+for i in [create_table_query1, create_table_query2, create_table_query3, create_table_query4, create_table_query5]:
     try:
         db_handler.execute_sql(i)
     except sqlite3.OperationalError:
