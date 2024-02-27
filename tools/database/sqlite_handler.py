@@ -44,7 +44,7 @@ class SQLiteHandler:
 create_table_query1 = '''
 CREATE TABLE "project" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT,
-  "name" TEXT NOT NULL, -- 项目名称
+  "name" TEXT NOT NULL, --  
   "is_notice" INTEGER NOT NULL -- 该项目是否通知
 );
 '''
@@ -77,6 +77,28 @@ CREATE TABLE "test_case" (
   "project_id" INTEGER NOT NULL, -- 项目id
   "name" TEXT NOT NULL, -- 接口名称
   "client_type" INTEGER NOT NULL, -- 接口端类型
+  "method" INTEGER NOT NULL, -- 接口请求方法
+  "url" TEXT NOT NULL, -- url
+  "params" TEXT, -- 接口参数
+  "data" TEXT, -- 接口请求数据
+  "json" TEXT, -- 接口请求json
+  "file" TEXT, -- 接口请求文件
+  "other_data" TEXT, -- 其他请求数据
+  "ass_response_whole" TEXT, -- 请求全匹配断言
+
+  "ass_response_value" TEXT, -- 请求响应断言
+  "ass_sql" TEXT, -- sql断言
+  "front_sql" TEXT, -- 前置sql
+  "posterior_sql" TEXT, -- 后置sql
+  "posterior_response" TEXT, -- 后置响应结果提取
+  "dump_data" TEXT -- 后置数据清除
+);
+'''
+create_table_query5 = '''
+CREATE TABLE "ui_element" (
+  "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+  "project_id" INTEGER NOT NULL, -- 项目id
+  "name" TEXT NOT NULL, -- 元素名称
   "method" INTEGER NOT NULL, -- 接口请求方法
   "url" TEXT NOT NULL, -- url
   "params" TEXT, -- 接口参数
