@@ -1,29 +1,17 @@
 # test_example.py
 import pytest
-from playwright.sync_api import sync_playwright
+from auto_test.ui import browser, page
 
 
-@pytest.fixture(scope="module")
-def browser():
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
-        yield browser
-        browser.close()
+class TestLogin:
 
+    def test_case_1(self, page):
+        page.goto("https://www.example.com")
+        assert page.title() == "Example Domain"
 
-@pytest.fixture
-def page(browser):
-    return browser.new_page()
-
-
-def test_case_1(page):
-    page.goto("https://www.example.com")
-    assert page.title() == "Example Domain"
-
-
-def test_case_2(page):
-    page.goto("https://www.google.com")
-    assert "Google" in page.title()
+    def test_case_2(self, page):
+        page.goto("https://www.google.com")
+        assert "Google" in page.title()
 
 
 if __name__ == '__main__':
