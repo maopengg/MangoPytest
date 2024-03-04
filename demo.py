@@ -1,27 +1,24 @@
 import streamlit as st
 import sqlite3
+import pandas as pd
 
 # 连接到 SQLite 数据库
-conn = sqlite3.connect('data.db')
+conn = sqlite3.connect('D:\GitCode\PytestAutoTest\cache\cache.db')
 c = conn.cursor()
-
-# # 创建表
-# c.execute('''CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT, age INTEGER)''')
-# conn.commit()
 
 # 增加数据
 def add_data(name, age):
-    c.execute('''INSERT INTO users (name, age) VALUES (?, ?)''', (name, age))
+    c.execute('''INSERT INTO ui_element (ele_name, nth) VALUES (?, ?)''', (name, age))
     conn.commit()
 
 # 删除数据
 def delete_data(user_id):
-    c.execute('''DELETE FROM users WHERE id = ?''', (user_id,))
+    c.execute('''DELETE FROM ui_element WHERE id = ?''', (user_id,))
     conn.commit()
 
 # 查询数据
 def get_data():
-    c.execute('''SELECT * FROM users''')
+    c.execute('''SELECT * FROM ui_element''')
     return c.fetchall()
 
 # Streamlit 应用
@@ -40,10 +37,16 @@ if st.button('删除数据'):
 
 # 展示数据
 st.write('当前数据库中的数据：')
-data = get_data()
-for row in data:
-    print(row)
-    st.write(row)
+df = pd.DataFrame(get_data(), columns=[i[0] for i in c.description])
+
+# 显示DataFrame作为表格
+st.write(df)
+
+# 删除按钮
+if st.button('删除选定行'):
+    selected_index = st.multiselect("选择要删除的行的索引", df.index)
+    for index in selected_index:
+        delete_data(df.iloc[index]['id'])
 
 # 关闭数据库连接
 conn.close()

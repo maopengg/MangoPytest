@@ -4,14 +4,6 @@
 # @Author :
 from tools.main_run import MainRun
 
-pytest_command = [
-    '-s',
-    '-W',
-    'ignore:Module already imported:pytest.PytestWarning',
-    '--alluredir',
-    './report/tmp',
-    "--clean-alluredir",
-]
 """
     --reruns: 失败重跑次数
     --count: 重复执行次数
@@ -24,6 +16,15 @@ pytest_command = [
     "--reruns=3", "--reruns-delay=2"
     -n 4: 代表使用多线程执行用例，4是线程数
 """
+
+pytest_command = [
+    '-s',
+    '-W',
+    'ignore:Module already imported:pytest.PytestWarning',
+    '--alluredir',
+    './report/tmp',
+    "--clean-alluredir",
+]
 
 test_project = [{'project': 'cdp', 'test_environment': 'pre', 'type': 1}]
 
