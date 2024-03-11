@@ -26,6 +26,6 @@ pytest_command = [
     "--clean-alluredir",
 ]
 
-test_project = [{'project': 'cdp', 'test_environment': 'pre', 'type': 1}]
+test_project = [{'project': 'WanAndroid', 'test_environment': 'pro', 'type': 0}]
 
 MainRun(test_project=test_project, pytest_command=pytest_command)

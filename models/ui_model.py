@@ -26,15 +26,14 @@ class AndroidConfigModel(BaseModel):
 
 class ElementModel(BaseModel):
     id: int
-    project_id: int
     ele_name: str
-    nth: int
-    sleep: int
+    nth: int | None = None
+    sleep: int | None = None
     iframe: list[str] | None = None
     method: ElementExpEnum
-    loc: str
-    name: str
+    locator: str
+    name: str | None = None
     exact: bool | None = None
     has_text: str | None = None
     has: str | None = None
-    loc2: str
+    locator2: str | None = None

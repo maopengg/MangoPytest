@@ -54,39 +54,45 @@ class PlaywrightDeviceInput:
 
         def find_ele(page: Page, *args, **kwargs) -> Locator:
             is_iframe = False
-            if element_model.method == ElementExpEnum.XPATH.value and is_iframe is False:
+            if element_model.iframe and is_iframe is False:
                 is_iframe = True
                 frame_locator: FrameLocator | Page = page
                 for loc in element_model.iframe:
                     frame_locator = frame_locator.frame_locator(loc)
                 return find_ele(frame_locator)
-            elif element_model.method == ElementExpEnum.XPATH.value:
+            elif element_model.method.value == ElementExpEnum.XPATH.value:
                 ele = page.locator(f'xpath={element_model.locator}')
-            elif element_model.method == ElementExpEnum.TEST_ID.value:
+            elif element_model.method.value == ElementExpEnum.TEST_ID.value:
                 ele = page.get_by_text(*args, **kwargs)
-            elif element_model.method == ElementExpEnum.PLACEHOLDER.value:
-                ele = page.get_by_placeholder(*args, **kwargs)
-            elif element_model.method == ElementExpEnum.LABEL.value:
+            elif element_model.method.value == ElementExpEnum.PLACEHOLDER.value:
+                ele = page.get_by_placeholder(text=element_model.locator, *args, **kwargs)
+            elif element_model.method.value == ElementExpEnum.LABEL.value:
                 ele = page.get_by_label(*args, **kwargs)
-            elif element_model.method == ElementExpEnum.TITLE.value:
+            elif element_model.method.value == ElementExpEnum.TITLE.value:
                 ele = page.get_by_title(*args, **kwargs)
-            elif element_model.method == ElementExpEnum.ROLE.value:
-                ele = page.get_by_role(*args, **kwargs)
-            elif element_model.method == ElementExpEnum.AIT_TEXT.value:
+            elif element_model.method.value == ElementExpEnum.ROLE.value:
+                ele = page.get_by_role(role=element_model.locator, *args, **kwargs)
+            elif element_model.method.value == ElementExpEnum.AIT_TEXT.value:
                 ele = page.get_by_alt_text(*args, **kwargs)
-            elif element_model.method == ElementExpEnum.AIT_TEXT.value:
+            elif element_model.method.value == ElementExpEnum.AIT_TEXT.value:
                 ele = page.locator(*args, **kwargs)
             else:
                 raise LocatorError(*ERROR_MSG_0042)
             ele.filter(has_text=element_model.has_text, has=element_model.has)
-            if element_model.loc2:
-                ele = page.locator(element_model.loc2).filter(has_text=element_model.has_text, has=element_model.has)
+            if element_model.locator2:
+                ele = page.locator(element_model.locator2).filter(has_text=element_model.has_text,
+                                                                  has=element_model.has)
             return ele
+
+        element_dict = {
+            'exact': True if element_model.exact else False
+        }
+        if element_model.name:
+            element_dict['name'] = element_model.name
 
         locator: Locator = find_ele(
             self.page,
-            name=element_model.name,
-            exact=True if element_model.exact else False,
+            **element_dict
         )
         if locator.count() < 1 or locator is None:
             raise ElementIsEmptyError(*ERROR_MSG_0043, value=(element_model.name, element_model.locator))

@@ -15,7 +15,7 @@ class LoginPage(BasePage):
     """
     页面元素
     """
-    url = "ht88/portal/"
+    url = "http:8088/portal/"
 
     # 查询操作
     def login(self, username: str, password: str):
