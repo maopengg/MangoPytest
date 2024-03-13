@@ -11,6 +11,7 @@ from models.ui_model import WEBConfigModel
 from tools.base_page.web.new_browser import NewDrowser
 from tools.data_processor import DataProcessor
 
+
 @pytest.fixture(scope='function')
 def setup_context_page():
     data = NewDrowser(WEBConfigModel(browser_type=0,
@@ -24,6 +25,7 @@ def setup_context_page():
     yield context, page
     context.close()
     page.close()
+
 
 @allure.epic('玩安卓')
 @allure.feature('登录模块')
@@ -52,7 +54,6 @@ class TestLogin:
         login_page.login(username, password)
 
 
-
 if __name__ == '__main__':
     pytest.main(
-        [r'D:\GitCode\PytestAutoTest\auto_test\ui\wan_android\test_case\test_login.py::TestLogin::test_example'])
+        [r'D:\GitCode\PytestAutoTest\auto_test\ui\wan_android\test_case\test_login.py::TestLogin'])

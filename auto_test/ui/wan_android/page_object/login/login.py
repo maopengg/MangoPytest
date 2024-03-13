@@ -32,9 +32,11 @@ if __name__ == '__main__':
     data = NewDrowser(
         WEBConfigModel(browser_type=0,
                        browser_port='登录',
-                       browser_path=r'C:\Users\Administrator\AppData\Local\Google\Chrome\Application\chrome.exe',
+                       browser_path=None,
                        is_headless=False,
                        is_header_intercept=False,
                        host=None,
                        project_id=None))
-    LoginPage(data.new_context(data.new_browser()), data_processor=DataProcessor()).login('maopeng', '729164035')
+    login_page = LoginPage(data.new_context(data.new_browser()), data_processor=DataProcessor())
+    login_page.w_goto(login_page.url)
+    login_page.login('maopeng', '729164035')
