@@ -8,7 +8,7 @@ from tools import InitializationPath
 class SQLiteHandler:
 
     def __init__(self):
-        db_name = os.path.join(InitializationPath.cache_dir, 'cache.db')
+        db_name = os.path.join(InitializationPath.cache_dir, 'data_storage.db')
         self.conn = sqlite3.connect(db_name)
         self.cursor = self.conn.cursor()
 

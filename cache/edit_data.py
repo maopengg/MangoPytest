@@ -3,7 +3,7 @@ import sqlite3
 import pandas as pd
 
 # 连接到 SQLite 数据库
-conn = sqlite3.connect('D:\GitCode\PytestAutoTest\cache\cache.db')
+conn = sqlite3.connect('/data_storage.db')
 c = conn.cursor()
 
 # 增加数据
@@ -50,3 +50,6 @@ if st.button('删除选定行'):
 
 # 关闭数据库连接
 conn.close()
+
+
+# streamlit run D:\GitCode\PytestAutoTest\cache\edit_data.py
