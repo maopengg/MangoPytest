@@ -10,6 +10,10 @@ class UiError(PytestAutoTestError):
     pass
 
 
+class UiElementLocatorError(UiError):
+    pass
+
+
 class CacheIsNone(UiError):
     pass
 

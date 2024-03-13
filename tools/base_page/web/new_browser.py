@@ -47,6 +47,7 @@ class NewDrowser:
     def new_context(self, browser) -> tuple[BrowserContext, Page]:
         context = browser.new_context(no_viewport=True)
         page = context.new_page()
+
         return context, page
 
     def __search_path(self, ):

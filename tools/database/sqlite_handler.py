@@ -72,7 +72,7 @@ CREATE TABLE "notice_config" (
 );
 '''
 create_table_query4 = '''
-CREATE TABLE "test_case" (
+CREATE TABLE "api_test_case" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT,
   "project_id" INTEGER NOT NULL, -- 项目id
   "name" TEXT NOT NULL, -- 接口名称
@@ -85,7 +85,6 @@ CREATE TABLE "test_case" (
   "file" TEXT, -- 接口请求文件
   "other_data" TEXT, -- 其他请求数据
   "ass_response_whole" TEXT, -- 请求全匹配断言
-
   "ass_response_value" TEXT, -- 请求响应断言
   "ass_sql" TEXT, -- sql断言
   "front_sql" TEXT, -- 前置sql
@@ -98,17 +97,13 @@ create_table_query5 = '''
 CREATE TABLE "ui_element" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT,
   "project_id" INTEGER NOT NULL, -- 项目id
+  "module_name" INTEGER NOT NULL, -- 项目id
+  "page_name" INTEGER NOT NULL, -- 项目id
   "ele_name" TEXT NOT NULL, -- 元素名称
-  "nth" INTEGER, -- 下标
-  "sleep" INTEGER, -- 等等时间
-  "iframe" TEXT, -- iframe列表
   "method" INTEGER NOT NULL, -- method
-  "loc" TEXT NOT NULL, -- 选择器
-  "name" TEXT, -- name
-  "exact" INTEGER, -- 精准匹配
-  "has_text" TEXT, -- has_text
-  "has" TEXT, -- has
-  "loc2" TEXT -- 选择器2
+  "locator" TEXT NOT NULL, -- 选择器
+  "nth" INTEGER, -- 下标
+  "sleep" INTEGER -- 等等时间
 );
 '''
 db_handler = SQLiteHandler()

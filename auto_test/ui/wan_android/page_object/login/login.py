@@ -3,7 +3,7 @@
 # @Description: 
 # @Time   : 2024-02-20 11:04
 # @Author : 毛鹏
-import time
+from playwright.sync_api import Page, BrowserContext
 
 from models.ui_model import WEBConfigModel
 from tools.base_page import BasePage
@@ -15,23 +15,26 @@ class LoginPage(BasePage):
     """
     页面元素
     """
-    url = "ht88/portal/"
+    url = "https://wanandroid.com/index"
+
+    def __init__(self, context_page: tuple[BrowserContext, Page], data_processor: DataProcessor):
+        super().__init__(4, '登录', context_page, data_processor)
 
     # 查询操作
     def login(self, username: str, password: str):
-        self.w_goto(self.url)
-        self.w_input(self.w_find_element(self.element_model('用户名')), username)
-        self.w_input(self.w_find_element(self.element_model('密码')), password)
-        self.w_click(self.w_find_element(self.element_model('登录')))
-        time.sleep(5)
+        self.w_click(self.element('登录按钮'))
+        self.w_input(self.element('用户名'), username)
+        self.w_input(self.element('密码'), password)
+        self.w_click(self.element('登录'))
 
 
 if __name__ == '__main__':
-    data = NewDrowser(WEBConfigModel(browser_type=0,
-                                     browser_port='登录',
-                                     browser_path='C:\Program Files\Google\Chrome\Application\chrome.exe',
-                                     is_headless=False,
-                                     is_header_intercept=False,
-                                     host=None,
-                                     project_id=None))
-    LoginPage(data.new_context(data.new_browser()), data_processor=DataProcessor()).login('zesk_system', 'zesk8888')
+    data = NewDrowser(
+        WEBConfigModel(browser_type=0,
+                       browser_port='登录',
+                       browser_path=r'C:\Users\Administrator\AppData\Local\Google\Chrome\Application\chrome.exe',
+                       is_headless=False,
+                       is_header_intercept=False,
+                       host=None,
+                       project_id=None))
+    LoginPage(data.new_context(data.new_browser()), data_processor=DataProcessor()).login('maopeng', '729164035')
