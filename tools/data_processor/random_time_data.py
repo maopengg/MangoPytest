@@ -4,9 +4,9 @@
 # @Time   : 2023-03-07 8:24
 # @Author : 毛鹏
 
+import time
 from datetime import date, timedelta, datetime
 
-import time
 from faker import Faker
 
 
@@ -133,6 +133,12 @@ class RandomTimeData:
         """获取30天后的12点整时间"""
         _time_after_week = (date.today() + timedelta(days=+30)).strftime("%Y-%m-%d") + " 00:00:00"
         return _time_after_week
+
+    @classmethod
+    def time_day(cls) -> int:
+        """获取今日日期的数字"""
+        today = datetime.today()
+        return today.day
 
 
 if __name__ == '__main__':
