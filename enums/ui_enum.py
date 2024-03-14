@@ -22,14 +22,13 @@ class ElementExpEnum(BaseEnum):
     """元素定位方式枚举"""
     XPATH = 0
     TEST_ID = 1
+    LOCATOR = 2
     TEXT = 3
     PLACEHOLDER = 4
     LABEL = 5
     TITLE = 6
     ROLE = 7
     AIT_TEXT = 8
-    IFRAME = 9
-    LOCATOR = 10
     # APP专属
     DESCRIPTION = 11
     BOUNDS = 12
@@ -39,14 +38,13 @@ class ElementExpEnum(BaseEnum):
     def obj(cls):
         return {0: "W_XPATH",
                 1: "W_TestID",
+                2: "W_定位器",
                 3: "W_文本",
                 4: "W_占位符",
                 5: "W_标签",
                 6: "W_标题",
                 7: "W_ROLE",
                 8: "W_AIT_TEXT",
-                9: "W_iframe",
-                10: "locator",
                 11: "W_TITLE",
                 12: "A_BOUNDS",
                 13: "A_百分比坐标点击"}
