@@ -3,12 +3,12 @@
 # @Description:
 # @Time   : 2023-09-09 23:17
 # @Author : 毛鹏
-from uiautomator2 import UiObject
-
 from autotest.ui.driver.android.android_base import AndroidBase, ElementNotFoundError, \
     ElementNotDisappearError
-from tools.data_processor import CacheTool
 from tools.logs.log_control import ERROR, INFO
+from uiautomator2 import UiObject
+
+from tools.data_processor import CacheTool
 
 
 class UiautomatorElementOperation(AndroidBase):

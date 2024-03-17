@@ -5,18 +5,15 @@
 # @Author : 毛鹏
 from pydantic import BaseModel
 
-from enums.ui_enum import ElementExpEnum
+from enums.ui_enum import ElementExpEnum, BrowserTypeEnum
 
 
 class WEBConfigModel(BaseModel):
     """ web启动配置 """
-    browser_type: int
-    browser_port: str | None
-    browser_path: str | None
-    is_headless: int | None
-    is_header_intercept: bool = False
-    host: str | None = None
-    project_id: int | None = None
+    browser_type: BrowserTypeEnum
+    browser_port: str | None = None
+    browser_path: str | None = None
+    is_headless: bool = False
 
 
 class AndroidConfigModel(BaseModel):

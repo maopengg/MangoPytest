@@ -30,11 +30,11 @@ class MainRun:
     def run(self):
         # 循环准备开始执行用例
         for case_run_model in self.data:
-            if case_run_model.project in project_type_paths:
-                project_paths = project_type_paths[case_run_model.project]
+            if case_run_model.project.value in project_type_paths:
+                project_paths = project_type_paths[case_run_model.project.value]
                 project_paths['test_environment'] = case_run_model.test_environment
-                if case_run_model.type in project_paths:
-                    self.pytest_command.append(project_paths[case_run_model.type])
+                if case_run_model.type.value in project_paths:
+                    self.pytest_command.append(project_paths[case_run_model.type.value])
         # 执行用例
         INFO.logger.info(f"开始执行测试任务...")
         pytest.main(self.pytest_command)
@@ -42,7 +42,7 @@ class MainRun:
         # 发送通知
         # notify_send(self.data)
         # 程序运行之后，自动启动报告，如果不想启动报告，可注释这段代码
-        os.system(f"allure serve ./report/tmp -h {get_host_ip()} -p 9998")
+        os.system(f"allure serve ./report/tmp -h {get_host_ip()} -p 9997")
 
 
 if __name__ == '__main__':

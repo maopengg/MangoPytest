@@ -7,28 +7,28 @@
 import copy
 from typing import Optional
 
-from retrying import retry
-from uiautomator2 import UiObject
-from uiautomator2.xpath import XPathSelector
-
 from autotest.ui.driver.android.application import UiautomatorApplication
 from autotest.ui.driver.android.element import UiautomatorElementOperation
 from autotest.ui.driver.android.equipment import UiautomatorEquipmentDevice
 from autotest.ui.driver.android.page import UiautomatorPage
 from autotest.ui.driver.web.element_assertion import PlaywrightAssertion
+from models.socket_model.ui_model import AndroidConfigModel
+from models.socket_model.ui_model import ElementModel, ElementResultModel
+from retrying import retry
+from tools.assertion.sql_assertion import SqlAssertion
+from tools.database_tool.mysql_control import MysqlDB
+from tools.logs.log_control import ERROR
+from tools.message.error_msg import ERROR_MSG_0014, ERROR_MSG_0016, ERROR_MSG_0019, ERROR_MSG_0020
+from uiautomator2 import UiObject
+from uiautomator2.xpath import XPathSelector
+
 from enums.tools_enum import StatusEnum
 from enums.ui_enum import ElementExpEnum, ElementAssEnum
 from exceptions.ui_exception import *
 from models.tools_model import MysqlConingModel
-from models.socket_model.ui_model import AndroidConfigModel
-from models.socket_model.ui_model import ElementModel, ElementResultModel
-from tools.assertion.public_assertion import PublicAssertion
-from tools.assertion.sql_assertion import SqlAssertion
-from tools.data_processor import DataProcessor
-from tools.database_tool.mysql_control import MysqlDB
-from tools.logs.log_control import ERROR
 from tools import Initialization
-from tools.message.error_msg import ERROR_MSG_0014, ERROR_MSG_0016, ERROR_MSG_0019, ERROR_MSG_0020
+from tools.assertion.public_assertion import PublicAssertion
+from tools.data_processor import DataProcessor
 
 
 class AndroidDriver(UiautomatorEquipmentDevice,

@@ -14,6 +14,10 @@ class UiElementLocatorError(UiError):
     pass
 
 
+class UiInitialError(UiError):
+    pass
+
+
 class CacheIsNone(UiError):
     pass
 

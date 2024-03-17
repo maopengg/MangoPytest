@@ -9,6 +9,11 @@ from tools import InitializationPath
 from tools.other_tools.path import Path
 
 
+class ProjectEnum(BaseEnum):
+    CDP = 'CDP'
+    WanAndroid = 'WanAndroid'
+
+
 class CDPEnum(BaseEnum):
     NAME = 'cdp'
     UI_PATH = Path.ensure_path_sep(fr"{InitializationPath.project_root_directory}\auto_test\ui\cdp\test_case")

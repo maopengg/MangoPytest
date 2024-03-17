@@ -7,7 +7,7 @@ import json
 
 from pydantic import BaseModel
 
-from auto_test import BaseDataModel
+from auto_test import ApiBaseDataModel
 
 
 class TestCaseModel(BaseModel):
@@ -75,7 +75,7 @@ class ResponseModel(BaseModel):
 
 
 class ApiDataModel(BaseModel):
-    base_data: BaseDataModel
+    base_data: ApiBaseDataModel
     test_case: TestCaseModel
     request: RequestModel | None = None
     response: ResponseModel | None = None

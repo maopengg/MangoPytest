@@ -1,25 +1,30 @@
-import streamlit as st
 import sqlite3
+
 import pandas as pd
+import streamlit as st
 
 # 连接到 SQLite 数据库
 conn = sqlite3.connect('/data_storage.db')
 c = conn.cursor()
+
 
 # 增加数据
 def add_data(name, age):
     c.execute('''INSERT INTO ui_element (ele_name, nth) VALUES (?, ?)''', (name, age))
     conn.commit()
 
+
 # 删除数据
 def delete_data(user_id):
     c.execute('''DELETE FROM ui_element WHERE id = ?''', (user_id,))
     conn.commit()
 
+
 # 查询数据
 def get_data():
     c.execute('''SELECT * FROM ui_element''')
     return c.fetchall()
+
 
 # Streamlit 应用
 st.title('SQLite 数据库操作示例')
@@ -50,6 +55,5 @@ if st.button('删除选定行'):
 
 # 关闭数据库连接
 conn.close()
-
 
 # streamlit run D:\GitCode\PytestAutoTest\cache\edit_data.py

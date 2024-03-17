@@ -4,9 +4,9 @@
 # @Author : 毛鹏
 import functools
 import json
+import time
 
 import allure
-import time
 from requests.models import Response
 
 from enums.api_enum import MethodEnum
@@ -15,7 +15,7 @@ from exceptions.api_exception import CaseParameterError
 from exceptions.error_msg import ERROR_MSG_0334
 from models.api_model import ApiDataModel, ResponseModel, TestCaseModel, RequestModel
 from settings.settings import PRINT_EXECUTION_RESULTS, REQUEST_TIMEOUT_FAILURE_TIME
-from tools.database.sql_statement import sql_statement_3
+from tools.database.sql_statement import sql_statement_4
 from tools.database.sqlite_handler import SQLiteHandler
 from tools.logging_tool.log_control import ERROR, WARNING, INFO
 
@@ -30,8 +30,8 @@ def case_data(case_id: int):
 
     def decorator(func):
         def wrapper(*args, **kwargs):
-            test_case_dict: dict = SQLiteHandler().execute_sql(sql_statement_3, (case_id,))[0]
-            allure.attach(json.dumps(test_case_dict), '查询用例数据')
+            test_case_dict: dict = SQLiteHandler().execute_sql(sql_statement_4, (case_id,))[0]
+            allure.attach(json.dumps(test_case_dict, ensure_ascii=False), '查询用例数据')
             try:
                 func(
                     *args,

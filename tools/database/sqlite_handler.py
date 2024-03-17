@@ -52,8 +52,9 @@ create_table_query2 = '''
 CREATE TABLE "test_object" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT,
   "project_id" INTEGER NOT NULL, -- 项目id
-  "client_type" INTEGER NOT NULL, -- 端类型
+  "type" INTEGER NOT NULL, -- 该是否断言数据库
   "name" TEXT NOT NULL, -- 测试环境名称
+  "client_type" INTEGER NOT NULL, -- 端类型
   "host" TEXT NOT NULL, -- 环境域名
   "is_db" INTEGER NOT NULL, -- 该是否断言数据库
   "db_user" TEXT, -- 数据库用户名

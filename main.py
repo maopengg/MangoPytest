@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 # @Time   : 2023/08/07 11:01
 # @Author :
+from auto_test.project_enum import ProjectEnum
+from enums.tools_enum import EnvironmentEnum, AutoTestTypeEnum
 from tools.main_run import MainRun
 
 """
@@ -26,6 +28,9 @@ pytest_command = [
     "--clean-alluredir",
 ]
 
-test_project = [{'project': 'WanAndroid', 'test_environment': 'pro', 'type': 0}]
+test_project = [
+    {'project': ProjectEnum.WanAndroid, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.UI},
+    {'project': ProjectEnum.WanAndroid, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.API}
+]
 
 MainRun(test_project=test_project, pytest_command=pytest_command)

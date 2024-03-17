@@ -6,6 +6,9 @@
 
 from pydantic import BaseModel
 
+from auto_test.project_enum import ProjectEnum
+from enums.tools_enum import AutoTestTypeEnum, EnvironmentEnum
+
 
 class MysqlConingModel(BaseModel):
     host: str
@@ -16,9 +19,9 @@ class MysqlConingModel(BaseModel):
 
 
 class CaseRunModel(BaseModel):
-    project: str
-    type: int
-    test_environment: str
+    project: ProjectEnum
+    type: AutoTestTypeEnum
+    test_environment: EnvironmentEnum
 
 
 class TestMetrics(BaseModel):

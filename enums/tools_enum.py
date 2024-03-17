@@ -27,6 +27,20 @@ class AutoTestTypeEnum(BaseEnum):
         return {0: "界面", 1: "接口", 2: "性能"}
 
 
+class EnvironmentEnum(BaseEnum):
+    """测试环境枚举"""
+    DEV = 0
+    TEST = 1
+    PRE = 2
+    UAT = 3
+    SIM = 4
+    PRO = 5
+
+    @classmethod
+    def obj(cls):
+        return {0: "开发环境", 1: "测试环境", 2: "预发环境", 3: "验收环境", 4: "仿真环境", 5: "生产环境", }
+
+
 class NotificationType(BaseEnum):
     """通知枚举"""
     MAIL = 0

@@ -3,22 +3,27 @@
 # @Description: 
 # @Time   : 2024-02-20 11:04
 # @Author : 毛鹏
+from urllib.parse import urljoin
+
 from playwright.sync_api import Page, BrowserContext
 
+from auto_test.ui.wan_android import WanAndroidDataModel
+from enums.ui_enum import BrowserTypeEnum
 from models.ui_model import WEBConfigModel
 from tools.base_page import BasePage
-from tools.base_page.web.new_browser import NewDrowser
-from tools.data_processor import DataProcessor
+from tools.base_page.web.new_browser import NewBrowser
 
 
 class LoginPage(BasePage):
     """
     页面元素
     """
-    url = "https://wanandroid.com/index"
 
-    def __init__(self, context_page: tuple[BrowserContext, Page], data_processor: DataProcessor):
-        super().__init__(4, '登录', context_page, data_processor)
+    def __init__(self, context_page: tuple[BrowserContext, Page], data_model: WanAndroidDataModel):
+        project_id = 4
+        module_name = '登录'
+        super().__init__(project_id, module_name, context_page, data_model.data_processor)
+        self.url = urljoin(data_model.base_data_model.host, '/index')
 
     # 查询操作
     def login(self, username: str, password: str):
@@ -29,14 +34,8 @@ class LoginPage(BasePage):
 
 
 if __name__ == '__main__':
-    data = NewDrowser(
-        WEBConfigModel(browser_type=0,
-                       browser_port='登录',
-                       browser_path=None,
-                       is_headless=False,
-                       is_header_intercept=False,
-                       host=None,
-                       project_id=None))
-    login_page = LoginPage(data.new_context(data.new_browser()), data_processor=DataProcessor())
+    url = "https://wanandroid.com/index"
+    data = NewBrowser(WEBConfigModel(browser_type=BrowserTypeEnum.CHROMIUM))
+    login_page = LoginPage(data.new_context_page(), WanAndroidDataModel())
     login_page.w_goto(login_page.url)
     login_page.login('maopeng', '729164035')

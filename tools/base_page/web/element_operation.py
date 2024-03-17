@@ -3,7 +3,6 @@
 # @Description: 
 # @Time   : 2023-04-26 22:22
 # @Author : 毛鹏
-import asyncio
 import time
 from typing import Optional
 
@@ -58,7 +57,7 @@ class PlaywrightElementOperation:
         # 计算点击位置的坐标
         x = button_position['x'] + button_position['width'] + 50
         y = button_position['y'] - 40
-        asyncio.sleep(1)
+        time.sleep(1)
         self.page.mouse.click(x, y)
 
     def w_upload_files(self, locating: Locator, file_path: str | list):

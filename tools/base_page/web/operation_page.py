@@ -3,7 +3,6 @@
 # @Description: 
 # @Time   : 2023-04-25 22:33
 # @Author : 毛鹏
-import asyncio
 
 from playwright.sync_api import Locator
 from playwright.sync_api import Page, BrowserContext
@@ -19,11 +18,9 @@ class PlaywrightPageOperation:
         pages = self.context.pages
         pages[int(individual)].bring_to_front()
         self.page = pages[int(individual)]
-        asyncio.sleep(1)
 
     def w_close_current_tab(self):
         """关闭当前页签"""
-        asyncio.sleep(2)
         pages = self.context.pages
         pages[-1].close()
         self.page = pages[0]
@@ -31,9 +28,7 @@ class PlaywrightPageOperation:
     def open_new_tab_and_switch(self, locating: Locator):
         """点击并打开新页签"""
         locating.click()
-        asyncio.sleep(2)
         pages = self.context.pages
         new_page = pages[-1]
         new_page.bring_to_front()
         self.page = new_page
-        asyncio.sleep(1)

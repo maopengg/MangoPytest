@@ -16,13 +16,14 @@ class PlaywrightOperationBrowser:
     """浏览器操作"""
     page: Page = None
     context: BrowserContext = None
+    url: str = None
 
-    def w_goto(self, url: str):
+    def w_goto(self, ):
         """打开url"""
         try:
-            self.page.goto(url, timeout=60000)
+            self.page.goto(self.url, timeout=60000)
         except TimeoutError:
-            raise UiTimeoutError(*ERROR_MSG_0038, value=(url,))
+            raise UiTimeoutError(*ERROR_MSG_0038, value=(self.url,))
 
     def w_screenshot(self, path: str, full_page=True):
         """整个页面截图"""

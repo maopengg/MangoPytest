@@ -3,13 +3,12 @@
 # @Description: 
 # @Time   : 2023-03-11 17:25
 # @Author : 毛鹏
-from typing import Optional
-
 from time import sleep
-from uiautomator2 import Device
+from typing import Optional
 
 from models.socket_model.ui_model import AndroidConfigModel
 from tools.logs.log_control import INFO
+from uiautomator2 import Device
 
 """
 python -m uiautomator2 init
