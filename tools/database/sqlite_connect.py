@@ -5,7 +5,7 @@ from typing import Union
 from tools import InitializationPath
 
 
-class SQLiteHandler:
+class SQLiteConnect:
 
     def __init__(self):
         db_name = os.path.join(InitializationPath.cache_dir, 'data_storage.db')
@@ -45,7 +45,6 @@ create_table_query1 = '''
 CREATE TABLE "project" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT,
   "name" TEXT NOT NULL, --  
-  "is_notice" INTEGER NOT NULL -- 该项目是否通知
 );
 '''
 create_table_query2 = '''
@@ -56,7 +55,9 @@ CREATE TABLE "test_object" (
   "name" TEXT NOT NULL, -- 测试环境名称
   "client_type" INTEGER NOT NULL, -- 端类型
   "host" TEXT NOT NULL, -- 环境域名
-  "is_db" INTEGER NOT NULL, -- 该是否断言数据库
+  "db_rud_status" INTEGER NOT NULL, -- 是否可执行crud
+  "db_c_status" INTEGER NOT NULL, -- 是否可执行查询
+  "is_notice" INTEGER NOT NULL, -- 是否进行通知
   "db_user" TEXT, -- 数据库用户名
   "db_host" TEXT, -- 数据库IP
   "db_port" TEXT, -- 数据库端口
@@ -69,7 +70,7 @@ CREATE TABLE "notice_config" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT,
   "project_id" INTEGER NOT NULL, -- 项目id
   "type" INTEGER NOT NULL, -- 通知类型
-  "settings" TEXT NOT NULL -- 通知配置
+  "config" TEXT NOT NULL -- 通知配置
 );
 '''
 create_table_query4 = '''
@@ -107,7 +108,7 @@ CREATE TABLE "ui_element" (
   "sleep" INTEGER -- 等等时间
 );
 '''
-db_handler = SQLiteHandler()
+db_handler = SQLiteConnect()
 for i in [create_table_query1, create_table_query2, create_table_query3, create_table_query4, create_table_query5]:
     try:
         db_handler.execute_sql(i)

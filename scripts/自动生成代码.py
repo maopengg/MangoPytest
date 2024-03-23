@@ -39,7 +39,7 @@ class FidToPy(object):
             if "Cookie: " in i:
                 break
             info += i + "\n"
-        headers = info.split("\n")
+        headers = split("\n")
         while "" in headers:
             headers.remove("")
         for i in headers:

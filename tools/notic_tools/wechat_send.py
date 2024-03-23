@@ -3,16 +3,15 @@
 # @Description: 企微通知封装
 # @Time   : 2022-11-04 22:05
 # @Author : 毛鹏
-import logging
 
 import requests
 
 from enums.tools_enum import ClientNameEnum
 from exceptions.api_exception import SendMessageError
 from exceptions.error_msg import ERROR_MSG_0018, ERROR_MSG_0020, ERROR_MSG_0013, ERROR_MSG_0014, ERROR_MSG_0019
+from exceptions.tools_exception import ValueTypeError
 from models.tools_model import WeChatNoticeModel, TestReportModel
-
-logger = logging.getLogger('system')
+from tools.logging_tool import logger
 
 
 class WeChatSend:
@@ -35,7 +34,6 @@ class WeChatSend:
         text = f"""【{ClientNameEnum.PLATFORM_CHINESE.value}通知】
                     >测试项目：<font color=\"info\">{self.test_report.project_name}</font>
                     >测试环境：{self.test_report.test_environment}
-                    >测试套ID：{self.test_report.test_suite_id}
                     >
                     > **执行结果**
                     ><font color=\"info\">成  功  率  : {self.test_report.success_rate}%</font>

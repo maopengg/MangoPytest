@@ -72,7 +72,7 @@ class PlaywrightElementOperation:
             raise UploadElementInputError(*ERROR_MSG_0036)
         # with self.page.expect_file_chooser() as fc_info:
         #     locating.click()
-        # file_chooser = fc_info.value
+        # file_chooser = fc_value
         # file_chooser.set_files(file_path)
 
     def w_drag_to(self, locating1: Locator, locating2: Locator):

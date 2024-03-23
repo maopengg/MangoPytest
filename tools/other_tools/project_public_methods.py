@@ -11,10 +11,10 @@ from enums.tools_enum import EnvironmentEnum, StatusEnum
 from exceptions.error_msg import *
 from exceptions.ui_exception import UiInitialError
 from models.tools_model import MysqlConingModel
-from tools.database.mysql_control import MySQLConnect
+from tools.database.mysql_connect import MySQLConnect
 from tools.database.sql_statement import sql_statement_2, sql_statement_3
-from tools.database.sqlite_handler import SQLiteHandler
-from tools.logging_tool.log_control import WARNING
+from tools.database.sqlite_connect import SQLiteConnect
+from tools.logging_tool import logger
 
 
 class ProjectPublicMethods:
@@ -25,10 +25,10 @@ class ProjectPublicMethods:
         project_dict = project_type_paths[project_name]
         if project_dict.get('test_environment') is None:
             test_environment: EnvironmentEnum = test_environment
-            WARNING.logger.warning(f'项目：{project_name}未获取到测试环境变量，请检查！')
+            logger.warning(f'项目：{project_name}未获取到测试环境变量，请检查！')
         else:
             test_environment: EnvironmentEnum = project_dict.get('test_environment')
-        sql_handler = SQLiteHandler()
+        sql_handler = SQLiteConnect()
         try:
             project: dict = sql_handler.execute_sql(sql_statement_2, data=(project_name,))[0]
         except IndexError:

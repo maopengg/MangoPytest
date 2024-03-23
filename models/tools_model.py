@@ -32,11 +32,11 @@ class TestMetrics(BaseModel):
     skipped: int
     total: int
     pass_rate: float
-    time: str
+    time: float
 
 
 class TestReportModel(BaseModel):
-    project_id: str
+    project_id: str | int
     project_name: str
     test_environment: str
     case_sum: int
@@ -44,7 +44,7 @@ class TestReportModel(BaseModel):
     success_rate: float
     warning: int
     fail: int
-    execution_duration: int
+    execution_duration: int | float
     test_time: str
     ip: str
 
@@ -54,4 +54,7 @@ class WeChatNoticeModel(BaseModel):
 
 
 class EmailNoticeModel(BaseModel):
+    send_user: str
+    email_host: str
+    stamp_key: str
     send_list: list

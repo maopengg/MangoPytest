@@ -6,7 +6,7 @@
 # import requests
 from pydantic import BaseModel
 
-from auto_test import ApiBaseDataModel
+from models.api_model import ApiBaseDataModel
 from tools.decorator.singleton import singleton
 
 
@@ -33,12 +33,12 @@ class CDPDataModel(BaseModel):
 #         test_environment = cdp_dict.get('test_environment')
 #
 #     try:
-#         project: dict = SQLiteHandler().execute_sql(sql_statement_2, data=(CDPEnum.NAME.value,))[0]
+#         project: dict = SQLiteConnect().execute_sql(sql_statement_2, data=(CDPEnum.NAME.value,))[0]
 #     except IndexError:
 #         raise LoginError(*ERROR_MSG_0331)
 #
 #     try:
-#         test_object: dict = SQLiteHandler().execute_sql(sql_statement_3, data=(project.get('id'),))[0]
+#         test_object: dict = SQLiteConnect().execute_sql(sql_statement_3, data=(project.get('id'),))[0]
 #     except IndexError:
 #         raise LoginError(*ERROR_MSG_0332)
 #     mysql_config_model = None
@@ -66,7 +66,7 @@ class CDPDataModel(BaseModel):
 #             mysql_connect=mysql_connect,
 #         )
 #     )
-#     for role, user in data_model.user_info.items():
+#     for role, user in data_model.user_items():
 #         password = EncryptionTool.md5_encrypt(user.get('password'))
 #         login_url = f'{test_object.get("host")}/backend/api-auth/oauth/token?username={user.get("username")}&password={password}&grant_type=password_code'
 #         response = requests.post(url=login_url, headers=data_model.headers)
@@ -87,7 +87,7 @@ class CDPDataModel(BaseModel):
 #             data_model.headers['Service'] = user_info_service_dict['data'][0]['serviceName']
 #             data_model.base_data_model.headers = data_model.headers
 #
-#     INFO.logger.info(f'{CDPEnum.NAME.value}的基础信息设置完成！')
+#     logger.info(f'{CDPEnum.NAME.value}的基础信息设置完成！')
 #
 #
 # cdp_login()

@@ -13,7 +13,7 @@ from exceptions.ui_exception import ElementIsEmptyError, UiElementLocatorError
 from tools.base_page.web import WebDevice
 from tools.data_processor import DataProcessor
 from tools.database.sql_statement import sql_statement_1
-from tools.database.sqlite_handler import SQLiteHandler
+from tools.database.sqlite_connect import SQLiteConnect
 
 
 class BasePage(WebDevice):
@@ -24,7 +24,7 @@ class BasePage(WebDevice):
                  data_processor: DataProcessor):
         context, page = context_page
         super().__init__(page, context, data_processor)
-        self.element_list: list[dict] = SQLiteHandler().execute_sql(sql_statement_1, (project_id, module_name))
+        self.element_list: list[dict] = SQLiteConnect().execute_sql(sql_statement_1, (project_id, module_name))
 
     def element(self, ele_name: str, is_ope: bool = True) -> Locator:
         for element in self.element_list:

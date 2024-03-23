@@ -31,7 +31,7 @@ class AndroidBase:
 
     def new_android(self):
         self.android = Device(self.android_config.equipment)
-        INFO.logger.info(f'设备启动成功，设备信息：{self.android.info}')
+        logger.info(f'设备启动成功，设备信息：{self.android.info}')
 
 
 class ElementNotFoundError(Exception):

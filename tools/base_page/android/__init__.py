@@ -168,7 +168,7 @@ class AndroidDriver(UiautomatorEquipmentDevice,
 
     def __error(self, error_class, msg, e=None):
         """ 操作元素失败时试用的函数 """
-        ERROR.logger.error(f'元素：{self.element.ele_name_a} 操作失败\n'
+        logger.error(f'元素：{self.element.ele_name_a} 操作失败\n'
                            f'报错信息：{e}\n'
                            f'元素对象：{self.element.dict()}\n')
         path = rf'{Initialization.get_log_screenshot()}\{self.element.ele_name_a}{DataProcessor.get_deta_hms()}.jpg'
@@ -188,7 +188,7 @@ class AndroidDriver(UiautomatorEquipmentDevice,
         if value is not None:
             self.element.ope_value[key] = value
         else:
-            ERROR.logger.error(f'操作-{self.element.ele_name_a}走到了这里，请检查。{self.element.model_dump_json()}')
+            logger.error(f'操作-{self.element.ele_name_a}走到了这里，请检查。{self.element.model_dump_json()}')
 
     @retry(stop_max_attempt_number=3, wait_fixed=2000)
     def __ass(self, key, expect):
@@ -201,4 +201,4 @@ class AndroidDriver(UiautomatorEquipmentDevice,
         if value is not None:
             self.element.ass_value[key] = value
         else:
-            ERROR.logger.error(f'断言-{self.element.ele_name_a}走到了这里，请检查。{self.element.model_dump_json()}')
+            logger.error(f'断言-{self.element.ele_name_a}走到了这里，请检查。{self.element.model_dump_json()}')

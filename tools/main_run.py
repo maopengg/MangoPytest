@@ -14,7 +14,8 @@ import pytest
 from auto_test.project_enum import *
 from models.tools_model import CaseRunModel
 from tools.files.zip_files import zip_files
-from tools.logging_tool.log_control import INFO
+from tools.logging_tool import logger
+from tools.notic_tools import NoticeMain
 from tools.other_tools.native_ip import get_host_ip
 
 
@@ -36,11 +37,11 @@ class MainRun:
                 if case_run_model.type.value in project_paths:
                     self.pytest_command.append(project_paths[case_run_model.type.value])
         # 执行用例
-        INFO.logger.info(f"开始执行测试任务...")
+        logger.info(f"开始执行测试任务...")
         pytest.main(self.pytest_command)
         os.system(r"allure generate ./report/tmp -o ./report/html --clean")
         # 发送通知
-        # notify_send(self.data)
+        NoticeMain(self.data).notice_main()
         # 程序运行之后，自动启动报告，如果不想启动报告，可注释这段代码
         os.system(f"allure serve ./report/tmp -h {get_host_ip()} -p 9997")
 

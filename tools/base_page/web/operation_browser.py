@@ -41,5 +41,5 @@ class PlaywrightOperationBrowser:
         """下载文件"""
         with self.page.expect_download() as download_info:
             self.page.get_by_text("Download file").click()
-        download = download_info.value
+        download = download_value
         download.save_as(save_path)

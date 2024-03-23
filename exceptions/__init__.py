@@ -3,7 +3,7 @@
 # @Description: 
 # @Time   : 2023-07-07 10:14
 # @Author : 毛鹏
-from tools.logging_tool.log_control import ERROR
+from tools.logging_tool import logger
 
 
 class PytestAutoTestError(Exception):
@@ -12,6 +12,6 @@ class PytestAutoTestError(Exception):
         if value:
             msg = msg.format(*value)
         if error:
-            ERROR.logger.error(error)
+            logger.error(error)
         self.code = code
         self.msg = msg

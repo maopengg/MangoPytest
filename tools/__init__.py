@@ -30,6 +30,9 @@ class InitializationPath:
 
 InitializationPath()
 if __name__ == '__main__':
-    print(InitializationPath.logs_dir)
+    print(InitializationPath.current_directory)
     print(InitializationPath.project_root_directory)
+    print(InitializationPath.current_dir2)
+    print(InitializationPath.logs_dir)
     print(InitializationPath.cache_dir)
+    print(InitializationPath.reports_dir)

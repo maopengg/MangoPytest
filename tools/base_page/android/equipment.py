@@ -21,7 +21,7 @@ class UiautomatorEquipmentDevice(AndroidBase):
 
     def a_swipe_left(self):
         """获取屏幕开关状态"""
-        self.android.info.get('screenOn')
+        self.android.get('screenOn')
 
     def a_home(self):
         """返回首页"""

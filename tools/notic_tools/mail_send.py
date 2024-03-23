@@ -8,13 +8,17 @@ from email.mime.text import MIMEText
 from smtplib import SMTPException
 from socket import gaierror
 
+from enums.tools_enum import ClientNameEnum
+from exceptions.api_exception import SendMessageError
+from exceptions.error_msg import ERROR_MSG_0017, ERROR_MSG_0016
 from models.tools_model import EmailNoticeModel, TestReportModel
+from tools.logging_tool import logger
 
 
 class SendEmail:
     """ 发送邮箱 """
 
-    def __init__(self, notice_config: EmailNoticeModel, test_report: TestReportModel):
+    def __init__(self, notice_config: EmailNoticeModel, test_report: TestReportModel = None):
         self.test_report = test_report
         self.notice_config = notice_config
 
@@ -25,7 +29,7 @@ class SendEmail:
         """
         content = f"""
         各位同事, 大家好:
-            测试套ID：{self.test_report.test_suite_id}任务执行完成，执行结果如下:
+            自动化测试执行完成，结果如下:
             用例运行总数: {self.test_report.case_sum} 个
             通过用例个数: {self.test_report.success} 个
             失败用例个数: {self.test_report.fail} 个
@@ -35,8 +39,8 @@ class SendEmail:
 
 
         **********************************
-        芒果自动化平台地址：https://{self.test_report.ip}:8002/#/login
-        详细情况可前往芒果自动化平台查看，非相关负责人员可忽略此消息。谢谢！
+        自动化测试结果地址：https://{self.test_report.ip}:9997/
+        详细情况请点击链接查看，非相关负责人员可忽略此消息。谢谢！
         """
         try:
             self.send_mail(self.notice_config.send_list, f'【{ClientNameEnum.PLATFORM_CHINESE.value}通知】', content)

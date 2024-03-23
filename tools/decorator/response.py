@@ -16,8 +16,8 @@ from exceptions.error_msg import ERROR_MSG_0334
 from models.api_model import ApiDataModel, ResponseModel, TestCaseModel, RequestModel
 from settings.settings import PRINT_EXECUTION_RESULTS, REQUEST_TIMEOUT_FAILURE_TIME
 from tools.database.sql_statement import sql_statement_4
-from tools.database.sqlite_handler import SQLiteHandler
-from tools.logging_tool.log_control import ERROR, WARNING, INFO
+from tools.database.sqlite_connect import SQLiteConnect
+from tools.logging_tool import logger
 
 
 def case_data(case_id: int):
@@ -30,7 +30,7 @@ def case_data(case_id: int):
 
     def decorator(func):
         def wrapper(*args, **kwargs):
-            test_case_dict: dict = SQLiteHandler().execute_sql(sql_statement_4, (case_id,))[0]
+            test_case_dict: dict = SQLiteConnect().execute_sql(sql_statement_4, (case_id,))[0]
             allure.attach(json.dumps(test_case_dict, ensure_ascii=False), '查询用例数据')
             try:
                 func(
@@ -40,7 +40,7 @@ def case_data(case_id: int):
                                       test_case=TestCaseModel.get_obj(test_case_dict))
                 )
             except PytestAutoTestError as error:
-                ERROR.logger.error(error.msg)
+                logger.error(error.msg)
                 allure.attach(error.msg, '执行中断异常')
                 raise error
 
@@ -106,13 +106,12 @@ def timer(func):
         response_time = time.time() - start
         # 计算时间戳毫米级别，如果时间大于number，则打印 函数名称 和运行时间
         if response_time > REQUEST_TIMEOUT_FAILURE_TIME:
-            WARNING.logger.error(
+            logger.error(
                 f"\n{'=' * 100}\n"
-                "测试用例执行时间较长，请关注.\n"
-                "函数运行时间: %s ms\n"
-                "测试用例相关数据: %s\n"
-                f"{'=' * 100}"
-                , response_time, response)
+                f"测试用例执行时间较长，请关注.\n"
+                f"函数运行时间: {response_time} ms\n"
+                f"测试用例相关数据: {response}\n"
+                f"{'=' * 100}")
         try:
             response_dict = response.json()
         except json.JSONDecodeError:
@@ -155,9 +154,9 @@ def log_decorator(func):
                        f"Http状态码: {data.response.status_code}\n" \
                        f"{'=' * 100}"
             if data.response.status_code == 200 or data.response.status_code == 300:
-                INFO.logger.info(_log_msg)
+                logger.info(_log_msg)
             else:
-                ERROR.logger.error(_log_msg)
+                logger.error(_log_msg)
         return data
 
     return swapper

@@ -24,3 +24,10 @@ class FileDoesNotEexistError(PytestAutoTestError):
 
 class ValueTypeError(PytestAutoTestError):
     pass
+
+class MysqlConnectionError(PytestAutoTestError):
+    pass
+
+
+class MysqlQueryError(PytestAutoTestError):
+    pass

@@ -8,12 +8,23 @@ from enum import unique
 from enums import BaseEnum
 
 
+class NoticeEnum(BaseEnum):
+    """通知枚举"""
+    MAIL = 0
+    WECOM = 1
+    NAILING = 2
+
+    @classmethod
+    def obj(cls):
+        return {0: "邮箱", 1: "企微", 2: "钉钉-未测试"}
+
+
 class ClientNameEnum(BaseEnum):
     """
     端名称
     """
-    PLATFORM_CHINESE = '芒果自动化测试平台'
-    PLATFORM_ENGLISH = 'MangoTestPlatform'
+    PLATFORM_CHINESE = '自动化测试'
+    PLATFORM_ENGLISH = 'AutoTest'
 
 
 class AutoTestTypeEnum(BaseEnum):

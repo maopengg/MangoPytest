@@ -11,12 +11,12 @@
 from pydantic import BaseModel
 from pydantic.v1 import ConfigDict
 
-from auto_test import UiBaseDataModel
 from auto_test.project_enum import WanAndroidEnum
 from enums.tools_enum import EnvironmentEnum
+from models.ui_model import UiBaseDataModel
 from tools.data_processor import DataProcessor
 from tools.decorator.singleton import singleton
-from tools.logging_tool.log_control import INFO
+from tools.logging_tool import logger
 from tools.other_tools.project_public_methods import ProjectPublicMethods
 
 
@@ -51,7 +51,7 @@ def data_initial():
             mysql_connect=mysql_connect,
         )
     )
-    INFO.logger.info(f'{WanAndroidEnum.NAME.value}的UI在自动化基础信息设置完成！')
+    logger.info(f'{WanAndroidEnum.NAME.value}的UI在自动化基础信息设置完成！')
 
 
 data_initial()
