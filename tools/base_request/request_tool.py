@@ -44,7 +44,7 @@ class RequestTool:
         return data
 
     @timer
-    def http_request(self, request_model: RequestModel) -> Response | ResponseModel:
+    def http_request(self, request_model: RequestModel) -> ResponseModel | Response:
         """
         全局请求统一处理
         @param request_model: RequestDataModel
