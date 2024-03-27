@@ -13,6 +13,7 @@ BROWSER_IS_MAXIMIZE = True
 EMAIL_HOST = 'smtp.qq.com'
 SEND_USER = '729164035@qq.com'
 STAMP_KEY = 'lqfzvjbpfcwtbecg'
+PROXY = {'http': '127.0.0.1:7890', 'https': '127.0.0.1:7890'}
 
 if __name__ == '__main__':
-    print("email_host".upper())
+    print("proxy".upper())
