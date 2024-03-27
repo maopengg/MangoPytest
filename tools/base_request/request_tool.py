@@ -9,14 +9,12 @@ from urllib.parse import urljoin
 import requests
 from requests.models import Response
 
-from models.api_model import ApiDataModel
+from models.api_model import ApiDataModel, RequestModel, ResponseModel
+from settings.settings import PROXY
 from tools.data_processor import DataProcessor
 from tools.decorator.response import timer
 
-proxies = {
-    'http': 'http://127.0.0.1:7890',
-    'https': 'https://127.0.0.1:7890'
-}
+
 class RequestTool:
     data_processor: DataProcessor = DataProcessor()
 
@@ -25,32 +23,7 @@ class RequestTool:
         处理请求的数据，写入到request对象中
         @return:
         """
-        return self.http_request(self.request_data(data))
-
-    @timer
-    def http_request(self, data: ApiDataModel) -> Response:
-        """
-        全局请求统一处理
-        @param data: RequestDataModel
-        @return: ApiDataModel
-        """
-        return requests.request(
-            method=data.request.method,
-            url=urljoin(data.base_data.host, data.request.url),
-            headers=data.request.headers,
-            params=data.request.params,
-            data=data.request.data,
-            json=data.request.json_data,
-            files=data.request.file,
-            proxies=proxies
-        )
-
-    def request_data(self, data: ApiDataModel) -> ApiDataModel:
-        """
-        检查请求信息中是否存在变量进行替换
-        @param data:RequestModel
-        @return:
-        """
+        data.request.url = urljoin(data.base_data.host, data.request.url)
         for key, value in data.request:
             if value is not None and key != 'file':
                 value = self.data_processor.replace(value)
@@ -67,4 +40,23 @@ class RequestTool:
                             path = self.data_processor.replace(v)
                             file.append((k, (file_name, open(path, 'rb'))))
                     data.request.file = file
+        data.response = self.http_request(data.request)[0]
         return data
+
+    @timer
+    def http_request(self, request_model: RequestModel) -> Response | ResponseModel:
+        """
+        全局请求统一处理
+        @param request_model: RequestDataModel
+        @return: ApiDataModel
+        """
+        return requests.request(
+            method=request_model.method,
+            url=request_model.url,
+            headers=request_model.headers,
+            params=request_model.params,
+            data=request_model.data,
+            json=request_model.json_data,
+            files=request_model.file,
+            proxies=PROXY
+        )

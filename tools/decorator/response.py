@@ -100,7 +100,7 @@ def timer(func):
     """
 
     @functools.wraps(func)
-    def swapper(*args, **kwargs) -> ApiDataModel:
+    def swapper(*args, **kwargs) -> tuple[ResponseModel, Response]:
         start = time.time()
         response: Response = func(*args, **kwargs)
         response_time = time.time() - start
@@ -117,17 +117,15 @@ def timer(func):
         except json.JSONDecodeError:
             response_dict = '序列化json失败'
 
-        data: ApiDataModel = args[1]
-        data.response = ResponseModel(url=response.url,
-                                      status_code=response.status_code,
-                                      method=data.request.method,
-                                      headers=response.headers,
-                                      response_text=response.text,
-                                      response_dict=response_dict,
-                                      response_time=response_time
-                                      )
-
-        return data
+        data: RequestModel = args[1]
+        return ResponseModel(url=response.url,
+                             status_code=response.status_code,
+                             method=data.method,
+                             headers=response.headers,
+                             response_text=response.text,
+                             response_dict=response_dict,
+                             response_time=response_time
+                             ), response
 
     return swapper
 

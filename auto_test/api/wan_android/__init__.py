@@ -1,12 +1,12 @@
 from urllib.parse import urljoin
 
-import requests
 from pydantic import BaseModel
 from pydantic.v1 import ConfigDict
 
 from auto_test.project_enum import WanAndroidEnum
 from enums.tools_enum import EnvironmentEnum
-from models.api_model import ApiBaseDataModel
+from models.api_model import ApiBaseDataModel, RequestModel
+from tools.base_request.request_tool import RequestTool
 from tools.data_processor import DataProcessor
 from tools.decorator.singleton import singleton
 from tools.logging_tool import logger
@@ -48,11 +48,11 @@ def data_initial():
         )
     )
     login_url = f'user/login'
-    response = requests.post(url=urljoin(test_object.get('host'), login_url),
-                             headers=data_model.headers,
-                             data=data_model.user_info,
-                             verify=True)
 
+    response = RequestTool().http_request(RequestModel(url=urljoin(test_object.get('host'), login_url),
+                                                       method="POST",
+                                                       headers=data_model.headers,
+                                                       data=data_model.user_info, ))[1]
     cookies = ''
     for k, v in response.cookies.items():
         _cookie = k + "=" + v + ";"
