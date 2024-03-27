@@ -9,7 +9,7 @@ from pydantic.v1 import ConfigDict
 
 from enums.ui_enum import ElementExpEnum, BrowserTypeEnum
 from models.tools_model import MysqlConingModel
-from tools.database.mysql_connect import MySQLConnect
+from tools.database.mysql_connect import MysqlConnect
 
 
 class WEBConfigModel(BaseModel):
@@ -49,7 +49,7 @@ class UiBaseDataModel(BaseModel):
     host: str  # 域名
     is_database_assertion: bool
     mysql_config_model: MysqlConingModel | None = None
-    mysql_connect: MySQLConnect | None = None
+    mysql_connect: MysqlConnect | None = None
     other_data: dict | None = None  # 其他数据
 
     class Config(ConfigDict):

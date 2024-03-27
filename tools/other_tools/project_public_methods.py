@@ -11,7 +11,7 @@ from enums.tools_enum import EnvironmentEnum, StatusEnum
 from exceptions.error_msg import *
 from exceptions.ui_exception import UiInitialError
 from models.tools_model import MysqlConingModel
-from tools.database.mysql_connect import MySQLConnect
+from tools.database.mysql_connect import MysqlConnect
 from tools.database.sql_statement import sql_statement_2, sql_statement_3
 from tools.database.sqlite_connect import SQLiteConnect
 from tools.logging_tool import logger
@@ -42,7 +42,7 @@ class ProjectPublicMethods:
         return test_environment, project, test_object
 
     @staticmethod
-    def get_mysql_info(test_object: dict) -> tuple[MysqlConingModel, MySQLConnect] | tuple[None, None]:
+    def get_mysql_info(test_object: dict) -> tuple[MysqlConingModel, MysqlConnect] | tuple[None, None]:
         mysql_config_model = None
         mysql_connect = None
         try:
@@ -51,7 +51,7 @@ class ProjectPublicMethods:
                                                   user=test_object.get('db_user'),
                                                   password=test_object.get('db_password'),
                                                   database=test_object.get('db_database'))
-            mysql_connect = MySQLConnect(mysql_config_model)
+            mysql_connect = MysqlConnect(mysql_config_model)
 
         except ValidationError:
             if test_object.get('is_db') == StatusEnum.SUCCESS.value:

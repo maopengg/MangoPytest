@@ -13,7 +13,10 @@ from models.api_model import ApiDataModel
 from tools.data_processor import DataProcessor
 from tools.decorator.response import timer
 
-
+proxies = {
+    'http': 'http://127.0.0.1:7890',
+    'https': 'https://127.0.0.1:7890'
+}
 class RequestTool:
     data_processor: DataProcessor = DataProcessor()
 
@@ -38,7 +41,8 @@ class RequestTool:
             params=data.request.params,
             data=data.request.data,
             json=data.request.json_data,
-            files=data.request.file
+            files=data.request.file,
+            proxies=proxies
         )
 
     def request_data(self, data: ApiDataModel) -> ApiDataModel:

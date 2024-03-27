@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from pydantic.v1 import ConfigDict
 
 from models.tools_model import MysqlConingModel
-from tools.database.mysql_connect import MySQLConnect
+from tools.database.mysql_connect import MysqlConnect
 
 
 class TestCaseModel(BaseModel):
@@ -86,7 +86,7 @@ class ApiBaseDataModel(BaseModel):
     headers: dict | None = None  # 请求头
     is_database_assertion: bool
     mysql_config_model: MysqlConingModel | None = None
-    mysql_connect: MySQLConnect | None = None
+    mysql_connect: MysqlConnect | None = None
     other_data: dict | None = None  # 其他数据
 
     class Config(ConfigDict):

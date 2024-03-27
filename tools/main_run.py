@@ -41,7 +41,7 @@ class MainRun:
         pytest.main(self.pytest_command)
         os.system(r"allure generate ./report/tmp -o ./report/html --clean")
         # 发送通知
-        NoticeMain(self.data).notice_main()
+        # NoticeMain(self.data).notice_main()
         # 程序运行之后，自动启动报告，如果不想启动报告，可注释这段代码
         os.system(f"allure serve ./report/tmp -h {get_host_ip()} -p 9997")
 
