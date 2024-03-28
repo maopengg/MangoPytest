@@ -10,12 +10,14 @@ import pytest
 from auto_test.api.wan_android.modules_api.login import LoginAPI
 from models.api_model import ApiDataModel
 from tools.base_request.case_tool import CaseTool
+from tools.data_processor import DataProcessor
 from tools.decorator.response import case_data
 
 
 @allure.epic('玩安卓API')
 @allure.feature('登录模块')
 class TestLogin(LoginAPI, CaseTool):
+    data_processor: DataProcessor = DataProcessor()
 
     @allure.title('正确的账号，正确的密码，进行登录')
     @case_data(1)

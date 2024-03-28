@@ -11,12 +11,10 @@ from requests.models import Response
 
 from models.api_model import ApiDataModel, RequestModel, ResponseModel
 from settings.settings import PROXY
-from tools.data_processor import DataProcessor
 from tools.decorator.response import timer
 
 
 class RequestTool:
-    data_processor: DataProcessor = DataProcessor()
 
     def http(self, data: ApiDataModel) -> ApiDataModel | Response:
         """
@@ -58,5 +56,37 @@ class RequestTool:
             data=request_model.data,
             json=request_model.json_data,
             files=request_model.file,
+            proxies=PROXY
+        )
+
+    @staticmethod
+    def internal_http(url: str,
+                      method: str,
+                      headers: dict,
+                      params: dict | None = None,
+                      data: str | dict | None = None,
+                      json: dict | None = None,
+                      file: dict | None = None) -> Response:
+        """
+        全局请求统一处理
+        @return: ApiDataModel
+        """
+        data = RequestModel(
+            url=url,
+            method=method,
+            headers=headers,
+            params=params,
+            data=data,
+            json_data=json,
+            file=file,
+        )
+        return requests.request(
+            method=data.method,
+            url=data.url,
+            headers=data.headers,
+            params=data.params,
+            data=data.data,
+            json=data.json_data,
+            files=data.file,
             proxies=PROXY
         )
