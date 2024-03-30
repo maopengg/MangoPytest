@@ -58,7 +58,6 @@ def request_data(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs) -> ApiDataModel:
         data: ApiDataModel = kwargs.get('data')
-
         data.request = RequestModel(
             url=data.test_case.url,
             method=MethodEnum.get_value(data.test_case.method),
@@ -68,10 +67,10 @@ def request_data(func):
             json_data=data.test_case.json_data,
             file=data.test_case.file,
         )
-        try:
-            res_args = func(*args, **kwargs)
-        except TypeError:
-            raise CaseParameterError(*ERROR_MSG_0334)
+        # try:
+        res_args = func(*args, **kwargs)
+        # except TypeError:
+        #     raise CaseParameterError(*ERROR_MSG_0334)
         # 处理后置allure报告
         allure.attach(str(data.request.url), 'url')
         allure.attach(str(data.request.method), '请求方法')

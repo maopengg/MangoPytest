@@ -21,7 +21,7 @@ class WanAndroidDataModel(BaseModel):
     test_environment: EnvironmentEnum
     base_data_model: ApiBaseDataModel
     data_processor: DataProcessor = DataProcessor()
-    cache_data: dict | None = None
+    cache_data: dict = {}
 
     class Config(ConfigDict):
         arbitrary_types_allowed = True

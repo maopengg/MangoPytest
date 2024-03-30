@@ -9,6 +9,7 @@ from pydantic import BaseModel
 from pydantic.v1 import ConfigDict
 
 from models.tools_model import MysqlConingModel
+from tools.data_processor import DataClean
 from tools.database.mysql_connect import MysqlConnect
 
 
@@ -94,7 +95,11 @@ class ApiBaseDataModel(BaseModel):
 
 
 class ApiDataModel(BaseModel):
-    base_data: ApiBaseDataModel
-    test_case: TestCaseModel
+    base_data: ApiBaseDataModel  # 基础信息
+    test_case: TestCaseModel  # 测试用例信息
+    data_clean: DataClean = DataClean()  # 缓存数据
     request: RequestModel | None = None
     response: ResponseModel | None = None
+
+    class Config(ConfigDict):
+        arbitrary_types_allowed = True

@@ -62,7 +62,7 @@ class RequestTool:
     @staticmethod
     def internal_http(url: str,
                       method: str,
-                      headers: dict,
+                      headers: dict | None = None,
                       params: dict | None = None,
                       data: str | dict | None = None,
                       json: dict | None = None,

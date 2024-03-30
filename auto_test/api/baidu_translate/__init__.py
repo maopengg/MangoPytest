@@ -1,27 +1,23 @@
-from urllib.parse import urljoin
-
 from pydantic import BaseModel
 from pydantic.v1 import ConfigDict
 
-from auto_test.project_enum import WanAndroidEnum
+from auto_test.project_enum import BaiduTranslateEnum
 from enums.tools_enum import EnvironmentEnum
 from models.api_model import ApiBaseDataModel
-from tools.base_request.request_tool import RequestTool
-from tools.data_processor import DataProcessor
+from tools.data_processor import DataClean
 from tools.decorator.singleton import singleton
 from tools.logging_tool import logger
 from tools.other_tools.project_public_methods import ProjectPublicMethods
 
 
 @singleton
-class WanAndroidDataModel(BaseModel):
-    user_info: dict = {"username": "maopeng", "password": "729164035"}
-    headers: dict = {'Content-Type': 'application/x-www-form-urlencoded'}
-
+class BaiduTranslateModel(BaseModel):
+    user_info: dict | None = None
+    headers: dict | None = None
     test_environment: EnvironmentEnum
     base_data_model: ApiBaseDataModel
-    data_processor: DataProcessor = DataProcessor()
-    cache_data: dict | None = None
+    data_clean: DataClean = DataClean()
+    cache_data: dict = {}
 
     class Config(ConfigDict):
         arbitrary_types_allowed = True
@@ -33,10 +29,10 @@ def data_initial():
     :return:
     """
     test_environment, project, test_object = ProjectPublicMethods.get_project_test_object(
-        project_name=WanAndroidEnum.NAME.value,
+        project_name=BaiduTranslateEnum.NAME.value,
         test_environment=EnvironmentEnum.PRO)
     mysql_config_model, mysql_connect = ProjectPublicMethods.get_mysql_info(test_object)
-    data_model: WanAndroidDataModel = WanAndroidDataModel(
+    data: BaiduTranslateModel = BaiduTranslateModel(
         test_environment=test_environment,
         base_data_model=ApiBaseDataModel(
             test_object=test_object,
@@ -47,21 +43,10 @@ def data_initial():
             mysql_connect=mysql_connect,
         )
     )
-    login_url = f'user/login'
+    data.cache_data['app_id'] = "20221117001456480"
+    data.cache_data['secret_key'] = "YU2_BJkJoiiLRyBBkL0F"
 
-    response = RequestTool.internal_http(url=urljoin(test_object.get('host'), login_url),
-                                         method="POST",
-                                         headers=data_model.headers,
-                                         data=data_model.user_info)
-    cookies = ''
-    for k, v in response.cookies.items():
-        _cookie = k + "=" + v + ";"
-        # 拿到登录的cookie内容，cookie拿到的是字典类型，转换成对应的格式
-        cookies += _cookie
-        # 将登录接口中的cookie写入缓存中，其中login_cookie是缓存名称
-    data_model.headers['cookie'] = cookies
-    data_model.base_data_model.headers = data_model.headers
-    logger.info(f'{WanAndroidEnum.NAME.value}的API在自动化基础信息设置完成！')
+    logger.info(f'{BaiduTranslateEnum.NAME.value}的API在自动化基础信息设置完成！')
 
 
 data_initial()
