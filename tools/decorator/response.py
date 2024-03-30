@@ -11,8 +11,6 @@ from requests.models import Response
 
 from enums.api_enum import MethodEnum
 from exceptions import PytestAutoTestError
-from exceptions.api_exception import CaseParameterError
-from exceptions.error_msg import ERROR_MSG_0334
 from models.api_model import ApiDataModel, ResponseModel, TestCaseModel, RequestModel
 from settings.settings import PRINT_EXECUTION_RESULTS, REQUEST_TIMEOUT_FAILURE_TIME
 from tools.database.sql_statement import sql_statement_4
