@@ -4,8 +4,7 @@
 # @Time   : 2024-01-17 11:11
 # @Author : 毛鹏
 
-from pydantic import BaseModel
-from pydantic.v1 import ConfigDict
+from pydantic import BaseModel, ConfigDict
 
 from enums.ui_enum import ElementExpEnum, BrowserTypeEnum
 from models.tools_model import MysqlConingModel
@@ -44,6 +43,7 @@ class UiBaseDataModel(BaseModel):
     """
         每个自动化的项目要在这里设置全局通用的变量，如域名，测试环境，请求头等信息，后面在发生真正请求时，会使用这这里面的信息
     """
+    model_config = ConfigDict(arbitrary_types_allowed=True)
     test_object: dict  # 测试对象表
     project: dict  # 项目表
     host: str  # 域名
@@ -51,6 +51,3 @@ class UiBaseDataModel(BaseModel):
     mysql_config_model: MysqlConingModel | None = None
     mysql_connect: MysqlConnect | None = None
     other_data: dict | None = None  # 其他数据
-
-    class Config(ConfigDict):
-        arbitrary_types_allowed = True

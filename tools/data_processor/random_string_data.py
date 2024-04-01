@@ -7,14 +7,14 @@ import random
 import string
 import uuid
 
-from faker import Faker
+import faker
 
 from exceptions.tools_exception import ValueTypeError
 
 
 class RandomStringData:
     """ 随机的字符类型测试数据 """
-    faker = Faker(locale='zh_CN')
+    faker = faker.Faker(locale='zh_CN')
     goods = ["清洁霜", "洗面奶", "浴剂", "润发油", "洗发护发剂", "剃须膏", "面霜", "蜜", "化妆水", "面膜", "发乳", "发胶", "胭脂", "口红", "眼影", "清凉剂",
              "除臭剂", "育毛剂", "除毛剂", "染毛剂", "驱虫剂", "橄榄精华", "洗面乳", "浴液", "洗发液", "化妆水", "香水", "洁肤水", "卸妆液", "精华液", "原液",
              "蜜类", "护发乳", "精华乳", "润面霜", "粉底霜", "洗发膏", "遮瑕膏", "炯发膏", "精华霜", "妆前霜", "香粉", "爽身粉", "散粉", "洁肤粉",

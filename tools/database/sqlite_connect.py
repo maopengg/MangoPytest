@@ -51,7 +51,7 @@ create_table_query2 = '''
 CREATE TABLE "test_object" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT,
   "project_id" INTEGER NOT NULL, -- 项目id
-  "type" INTEGER NOT NULL, -- 该是否断言数据库
+  "type" INTEGER NOT NULL, -- 环境类型
   "name" TEXT NOT NULL, -- 测试环境名称
   "client_type" INTEGER NOT NULL, -- 端类型
   "host" TEXT NOT NULL, -- 环境域名
@@ -78,9 +78,6 @@ CREATE TABLE "api_test_case" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT,
   "project_id" INTEGER NOT NULL, -- 项目id
   "name" TEXT NOT NULL, -- 接口名称
-  "client_type" INTEGER NOT NULL, -- 接口端类型
-  "method" INTEGER NOT NULL, -- 接口请求方法
-  "url" TEXT NOT NULL, -- url
   "params" TEXT, -- 接口参数
   "data" TEXT, -- 接口请求数据
   "json" TEXT, -- 接口请求json
@@ -108,8 +105,21 @@ CREATE TABLE "ui_element" (
   "sleep" INTEGER -- 等等时间
 );
 '''
+create_table_query6 = '''
+CREATE TABLE "api_info" (
+  "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+  "project_id" INTEGER NOT NULL, -- 项目id
+  "name" TEXT NOT NULL, -- 接口名称
+  "client_type" INTEGER NOT NULL, -- 接口端类型
+  "method" INTEGER NOT NULL, -- 接口请求方法
+  "url" TEXT NOT NULL, -- url
+  "headers" TEXT-- url
+);
+'''
+
 db_handler = SQLiteConnect()
-for i in [create_table_query1, create_table_query2, create_table_query3, create_table_query4, create_table_query5]:
+for i in [create_table_query1, create_table_query2, create_table_query3, create_table_query4, create_table_query5,
+          create_table_query6]:
     try:
         db_handler.execute_sql(i)
     except sqlite3.OperationalError:

@@ -11,9 +11,9 @@ from requests.models import Response
 
 from enums.api_enum import MethodEnum
 from exceptions import PytestAutoTestError
-from models.api_model import ApiDataModel, ResponseModel, TestCaseModel, RequestModel
+from models.api_model import ApiDataModel, ResponseModel, TestCaseModel, RequestModel, ApiInfoModel
 from settings.settings import PRINT_EXECUTION_RESULTS, REQUEST_TIMEOUT_FAILURE_TIME
-from tools.database.sql_statement import sql_statement_4
+from tools.database.sql_statement import sql_statement_4, sql_statement_7
 from tools.database.sqlite_connect import SQLiteConnect
 from tools.logging_tool import logger
 
@@ -41,53 +41,60 @@ def case_data(case_id: int):
                 logger.error(error.msg)
                 allure.attach(error.msg, '执行中断异常')
                 raise error
+            except AttributeError as error:
+                logger.error("你的用例参数可能存在问题，请检查报错排查，或者查看用例中的数据与你的用例编写存在问题")
+                raise error
 
         return wrapper
 
     return decorator
 
 
-def request_data(func):
+def request_data(api_info_id):
     """
     处理请求的数据和结果，写入allure报告
     :return:
     """
 
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs) -> ApiDataModel:
-        data: ApiDataModel = kwargs.get('data')
-        data.request = RequestModel(
-            url=data.test_case.url,
-            method=MethodEnum.get_value(data.test_case.method),
-            headers=data.base_data.headers,
-            params=data.test_case.params,
-            data=data.test_case.data,
-            json_data=data.test_case.json_data,
-            file=data.test_case.file,
-        )
-        # try:
-        res_args = func(*args, **kwargs)
-        # except TypeError:
-        #     raise CaseParameterError(*ERROR_MSG_0334)
-        # 处理后置allure报告
-        allure.attach(str(data.request.url), 'url')
-        allure.attach(str(data.request.method), '请求方法')
-        allure.attach(str(data.request.headers), '请求头')
-        if data.request.params:
-            allure.attach(json.dumps(data.request.params, ensure_ascii=False), '参数')
-        if data.request.data:
-            allure.attach(json.dumps(data.request.data, ensure_ascii=False), '表单')
-        if data.request.json_data:
-            allure.attach(json.dumps(data.request.json_data, ensure_ascii=False), 'json')
-        if data.request.file:
-            allure.attach(json.dumps(data.request.file, ensure_ascii=False), '文件')
+    def decorator(func):
 
-        allure.attach(str(data.response.status_code), '响应状态码')
-        allure.attach(json.dumps(data.response.response_dict, ensure_ascii=False), '响应结果')
+        # @functools.wraps(func)
+        def wrapper(*args, **kwargs) -> ApiDataModel:
+            data: ApiDataModel = kwargs.get('data')
+            api_info_dict = SQLiteConnect().execute_sql(sql_statement_7, (api_info_id,))[0]
+            api_info_model = ApiInfoModel.get_obj(api_info_dict)
+            data.request = RequestModel(
+                url=api_info_model.url,
+                method=MethodEnum.get_value(api_info_model.method),
+                headers=api_info_model.headers if api_info_model.headers else data.base_data.headers,
+                params=data.test_case.params,
+                data=data.test_case.data,
+                json_data=data.test_case.json_data,
+                file=data.test_case.file,
+            )
+            allure.attach(str(data.request.url), 'url')
+            allure.attach(str(data.request.method), '请求方法')
+            allure.attach(str(data.request.headers), '请求头')
+            # try:
+            res_args = func(*args, **kwargs)
+            # except TypeError:
+            #     raise CaseParameterError(*ERROR_MSG_0334)
+            if data.request.params:
+                allure.attach(json.dumps(data.request.params, ensure_ascii=False), '参数')
+            if data.request.data:
+                allure.attach(json.dumps(data.request.data, ensure_ascii=False), '表单')
+            if data.request.json_data:
+                allure.attach(json.dumps(data.request.json_data, ensure_ascii=False), 'json')
+            if data.request.file:
+                allure.attach(json.dumps(data.request.file, ensure_ascii=False), '文件')
+            allure.attach(str(data.response.status_code), '响应状态码')
+            allure.attach(json.dumps(data.response.response_dict, ensure_ascii=False), '响应结果')
 
-        return res_args
+            return res_args
 
-    return wrapper
+        return wrapper
+
+    return decorator
 
 
 def timer(func):
@@ -97,7 +104,7 @@ def timer(func):
     """
 
     @functools.wraps(func)
-    def swapper(*args, **kwargs) -> tuple[ResponseModel, Response]:
+    def swapper(*args, **kwargs) -> ResponseModel:
         start = time.time()
         response: Response = func(*args, **kwargs)
         response_time = time.time() - start
@@ -122,7 +129,7 @@ def timer(func):
                              response_text=response.text,
                              response_dict=response_dict,
                              response_time=response_time
-                             ), response
+                             )
 
     return swapper
 

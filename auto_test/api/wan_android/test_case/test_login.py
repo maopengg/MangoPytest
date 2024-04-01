@@ -41,4 +41,4 @@ class TestLogin(LoginAPI, CaseTool):
 
 
 if __name__ == '__main__':
-    pytest.main([r'D:\GitCode\PytestAutoTest\auto_test\api\cdp\test_case\test_login.py::TestLogin::test_login01'])
+    pytest.main([r'D:\GitCode\PytestAutoTest\auto_test\api\cdp\test_case\test_login.py::TestLogin'])

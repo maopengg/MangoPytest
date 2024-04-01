@@ -1,5 +1,4 @@
-from pydantic import BaseModel
-from pydantic.v1 import ConfigDict
+from pydantic import BaseModel, ConfigDict
 
 from auto_test.project_enum import BaiduTranslateEnum
 from enums.tools_enum import EnvironmentEnum
@@ -12,15 +11,14 @@ from tools.other_tools.project_public_methods import ProjectPublicMethods
 
 @singleton
 class BaiduTranslateModel(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     user_info: dict | None = None
     headers: dict | None = None
     test_environment: EnvironmentEnum
     base_data_model: ApiBaseDataModel
     data_clean: DataClean = DataClean()
     cache_data: dict = {}
-
-    class Config(ConfigDict):
-        arbitrary_types_allowed = True
 
 
 def data_initial():

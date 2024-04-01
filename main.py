@@ -17,6 +17,10 @@ from tools.main_run import MainRun
     --maxfail: 设置最大失败次数，当超出这个阈值时，则不会在执行测试用例
     "--reruns=3", "--reruns-delay=2"
     -n 4: 代表使用多线程执行用例，4是线程数
+    '-p no:warnings' 忽略警告
+    'ignore:Module already imported:pytest.PytestWarning' 特定警告
+    "--clean-alluredir",清空目录
+
 """
 
 pytest_command = [
@@ -26,11 +30,13 @@ pytest_command = [
     '--alluredir',
     './report/tmp',
     "--clean-alluredir",
+    '-n 3',
 ]
 
 test_project = [
     {'project': ProjectEnum.WanAndroid, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.UI},
-    {'project': ProjectEnum.WanAndroid, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.API}
+    {'project': ProjectEnum.WanAndroid, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.API},
+    {'project': ProjectEnum.BaiduTranslate, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.API}
 ]
 
 MainRun(test_project=test_project, pytest_command=pytest_command)

@@ -14,6 +14,11 @@ class RandomNumberData:
     faker = Faker(locale='zh_CN')
 
     @classmethod
+    def randint(cls, left, right):
+        """获取基于当前时间戳的随机五位数"""
+        return random.randint(left, right)
+
+    @classmethod
     def time_random(cls):
         """获取基于当前时间戳的随机五位数"""
         s = int(time.time())

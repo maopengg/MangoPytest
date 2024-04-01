@@ -1,7 +1,6 @@
 from urllib.parse import urljoin
 
-from pydantic import BaseModel
-from pydantic.v1 import ConfigDict
+from pydantic import BaseModel, ConfigDict
 
 from auto_test.project_enum import WanAndroidEnum
 from enums.tools_enum import EnvironmentEnum
@@ -15,6 +14,8 @@ from tools.other_tools.project_public_methods import ProjectPublicMethods
 
 @singleton
 class WanAndroidDataModel(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     user_info: dict = {"username": "maopeng", "password": "729164035"}
     headers: dict = {'Content-Type': 'application/x-www-form-urlencoded'}
 
@@ -22,9 +23,6 @@ class WanAndroidDataModel(BaseModel):
     base_data_model: ApiBaseDataModel
     data_processor: DataProcessor = DataProcessor()
     cache_data: dict = {}
-
-    class Config(ConfigDict):
-        arbitrary_types_allowed = True
 
 
 def data_initial():

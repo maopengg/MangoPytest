@@ -3,8 +3,10 @@
 # @Description: 
 # @Time   : 2023-07-15 11:57
 # @Author : 毛鹏
+import json
 import re
 
+import allure
 from playwright.sync_api import Locator
 from playwright.sync_api import Page, BrowserContext
 
@@ -33,6 +35,8 @@ class BasePage(WebDevice):
                     locator: Locator = eval(f"self.{element.get('locator')}")
                 except SyntaxError:
                     raise UiElementLocatorError(*ERROR_MSG_0344)
+                allure.attach(json.dumps(element, ensure_ascii=False), ele_name)
+                # allure.attach(self.page.screenshot(full_page=True), name="失败截图", attachment_type=allure.attachment_type.PNG)
                 if is_ope:
                     if locator.count() < 1 or locator is None:
                         raise ElementIsEmptyError(*ERROR_MSG_0043,

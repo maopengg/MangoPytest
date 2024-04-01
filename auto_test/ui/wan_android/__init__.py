@@ -8,8 +8,7 @@
 # @Description:
 # @Time   : 2024-02-20 10:56
 # @Author : 毛鹏
-from pydantic import BaseModel
-from pydantic.v1 import ConfigDict
+from pydantic import BaseModel, ConfigDict
 
 from auto_test.project_enum import WanAndroidEnum
 from enums.tools_enum import EnvironmentEnum
@@ -22,13 +21,12 @@ from tools.other_tools.project_public_methods import ProjectPublicMethods
 
 @singleton
 class WanAndroidDataModel(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     test_environment: EnvironmentEnum
     base_data_model: UiBaseDataModel
     data_processor: DataProcessor = DataProcessor()
     cache_data: dict = {}
-
-    class Config(ConfigDict):
-        arbitrary_types_allowed = True
 
 
 def data_initial():

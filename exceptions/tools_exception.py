@@ -18,12 +18,17 @@ class JsonPathError(PytestAutoTestError):
     pass
 
 
+class JsonSerializationError(PytestAutoTestError):
+    pass
+
+
 class FileDoesNotEexistError(PytestAutoTestError):
     pass
 
 
 class ValueTypeError(PytestAutoTestError):
     pass
+
 
 class MysqlConnectionError(PytestAutoTestError):
     pass

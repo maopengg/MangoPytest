@@ -10,10 +10,9 @@ from tools.decorator.response import request_data
 
 
 class LoginAPI(RequestTool):
-    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     data_model = WanAndroidDataModel()
 
-    @request_data
+    @request_data(1)
     def api_login(self, data: ApiDataModel) -> ApiDataModel:
         """
         登录接口

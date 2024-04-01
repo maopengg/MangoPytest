@@ -11,10 +11,12 @@ from requests.models import Response
 
 from models.api_model import ApiDataModel, RequestModel, ResponseModel
 from settings.settings import PROXY
+from tools.data_processor import DataProcessor
 from tools.decorator.response import timer
 
 
 class RequestTool:
+    data_processor: DataProcessor = None
 
     def http(self, data: ApiDataModel) -> ApiDataModel | Response:
         """
@@ -25,8 +27,6 @@ class RequestTool:
         for key, value in data.request:
             if value is not None and key != 'file':
                 value = self.data_processor.replace(value)
-                if key == 'headers' and isinstance(value, str):
-                    value = self.data_processor.replace(self.data_processor.loads(value))
                 setattr(data.request, key, value)
             elif key == 'file':
                 if data.request.file:
@@ -38,7 +38,7 @@ class RequestTool:
                             path = self.data_processor.replace(v)
                             file.append((k, (file_name, open(path, 'rb'))))
                     data.request.file = file
-        data.response = self.http_request(data.request)[0]
+        data.response = self.http_request(data.request)
         return data
 
     @timer
@@ -68,7 +68,7 @@ class RequestTool:
                       json: dict | None = None,
                       file: dict | None = None) -> Response:
         """
-        全局请求统一处理
+        内部使用的全局请求统一处理
         @return: ApiDataModel
         """
         data = RequestModel(

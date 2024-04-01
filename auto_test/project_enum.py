@@ -11,6 +11,7 @@ from tools import InitializationPath
 class ProjectEnum(BaseEnum):
     CDP = 'CDP'
     WanAndroid = 'WanAndroid'
+    BaiduTranslate = 'BaiduTranslate'
 
 
 class CDPEnum(BaseEnum):
