@@ -3,7 +3,6 @@
 # @Description:
 # @Time   : 2023-07-04 13:42
 # @Author : 毛鹏
-from enum import unique
 
 from enums import BaseEnum
 
@@ -80,3 +79,14 @@ class StatusEnum(BaseEnum):
     @classmethod
     def obj(cls):
         return {0: "关闭&进行中&失败", 1: "启用&已完成&通过"}
+
+
+class ClientEnum(BaseEnum):
+    """设备类型"""
+    WEB = 0
+    Android = 1
+    MINI = 2
+
+    @classmethod
+    def obj(cls):
+        return {0: "WEB", 1: "安卓", 2: "MINI"}
