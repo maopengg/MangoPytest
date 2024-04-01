@@ -31,6 +31,11 @@ class BaiduTranslateEnum(BaseEnum):
     API_PATH = fr"{InitializationPath.project_root_directory}\auto_test\api\baidu_translate\test_case"
 
 
+class GiteeEnum(BaseEnum):
+    NAME = 'Gitee'
+    UI_PATH = fr"{InitializationPath.project_root_directory}\auto_test\ui\gitee\test_case"
+
+
 project_type_paths = {
     CDPEnum.NAME.value: {
         AutoTestTypeEnum.UI.value: CDPEnum.UI_PATH.value,
@@ -42,5 +47,8 @@ project_type_paths = {
     },
     BaiduTranslateEnum.NAME.value: {
         AutoTestTypeEnum.API.value: BaiduTranslateEnum.API_PATH.value
+    },
+    GiteeEnum.NAME.value: {
+        AutoTestTypeEnum.UI.value: GiteeEnum.UI_PATH.value
     }
 }

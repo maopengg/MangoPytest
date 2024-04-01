@@ -8,15 +8,12 @@ from urllib.parse import urljoin
 from playwright.sync_api import Page, BrowserContext
 
 from auto_test.ui.wan_android import WanAndroidDataModel
-from enums.ui_enum import BrowserTypeEnum
-from models.ui_model import WEBConfigModel
 from tools.base_page import BasePage
-from tools.base_page.web.new_browser import NewBrowser
 
 
 class LoginPage(BasePage):
     """
-    页面元素
+    登录页面
     """
 
     def __init__(self, context_page: tuple[BrowserContext, Page], data_model: WanAndroidDataModel):
@@ -34,6 +31,10 @@ class LoginPage(BasePage):
 
 
 if __name__ == '__main__':
+    from tools.base_page.web.new_browser import NewBrowser
+    from enums.ui_enum import BrowserTypeEnum
+    from models.ui_model import WEBConfigModel
+
     url = "https://wanandroid.com/index"
     data = NewBrowser(WEBConfigModel(browser_type=BrowserTypeEnum.CHROMIUM))
     login_page = LoginPage(data.new_context_page(), WanAndroidDataModel())

@@ -80,33 +80,3 @@ class StatusEnum(BaseEnum):
     @classmethod
     def obj(cls):
         return {0: "关闭&进行中&失败", 1: "启用&已完成&通过"}
-
-
-@unique
-class AllureAttachmentType(BaseEnum):
-    """
-    allure 报告的文件类型枚举
-    """
-    TEXT = "txt"
-    CSV = "csv"
-    TSV = "tsv"
-    URI_LIST = "uri"
-
-    HTML = "html"
-    XML = "xml"
-    JSON = "json"
-    YAML = "yaml"
-    PCAP = "pcap"
-
-    PNG = "png"
-    JPG = "jpg"
-    SVG = "svg"
-    GIF = "gif"
-    BMP = "bmp"
-    TIFF = "tiff"
-
-    MP4 = "mp4"
-    OGG = "ogg"
-    WEBM = "webm"
-
-    PDF = "pdf"

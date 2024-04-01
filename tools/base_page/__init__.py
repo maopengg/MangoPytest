@@ -10,12 +10,13 @@ import allure
 from playwright.sync_api import Locator
 from playwright.sync_api import Page, BrowserContext
 
-from exceptions.error_msg import ERROR_MSG_0043, ERROR_MSG_0344
-from exceptions.ui_exception import ElementIsEmptyError, UiElementLocatorError
+from exceptions.error_msg import ERROR_MSG_0043, ERROR_MSG_0344, ERROR_MSG_0346
+from exceptions.ui_exception import ElementIsEmptyError, UiElementLocatorError, UiElementIsNullError
 from tools.base_page.web import WebDevice
 from tools.data_processor import DataProcessor
 from tools.database.sql_statement import sql_statement_1
 from tools.database.sqlite_connect import SQLiteConnect
+from retrying import retry
 
 
 class BasePage(WebDevice):
@@ -27,7 +28,11 @@ class BasePage(WebDevice):
         context, page = context_page
         super().__init__(page, context, data_processor)
         self.element_list: list[dict] = SQLiteConnect().execute_sql(sql_statement_1, (project_id, module_name))
+        if not self.element_list:
+            raise UiElementIsNullError(*ERROR_MSG_0346)
+        d = re.DEBUG
 
+    @retry(stop_max_attempt_number=5, wait_fixed=1000)
     def element(self, ele_name: str, is_ope: bool = True) -> Locator:
         for element in self.element_list:
             if element.get('ele_name') == ele_name:
