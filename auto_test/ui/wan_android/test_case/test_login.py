@@ -8,6 +8,7 @@ import time
 
 from auto_test.ui import *
 from auto_test.ui.wan_android import WanAndroidDataModel
+from auto_test.ui.wan_android.page_object.login import LoginPage
 
 
 @allure.epic('玩安卓UI')

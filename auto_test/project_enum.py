@@ -12,27 +12,28 @@ class ProjectEnum(BaseEnum):
     CDP = 'CDP'
     WanAndroid = 'WanAndroid'
     BaiduTranslate = 'BaiduTranslate'
+    Gitee = 'Gitee'
 
 
 class CDPEnum(BaseEnum):
-    NAME = 'cdp'
+    NAME = ProjectEnum.CDP.value
     UI_PATH = fr"{InitializationPath.project_root_directory}\auto_test\ui\cdp\test_case"
     API_PATH = fr"{InitializationPath.project_root_directory}\auto_test\api\cdp\test_case"
 
 
 class WanAndroidEnum(BaseEnum):
-    NAME = 'WanAndroid'
+    NAME = ProjectEnum.WanAndroid.value
     UI_PATH = fr"{InitializationPath.project_root_directory}\auto_test\ui\wan_android\test_case"
     API_PATH = fr"{InitializationPath.project_root_directory}\auto_test\api\wan_android\test_case"
 
 
 class BaiduTranslateEnum(BaseEnum):
-    NAME = 'BaiduTranslate'
+    NAME = ProjectEnum.BaiduTranslate.value
     API_PATH = fr"{InitializationPath.project_root_directory}\auto_test\api\baidu_translate\test_case"
 
 
 class GiteeEnum(BaseEnum):
-    NAME = 'Gitee'
+    NAME = ProjectEnum.Gitee.value
     UI_PATH = fr"{InitializationPath.project_root_directory}\auto_test\ui\gitee\test_case"
 
 
