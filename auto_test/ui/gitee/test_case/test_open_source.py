@@ -8,8 +8,8 @@ import time
 import allure
 
 from auto_test.ui import *
-from auto_test.ui.gitee.page_object.home import HomePage
 from auto_test.ui.gitee import GiteeDataModel
+from auto_test.ui.gitee.page_object.home import HomePage
 from auto_test.ui.gitee.page_object.open_source import OpenSourcePage
 
 
@@ -23,19 +23,9 @@ class TestOpenSource:
     def teardown_class(self):
         pass
 
-    @allure.title('搜索芒果测试平台，并断言项目可以被搜索到')
-    @pytest.mark.parametrize("name", ["芒果测试平台"])
+    @allure.title('搜索测试项目，并断言项目可以被搜索到')
+    @pytest.mark.parametrize("name", ["芒果测试平台", "PytestAutoTest"])
     def test_open1(self, setup_context_page, name):
-        login_page = HomePage(setup_context_page, self.data_model)
-        login_page.w_goto()
-        login_page.click_open_source()
-        open_source_page = OpenSourcePage(setup_context_page, self.data_model)
-        open_source_page.search_for_open_source_projects(name)
-        time.sleep(3)
-
-    @allure.title('搜索PytestAutoTest，并断言项目可以被搜索到')
-    @pytest.mark.parametrize("name", ["PytestAutoTest"])
-    def test_open2(self, setup_context_page, name):
         login_page = HomePage(setup_context_page, self.data_model)
         login_page.w_goto()
         login_page.click_open_source()
