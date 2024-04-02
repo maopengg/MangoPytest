@@ -88,5 +88,5 @@ class RequestTool:
             data=data.data,
             json=data.json_data,
             files=data.file,
-            # proxies=PROXY
+            proxies=PROXY
         )

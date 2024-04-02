@@ -8,7 +8,7 @@ from tools import InitializationPath
 class SQLiteConnect:
 
     def __init__(self):
-        db_name = os.path.join(InitializationPath.cache_dir, 'data_storage.db')
+        db_name = os.path.join(InitializationPath.sqlite_dir, 'data_storage.db')
         self.conn = sqlite3.connect(db_name)
         self.cursor = self.conn.cursor()
 
@@ -44,7 +44,7 @@ class SQLiteConnect:
 create_table_query1 = '''
 CREATE TABLE "project" (
   "id" INTEGER PRIMARY KEY AUTOINCREMENT,
-  "name" TEXT NOT NULL, --  
+  "name" TEXT NOT NULL --  
 );
 '''
 create_table_query2 = '''
@@ -55,9 +55,9 @@ CREATE TABLE "test_object" (
   "name" TEXT NOT NULL, -- 测试环境名称
   "client_type" INTEGER NOT NULL, -- 端类型
   "host" TEXT NOT NULL, -- 环境域名
-  "db_rud_status" INTEGER NOT NULL, -- 是否可执行crud
-  "db_c_status" INTEGER NOT NULL, -- 是否可执行查询
   "is_notice" INTEGER NOT NULL, -- 是否进行通知
+  "db_c_status" INTEGER NOT NULL, -- 是否可执行查询
+  "db_rud_status" INTEGER NOT NULL, -- 是否可执行crud
   "db_user" TEXT, -- 数据库用户名
   "db_host" TEXT, -- 数据库IP
   "db_port" TEXT, -- 数据库端口

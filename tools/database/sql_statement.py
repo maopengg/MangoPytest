@@ -12,6 +12,13 @@ sql_statement_4 = 'SELECT * FROM api_test_case WHERE `id` = ?;'
 sql_statement_5 = 'SELECT * FROM project WHERE `name` = ?;'
 sql_statement_6 = 'SELECT * FROM notice_config WHERE `project_id` = ?;'
 sql_statement_7 = 'SELECT * FROM api_info WHERE `id` = ?;'
+
+sql_project = 'SELECT * FROM project;'
+sql_test_object = 'SELECT * FROM test_object;'
+sql_notice_config = 'SELECT * FROM notice_config;'
+sql_api_info = 'SELECT * FROM api_info;'
+sql_api_test_case = 'SELECT * FROM api_test_case;'
+sql_ui_element = 'SELECT * FROM ui_element;'
 if __name__ == '__main__':
     db_handler = SQLiteConnect()
     print(db_handler.execute_sql(sql_statement_1, (1, 0)))

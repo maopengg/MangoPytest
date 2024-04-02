@@ -15,13 +15,11 @@ class InitializationPath:
     if 'python.exe' not in sys.executable:
         project_root_directory = current_dir2
     logs_dir = os.path.join(project_root_directory, "logs")
-    cache_dir = os.path.join(project_root_directory, "cache")
+    sqlite_dir = os.path.join(project_root_directory, r"sources\sql_data")
     report_dir = os.path.join(project_root_directory, "report")
     reports_dir = os.path.join(project_root_directory, "reports")
     if not os.path.exists(logs_dir):
         os.makedirs(logs_dir)
-    if not os.path.exists(cache_dir):
-        os.makedirs(cache_dir)
     if not os.path.exists(report_dir):
         os.makedirs(report_dir)
     if not os.path.exists(reports_dir):
@@ -34,5 +32,5 @@ if __name__ == '__main__':
     print(InitializationPath.project_root_directory)
     print(InitializationPath.current_dir2)
     print(InitializationPath.logs_dir)
-    print(InitializationPath.cache_dir)
+    print(InitializationPath.sqlite_dir)
     print(InitializationPath.reports_dir)

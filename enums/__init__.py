@@ -28,3 +28,7 @@ class BaseEnum(Enum):
 
             for key in keys_with_target_value:
                 return key
+
+    @classmethod
+    def reversal_obj(cls):
+        return {v: k for k, v in cls.obj().items()}

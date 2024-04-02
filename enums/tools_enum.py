@@ -7,6 +7,16 @@
 from enums import BaseEnum
 
 
+class SourcesTypeEnum(BaseEnum):
+    """通知枚举"""
+    SQL = 0
+    DOCUMENT = 1
+
+    @classmethod
+    def obj(cls):
+        return {0: "SQL", 1: "飞书文档"}
+
+
 class NoticeEnum(BaseEnum):
     """通知枚举"""
     MAIL = 0
@@ -51,17 +61,6 @@ class EnvironmentEnum(BaseEnum):
         return {0: "开发环境", 1: "测试环境", 2: "预发环境", 3: "验收环境", 4: "仿真环境", 5: "生产环境", }
 
 
-class NotificationType(BaseEnum):
-    """通知枚举"""
-    MAIL = 0
-    WECOM = 1
-    NAILING = 2
-
-    @classmethod
-    def obj(cls):
-        return {0: "邮箱", 1: "企微", 2: "钉钉-未测试"}
-
-
 class AssEnum(BaseEnum):
     response = 0
     sql = 1
@@ -78,15 +77,15 @@ class StatusEnum(BaseEnum):
 
     @classmethod
     def obj(cls):
-        return {0: "关闭&进行中&失败", 1: "启用&已完成&通过"}
+        return {0: "关闭", 1: "启用"}
 
 
 class ClientEnum(BaseEnum):
-    """设备类型"""
+    """客户端类型"""
     WEB = 0
     Android = 1
     MINI = 2
 
     @classmethod
     def obj(cls):
-        return {0: "WEB", 1: "安卓", 2: "MINI"}
+        return {0: "WEB", 1: "安卓", 2: "微信小程序"}
