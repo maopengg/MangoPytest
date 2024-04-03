@@ -13,8 +13,6 @@ from enums.api_enum import MethodEnum
 from exceptions import PytestAutoTestError
 from models.api_model import ApiDataModel, ResponseModel, TestCaseModel, RequestModel, ApiInfoModel
 from settings.settings import PRINT_EXECUTION_RESULTS, REQUEST_TIMEOUT_FAILURE_TIME
-from tools.database.sql_statement import sql_statement_4, sql_statement_7
-from tools.database.sqlite_connect import SQLiteConnect
 from tools.logging_tool import logger
 
 
@@ -28,7 +26,11 @@ def case_data(case_id: int):
 
     def decorator(func):
         def wrapper(*args, **kwargs):
-            test_case_dict: dict = SQLiteConnect().execute_sql(sql_statement_4, (case_id,))[0]
+            from sources import SourcesData
+            test_case_dict: dict = SourcesData\
+                .api_test_case[SourcesData.api_test_case['id'] == case_id]\
+                .squeeze()\
+                .to_dict()
             allure.attach(json.dumps(test_case_dict, ensure_ascii=False), '查询用例数据')
             try:
                 func(
@@ -61,7 +63,12 @@ def request_data(api_info_id):
         # @functools.wraps(func)
         def wrapper(*args, **kwargs) -> ApiDataModel:
             data: ApiDataModel = kwargs.get('data')
-            api_info_dict = SQLiteConnect().execute_sql(sql_statement_7, (api_info_id,))[0]
+            from sources import SourcesData
+            api_info_dict: dict = SourcesData\
+                .api_info[SourcesData.api_info['id'] == api_info_id]\
+                .squeeze()\
+                .to_dict()
+
             api_info_model = ApiInfoModel.get_obj(api_info_dict)
             data.request = RequestModel(
                 url=api_info_model.url,

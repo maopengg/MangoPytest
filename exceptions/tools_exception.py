@@ -12,8 +12,18 @@ class CacheIsNone(PytestAutoTestError):
 
 class CacheIsEmptyError(PytestAutoTestError):
     pass
+
+
 class GetProjectDataError(PytestAutoTestError):
     pass
+
+
+class DataFrameQueryNullError(PytestAutoTestError):
+    pass
+
+class DataFrameQueryManyError(PytestAutoTestError):
+    pass
+
 
 class JsonPathError(PytestAutoTestError):
     pass

@@ -3,7 +3,6 @@
 # @Description: 
 # @Time   : 2024-01-10 16:58
 # @Author : 毛鹏
-from tools.database.sqlite_connect import SQLiteConnect
 
 sql_statement_1 = 'SELECT * FROM ui_element where project_id = ? and module_name = ?;'
 sql_statement_2 = 'SELECT * FROM project WHERE `name` = ?;'
@@ -19,6 +18,4 @@ sql_notice_config = 'SELECT * FROM notice_config;'
 sql_api_info = 'SELECT * FROM api_info;'
 sql_api_test_case = 'SELECT * FROM api_test_case;'
 sql_ui_element = 'SELECT * FROM ui_element;'
-if __name__ == '__main__':
-    db_handler = SQLiteConnect()
-    print(db_handler.execute_sql(sql_statement_1, (1, 0)))
+

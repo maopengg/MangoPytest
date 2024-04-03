@@ -11,9 +11,8 @@ from enums.tools_enum import EnvironmentEnum, StatusEnum
 from exceptions.error_msg import *
 from exceptions.ui_exception import UiInitialError
 from models.tools_model import MysqlConingModel
+from sources import SourcesData
 from tools.database.mysql_connect import MysqlConnect
-from tools.database.sql_statement import sql_statement_2, sql_statement_3
-from tools.database.sqlite_connect import SQLiteConnect
 from tools.logging_tool import logger
 
 
@@ -21,24 +20,18 @@ class ProjectPublicMethods:
 
     @staticmethod
     def get_project_test_object(
-            project_name: str, test_environment: EnvironmentEnum) -> tuple[EnvironmentEnum, dict, dict]:
+            project_name: str,
+            test_environment: EnvironmentEnum) -> tuple[EnvironmentEnum, dict, dict]:
         project_dict = project_type_paths[project_name]
         if project_dict.get('test_environment') is None:
             test_environment: EnvironmentEnum = test_environment
             logger.warning(f'项目：{project_name}未获取到测试环境变量，请检查！')
         else:
             test_environment: EnvironmentEnum = project_dict.get('test_environment')
-        sql_handler = SQLiteConnect()
-        try:
-            project: dict = sql_handler.execute_sql(sql_statement_2, data=(project_name,))[0]
-        except IndexError:
-            raise UiInitialError(*ERROR_MSG_0331)
-
-        try:
-            test_object: dict = sql_handler.execute_sql(sql_statement_3,
-                                                        data=(project.get('id'), test_environment.value))[0]
-        except IndexError:
-            raise UiInitialError(*ERROR_MSG_0332)
+        project: dict = SourcesData \
+            .get_test_object(**{'name': project_name})
+        test_object = SourcesData\
+            .get_test_object(**{'project_id': project.get('id'), 'type': test_environment.value})
         return test_environment, project, test_object
 
     @staticmethod

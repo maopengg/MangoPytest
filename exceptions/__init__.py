@@ -13,5 +13,7 @@ class PytestAutoTestError(Exception):
             msg = msg.format(*value)
         if error:
             logger.error(error)
+        else:
+            logger.error(msg)
         self.code = code
         self.msg = msg

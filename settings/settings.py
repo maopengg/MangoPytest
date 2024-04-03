@@ -6,7 +6,7 @@
 # ↓-----------------------------------数据源选择-----------------------------------↓
 from enums.tools_enum import SourcesTypeEnum
 
-SOURCES_TYPE = SourcesTypeEnum.SQL
+SOURCES_TYPE = SourcesTypeEnum.DOCUMENT
 
 # ↑-----------------------------------数据源选择-----------------------------------↑
 

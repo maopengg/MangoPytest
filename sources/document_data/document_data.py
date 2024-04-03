@@ -11,7 +11,6 @@ from enums.api_enum import MethodEnum
 from enums.tools_enum import NoticeEnum, EnvironmentEnum, ClientEnum, StatusEnum
 from enums.ui_enum import ElementExpEnum
 from settings.settings import PROJECT, API_TEST_CASE, API_INFO, UI_ELEMENT, APP_ID, APP_SECRET
-from tools.base_request.request_tool import RequestTool
 
 
 class DocumentData:
@@ -35,9 +34,9 @@ class DocumentData:
         headers = {
             'Content-Type': 'application/json'
         }
+        from tools.base_request.request_tool import RequestTool
         response = RequestTool.internal_http(url, "POST", headers=headers, data=payload)
         self.headers['Authorization'] = f'Bearer {response.json()["tenant_access_token"]}'
-        print(self.headers)
 
     def project(self):
         for i in PROJECT[1]:
@@ -118,6 +117,8 @@ class DocumentData:
         return df
 
     def cls(self, url):
+        from tools.base_request.request_tool import RequestTool
+
         response = RequestTool.internal_http(url, "GET", headers=self.headers)
         response_dict = response.json()
         if response_dict.get('code') != 0:

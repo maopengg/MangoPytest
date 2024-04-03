@@ -12,9 +12,8 @@ from enums.tools_enum import StatusEnum
 from models.tools_model import CaseRunModel, WeChatNoticeModel, EmailNoticeModel
 from models.tools_model import TestReportModel
 from settings.settings import SEND_USER, EMAIL_HOST, STAMP_KEY
+from sources import SourcesData
 from tools import InitializationPath
-from tools.database.sql_statement import sql_statement_5, sql_statement_6
-from tools.database.sqlite_connect import SQLiteConnect
 from tools.notic_tools.mail_send import SendEmail
 from tools.notic_tools.wechat_send import WeChatSend
 from tools.other_tools.native_ip import get_host_ip
@@ -28,14 +27,17 @@ class NoticeMain:
         self.test_environment = None
 
     def notice_main(self):
-        sql_connect = SQLiteConnect()
         for i in self.case_run_model:
             self.test_environment = EnvironmentEnum.get_value(i.test_environment.value)
 
-            self.result_list = sql_connect.execute_sql(sql_statement_5, (i.project.value,))
+            self.result_list = SourcesData\
+                .project[SourcesData.project['name'] == i.project.value]\
+                .to_dict(orient='records')
             if self.result_list:
                 if self.result_list[0].get('is_notice') == StatusEnum.SUCCESS.value:
-                    notice_list = sql_connect.execute_sql(sql_statement_6, (self.result_list[0].get('id'),))
+                    notice_list = SourcesData \
+                        .project[SourcesData.notice_config['project_id'] == self.result_list[0].get('id')] \
+                        .to_dict(orient='records')
                     for notice in notice_list:
                         if notice.get('type') == NoticeEnum.MAIL.value:
                             try:
@@ -44,7 +46,6 @@ class NoticeMain:
                                 raise SyntaxError("邮件发送人输入的不是一个list")
                         elif notice.get('type') == NoticeEnum.WECOM.value:
                             self.__we_chat_send(notice.get('config'), )
-        sql_connect.close_connection()
 
     @classmethod
     def email_alert(cls, content: str) -> None:
