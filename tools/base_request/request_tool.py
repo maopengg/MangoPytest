@@ -56,7 +56,7 @@ class RequestTool:
             data=request_model.data,
             json=request_model.json_data,
             files=request_model.file,
-            proxies=PROXY
+            proxies=PROXY if PROXY else None
         )
 
     @staticmethod
@@ -88,5 +88,5 @@ class RequestTool:
             data=data.data,
             json=data.json_data,
             files=data.file,
-            proxies=PROXY
+            proxies=PROXY if PROXY else None
         )

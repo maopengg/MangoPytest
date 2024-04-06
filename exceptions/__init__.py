@@ -8,12 +8,12 @@ from tools.logging_tool import logger
 
 class PytestAutoTestError(Exception):
 
-    def __init__(self, code: int, msg: str, value: tuple = None, error: any = None):
+    def __init__(self, code: int, msg: str, value: tuple = None, error: any = None, is_log: bool = True):
         if value:
             msg = msg.format(*value)
-        if error:
-            logger.error(error)
+        if error and is_log:
+            logger.error(f'报错提示：{msg}， 报错内容：{error}')
         else:
-            logger.error(msg)
+            logger.error(f'报错提示：{msg}')
         self.code = code
         self.msg = msg

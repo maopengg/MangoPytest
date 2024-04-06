@@ -40,4 +40,5 @@ test_project = [
     {'project': ProjectEnum.Gitee, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.UI},
 ]
 
-MainRun(test_project=test_project, pytest_command=pytest_command)
+if __name__ == '__main__':
+    MainRun(test_project=test_project, pytest_command=pytest_command)

@@ -76,17 +76,20 @@ class SourcesData:
                 conditions = conditions & (df[key] == value)
         result = df[conditions]
         if result.empty:
-            raise DataFrameQueryNullError(*ERROR_MSG_0349, value=(str(kwargs), ))
+            raise DataFrameQueryNullError(*ERROR_MSG_0349, value=(str(kwargs),))
         elif len(result) == 1:
             data = result.squeeze().to_dict()
         else:
             data = result.to_dict(orient='records')
         if is_dict:
             if isinstance(data, list):
-                raise DataFrameQueryManyError(*ERROR_MSG_0348, value=(str(kwargs), ))
+                raise DataFrameQueryManyError(*ERROR_MSG_0348, value=(str(kwargs),))
         return data
 
 
 if __name__ == '__main__':
     print(SourcesData.project)
     print(SourcesData.test_object)
+    project: dict = SourcesData \
+        .get_test_object(**{'name': 'CDP预发环境'})
+    print(project)

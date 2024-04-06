@@ -11,8 +11,11 @@ import os
 
 import pytest
 
-from auto_test.project_enum import *
+from auto_test.project_enum import ProjectTypePaths
+from exceptions.error_msg import ERROR_MSG_0007
+from exceptions.tools_exception import TestProjectError
 from models.tools_model import CaseRunModel
+from settings.settings import IS_TEST_REPORT
 from tools.files.zip_files import zip_files
 from tools.logging_tool import logger
 from tools.notic_tools import NoticeMain
@@ -26,26 +29,28 @@ class MainRun:
         self.pytest_command = pytest_command
         # 压缩上一次执行结果，并且保存起来，方便后面查询
         zip_files()
+        self.project_type_paths: ProjectTypePaths = ProjectTypePaths()
         self.run()
 
     def run(self):
         # 循环准备开始执行用例
         for case_run_model in self.data:
-            if case_run_model.project.value in project_type_paths:
-                project_paths = project_type_paths[case_run_model.project.value]
-                project_paths['test_environment'] = case_run_model.test_environment
-                if case_run_model.type.value in project_paths:
-                    self.pytest_command.append(project_paths[case_run_model.type.value])
+            project_key = case_run_model.project.value
+            if project_key in self.project_type_paths.data:
+                self.project_type_paths.set_test_environment(project_key, case_run_model.test_environment.value)
+                # project_enum.project_type_paths[project_key]['test_environment'] = case_run_model.test_environment
+                if case_run_model.type.value not in self.project_type_paths.data[project_key]:
+                    raise TestProjectError(*ERROR_MSG_0007)
+                if case_run_model.type.value in self.project_type_paths.data[project_key]:
+                    self.pytest_command.append(self.project_type_paths.data[project_key][case_run_model.type.value])
+            else:
+                raise TestProjectError(*ERROR_MSG_0007)
+        logger.info(f'类ID:{id(self.project_type_paths)}')
         # 执行用例
-        logger.info(f"开始执行测试任务...")
+        logger.info(f"开始执行测试任务......")
         pytest.main(self.pytest_command)
-        os.system(r"allure generate ./report/tmp -o ./report/html --clean")
         # 发送通知
         NoticeMain(self.data).notice_main()
-        # 程序运行之后，自动启动报告，如果不想启动报告，可注释这段代码
-        os.system(f"allure serve ./report/tmp -h {get_host_ip()} -p 9997")
-
-
-if __name__ == '__main__':
-    pytest.main(['-s', '-W', 'ignore:Module already imported:pytest.PytestWarning', '--alluredir', './report/tmp',
-                 '--clean-alluredir', 'D:\\GitCode\\PytestAutoTestauto_test\\ui\\cdp\\test_case'])
+        if IS_TEST_REPORT:
+            os.system(r"allure generate ./report/tmp -o ./report/html --clean")
+            os.system(f"allure serve ./report/tmp -h {get_host_ip()} -p 9997")

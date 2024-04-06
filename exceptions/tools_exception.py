@@ -10,6 +10,10 @@ class CacheIsNone(PytestAutoTestError):
     pass
 
 
+class TestProjectError(PytestAutoTestError):
+    pass
+
+
 class CacheIsEmptyError(PytestAutoTestError):
     pass
 

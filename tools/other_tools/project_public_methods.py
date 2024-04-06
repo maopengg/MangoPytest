@@ -6,7 +6,7 @@
 
 from pydantic_core._pydantic_core import ValidationError
 
-from auto_test.project_enum import project_type_paths
+from auto_test.project_enum import ProjectTypePaths
 from enums.tools_enum import EnvironmentEnum, StatusEnum
 from exceptions.error_msg import *
 from exceptions.ui_exception import UiInitialError
@@ -22,15 +22,17 @@ class ProjectPublicMethods:
     def get_project_test_object(
             project_name: str,
             test_environment: EnvironmentEnum) -> tuple[EnvironmentEnum, dict, dict]:
-        project_dict = project_type_paths[project_name]
+        project_type_paths = ProjectTypePaths()
+        project_dict = project_type_paths.data[project_name]
+        logger.debug(f'类ID：{id(project_type_paths)}')
         if project_dict.get('test_environment') is None:
             test_environment: EnvironmentEnum = test_environment
             logger.warning(f'项目：{project_name}未获取到测试环境变量，请检查！')
         else:
             test_environment: EnvironmentEnum = project_dict.get('test_environment')
         project: dict = SourcesData \
-            .get_test_object(**{'name': project_name})
-        test_object = SourcesData\
+            .get_project(**{'name': project_name})
+        test_object = SourcesData \
             .get_test_object(**{'project_id': project.get('id'), 'type': test_environment.value})
         return test_environment, project, test_object
 
