@@ -60,20 +60,6 @@ class GiteeEnum(BaseEnum):
     NAME = ProjectEnum.Gitee.value
     UI_PATH = fr"{InitializationPath.project_root_directory}\auto_test\ui\gitee\test_case"
 
-def singleton(cls):
-    instances = {}
-    lock = threading.Lock()
-    manager = multiprocessing.Manager()
-
-    def get_instance(*args, **kwargs):
-        if cls not in instances:
-            with lock:
-                if cls not in instances:
-                    instances[cls] = cls(*args, **kwargs)
-        return instances[cls]
-
-    return get_instance
-@singleton
 
 class ProjectTypePaths:
 
@@ -97,3 +83,4 @@ class ProjectTypePaths:
 
     def set_test_environment(self, project_name: ProjectEnum, value):
         self.data[project_name]['test_environment'] = value
+

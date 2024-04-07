@@ -8,6 +8,7 @@
 # @Time   : 2023/08/07 11:01
 # @Author :
 import os
+from multiprocessing import Manager
 
 import pytest
 
@@ -21,6 +22,8 @@ from tools.logging_tool import logger
 from tools.notic_tools import NoticeMain
 from tools.other_tools.native_ip import get_host_ip
 
+shared_dict = None
+
 
 class MainRun:
 
@@ -29,23 +32,28 @@ class MainRun:
         self.pytest_command = pytest_command
         # 压缩上一次执行结果，并且保存起来，方便后面查询
         zip_files()
-        self.project_type_paths: ProjectTypePaths = ProjectTypePaths()
         self.run()
 
     def run(self):
-        # 循环准备开始执行用例
+        global shared_dict
+        manager = Manager()
+        shared_dict = manager.dict()
+        project_type_paths = ProjectTypePaths()
+
         for case_run_model in self.data:
             project_key = case_run_model.project.value
-            if project_key in self.project_type_paths.data:
-                self.project_type_paths.set_test_environment(project_key, case_run_model.test_environment.value)
+            if project_key in project_type_paths.data:
+                project_type_paths.set_test_environment(project_key, case_run_model.test_environment.value)
                 # project_enum.project_type_paths[project_key]['test_environment'] = case_run_model.test_environment
-                if case_run_model.type.value not in self.project_type_paths.data[project_key]:
+                if case_run_model.type.value not in project_type_paths.data[project_key]:
                     raise TestProjectError(*ERROR_MSG_0007)
-                if case_run_model.type.value in self.project_type_paths.data[project_key]:
-                    self.pytest_command.append(self.project_type_paths.data[project_key][case_run_model.type.value])
+                if case_run_model.type.value in project_type_paths.data[project_key]:
+                    self.pytest_command.append(project_type_paths.data[project_key][case_run_model.type.value])
             else:
                 raise TestProjectError(*ERROR_MSG_0007)
-        logger.info(f'类ID:{id(self.project_type_paths)}')
+        shared_dict['project_type_paths'] = project_type_paths
+
+        logger.info(f'类ID:{id(project_type_paths)}')
         # 执行用例
         logger.info(f"开始执行测试任务......")
         pytest.main(self.pytest_command)

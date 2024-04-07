@@ -30,7 +30,6 @@ pytest_command = [
     '--alluredir',
     './report/tmp',
     "--clean-alluredir",
-    '-n 3',
 ]
 
 test_project = [

@@ -6,7 +6,7 @@
 
 from pydantic_core._pydantic_core import ValidationError
 
-from auto_test.project_enum import ProjectTypePaths
+# from auto_test.project_enum import project_type_paths
 from enums.tools_enum import EnvironmentEnum, StatusEnum
 from exceptions.error_msg import *
 from exceptions.ui_exception import UiInitialError
@@ -14,6 +14,7 @@ from models.tools_model import MysqlConingModel
 from sources import SourcesData
 from tools.database.mysql_connect import MysqlConnect
 from tools.logging_tool import logger
+from tools.main_run import shared_dict
 
 
 class ProjectPublicMethods:
@@ -21,19 +22,20 @@ class ProjectPublicMethods:
     @staticmethod
     def get_project_test_object(
             project_name: str,
-            test_environment: EnvironmentEnum) -> tuple[EnvironmentEnum, dict, dict]:
-        project_type_paths = ProjectTypePaths()
+            test_environment: EnvironmentEnum) -> tuple[int, dict, dict]:
+        # 从共享的字典中获取实例
+        project_type_paths = shared_dict['project_type_paths']
         project_dict = project_type_paths.data[project_name]
         logger.debug(f'类ID：{id(project_type_paths)}')
         if project_dict.get('test_environment') is None:
-            test_environment: EnvironmentEnum = test_environment
+            test_environment: int = test_environment.value
             logger.warning(f'项目：{project_name}未获取到测试环境变量，请检查！')
         else:
-            test_environment: EnvironmentEnum = project_dict.get('test_environment')
+            test_environment: int = project_dict.get('test_environment')
         project: dict = SourcesData \
             .get_project(**{'name': project_name})
         test_object = SourcesData \
-            .get_test_object(**{'project_id': project.get('id'), 'type': test_environment.value})
+            .get_test_object(**{'project_id': project.get('id'), 'type': test_environment})
         return test_environment, project, test_object
 
     @staticmethod
