@@ -52,8 +52,6 @@ class MainRun:
             else:
                 raise TestProjectError(*ERROR_MSG_0007)
         shared_dict['project_type_paths'] = project_type_paths
-
-        logger.info(f'类ID:{id(project_type_paths)}')
         # 执行用例
         logger.info(f"开始执行测试任务......")
         pytest.main(self.pytest_command)

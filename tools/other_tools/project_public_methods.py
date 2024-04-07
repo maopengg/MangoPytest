@@ -26,7 +26,6 @@ class ProjectPublicMethods:
         # 从共享的字典中获取实例
         project_type_paths = shared_dict['project_type_paths']
         project_dict = project_type_paths.data[project_name]
-        logger.debug(f'类ID：{id(project_type_paths)}')
         if project_dict.get('test_environment') is None:
             test_environment: int = test_environment.value
             logger.warning(f'项目：{project_name}未获取到测试环境变量，请检查！')
