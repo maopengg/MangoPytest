@@ -10,8 +10,8 @@ from enums.tools_enum import EnvironmentEnum
 from models.ui_model import UiBaseDataModel
 from tools.data_processor import DataProcessor
 from tools.decorator.singleton import singleton
-from tools.logging_tool import logger
-from tools.other_tools.project_public_methods import ProjectPublicMethods
+from tools.log_collector import log
+from tools.other.project_public_methods import ProjectPublicMethods
 
 
 @singleton
@@ -44,7 +44,7 @@ def data_initial():
             mysql_connect=mysql_connect,
         )
     )
-    logger.info(f'{GiteeEnum.NAME.value}的UI在自动化基础信息设置完成！')
+    log.info(f'{GiteeEnum.NAME.value}的UI在自动化基础信息设置完成！')
 
 
 data_initial()

@@ -8,8 +8,8 @@ from models.api_model import ApiBaseDataModel
 from tools.base_request.request_tool import RequestTool
 from tools.data_processor import DataProcessor
 from tools.decorator.singleton import singleton
-from tools.logging_tool import logger
-from tools.other_tools.project_public_methods import ProjectPublicMethods
+from tools.log_collector import log
+from tools.other.project_public_methods import ProjectPublicMethods
 
 
 @singleton
@@ -59,7 +59,7 @@ def data_initial():
         # 将登录接口中的cookie写入缓存中，其中login_cookie是缓存名称
     data_model.headers['cookie'] = cookies
     data_model.base_data_model.headers = data_model.headers
-    logger.info(f'{WanAndroidEnum.NAME.value}的API在自动化基础信息设置完成！')
+    log.info(f'{WanAndroidEnum.NAME.value}的API在自动化基础信息设置完成！')
 
 
 data_initial()

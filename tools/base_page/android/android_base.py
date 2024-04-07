@@ -7,7 +7,7 @@ from time import sleep
 from typing import Optional
 
 from models.socket_model.ui_model import AndroidConfigModel
-from tools.logs.log_control import INFO
+from tools.log_collector import log
 from uiautomator2 import Device
 
 """
@@ -31,7 +31,7 @@ class AndroidBase:
 
     def new_android(self):
         self.android = Device(self.android_config.equipment)
-        logger.info(f'设备启动成功，设备信息：{self.android.info}')
+        log.info(f'设备启动成功，设备信息：{self.android.info}')
 
 
 class ElementNotFoundError(Exception):

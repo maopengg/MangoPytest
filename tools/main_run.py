@@ -18,9 +18,9 @@ from exceptions.tools_exception import TestProjectError
 from models.tools_model import CaseRunModel
 from settings.settings import IS_TEST_REPORT
 from tools.files.zip_files import zip_files
-from tools.logging_tool import logger
-from tools.notic_tools import NoticeMain
-from tools.other_tools.native_ip import get_host_ip
+from tools.log_collector import log
+from tools.notice import NoticeMain
+from tools.other.native_ip import get_host_ip
 
 shared_dict = None
 
@@ -53,7 +53,7 @@ class MainRun:
                 raise TestProjectError(*ERROR_MSG_0007)
         shared_dict['project_type_paths'] = project_type_paths
         # 执行用例
-        logger.info(f"开始执行测试任务......")
+        log.info(f"开始执行测试任务......")
         pytest.main(self.pytest_command)
         # 发送通知
         NoticeMain(self.data).notice_main()

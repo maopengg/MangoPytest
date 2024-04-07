@@ -5,8 +5,8 @@ from enums.tools_enum import EnvironmentEnum
 from models.api_model import ApiBaseDataModel
 from tools.data_processor import DataClean
 from tools.decorator.singleton import singleton
-from tools.logging_tool import logger
-from tools.other_tools.project_public_methods import ProjectPublicMethods
+from tools.log_collector import log
+from tools.other.project_public_methods import ProjectPublicMethods
 
 
 @singleton
@@ -44,7 +44,7 @@ def data_initial():
     data.cache_data['app_id'] = "20221117001456480"
     data.cache_data['secret_key'] = "YU2_BJkJoiiLRyBBkL0F"
 
-    logger.info(f'{BaiduTranslateEnum.NAME.value}的API在自动化基础信息设置完成！')
+    log.info(f'{BaiduTranslateEnum.NAME.value}的API在自动化基础信息设置完成！')
 
 
 data_initial()

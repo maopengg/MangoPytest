@@ -6,14 +6,13 @@
 
 from pydantic_core._pydantic_core import ValidationError
 
-# from auto_test.project_enum import project_type_paths
 from enums.tools_enum import EnvironmentEnum, StatusEnum
 from exceptions.error_msg import *
 from exceptions.ui_exception import UiInitialError
 from models.tools_model import MysqlConingModel
 from sources import SourcesData
 from tools.database.mysql_connect import MysqlConnect
-from tools.logging_tool import logger
+from tools.log_collector import log
 from tools.main_run import shared_dict
 
 
@@ -28,7 +27,7 @@ class ProjectPublicMethods:
         project_dict = project_type_paths.data[project_name]
         if project_dict.get('test_environment') is None:
             test_environment: int = test_environment.value
-            logger.warning(f'项目：{project_name}未获取到测试环境变量，请检查！')
+            log.warning(f'项目：{project_name}未获取到测试环境变量，请检查！')
         else:
             test_environment: int = project_dict.get('test_environment')
         project: dict = SourcesData \

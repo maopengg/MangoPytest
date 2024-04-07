@@ -14,9 +14,9 @@ from models.tools_model import TestReportModel
 from settings.settings import SEND_USER, EMAIL_HOST, STAMP_KEY
 from sources import SourcesData
 from tools import InitializationPath
-from tools.notic_tools.mail_send import SendEmail
-from tools.notic_tools.wechat_send import WeChatSend
-from tools.other_tools.native_ip import get_host_ip
+from tools.notice.mail import SendEmail
+from tools.notice.wechat import WeChatSend
+from tools.other.native_ip import get_host_ip
 
 
 class NoticeMain:

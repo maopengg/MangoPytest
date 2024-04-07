@@ -13,7 +13,7 @@ from enums.api_enum import MethodEnum
 from exceptions import PytestAutoTestError
 from models.api_model import ApiDataModel, ResponseModel, TestCaseModel, RequestModel, ApiInfoModel
 from settings.settings import PRINT_EXECUTION_RESULTS, REQUEST_TIMEOUT_FAILURE_TIME
-from tools.logging_tool import logger
+from tools.log_collector import log
 
 
 def case_data(case_id: int):
@@ -40,11 +40,11 @@ def case_data(case_id: int):
                                       test_case=TestCaseModel.get_obj(test_case_dict))
                 )
             except PytestAutoTestError as error:
-                logger.error(error.msg)
+                log.error(error.msg)
                 allure.attach(error.msg, '执行中断异常')
                 raise error
             except AttributeError as error:
-                logger.error("你的用例参数可能存在问题，请检查报错排查，或者查看用例中的数据与你的用例编写存在问题")
+                log.error("你的用例参数可能存在问题，请检查报错排查，或者查看用例中的数据与你的用例编写存在问题")
                 raise error
 
         return wrapper
@@ -117,7 +117,7 @@ def timer(func):
         response_time = time.time() - start
         # 计算时间戳毫米级别，如果时间大于number，则打印 函数名称 和运行时间
         if response_time > REQUEST_TIMEOUT_FAILURE_TIME:
-            logger.error(
+            log.error(
                 f"\n{'=' * 100}\n"
                 f"测试用例执行时间较长，请关注.\n"
                 f"函数运行时间: {response_time} ms\n"
@@ -163,9 +163,9 @@ def log_decorator(func):
                        f"Http状态码: {data.response.status_code}\n" \
                        f"{'=' * 100}"
             if data.response.status_code == 200 or data.response.status_code == 300:
-                logger.info(_log_msg)
+                log.info(_log_msg)
             else:
-                logger.error(_log_msg)
+                log.error(_log_msg)
         return data
 
     return swapper

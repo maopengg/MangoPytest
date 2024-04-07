@@ -12,7 +12,7 @@ from enums.tools_enum import ClientNameEnum
 from exceptions.api_exception import SendMessageError
 from exceptions.error_msg import ERROR_MSG_0017, ERROR_MSG_0016
 from models.tools_model import EmailNoticeModel, TestReportModel
-from tools.logging_tool import logger
+from tools.log_collector import log
 
 
 class SendEmail:
@@ -44,9 +44,9 @@ class SendEmail:
         """
         try:
             self.send_mail(self.notice_config.send_list, f'【{ClientNameEnum.PLATFORM_CHINESE.value}通知】', content)
-            logger.info(f"邮件发送成功:{self.notice_config.json()}")
+            log.info(f"邮件发送成功:{self.notice_config.json()}")
         except SMTPException as error:
-            logger.error(f"邮件发送失败->错误消息：{error}，错误数据：{self.notice_config.json()}")
+            log.error(f"邮件发送失败->错误消息：{error}，错误数据：{self.notice_config.json()}")
             raise SendMessageError(*ERROR_MSG_0016)
 
     def send_mail(self, user_list: list, sub: str, content: str, ) -> None:
@@ -69,7 +69,7 @@ class SendEmail:
             server.sendmail(user, user_list, message.as_string())  #
             server.close()
         except gaierror as error:
-            logger.error(f"邮件发送失败->错误消息：{error}，错误数据：{self.notice_config.json()}")
+            log.error(f"邮件发送失败->错误消息：{error}，错误数据：{self.notice_config.json()}")
             raise SendMessageError(*ERROR_MSG_0017)
 
     def error_mail(self, error_message: str) -> None:

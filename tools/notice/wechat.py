@@ -10,7 +10,7 @@ from exceptions.error_msg import ERROR_MSG_0018, ERROR_MSG_0020, ERROR_MSG_0013,
 from exceptions.tools_exception import ValueTypeError
 from models.tools_model import WeChatNoticeModel, TestReportModel
 from tools.base_request.request_tool import RequestTool
-from tools.logging_tool import logger
+from tools.log_collector import log
 
 
 class WeChatSend:
@@ -58,7 +58,7 @@ class WeChatSend:
         _data = {"msgtype": "markdown", "markdown": {"content": content}}
         res = RequestTool.internal_http(url=self.notice_config.webhook, method='POST', json=_data, headers=self.headers)
         if res.json()['errcode'] != 0:
-            logger.error(res.text)
+            log.error(res.text)
             raise SendMessageError(*ERROR_MSG_0018)
 
     def send_file_msg(self, file):
@@ -70,7 +70,7 @@ class WeChatSend:
         _data = {"msgtype": "file", "file": {"media_id": self.__upload_file(file)}}
         res = RequestTool.internal_http(url=self.notice_config.webhook, method='POST', json=_data, headers=self.headers)
         if res.json()['errcode'] != 0:
-            logger.error(res.json())
+            log.error(res.json())
             raise SendMessageError(*ERROR_MSG_0020)
 
     def __upload_file(self, file):
@@ -102,7 +102,7 @@ class WeChatSend:
                         res = RequestTool.internal_http(url=self.notice_config.webhook, method='POST', json=_data,
                                                         headers=self.headers)
                         if res.json()['errcode'] != 0:
-                            logger.error(res.json())
+                            log.error(res.json())
                             raise SendMessageError(*ERROR_MSG_0019)
 
                     else:
