@@ -25,6 +25,7 @@ class GetProjectDataError(PytestAutoTestError):
 class DataFrameQueryNullError(PytestAutoTestError):
     pass
 
+
 class DataFrameQueryManyError(PytestAutoTestError):
     pass
 

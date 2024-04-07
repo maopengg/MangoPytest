@@ -17,7 +17,6 @@ from models.socket_model.ui_model import ElementModel, ElementResultModel
 from retrying import retry
 from tools.assertion.sql_assertion import SqlAssertion
 from tools.database_tool.mysql_control import MysqlDB
-from tools.logs.log_control import ERROR
 from tools.message.error_msg import ERROR_MSG_0014, ERROR_MSG_0016, ERROR_MSG_0019, ERROR_MSG_0020
 from uiautomator2 import UiObject
 from uiautomator2.xpath import XPathSelector
@@ -169,8 +168,8 @@ class AndroidDriver(UiautomatorEquipmentDevice,
     def __error(self, error_class, msg, e=None):
         """ 操作元素失败时试用的函数 """
         logger.error(f'元素：{self.element.ele_name_a} 操作失败\n'
-                           f'报错信息：{e}\n'
-                           f'元素对象：{self.element.dict()}\n')
+                     f'报错信息：{e}\n'
+                     f'元素对象：{self.element.dict()}\n')
         path = rf'{Initialization.get_log_screenshot()}\{self.element.ele_name_a}{DataProcessor.get_deta_hms()}.jpg'
         self.a_screenshot(path)
         self.element_test_result.msg = msg

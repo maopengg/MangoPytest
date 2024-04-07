@@ -8,11 +8,10 @@
 # @Time   : 2023/08/07 11:01
 # @Author :
 import os
-from multiprocessing import Manager
 
 import pytest
 
-from auto_test.project_enum import ProjectTypePaths
+from auto_test.project_enum import ProjectPaths
 from exceptions.error_msg import ERROR_MSG_0007
 from exceptions.tools_exception import TestProjectError
 from models.tools_model import CaseRunModel
@@ -22,8 +21,6 @@ from tools.log_collector import log
 from tools.notice import NoticeMain
 from tools.other.native_ip import get_host_ip
 
-shared_dict = None
-
 
 class MainRun:
 
@@ -32,26 +29,21 @@ class MainRun:
         self.pytest_command = pytest_command
         # 压缩上一次执行结果，并且保存起来，方便后面查询
         zip_files()
+        ProjectPaths.init()
         self.run()
 
     def run(self):
-        global shared_dict
-        manager = Manager()
-        shared_dict = manager.dict()
-        project_type_paths = ProjectTypePaths()
-
+        project_type_paths = ProjectPaths.check()
         for case_run_model in self.data:
             project_key = case_run_model.project.value
-            if project_key in project_type_paths.data:
-                project_type_paths.set_test_environment(project_key, case_run_model.test_environment.value)
-                # project_enum.project_type_paths[project_key]['test_environment'] = case_run_model.test_environment
-                if case_run_model.type.value not in project_type_paths.data[project_key]:
+            if project_key in project_type_paths:
+                ProjectPaths.update(project_key, case_run_model.test_environment.value)
+                if str(case_run_model.type.value) not in project_type_paths[project_key]:
                     raise TestProjectError(*ERROR_MSG_0007)
-                if case_run_model.type.value in project_type_paths.data[project_key]:
-                    self.pytest_command.append(project_type_paths.data[project_key][case_run_model.type.value])
+                if case_run_model.type.value in project_type_paths[project_key]:
+                    self.pytest_command.append(project_type_paths[project_key][case_run_model.type.value])
             else:
                 raise TestProjectError(*ERROR_MSG_0007)
-        shared_dict['project_type_paths'] = project_type_paths
         # 执行用例
         log.info(f"开始执行测试任务......")
         pytest.main(self.pytest_command)

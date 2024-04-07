@@ -3,8 +3,9 @@
 # @Description: 
 # @Time   : 2024-02-20 11:11
 # @Author : 毛鹏
-import allure
 import time
+
+import allure
 
 from auto_test.ui import *
 from auto_test.ui.wan_android import WanAndroidDataModel

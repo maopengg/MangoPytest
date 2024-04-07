@@ -28,7 +28,7 @@ class BasePage(WebDevice):
         super().__init__(page, context, data_processor)
         self.element_list: list[dict] = SourcesData.ui_element[
             (SourcesData.ui_element['project_id'] == project_id) & (
-                        SourcesData.ui_element['module_name'] == module_name)].to_dict(orient='records')
+                    SourcesData.ui_element['module_name'] == module_name)].to_dict(orient='records')
         if not self.element_list:
             raise UiElementIsNullError(*ERROR_MSG_0346)
         d = re.DEBUG

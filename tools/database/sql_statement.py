@@ -18,4 +18,3 @@ sql_notice_config = 'SELECT * FROM notice_config;'
 sql_api_info = 'SELECT * FROM api_info;'
 sql_api_test_case = 'SELECT * FROM api_test_case;'
 sql_ui_element = 'SELECT * FROM ui_element;'
-

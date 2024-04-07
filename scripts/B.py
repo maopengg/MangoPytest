@@ -1,5 +1,6 @@
-import threading
 import multiprocessing
+import threading
+
 
 class Singleton:
     _instance = None
@@ -10,9 +11,11 @@ class Singleton:
             Singleton._instance = Singleton()
         return Singleton._instance
 
+
 class SharedData:
     def __init__(self, singleton):
         self.singleton = singleton
+
 
 # 多线程示例
 singleton = Singleton.getInstance()

@@ -30,8 +30,8 @@ class NoticeMain:
         for i in self.case_run_model:
             self.test_environment = EnvironmentEnum.get_value(i.test_environment.value)
 
-            self.result_list = SourcesData\
-                .project[SourcesData.project['name'] == i.project.value]\
+            self.result_list = SourcesData \
+                .project[SourcesData.project['name'] == i.project.value] \
                 .to_dict(orient='records')
             if self.result_list:
                 if self.result_list[0].get('is_notice') == StatusEnum.SUCCESS.value:
