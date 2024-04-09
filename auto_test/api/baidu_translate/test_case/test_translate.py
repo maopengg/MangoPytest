@@ -14,7 +14,7 @@ from tools.data_processor import DataProcessor
 from tools.decorator.response import case_data
 
 
-@allure.epic('百度翻译')
+@allure.epic('演示-API自动化-第三方API-百度翻译')
 @allure.feature('对接百度翻译接口')
 class TestTranslate(TranslateApi, CaseTool):
     data_processor: DataProcessor = DataProcessor()

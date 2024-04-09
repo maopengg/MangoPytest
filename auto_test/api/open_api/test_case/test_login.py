@@ -14,7 +14,7 @@ from tools.data_processor import DataProcessor
 from tools.decorator.response import case_data
 
 
-@allure.epic('玩安卓API')
+@allure.epic('演示-API自动化-常规API-玩安卓')
 @allure.feature('登录模块')
 class TestLogin(LoginAPI, CaseTool):
     data_processor: DataProcessor = DataProcessor()

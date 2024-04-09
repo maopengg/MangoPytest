@@ -12,7 +12,7 @@ from auto_test.ui.wan_android import WanAndroidDataModel
 from auto_test.ui.wan_android.page_object.login import LoginPage
 
 
-@allure.epic('玩安卓UI')
+@allure.epic('演示-UI自动化-WEB项目-玩安卓')
 @allure.feature('登录模块')
 class TestLogin:
 

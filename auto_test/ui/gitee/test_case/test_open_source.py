@@ -13,7 +13,7 @@ from auto_test.ui.gitee.page_object.home import HomePage
 from auto_test.ui.gitee.page_object.open_source import OpenSourcePage
 
 
-@allure.epic('Gitee')
+@allure.epic('演示-UI自动化-WEB项目-Gitee')
 @allure.feature('搜索自己的开源项目')
 class TestOpenSource:
 
