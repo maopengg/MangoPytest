@@ -15,11 +15,12 @@ class PageElementAPI(RequestTool):
     @request_data(4)
     def page_element_list(self, data: ApiDataModel) -> ApiDataModel:
         """
-        登录接口
-        @param data: ApiDataModel
-        @return: ApiDataModel
+        页面元素列表
         """
         return self.http(data)
 
-    def api_reset_password(self) -> ApiDataModel:
-        pass
+    def api_reset_password(self, data: ApiDataModel) -> ApiDataModel:
+        """
+
+        @return:
+        """

@@ -11,9 +11,9 @@ class PublicAssertion:
         assert actual > expect
 
     @classmethod
-    def actual_is_null(cls, actual):
+    def is_null(cls, actual):
         """实际为None"""
-        assert actual is None
+        assert actual is None, f"实际：{actual}， 期望: 是null"
 
     @classmethod
     def is_not_none(cls, actual):
