@@ -23,7 +23,12 @@ class ProjectPublicMethods:
             project_name: str,
             test_environment: EnvironmentEnum) -> tuple[int, dict, dict]:
         # 从共享的字典中获取实例
-        project_dict = ProjectPaths.check()[project_name]
+        try:
+            project_dict = ProjectPaths.check()[project_name]
+        except KeyError:
+            ProjectPaths.init()
+            project_dict = ProjectPaths.check()[project_name]
+
         if project_dict.get('test_environment') is None:
             test_environment: int = test_environment.value
             log.warning(f'项目：{project_name}未获取到测试环境变量，请检查！')

@@ -24,7 +24,7 @@ class GiteeDataModel(BaseModel):
     cache_data: dict = {}
 
 
-def data_initial():
+def data_init():
     """
     项目数据初始化
     :return:
@@ -47,4 +47,4 @@ def data_initial():
     log.info(f'{GiteeEnum.NAME.value}的UI在自动化基础信息设置完成！')
 
 
-data_initial()
+data_init()

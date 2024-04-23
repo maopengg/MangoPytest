@@ -25,7 +25,7 @@ class WanAndroidDataModel(BaseModel):
     cache_data: dict = {}
 
 
-def data_initial():
+def data_init():
     """
     登录接口，获取通用token
     :return:
@@ -62,4 +62,4 @@ def data_initial():
     log.info(f'{WanAndroidEnum.NAME.value}的API在自动化基础信息设置完成！')
 
 
-data_initial()
+data_init()

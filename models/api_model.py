@@ -46,7 +46,7 @@ class TestCaseModel(BaseModel):
             name=data['name'],
             params=json_serialize(data.get('params')),
             data=json_serialize(data.get('data')),
-            json_data=json_serialize(data.get('json_data')),
+            json_data=json_serialize(data.get('json')),
             file=json_serialize(data.get('file')),
             other_data=json_serialize(data.get('other_data')),
             ass_response_whole=data.get('ass_response_whole'),
@@ -84,7 +84,7 @@ class ApiInfoModel(BaseModel):
 class RequestModel(BaseModel):
     url: str
     method: str
-    headers: dict
+    headers: dict | None = None
     params: dict | None = None
     data: str | dict | None = None
     json_data: dict | None = None
@@ -97,7 +97,7 @@ class ResponseModel(BaseModel):
     method: str
     headers: dict
     response_text: str
-    response_dict: dict
+    response_dict: dict | str
     response_time: int | float | None = None
 
 

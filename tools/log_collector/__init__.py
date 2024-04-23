@@ -3,12 +3,12 @@
 # @Description: 
 # @Time   : 2023-04-05 12:40
 # @Author : 毛鹏
-from tools import InitializationPath
+from tools import InitPath
 from tools.log_collector.log_control import LogHandler
 
 
 class Log:
-    log_path = InitializationPath.logs_dir
+    log_path = InitPath.logs_dir
     DEBUG = LogHandler(fr"{log_path}\debug-log.log", 'debug')
     INFO = LogHandler(fr"{log_path}\info-log.log", 'info')
     WARNING = LogHandler(fr"{log_path}\warning-log.log", 'warning')

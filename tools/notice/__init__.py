@@ -13,7 +13,7 @@ from models.tools_model import CaseRunModel, WeChatNoticeModel, EmailNoticeModel
 from models.tools_model import TestReportModel
 from settings.settings import SEND_USER, EMAIL_HOST, STAMP_KEY
 from sources import SourcesData
-from tools import InitializationPath
+from tools import InitPath
 from tools.notice.mail import SendEmail
 from tools.notice.wechat import WeChatSend
 from tools.other.native_ip import get_host_ip
@@ -83,7 +83,7 @@ class NoticeMain:
     def get_case_count(self) -> TestReportModel:
         """ 统计用例数量 """
         try:
-            file_name = fr"{InitializationPath.project_root_directory}\report\html\widgets\summary.json"
+            file_name = fr"{InitPath.project_root_directory}\report\html\widgets\summary.json"
             with open(file_name, 'r', encoding='utf-8') as file:
                 data = json.load(file)
                 statistic = data['statistic']

@@ -31,7 +31,7 @@ def case_data(case_id: int):
                 .api_test_case[SourcesData.api_test_case['id'] == case_id] \
                 .squeeze() \
                 .to_dict()
-            allure.attach(json.dumps(test_case_dict, ensure_ascii=False), '查询用例数据')
+            allure.attach(json.dumps(test_case_dict, ensure_ascii=False), '用例数据')
             try:
                 func(
                     *args,
@@ -42,9 +42,6 @@ def case_data(case_id: int):
             except PytestAutoTestError as error:
                 log.error(error.msg)
                 allure.attach(error.msg, '执行中断异常')
-                raise error
-            except AttributeError as error:
-                log.error("你的用例参数可能存在问题，请检查报错排查，或者查看用例中的数据与你的用例编写存在问题")
                 raise error
 
         return wrapper
@@ -63,12 +60,13 @@ def request_data(api_info_id):
         # @functools.wraps(func)
         def wrapper(*args, **kwargs) -> ApiDataModel:
             data: ApiDataModel = kwargs.get('data')
+            if len(args) == 2:
+                data: ApiDataModel = args[1]
             from sources import SourcesData
             api_info_dict: dict = SourcesData \
                 .api_info[SourcesData.api_info['id'] == api_info_id] \
                 .squeeze() \
                 .to_dict()
-
             api_info_model = ApiInfoModel.get_obj(api_info_dict)
             data.request = RequestModel(
                 url=api_info_model.url,
@@ -79,22 +77,23 @@ def request_data(api_info_id):
                 json_data=data.test_case.json_data,
                 file=data.test_case.file,
             )
-            allure.attach(str(data.request.url), 'url')
-            allure.attach(str(data.request.method), '请求方法')
-            allure.attach(str(data.request.headers), '请求头')
             # try:
             res_args = func(*args, **kwargs)
             # except TypeError:
             #     raise CaseParameterError(*ERROR_MSG_0334)
+            allure.attach(str(data.request.url), 'URL')
+            allure.attach(str(data.request.method), '请求方法')
+            allure.attach(str(data.request.headers), '请求头')
             if data.request.params:
                 allure.attach(json.dumps(data.request.params, ensure_ascii=False), '参数')
             if data.request.data:
                 allure.attach(json.dumps(data.request.data, ensure_ascii=False), '表单')
             if data.request.json_data:
-                allure.attach(json.dumps(data.request.json_data, ensure_ascii=False), 'json')
+                allure.attach(json.dumps(data.request.json_data, ensure_ascii=False), 'JSON')
             if data.request.file:
                 allure.attach(json.dumps(data.request.file, ensure_ascii=False), '文件')
             allure.attach(str(data.response.status_code), '响应状态码')
+            allure.attach(str(data.response.response_time * 1000), '响应时间（毫秒）')
             allure.attach(json.dumps(data.response.response_dict, ensure_ascii=False), '响应结果')
 
             return res_args
@@ -126,7 +125,7 @@ def timer(func):
         try:
             response_dict = response.json()
         except json.JSONDecodeError:
-            response_dict = '序列化json失败'
+            response_dict = '您可以检查返回的值是否是json，如果不是，就不要使用response_dict'
 
         data: RequestModel = args[1]
         return ResponseModel(url=response.url,

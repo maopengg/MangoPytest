@@ -12,12 +12,13 @@ from requests.models import Response
 from models.api_model import ApiDataModel, RequestModel, ResponseModel
 from settings.settings import PROXY
 from tools.data_processor import DataProcessor
-from tools.decorator.response import timer
+from tools.decorator.response import timer, log_decorator
 
 
 class RequestTool:
     data_processor: DataProcessor = None
 
+    @log_decorator
     def http(self, data: ApiDataModel) -> ApiDataModel | Response:
         """
         处理请求的数据，写入到request对象中

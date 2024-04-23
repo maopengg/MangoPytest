@@ -40,8 +40,8 @@ class MainRun:
                 ProjectPaths.update(project_key, case_run_model.test_environment.value)
                 if str(case_run_model.type.value) not in project_type_paths[project_key]:
                     raise TestProjectError(*ERROR_MSG_0007)
-                if case_run_model.type.value in project_type_paths[project_key]:
-                    self.pytest_command.append(project_type_paths[project_key][case_run_model.type.value])
+                if str(case_run_model.type.value) in project_type_paths[project_key]:
+                    self.pytest_command.append(project_type_paths[project_key][str(case_run_model.type.value)])
             else:
                 raise TestProjectError(*ERROR_MSG_0007)
         # 执行用例

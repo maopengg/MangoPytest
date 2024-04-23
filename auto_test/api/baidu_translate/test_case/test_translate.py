@@ -30,7 +30,7 @@ class TestTranslate(TranslateApi, CaseTool):
         data.test_case.params['appid'] = appid
         data.test_case.params['salt'] = salt
         data.test_case.params['sign'] = sign
-        data = self.case_run(self.translate, data)
+        data = self.translate(data)
         assert data.response.response_dict['trans_result'][0]['dst'] == "芒果"
         assert data.response.response_dict['trans_result'][0]['src'] == "mango"
 
@@ -45,7 +45,7 @@ class TestTranslate(TranslateApi, CaseTool):
         data.test_case.params['appid'] = appid
         data.test_case.params['salt'] = salt
         data.test_case.params['sign'] = sign
-        data = self.case_run(self.translate, data)
+        data = self.translate(data)
         assert data.response.response_dict['trans_result'][0]['src'] == "芒果"
         assert data.response.response_dict['trans_result'][0]['dst'] == "mango"
 

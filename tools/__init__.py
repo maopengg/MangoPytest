@@ -8,7 +8,7 @@ import os
 import sys
 
 
-class InitializationPath:
+class InitPath:
     current_directory = os.path.abspath(__file__)
     project_root_directory = os.path.dirname(os.path.dirname(current_directory))
     current_dir2 = os.path.dirname(sys.executable)
@@ -26,11 +26,11 @@ class InitializationPath:
         os.makedirs(reports_dir)
 
 
-InitializationPath()
+InitPath()
 if __name__ == '__main__':
-    print(InitializationPath.current_directory)
-    print(InitializationPath.project_root_directory)
-    print(InitializationPath.current_dir2)
-    print(InitializationPath.logs_dir)
-    print(InitializationPath.sqlite_dir)
-    print(InitializationPath.reports_dir)
+    print(InitPath.current_directory)
+    print(InitPath.project_root_directory)
+    print(InitPath.current_dir2)
+    print(InitPath.logs_dir)
+    print(InitPath.sqlite_dir)
+    print(InitPath.reports_dir)
