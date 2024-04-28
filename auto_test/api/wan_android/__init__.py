@@ -51,6 +51,9 @@ def data_init():
                                          method="POST",
                                          headers=data_model.headers,
                                          data=data_model.user_info)
+    print(urljoin(test_object.get('host'), login_url))
+    print(data_model.headers)
+    print(data_model.user_info)
     cookies = ''
     for k, v in response.cookies.items():
         _cookie = k + "=" + v + ";"
