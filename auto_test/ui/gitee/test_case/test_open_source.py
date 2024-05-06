@@ -25,9 +25,8 @@ class TestOpenSource:
 
     @allure.title('搜索测试项目，并断言项目可以被搜索到')
     @pytest.mark.parametrize("name", ["芒果测试平台", "PytestAutoTest"])
-    # @pytest.mark.parametrize("name, introduction",
-    #                          [("芒果测试平台", "这是芒果测试平台的介绍"), ("PytestAutoTest", "这是PytestAutoTest的介绍")])
-    def test_open1(self, setup_context_page, name):
+    @pytest.mark.asyncio
+    async def test_open1(self, setup_context_page, name):
         login_page = HomePage(setup_context_page, self.data_model)
         login_page.w_goto()
         login_page.click_open_source()

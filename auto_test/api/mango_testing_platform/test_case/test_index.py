@@ -19,9 +19,10 @@ from tools.decorator.response import case_data
 class TestIndex(IndexAPI, CaseTool):
     data_processor: DataProcessor = DataProcessor()
 
+    @pytest.mark.asyncio
     @allure.title('获取菜单信息')
     @case_data(11)
-    def test_01(self, data: ApiDataModel):
+    async def test_01(self, data: ApiDataModel):
         data = self.api_menu(data)
         self.ass_response_whole(data.response.response_dict, eval(data.test_case.ass_response_whole))
 

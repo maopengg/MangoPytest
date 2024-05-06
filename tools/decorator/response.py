@@ -17,15 +17,8 @@ from tools.log_collector import log
 
 
 def case_data(case_id: int):
-    """
-    1.查询测试数据，写入allure报告
-    2.断言结果写入allure报告
-    @param case_id: 用例ID或接口ID
-    @return:
-    """
-
     def decorator(func):
-        def wrapper(*args, **kwargs):
+        async def wrapper(*args, **kwargs):
             from sources import SourcesData
             test_case_dict: dict = SourcesData \
                 .api_test_case[SourcesData.api_test_case['id'] == case_id] \
@@ -33,7 +26,7 @@ def case_data(case_id: int):
                 .to_dict()
             allure.attach(json.dumps(test_case_dict, ensure_ascii=False), '用例数据')
             try:
-                func(
+                await func(
                     *args,
                     **kwargs,
                     data=ApiDataModel(base_data=args[0].data_model.base_data_model,

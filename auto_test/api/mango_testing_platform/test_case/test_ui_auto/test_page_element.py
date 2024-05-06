@@ -18,32 +18,36 @@ from tools.decorator.response import case_data
 class TestPageElement(PageElementAPI, CaseTool):
     data_processor: DataProcessor = DataProcessor()
 
+    @pytest.mark.asyncio
     @allure.title('获取type等于0的页面对象列表')
     @allure.description('测试页面元素的列表')
     @case_data(7)
-    def test_page_type00(self, data: ApiDataModel):
+    async def test_page_type00(self, data: ApiDataModel):
         data = self.page_element_list(data)
         self.is_equal_to(data.response.response_dict.get('code'), 200)
         self.is_not_none(data.response.response_dict.get('data'))
 
+    @pytest.mark.asyncio
     @allure.title('获取type等于1的页面对象列表')
     @allure.description('测试页面元素的列表')
     @case_data(8)
-    def test_page_type01(self, data: ApiDataModel):
+    async def test_page_type01(self, data: ApiDataModel):
         data = self.page_element_list(data)
         self.is_equal_to(data.response.response_dict.get('code'), 200)
 
+    @pytest.mark.asyncio
     @allure.title('获取type等于2的页面对象列表')
     @allure.description('测试页面元素的列表')
     @case_data(9)
-    def test_page_type02(self, data: ApiDataModel):
+    async def test_page_type02(self, data: ApiDataModel):
         data = self.page_element_list(data)
         self.is_equal_to(data.response.response_dict.get('code'), 200)
 
+    @pytest.mark.asyncio
     @allure.title('获取type等于3的页面对象列表')
     @allure.description('测试页面元素的列表')
     @case_data(10)
-    def test_page_type03(self, data: ApiDataModel):
+    async def test_page_type03(self, data: ApiDataModel):
         data = self.page_element_list(data)
         self.is_equal_to(data.response.response_dict.get('code'), 200)
 

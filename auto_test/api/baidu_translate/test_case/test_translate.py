@@ -3,6 +3,7 @@
 # @Description: 
 # @Time   : 2023-08-08 15:30
 # @Author : 毛鹏
+import asyncio
 
 import allure
 import pytest
@@ -12,6 +13,7 @@ from models.api_model import ApiDataModel
 from tools.base_request.case_tool import CaseTool
 from tools.data_processor import DataProcessor
 from tools.decorator.response import case_data
+from tools.log_collector import log
 
 
 @allure.epic('演示-API自动化-第三方API-百度翻译')
@@ -19,9 +21,12 @@ from tools.decorator.response import case_data
 class TestTranslate(TranslateApi, CaseTool):
     data_processor: DataProcessor = DataProcessor()
 
+    @pytest.mark.asyncio
     @allure.title('英文翻译成中文')
     @case_data(4)
-    def test_login01(self, data: ApiDataModel):
+    async def test_login01(self, data: ApiDataModel):
+        log.info('123213')
+        await asyncio.sleep(1)
         appid = self.data_model.cache_data.get('app_id')
         secret_key = self.data_model.cache_data.get('secret_key')
         salt = self.data_processor.randint(32768, 65536)
@@ -34,13 +39,15 @@ class TestTranslate(TranslateApi, CaseTool):
         assert data.response.response_dict['trans_result'][0]['dst'] == "芒果"
         assert data.response.response_dict['trans_result'][0]['src'] == "mango"
 
+    @pytest.mark.asyncio
     @allure.title('中文翻译成英文')
     @case_data(5)
-    def test_login02(self, data: ApiDataModel):
+    async def test_login02(self, data: ApiDataModel):
         appid = self.data_model.cache_data.get('app_id')
         secret_key = self.data_model.cache_data.get('secret_key')
         salt = self.data_processor.randint(32768, 65536)
         query = data.test_case.params.get('q')
+        await asyncio.sleep(5)
         sign = self.data_processor.md5_32_small(appid + query + str(salt) + secret_key)
         data.test_case.params['appid'] = appid
         data.test_case.params['salt'] = salt

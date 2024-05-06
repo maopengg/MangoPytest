@@ -24,7 +24,8 @@ class TestLogin:
 
     @allure.title('正确的账号，正确的密码，进行登录')
     @pytest.mark.parametrize("username, password", [("maopeng", "729164035")])
-    def test_login1(self, setup_context_page, username, password):
+    @pytest.mark.asyncio
+    async def test_login1(self, setup_context_page, username, password):
         login_page = LoginPage(setup_context_page, self.data_model)
         login_page.w_goto()
         login_page.login(username, password)
@@ -32,7 +33,8 @@ class TestLogin:
 
     @allure.title('正确的账号，错误的密码，进行登录')
     @pytest.mark.parametrize("username, password", [("maopeng", "7291640351")])
-    def test_login2(self, setup_context_page, username, password):
+    @pytest.mark.asyncio
+    async def test_login2(self, setup_context_page, username, password):
         login_page = LoginPage(setup_context_page, self.data_model)
         login_page.w_goto()
         login_page.login(username, password)
