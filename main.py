@@ -22,7 +22,6 @@ from tools.main_run import MainRun
     "--clean-alluredir",清空目录
 
 """
-
 pytest_command = [
     '-s',
     '-W',
