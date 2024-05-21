@@ -24,7 +24,7 @@ class TestTranslate(TranslateApi, CaseTool):
     @pytest.mark.asyncio
     @allure.title('英文翻译成中文')
     @case_data(4)
-    async def test_login01(self, data: ApiDataModel):
+    async def test_01(self, data: ApiDataModel):
         log.info('123213')
         await asyncio.sleep(1)
         appid = self.data_model.cache_data.get('app_id')
@@ -35,7 +35,7 @@ class TestTranslate(TranslateApi, CaseTool):
         data.test_case.params['appid'] = appid
         data.test_case.params['salt'] = salt
         data.test_case.params['sign'] = sign
-        data = self.translate(data)
+        data = await self.translate(data)
         assert data.response.response_dict['trans_result'][0]['dst'] == "芒果"
         assert data.response.response_dict['trans_result'][0]['src'] == "mango"
 
@@ -52,7 +52,7 @@ class TestTranslate(TranslateApi, CaseTool):
         data.test_case.params['appid'] = appid
         data.test_case.params['salt'] = salt
         data.test_case.params['sign'] = sign
-        data = self.translate(data)
+        data = await self.translate(data)
         assert data.response.response_dict['trans_result'][0]['src'] == "芒果"
         assert data.response.response_dict['trans_result'][0]['dst'] == "mango"
 

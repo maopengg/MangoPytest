@@ -13,13 +13,13 @@ from models.api_model import ApiDataModel, RequestModel, ResponseModel
 from settings.settings import PROXY
 from tools.data_processor import DataProcessor
 from tools.decorator.response import timer, log_decorator
-
+from tools.log_collector import log
 
 class RequestTool:
     data_processor: DataProcessor = None
 
     @log_decorator
-    def http(self, data: ApiDataModel) -> ApiDataModel | Response:
+    async def http(self, data: ApiDataModel) -> ApiDataModel | Response:
         """
         处理请求的数据，写入到request对象中
         @return:
@@ -39,11 +39,12 @@ class RequestTool:
                             path = self.data_processor.replace(v)
                             file.append((k, (file_name, open(path, 'rb'))))
                     data.request.file = file
-        data.response = self.http_request(data.request)
+        data.response = await self.http_request(data.request)
+        log.warning(data.response)
         return data
 
     @timer
-    def http_request(self, request_model: RequestModel) -> ResponseModel | Response:
+    async def http_request(self, request_model: RequestModel) -> ResponseModel | Response:
         """
         全局请求统一处理
         @param request_model: RequestDataModel

@@ -24,8 +24,8 @@ class TestLogin(LoginAPI, CaseTool):
     @allure.title('正确的账号，正确的密码，进行登录')
     @allure.description('测试账号登录')
     @case_data(1)
-    async def test_login01(self, data: ApiDataModel):
-        data = self.api_login(data)
+    async def test_01(self, data: ApiDataModel):
+        data = await self.api_login(data)
         await asyncio.sleep(5)
         assert data.response.response_dict['data']['nickname'] == "maopeng"
 
@@ -33,8 +33,8 @@ class TestLogin(LoginAPI, CaseTool):
     @allure.title('正确的账号，错误的密码，进行登录')
     @allure.description('测试账号登录')
     @case_data(2)
-    async def test_login02(self, data: ApiDataModel):
-        data = self.api_login(data)
+    async def test_02(self, data: ApiDataModel):
+        data = await self.api_login(data)
         # assert data.response.response_dict['errorMsg'] == "账号密码不匹配！"
         with allure.step('检查错误消息'):
             expected_error_msg = "账号密码不匹配！"
@@ -46,8 +46,8 @@ class TestLogin(LoginAPI, CaseTool):
     @pytest.mark.asyncio
     @allure.title('错误的账号，错误的密码，进行登录')
     @case_data(3)
-    async def test_login03(self, data: ApiDataModel):
-        data = self.api_login(data)
+    async def test_03(self, data: ApiDataModel):
+        data = await self.api_login(data)
         assert data.response.response_dict['errorMsg'] == "账号密码不匹配！"
 
 

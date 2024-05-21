@@ -51,7 +51,7 @@ def request_data(api_info_id):
     def decorator(func):
 
         # @functools.wraps(func)
-        def wrapper(*args, **kwargs) -> ApiDataModel:
+        async def wrapper(*args, **kwargs) -> ApiDataModel:
             data: ApiDataModel = kwargs.get('data')
             if len(args) == 2:
                 data: ApiDataModel = args[1]
@@ -71,7 +71,7 @@ def request_data(api_info_id):
                 file=data.test_case.file,
             )
             # try:
-            res_args = func(*args, **kwargs)
+            res_args = await func(*args, **kwargs)
             # except TypeError:
             #     raise CaseParameterError(*ERROR_MSG_0334)
             allure.attach(str(data.request.url), 'URL')
@@ -103,9 +103,10 @@ def timer(func):
     """
 
     @functools.wraps(func)
-    def swapper(*args, **kwargs) -> ResponseModel:
+    async def swapper(*args, **kwargs) -> ResponseModel:
         start = time.time()
-        response: Response = func(*args, **kwargs)
+        response: Response = await func(*args, **kwargs)
+        log.warning(response.json())
         response_time = time.time() - start
         # 计算时间戳毫米级别，如果时间大于number，则打印 函数名称 和运行时间
         if response_time > REQUEST_TIMEOUT_FAILURE_TIME:
@@ -140,8 +141,8 @@ def log_decorator(func):
     """
 
     @functools.wraps(func)
-    def swapper(*args, **kwargs) -> ApiDataModel:
-        data = func(*args, **kwargs)
+    async def swapper(*args, **kwargs) -> ApiDataModel:
+        data = await func(*args, **kwargs)
         # 判断日志开关为开启状态
         if PRINT_EXECUTION_RESULTS:
             _log_msg = f"\n{'=' * 100}\n" \

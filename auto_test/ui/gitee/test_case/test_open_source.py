@@ -3,7 +3,6 @@
 # @Description: 
 # @Time   : 2024-02-20 11:11
 # @Author : 毛鹏
-import time
 
 import allure
 
@@ -23,16 +22,17 @@ class TestOpenSource:
     def teardown_class(self):
         pass
 
+    @pytest.mark.asyncio
     @allure.title('搜索测试项目，并断言项目可以被搜索到')
     @pytest.mark.parametrize("name", ["芒果测试平台", "PytestAutoTest"])
-    @pytest.mark.asyncio
     async def test_open1(self, setup_context_page, name):
+        log.warning(str(type(setup_context_page)))
         login_page = HomePage(setup_context_page, self.data_model)
-        login_page.w_goto()
-        login_page.click_open_source()
+        await login_page.w_goto()
+        await login_page.click_open_source()
         open_source_page = OpenSourcePage(setup_context_page, self.data_model)
-        open_source_page.search_for_open_source_projects(name)
-        time.sleep(3)
+        await open_source_page.search_for_open_source_projects(name)
+        await open_source_page.w_wait_for_timeout(3)
 
 
 if __name__ == '__main__':

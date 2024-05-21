@@ -7,8 +7,8 @@ import json
 import re
 
 import allure
-from playwright.sync_api import Locator
-from playwright.sync_api import Page, BrowserContext
+from playwright.async_api import Locator
+from playwright.async_api import Page, BrowserContext
 from retrying import retry
 
 from exceptions.error_msg import ERROR_MSG_0043, ERROR_MSG_0344, ERROR_MSG_0346
@@ -16,6 +16,7 @@ from exceptions.ui_exception import ElementIsEmptyError, UiElementLocatorError, 
 from sources import SourcesData
 from tools.base_page.web import WebDevice
 from tools.data_processor import DataProcessor
+from tools.log_collector import log
 
 
 class BasePage(WebDevice):
@@ -24,6 +25,7 @@ class BasePage(WebDevice):
                  module_name: str,
                  context_page: tuple[BrowserContext, Page],
                  data_processor: DataProcessor):
+        log.warning(type(context_page))
         context, page = context_page
         super().__init__(page, context, data_processor)
         self.element_list: list[dict] = SourcesData.ui_element[
@@ -34,17 +36,17 @@ class BasePage(WebDevice):
         d = re.DEBUG
 
     @retry(stop_max_attempt_number=5, wait_fixed=1000)
-    def element(self, ele_name: str, is_ope: bool = True) -> Locator:
+    async def element(self, ele_name: str, is_ope: bool = True) -> Locator:
         for element in self.element_list:
             if element.get('ele_name') == ele_name:
                 try:
-                    locator: Locator = eval(f"self.{element.get('locator')}")
+                    locator: Locator = eval(f"await self.{element.get('locator')}")
                 except SyntaxError:
                     raise UiElementLocatorError(*ERROR_MSG_0344)
                 allure.attach(json.dumps(element, ensure_ascii=False), ele_name)
                 # allure.attach(self.page.screenshot(full_page=True), name="失败截图", attachment_type=allure.attachment_type.PNG)
                 if is_ope:
-                    if locator.count() < 1 or locator is None:
+                    if await locator.count() < 1 or locator is None:
                         raise ElementIsEmptyError(*ERROR_MSG_0043,
                                                   value=(element.get('ele_name'), element.get('locator')))
                     return locator.nth(element.get('nth')) if element.get('nth') else locator

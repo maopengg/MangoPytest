@@ -22,6 +22,6 @@ class OpenSourcePage(BasePage):
         super().__init__(project_id, module_name, context_page, data_model.data_processor)
         self.url = urljoin(data_model.base_data_model.host, '/explore')
 
-    def search_for_open_source_projects(self, name: str):
-        self.w_input(self.element('开源搜索框'), name)
-        self.w_click(self.element('搜索按钮'))
+    async def search_for_open_source_projects(self, name: str):
+        await self.w_input(await self.element('开源搜索框'), name)
+        await self.w_click(await self.element('搜索按钮'))
