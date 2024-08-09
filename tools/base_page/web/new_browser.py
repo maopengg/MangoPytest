@@ -56,7 +56,6 @@ class NewBrowser:
         if self.browser is None:
             await self.new_browser()
         context = await self.browser.new_context(no_viewport=True)
-        log.warning(str(f'{type(context)}1'))
         return context, await context.new_page()
 
     async def __search_path(self, ):

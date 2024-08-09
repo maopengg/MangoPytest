@@ -16,7 +16,6 @@ from exceptions.ui_exception import ElementIsEmptyError, UiElementLocatorError, 
 from sources import SourcesData
 from tools.base_page.web import WebDevice
 from tools.data_processor import DataProcessor
-from tools.log_collector import log
 
 
 class BasePage(WebDevice):
@@ -25,7 +24,6 @@ class BasePage(WebDevice):
                  module_name: str,
                  context_page: tuple[BrowserContext, Page],
                  data_processor: DataProcessor):
-        log.warning(type(context_page))
         context, page = context_page
         super().__init__(page, context, data_processor)
         self.element_list: list[dict] = SourcesData.ui_element[

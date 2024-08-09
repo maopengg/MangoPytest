@@ -26,8 +26,7 @@ class TestOpenSource:
     @allure.title('搜索测试项目，并断言项目可以被搜索到')
     @pytest.mark.parametrize("name", ["芒果测试平台", "PytestAutoTest"])
     async def test_open1(self, setup_context_page, name):
-        log.warning(str(type(setup_context_page)))
-        login_page = HomePage(setup_context_page, self.data_model)
+        login_page = HomePage(await setup_context_page, self.data_model)
         await login_page.w_goto()
         await login_page.click_open_source()
         open_source_page = OpenSourcePage(setup_context_page, self.data_model)
@@ -38,3 +37,4 @@ class TestOpenSource:
 if __name__ == '__main__':
     pytest.main(
         [r'D:\GitCode\PytestAutoTest\auto_test\ui\gitee\test_case\test_open_source.py::TestOpenSource'])
+# log.warning(f"类型1：{str(type(await setup_context_page))}")

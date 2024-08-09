@@ -25,6 +25,7 @@ from tools.main_run import MainRun
 
 pytest_command = [
     '-s',
+    '-v',
     '-W',
     'ignore:Module already imported:pytest.PytestWarning',
     '--alluredir',
@@ -41,5 +42,4 @@ test_project = [
     # {'project': ProjectEnum.Mango, 'test_environment': EnvironmentEnum.TEST, 'type': AutoTestTypeEnum.API},
 ]
 
-if __name__ == '__main__':
-    MainRun(test_project=test_project, pytest_command=pytest_command)
+MainRun(test_project=test_project, pytest_command=pytest_command)

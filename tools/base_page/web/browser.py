@@ -30,6 +30,8 @@ class PlaywrightBrowser:
             if url:
                 await self.page.goto(url, timeout=60000)
             else:
+                if self.page is None:
+                    self.page = await self.context.new_page()
                 await self.page.goto(self.url, timeout=60000)
             await asyncio.sleep(2)
         except TimeoutError:

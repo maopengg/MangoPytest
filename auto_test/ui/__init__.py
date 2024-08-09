@@ -19,15 +19,7 @@ global_data_processor = DataProcessor()
 @pytest.fixture(scope='function')
 async def setup_context_page():
     data = NewBrowser(WEBConfigModel(browser_type=BrowserTypeEnum.CHROMIUM))
-    async with await data.new_context_page() as (context, page):
-
-        yield context, page
-    #
-    # try:
-    #     return context, page
-    # finally:
-    #     await context.close()
-    #     await page.close()
+    return await data.new_context_page()
 
 
 async def setup_context_page1():
