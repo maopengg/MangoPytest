@@ -11,12 +11,16 @@ from enums.ui_enum import BrowserTypeEnum
 from models.ui_model import WEBConfigModel
 from tools.base_page.web.new_browser import NewBrowser
 from tools.data_processor import DataProcessor
-from tools.log_collector import log
 
 global_data_processor = DataProcessor()
+
+lock = asyncio.Lock()
 
 
 @pytest.fixture(scope='function')
 async def setup_context_page():
     data = NewBrowser(WEBConfigModel(browser_type=BrowserTypeEnum.CHROMIUM))
-    return await data.new_context_page()
+    async with lock:
+        return await data.new_context_page()
+
+

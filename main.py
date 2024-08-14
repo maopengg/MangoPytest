@@ -31,13 +31,14 @@ pytest_command = [
     '--alluredir',
     './report/tmp',
     "--clean-alluredir",
-    '-n 2'
+    '-n 2',
+    '-p no:warnings'
 ]
 
 test_project = [
-    # {'project': ProjectEnum.WanAndroid, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.UI},
-    # {'project': ProjectEnum.WanAndroid, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.API},
-    # {'project': ProjectEnum.BaiduTranslate, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.API},
+    {'project': ProjectEnum.WanAndroid, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.UI},
+    {'project': ProjectEnum.WanAndroid, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.API},
+    {'project': ProjectEnum.BaiduTranslate, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.API},
     {'project': ProjectEnum.Gitee, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.UI},
     # {'project': ProjectEnum.Mango, 'test_environment': EnvironmentEnum.TEST, 'type': AutoTestTypeEnum.API},
 ]

@@ -8,7 +8,7 @@ import ctypes
 import os
 import string
 from typing import Optional
-
+import traceback
 from playwright._impl._api_types import Error
 from playwright.async_api import async_playwright, Page, BrowserContext, Browser
 
@@ -28,6 +28,7 @@ class NewBrowser:
         self.web_config = web_config
         self.browser_path = ['chrome.exe', 'msedge.exe', 'firefox.exe', '苹果', '360se.exe']
         self.browser: Optional[Browser] = None
+        self.lock = asyncio.Lock()
 
     async def new_browser(self):
         playwright = await async_playwright().start()
@@ -53,11 +54,17 @@ class NewBrowser:
             raise BrowserPathError(*ERROR_MSG_0040, error=error)
 
     async def new_context_page(self) -> tuple[BrowserContext, Page]:
-        if self.browser is None:
-            await self.new_browser()
-        context = await self.browser.new_context(no_viewport=True)
-        return context, await context.new_page()
-
+        async with self.lock:
+            try:
+                if self.browser is None:
+                    log.warning(f'当前的浏览器的值是空的，请注意！')
+                    await self.new_browser()
+                log.warning(f'浏览器对象的值是：{self.browser}')
+                context = await self.browser.new_context(no_viewport=True)
+                return context, await context.new_page()
+            except Exception as error:
+                log.error(str(traceback.print_exc()))
+                log.error(str(error))
     async def __search_path(self, ):
         drives = []
         for letter in string.ascii_uppercase:
@@ -70,6 +77,13 @@ class NewBrowser:
                     return os.path.join(root, self.browser_path[self.web_config.browser_type.value])
 
 
+async def main():
+    data = NewBrowser(WEBConfigModel(browser_type=BrowserTypeEnum.CHROMIUM))
+    for i in range(100):
+        context, page = await data.new_context_page()
+        await page.goto('https://www.baidu.com')
+        await asyncio.sleep(2)
+
+
 if __name__ == '__main__':
-    browser = NewBrowser(WEBConfigModel(browser_type=BrowserTypeEnum.CHROMIUM))
-    asyncio.run(browser.new_context_page())
+    asyncio.run(main())

@@ -9,24 +9,10 @@ import time
 from auto_test.ui import *
 from auto_test.ui.wan_android import WanAndroidDataModel
 from auto_test.ui.wan_android.page_object.login import LoginPage
-
-def custom_test_decorator(title, parametrize_values):
-    def decorator(func):
-        @allure.title(title)
-        @pytest.mark.parametrize("username, password", parametrize_values)
-        @pytest.mark.asyncio
-        async def wrapper(self, setup_context_page, username, password):
-            return await func(self, setup_context_page, username, password)
-        return wrapper
-    return decorator
+from tools.decorator.ui import case_data
 
 
 # 定义用例参数
-login_cases = [
-    ("maopeng", "729164035"),
-    ("maopeng", "7291640351"),
-    ("maopeng", "7291640351")
-]
 @allure.epic('演示-UI自动化-WEB项目-玩安卓')
 @allure.feature('登录模块')
 class TestLogin:
@@ -37,9 +23,14 @@ class TestLogin:
     def teardown_class(self):
         pass
 
-    @custom_test_decorator('玩安卓登录用例', login_cases)
-    async def test_login1(self, setup_context_page, username, password):
-        login_page = LoginPage(await setup_context_page, self.data_model)
+    @case_data('玩安卓登录用例',[
+        {'username': 'maopeng', 'password': '729164035'},
+        {'username': 'maopeng', 'password': '7291640351'},
+        {'username': 'maopeng1', 'password': '729164035'},
+    ])
+    async def test_login1(self, setup_context_page, data):
+        username, password = data['username'], data['password']
+        login_page = LoginPage(setup_context_page, self.data_model)
         await login_page.w_goto()
         await login_page.login(username, password)
         time.sleep(3)
