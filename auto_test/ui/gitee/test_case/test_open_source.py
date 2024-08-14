@@ -29,7 +29,7 @@ class TestOpenSource:
         login_page = HomePage(await setup_context_page, self.data_model)
         await login_page.w_goto()
         await login_page.click_open_source()
-        open_source_page = OpenSourcePage(setup_context_page, self.data_model)
+        open_source_page = OpenSourcePage(await setup_context_page, self.data_model)
         await open_source_page.search_for_open_source_projects(name)
         await open_source_page.w_wait_for_timeout(3)
 

@@ -54,7 +54,7 @@ class TestTranslate(TranslateApi, CaseTool):
         data.test_case.params['sign'] = sign
         data = await self.translate(data)
         assert data.response.response_dict['trans_result'][0]['src'] == "芒果"
-        assert data.response.response_dict['trans_result'][0]['dst'] == "mango"
+        assert data.response.response_dict['trans_result'][0]['dst'] == "Mango"
 
 
 if __name__ == '__main__':

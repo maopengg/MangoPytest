@@ -3,15 +3,30 @@
 # @Description: 
 # @Time   : 2024-02-20 11:11
 # @Author : 毛鹏
-import time
-
 import allure
+import time
 
 from auto_test.ui import *
 from auto_test.ui.wan_android import WanAndroidDataModel
 from auto_test.ui.wan_android.page_object.login import LoginPage
 
+def custom_test_decorator(title, parametrize_values):
+    def decorator(func):
+        @allure.title(title)
+        @pytest.mark.parametrize("username, password", parametrize_values)
+        @pytest.mark.asyncio
+        async def wrapper(self, setup_context_page, username, password):
+            return await func(self, setup_context_page, username, password)
+        return wrapper
+    return decorator
 
+
+# 定义用例参数
+login_cases = [
+    ("maopeng", "729164035"),
+    ("maopeng", "7291640351"),
+    ("maopeng", "7291640351")
+]
 @allure.epic('演示-UI自动化-WEB项目-玩安卓')
 @allure.feature('登录模块')
 class TestLogin:
@@ -22,22 +37,11 @@ class TestLogin:
     def teardown_class(self):
         pass
 
-    @allure.title('正确的账号，正确的密码，进行登录')
-    @pytest.mark.parametrize("username, password", [("maopeng", "729164035")])
-    @pytest.mark.asyncio
+    @custom_test_decorator('玩安卓登录用例', login_cases)
     async def test_login1(self, setup_context_page, username, password):
-        login_page = LoginPage(setup_context_page, self.data_model)
-        login_page.w_goto()
-        login_page.login(username, password)
-        time.sleep(3)
-
-    @allure.title('正确的账号，错误的密码，进行登录')
-    @pytest.mark.parametrize("username, password", [("maopeng", "7291640351")])
-    @pytest.mark.asyncio
-    async def test_login2(self, setup_context_page, username, password):
-        login_page = LoginPage(setup_context_page, self.data_model)
-        login_page.w_goto()
-        login_page.login(username, password)
+        login_page = LoginPage(await setup_context_page, self.data_model)
+        await login_page.w_goto()
+        await login_page.login(username, password)
         time.sleep(3)
 
 

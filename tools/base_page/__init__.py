@@ -16,6 +16,7 @@ from exceptions.ui_exception import ElementIsEmptyError, UiElementLocatorError, 
 from sources import SourcesData
 from tools.base_page.web import WebDevice
 from tools.data_processor import DataProcessor
+from tools.log_collector import log
 
 
 class BasePage(WebDevice):
@@ -36,11 +37,16 @@ class BasePage(WebDevice):
     @retry(stop_max_attempt_number=5, wait_fixed=1000)
     async def element(self, ele_name: str, is_ope: bool = True) -> Locator:
         for element in self.element_list:
+            log.error(json.dumps(element, ensure_ascii=False))
             if element.get('ele_name') == ele_name:
                 try:
-                    locator: Locator = eval(f"await self.{element.get('locator')}")
+                    if element.get('method') == 0:
+                        locator = self.page.locator(f'xpath={element.get("locator")}')
+
+                    else:
+                        locator: Locator = eval(f"await self.page.{element.get('locator')}")
                 except SyntaxError:
-                    raise UiElementLocatorError(*ERROR_MSG_0344)
+                    raise UiElementLocatorError(*ERROR_MSG_0344, value=(json.dumps(element, ensure_ascii=False), ))
                 allure.attach(json.dumps(element, ensure_ascii=False), ele_name)
                 # allure.attach(self.page.screenshot(full_page=True), name="失败截图", attachment_type=allure.attachment_type.PNG)
                 if is_ope:

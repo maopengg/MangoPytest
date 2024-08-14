@@ -20,19 +20,3 @@ global_data_processor = DataProcessor()
 async def setup_context_page():
     data = NewBrowser(WEBConfigModel(browser_type=BrowserTypeEnum.CHROMIUM))
     return await data.new_context_page()
-
-
-async def setup_context_page1():
-    data = NewBrowser(WEBConfigModel(browser_type=BrowserTypeEnum.CHROMIUM))
-    context, page = await data.new_context_page()
-    log.warning(str(type(context)))
-    log.warning(str(type(page)))
-    try:
-        return context, page
-    finally:
-        await context.close()
-        await page.close()
-
-
-if __name__ == '__main__':
-    asyncio.run(setup_context_page1())
