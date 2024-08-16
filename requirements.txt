@@ -10,6 +10,7 @@ playwright==1.32.1
 uiautomator2 == 2.16.22
 weditor==0.6.4
 Faker==24.1.0
+pydantic==2.6.3
 
 assertpy==1.1
 pydantic==2.6.0
