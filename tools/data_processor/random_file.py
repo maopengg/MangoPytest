@@ -24,7 +24,7 @@ class RandomFileData:
     #     """传入文件名称，返回文件对象,参数：file_name"""
     #     file_name = kwargs.get('data')
     #     project_id = kwargs.get('project_id')
-    #     HttpApi().download_file(project_id, file_name)
+    #     HttpClient().download_file(project_id, file_name)
     #     file_path = os.path.join(GetPath.get_upload_files(), file_name)
     #     if os.path.exists(file_path):
     #         return file_path
