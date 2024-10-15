@@ -4,8 +4,7 @@ from tools.base_page.web.browser import PlaywrightBrowser
 from tools.base_page.web.element import PlaywrightElement
 from tools.base_page.web.input_device import PlaywrightDeviceInput
 from tools.base_page.web.page import PlaywrightPage
-from tools.data_processor import DataProcessor
-
+from mangokit import DataProcessor
 
 class WebDevice(PlaywrightBrowser, PlaywrightElement, PlaywrightPage, PlaywrightDeviceInput):
 

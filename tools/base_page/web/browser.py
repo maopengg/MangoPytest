@@ -5,7 +5,6 @@
 # @Author : 毛鹏
 import asyncio
 
-from playwright._impl._api_types import TimeoutError
 from playwright.async_api import Locator
 from playwright.async_api import Page, BrowserContext
 

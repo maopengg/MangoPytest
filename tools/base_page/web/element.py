@@ -6,9 +6,7 @@
 
 import time
 
-from playwright._impl._api_types import Error
-from playwright.async_api import Locator
-from playwright.async_api import Page, BrowserContext
+from playwright.async_api import Page, BrowserContext, Locator, Error
 
 from exceptions.error_msg import ERROR_MSG_0035
 from exceptions.ui_exception import UploadElementInputError

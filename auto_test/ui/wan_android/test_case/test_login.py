@@ -4,12 +4,12 @@
 # @Time   : 2024-02-20 11:11
 # @Author : 毛鹏
 import allure
-import time
 
 from auto_test.ui import *
 from auto_test.ui.wan_android import WanAndroidDataModel
 from auto_test.ui.wan_android.page_object.login import LoginPage
 from tools.decorator.ui import case_data
+from tools.log_collector import log
 
 
 # 定义用例参数
@@ -29,11 +29,11 @@ class TestLogin:
         {'username': 'maopeng1', 'password': '729164035'},
     ])
     async def test_login1(self, setup_context_page, data):
+        log.debug(str(f'类型：{type(setup_context_page)},data：{data}'))
         username, password = data['username'], data['password']
         login_page = LoginPage(setup_context_page, self.data_model)
         await login_page.w_goto()
         await login_page.login(username, password)
-        time.sleep(3)
 
 
 if __name__ == '__main__':

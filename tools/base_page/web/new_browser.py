@@ -8,19 +8,15 @@ import ctypes
 import os
 import string
 from typing import Optional
-import traceback
 
 from mangokit import singleton
-from playwright._impl._api_types import Error
-from playwright.async_api import async_playwright, Page, BrowserContext, Browser
+from playwright.async_api import async_playwright, Page, BrowserContext, Browser, Error
 
 from enums.ui_enum import BrowserTypeEnum
 from exceptions.error_msg import ERROR_MSG_0039, ERROR_MSG_0040
 from exceptions.ui_exception import BrowserPathError
 from models.ui_model import WEBConfigModel
 from settings.settings import BROWSER_IS_MAXIMIZE
-from tools.decorator.singleton import singleton
-from tools.log_collector import log
 
 
 @singleton
@@ -57,16 +53,11 @@ class NewBrowser:
 
     async def new_context_page(self) -> tuple[BrowserContext, Page]:
         async with self.lock:
-            try:
-                if self.browser is None:
-                    log.warning(f'当前的浏览器的值是空的，请注意！')
-                    await self.new_browser()
-                log.warning(f'浏览器对象的值是：{self.browser}')
-                context = await self.browser.new_context(no_viewport=True)
-                return context, await context.new_page()
-            except Exception as error:
-                log.error(str(traceback.print_exc()))
-                log.error(str(error))
+            if self.browser is None:
+                await self.new_browser()
+            context = await self.browser.new_context(no_viewport=True)
+            return context, await context.new_page()
+
     async def __search_path(self, ):
         drives = []
         for letter in string.ascii_uppercase:

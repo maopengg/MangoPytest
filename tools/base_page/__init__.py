@@ -16,8 +16,6 @@ from exceptions.error_msg import ERROR_MSG_0043, ERROR_MSG_0344, ERROR_MSG_0346
 from exceptions.ui_exception import ElementIsEmptyError, UiElementLocatorError, UiElementIsNullError
 from sources import SourcesData
 from tools.base_page.web import WebDevice
-from tools.data_processor import DataProcessor
-from tools.log_collector import log
 from tools.log_collector import log
 from mangokit import DataProcessor
 
@@ -39,9 +37,8 @@ class BasePage(WebDevice):
     @retry(stop_max_attempt_number=5, wait_fixed=1000)
     async def element(self, ele_name: str, is_ope: bool = True) -> Locator:
         for element in self.element_list:
-            log.error(json.dumps(element, ensure_ascii=False))
             if element.get('ele_name') == ele_name:
-                if element.get('method') == 0:
+                if element.get('method') == ElementExpEnum.XPATH.value:
                     locator = self.page.locator(f'xpath={element.get("locator")}')
                 else:
                     try:
@@ -50,6 +47,7 @@ class BasePage(WebDevice):
                         try:
                             return eval(f"self.page.{element.get('locator')}")
                         except SyntaxError:
+                            log.error(json.dumps(element, ensure_ascii=False))
                             raise UiElementLocatorError(*ERROR_MSG_0344, value=(json.dumps(element, ensure_ascii=False), ))
                 allure.attach(json.dumps(element, ensure_ascii=False), ele_name)
                 # allure.attach(self.page.screenshot(full_page=True), name="失败截图", attachment_type=allure.attachment_type.PNG)
