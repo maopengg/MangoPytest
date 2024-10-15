@@ -3,16 +3,14 @@
 # @Description: 
 # @Time   : 2024-03-17 19:10
 # @Author : 毛鹏
-
+from mangokit import MysqlConnect, MysqlConingModel
 from pydantic_core._pydantic_core import ValidationError
 
 from auto_test.project_enum import ProjectPaths
 from enums.tools_enum import EnvironmentEnum, StatusEnum
 from exceptions.error_msg import *
 from exceptions.ui_exception import UiInitialError
-from models.tools_model import MysqlConingModel
 from sources import SourcesData
-from tools.database.mysql_connect import MysqlConnect
 from tools.log_collector import log
 
 

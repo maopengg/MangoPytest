@@ -1,0 +1,42 @@
+POST https://app-api.deepal.com.cn/appapi/v1/m_app/comment/1816374053604450306/praises HTTP/1.1
+Host: app-api.deepal.com.cn
+Connection: keep-alive
+Content-Length: 2
+X-Deepal-Crypto-Noncestr: 1722414303411A5B22FB4A1497CB5F4E
+weixinVersion: 3.9.11
+fingerprint: oKGiK4rwv_GtMIylrtUM59zEv1c8
+appType: mp
+X-Deepal-Crypto-Type: Hash
+authorization: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJsb2dpblR5cGUiOiJmcm9udGVkIiwibG9naW5JZCI6MTY3ODYzNzcxNzU1MzUzMjkzMCwicm5TdHIiOiIzbEQ3VXdsU0tYeE04bDd5ZjlUT3FDMkhzYUltSlJCTiJ9.Ai7UakTHxi4NT-1W5nstBQe2gIx5bkZ-kfMwnplwIPg
+osVersion: Windows 11 x64
+X-Deepal-Crypto-Timestamp: 1722414303411
+uid: 04fe02156c2065e00a7763d61700ce28
+X-Deepal-Crypto-Signature: d311b8179d3fde4e7015520d9bdcddc3
+deviceName: microsoft
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 MicroMessenger/7.0.20.1781(0x6700143B) NetType/WIFI MiniProgramEnv/Windows WindowsWechat/WMPF WindowsWechat(0x63090b19)XWEB/9193
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+xweb_xhr: 1
+appId: wx0c0217402bdf4059
+appVersion: 1.6.9
+Sec-Fetch-Site: cross-site
+Sec-Fetch-Mode: cors
+Sec-Fetch-Dest: empty
+Referer: https://servicewechat.com/wx0c0217402bdf4059/96/page-frame.html
+Accept-Encoding: gzip, deflate, br
+Accept-Language: zh-CN,zh;q=0.9
+
+
+HTTP/1.1 200
+Date: Wed, 31 Jul 2024 08:25:03 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+Vary: Accept-Encoding
+X-Api-RequestId: 6e30ab43b268d5bee5d6e9a5e421d57e
+X-Api-ID: api-9c0htqap
+X-Trace-Id: 00000000000000000000000000000000
+X-Deepal-Resp-Signature: af31f58e125efd4f0b315dfed9b1bd3f
+Access-Control-Expose-Headers: *
+Content-Encoding: gzip
+

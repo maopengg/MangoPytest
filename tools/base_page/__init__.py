@@ -11,13 +11,15 @@ from playwright.async_api import Locator
 from playwright.async_api import Page, BrowserContext
 from retrying import retry
 
+from enums.ui_enum import ElementExpEnum
 from exceptions.error_msg import ERROR_MSG_0043, ERROR_MSG_0344, ERROR_MSG_0346
 from exceptions.ui_exception import ElementIsEmptyError, UiElementLocatorError, UiElementIsNullError
 from sources import SourcesData
 from tools.base_page.web import WebDevice
 from tools.data_processor import DataProcessor
 from tools.log_collector import log
-
+from tools.log_collector import log
+from mangokit import DataProcessor
 
 class BasePage(WebDevice):
 

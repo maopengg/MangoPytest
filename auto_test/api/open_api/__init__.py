@@ -1,13 +1,12 @@
 from urllib.parse import urljoin
 
+from mangokit import DataProcessor, singleton
 from pydantic import BaseModel, ConfigDict
 
 from auto_test.project_enum import WanAndroidEnum
 from enums.tools_enum import EnvironmentEnum
 from models.api_model import ApiBaseDataModel
 from tools.base_request.request_tool import RequestTool
-from tools.data_processor import DataProcessor
-from tools.decorator.singleton import singleton
 from tools.log_collector import log
 from tools.other.project_public_methods import ProjectPublicMethods
 

@@ -7,11 +7,11 @@ import asyncio
 
 import allure
 import pytest
+from mangokit import DataProcessor
 
 from auto_test.api.wan_android.modules_api.login import LoginAPI
 from models.api_model import ApiDataModel
 from tools.base_request.case_tool import CaseTool
-from tools.data_processor import DataProcessor
 from tools.decorator.response import case_data
 
 

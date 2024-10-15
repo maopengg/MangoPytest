@@ -131,4 +131,3 @@ class DocumentData:
 
 if __name__ == '__main__':
     print(DocumentData().ui_element())
-    print(DocumentData().api_test_case())

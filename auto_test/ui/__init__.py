@@ -6,11 +6,11 @@
 import asyncio
 
 import pytest
+from mangokit import DataProcessor
 
 from enums.ui_enum import BrowserTypeEnum
 from models.ui_model import WEBConfigModel
 from tools.base_page.web.new_browser import NewBrowser
-from tools.data_processor import DataProcessor
 
 global_data_processor = DataProcessor()
 

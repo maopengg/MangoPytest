@@ -9,6 +9,8 @@ import os
 import string
 from typing import Optional
 import traceback
+
+from mangokit import singleton
 from playwright._impl._api_types import Error
 from playwright.async_api import async_playwright, Page, BrowserContext, Browser
 
