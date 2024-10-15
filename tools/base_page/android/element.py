@@ -5,9 +5,9 @@
 # @Author : 毛鹏
 from autotest.ui.driver.android.android_base import AndroidBase, ElementNotFoundError, \
     ElementNotDisappearError
+from tools.data_processor import CacheTool
 from uiautomator2 import UiObject
 
-from tools.data_processor import CacheTool
 from tools.log_collector import log
 
 

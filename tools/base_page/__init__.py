@@ -7,15 +7,17 @@ import json
 import re
 
 import allure
+from mangokit import DataProcessor
 from playwright.sync_api import Locator
 from playwright.sync_api import Page, BrowserContext
 from retrying import retry
 
+from enums.ui_enum import ElementExpEnum
 from exceptions.error_msg import ERROR_MSG_0043, ERROR_MSG_0344, ERROR_MSG_0346
 from exceptions.ui_exception import ElementIsEmptyError, UiElementLocatorError, UiElementIsNullError
 from sources import SourcesData
 from tools.base_page.web import WebDevice
-from tools.data_processor import DataProcessor
+from tools.log_collector import log
 
 
 class BasePage(WebDevice):
@@ -31,6 +33,8 @@ class BasePage(WebDevice):
                     SourcesData.ui_element['module_name'] == module_name)].to_dict(orient='records')
         if not self.element_list:
             raise UiElementIsNullError(*ERROR_MSG_0346)
+        else:
+            print(self.element_list)
         d = re.DEBUG
 
     @retry(stop_max_attempt_number=5, wait_fixed=1000)
@@ -38,7 +42,13 @@ class BasePage(WebDevice):
         for element in self.element_list:
             if element.get('ele_name') == ele_name:
                 try:
-                    locator: Locator = eval(f"self.{element.get('locator')}")
+                    if element.get('method') == ElementExpEnum.LOCATOR.value:
+                        locator: Locator = eval(f"self.page.{element.get('locator')}")
+                    elif element.get('method') == ElementExpEnum.XPATH.value:
+                        print(f'xpath={element}')
+                        locator: Locator = self.page.locator(f'xpath={element.get('locator')}')
+                    else:
+                        raise ElementIsEmptyError(300, '还未支持这个元素定位方式')
                 except SyntaxError:
                     raise UiElementLocatorError(*ERROR_MSG_0344)
                 allure.attach(json.dumps(element, ensure_ascii=False), ele_name)

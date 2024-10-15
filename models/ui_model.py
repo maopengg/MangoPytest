@@ -3,12 +3,10 @@
 # @Description: 
 # @Time   : 2024-01-17 11:11
 # @Author : 毛鹏
-
+from mangokit import MysqlConingModel, MysqlConnect
 from pydantic import BaseModel, ConfigDict
 
 from enums.ui_enum import ElementExpEnum, BrowserTypeEnum
-from models.tools_model import MysqlConingModel
-from tools.database.mysql_connect import MysqlConnect
 
 
 class WEBConfigModel(BaseModel):

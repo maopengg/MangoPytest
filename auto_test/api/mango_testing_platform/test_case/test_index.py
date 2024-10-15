@@ -10,7 +10,7 @@ import pytest
 from auto_test.api.mango_testing_platform.modules_api.index import IndexAPI
 from models.api_model import ApiDataModel
 from tools.base_request.case_tool import CaseTool
-from tools.data_processor import DataProcessor
+from mangokit import DataProcessor, singleton
 from tools.decorator.response import case_data
 
 

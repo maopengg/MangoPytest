@@ -22,10 +22,10 @@ pip install -r requirements.txt
 2. xxxx
 3. xxxx
 
-
 #### 加作者微信，进芒果自动化测试群(记得备注：pytestAutoTest。否则可能会不通过哦)
+
 ![img_8.png](img_8.png)
 
-
 #### 如果觉得项目对你有帮助，那就请我喝咖啡，哈哈哈
+
 ![微信.jpg](微信.jpg)

@@ -10,14 +10,6 @@ from auto_test.project_enum import ProjectEnum
 from enums.tools_enum import AutoTestTypeEnum, EnvironmentEnum
 
 
-class MysqlConingModel(BaseModel):
-    host: str
-    port: int
-    user: str
-    password: str
-    database: str | None
-
-
 class CaseRunModel(BaseModel):
     project: ProjectEnum
     type: AutoTestTypeEnum

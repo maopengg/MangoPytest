@@ -6,12 +6,10 @@
 
 from urllib.parse import urljoin
 
-import requests
+from mangokit import requests, DataProcessor
 from requests.models import Response
 
 from models.api_model import ApiDataModel, RequestModel, ResponseModel
-from settings.settings import PROXY
-from tools.data_processor import DataProcessor
 from tools.decorator.response import timer, log_decorator
 
 
@@ -57,7 +55,6 @@ class RequestTool:
             data=request_model.data,
             json=request_model.json_data,
             files=request_model.file,
-            proxies=PROXY if PROXY else None
         )
 
     @staticmethod
@@ -89,5 +86,4 @@ class RequestTool:
             data=data.data,
             json=data.json_data,
             files=data.file,
-            proxies=PROXY if PROXY else None
         )

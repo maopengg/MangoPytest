@@ -8,6 +8,7 @@ import os
 import string
 from typing import Optional
 
+from mangokit import singleton
 from playwright._impl._api_types import Error
 from playwright.sync_api import sync_playwright, Page, BrowserContext, Browser
 
@@ -16,7 +17,6 @@ from exceptions.error_msg import ERROR_MSG_0039, ERROR_MSG_0040
 from exceptions.ui_exception import BrowserPathError
 from models.ui_model import WEBConfigModel
 from settings.settings import BROWSER_IS_MAXIMIZE
-from tools.decorator.singleton import singleton
 
 
 @singleton

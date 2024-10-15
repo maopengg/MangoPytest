@@ -3,9 +3,9 @@
 # @Description: 
 # @Time   : 2023-04-26 22:22
 # @Author : 毛鹏
-import time
 from typing import Optional
 
+import time
 from playwright._impl._api_types import Error
 from playwright.sync_api import Locator
 from playwright.sync_api import Page, BrowserContext

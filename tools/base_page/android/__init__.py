@@ -12,6 +12,7 @@ from autotest.ui.driver.android.element import UiautomatorElementOperation
 from autotest.ui.driver.android.equipment import UiautomatorEquipmentDevice
 from autotest.ui.driver.android.page import UiautomatorPage
 from autotest.ui.driver.web.element_assertion import PlaywrightAssertion
+from mangokit import DataProcessor, MysqlConingModel
 from models.socket_model.ui_model import AndroidConfigModel
 from models.socket_model.ui_model import ElementModel, ElementResultModel
 from retrying import retry
@@ -23,11 +24,11 @@ from uiautomator2.xpath import XPathSelector
 
 from enums.tools_enum import StatusEnum
 from enums.ui_enum import ElementExpEnum, ElementAssEnum
+from exceptions.error_msg import ERROR_MSG_0023
 from exceptions.ui_exception import *
-from models.tools_model import MysqlConingModel
-from tools import Initialization
+from tools import InitPath
 from tools.assertion.public_assertion import PublicAssertion
-from tools.data_processor import DataProcessor
+from tools.log_collector import log
 
 
 class AndroidDriver(UiautomatorEquipmentDevice,
@@ -170,7 +171,7 @@ class AndroidDriver(UiautomatorEquipmentDevice,
         logger.error(f'元素：{self.element.ele_name_a} 操作失败\n'
                      f'报错信息：{e}\n'
                      f'元素对象：{self.element.dict()}\n')
-        path = rf'{Initialization.get_log_screenshot()}\{self.element.ele_name_a}{DataProcessor.get_deta_hms()}.jpg'
+        path = rf'{InitPath.get_log_screenshot()}\{self.element.ele_name_a}{DataProcessor.get_deta_hms()}.jpg'
         self.a_screenshot(path)
         self.element_test_result.msg = msg
         self.element_test_result.picture_path = path
@@ -187,7 +188,7 @@ class AndroidDriver(UiautomatorEquipmentDevice,
         if value is not None:
             self.element.ope_value[key] = value
         else:
-            logger.error(f'操作-{self.element.ele_name_a}走到了这里，请检查。{self.element.model_dump_json()}')
+            log.error(f'操作-{self.element.ele_name_a}走到了这里，请检查。{self.element.model_dump_json()}')
 
     @retry(stop_max_attempt_number=3, wait_fixed=2000)
     def __ass(self, key, expect):
@@ -200,4 +201,4 @@ class AndroidDriver(UiautomatorEquipmentDevice,
         if value is not None:
             self.element.ass_value[key] = value
         else:
-            logger.error(f'断言-{self.element.ele_name_a}走到了这里，请检查。{self.element.model_dump_json()}')
+            log.error(f'断言-{self.element.ele_name_a}走到了这里，请检查。{self.element.model_dump_json()}')

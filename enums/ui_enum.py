@@ -36,9 +36,9 @@ class ElementExpEnum(BaseEnum):
 
     @classmethod
     def obj(cls):
-        return {0: "W_XPATH",
+        return {0: "XPATH",
                 1: "W_TestID",
-                2: "W_定位器",
+                2: "定位器",
                 3: "W_文本",
                 4: "W_占位符",
                 5: "W_标签",

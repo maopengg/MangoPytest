@@ -29,7 +29,8 @@ class LoginAPI(RequestTool):
 if __name__ == '__main__':
     test_data = ApiDataModel(base_data=MangoDataModel().base_data_model,
                              test_case=TestCaseModel.get_obj(
-                                 {"id": 6, "project_id": 7, "name": "正确的账号和密码进行登录", "params": None, "data": None,
+                                 {"id": 6, "project_id": 7, "name": "正确的账号和密码进行登录", "params": None,
+                                  "data": None,
                                   "json_data": {"username": "17798339533", "password": "1234567"}, "file": None,
                                   "other_data": None, "ass_response_whole": None, "ass_response_value": None,
                                   "ass_sql": None, "front_sql": None, "posterior_sql": None, "posterior_response": None,
