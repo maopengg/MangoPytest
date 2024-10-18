@@ -6,8 +6,7 @@
 from typing import Optional
 
 import time
-from playwright._impl._api_types import Error
-from playwright.sync_api import Locator
+from playwright.sync_api import Locator, Error
 from playwright.sync_api import Page, BrowserContext
 
 from exceptions.error_msg import ERROR_MSG_0035, ERROR_MSG_0036

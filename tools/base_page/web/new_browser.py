@@ -9,8 +9,7 @@ import string
 from typing import Optional
 
 from mangokit import singleton
-from playwright._impl._api_types import Error
-from playwright.sync_api import sync_playwright, Page, BrowserContext, Browser
+from playwright.sync_api import sync_playwright, Page, BrowserContext, Browser, Error
 
 from enums.ui_enum import BrowserTypeEnum
 from exceptions.error_msg import ERROR_MSG_0039, ERROR_MSG_0040

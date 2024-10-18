@@ -4,7 +4,6 @@
 # @Time   : 2023-04-25 22:33
 # @Author : 毛鹏
 
-from playwright._impl._api_types import TimeoutError
 from playwright.sync_api import Locator
 from playwright.sync_api import Page, BrowserContext
 

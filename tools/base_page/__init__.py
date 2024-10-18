@@ -34,7 +34,7 @@ class BasePage(WebDevice):
         if not self.element_list:
             raise UiElementIsNullError(*ERROR_MSG_0346)
         else:
-            print(self.element_list)
+            pass
         d = re.DEBUG
 
     @retry(stop_max_attempt_number=5, wait_fixed=1000)
@@ -45,8 +45,8 @@ class BasePage(WebDevice):
                     if element.get('method') == ElementExpEnum.LOCATOR.value:
                         locator: Locator = eval(f"self.page.{element.get('locator')}")
                     elif element.get('method') == ElementExpEnum.XPATH.value:
-                        print(f'xpath={element}')
-                        locator: Locator = self.page.locator(f'xpath={element.get('locator')}')
+                        ele = element.get('locator')
+                        locator: Locator = self.page.locator(f'xpath={ele}')
                     else:
                         raise ElementIsEmptyError(300, '还未支持这个元素定位方式')
                 except SyntaxError:
