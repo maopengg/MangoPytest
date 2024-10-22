@@ -1,6 +1,14 @@
 # -*- coding: utf-8 -*-
-# @Project: MangoServer
-# @Description: 
-# @Time   : 2024-04-06 21:14
-# @Author : 毛鹏
-my_dict = {'key1': 'value1', 'key2': 'value2'}
+
+import pytest
+
+
+def data():
+    return [('ha', 't', 'hat'), ('h', 'a', 'ha'), ('q', 'd', 'qd')]
+
+
+class TestParamMore:
+    @pytest.mark.parametrize("a, b, c", data())
+    def test001(self, a, b, c):
+        print(f"test001：{type(a)}-{type(b)}-{type(c)}")
+        assert a + b == c
