@@ -56,34 +56,3 @@ class RequestTool:
             json=request_model.json_data,
             files=request_model.file,
         )
-
-    @staticmethod
-    def internal_http(url: str,
-                      method: str,
-                      headers: dict | None = None,
-                      params: dict | None = None,
-                      data: str | dict | None = None,
-                      json: dict | None = None,
-                      file: dict | None = None) -> Response:
-        """
-        内部使用的全局请求统一处理
-        @return: ApiDataModel
-        """
-        data = RequestModel(
-            url=url,
-            method=method,
-            headers=headers,
-            params=params,
-            data=data,
-            json_data=json,
-            file=file,
-        )
-        return requests.request(
-            method=data.method,
-            url=data.url,
-            headers=data.headers,
-            params=data.params,
-            data=data.data,
-            json=data.json_data,
-            files=data.file,
-        )

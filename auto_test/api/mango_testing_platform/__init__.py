@@ -1,12 +1,11 @@
 from urllib.parse import urljoin
 
-from mangokit import DataProcessor, singleton
+from mangokit import DataProcessor, singleton, requests
 from pydantic import BaseModel, ConfigDict
 
 from auto_test.project_enum import MangoTestingPlatformEnum
 from enums.tools_enum import EnvironmentEnum
 from models.api_model import ApiBaseDataModel
-from tools.base_request.request_tool import RequestTool
 from tools.log import log
 from tools.project_public_methods import ProjectPublicMethods
 
@@ -46,10 +45,10 @@ def data_init():
     )
     login_url = f'login'
     try:
-        response = RequestTool.internal_http(url=urljoin(test_object.get('host'), login_url),
-                                             method="POST",
-                                             headers=data_model.headers,
-                                             data=data_model.user_info)
+        response = requests.request(url=urljoin(test_object.get('host'), login_url),
+                                    method="POST",
+                                    headers=data_model.headers,
+                                    data=data_model.user_info)
         data_model.headers['Authorization'] = response.json()['data']['token']
         data_model.base_data_model.headers = data_model.headers
         log.info(f'{MangoTestingPlatformEnum.NAME.value}的API在自动化基础信息设置完成！')

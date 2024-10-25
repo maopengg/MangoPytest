@@ -4,12 +4,13 @@
 # @Time   : 2022-11-04 22:05
 # @Author : 毛鹏
 
+from mangokit import requests
+
 from enums.tools_enum import ClientNameEnum
 from exceptions.api_exception import SendMessageError
 from exceptions.error_msg import ERROR_MSG_0018, ERROR_MSG_0020, ERROR_MSG_0013, ERROR_MSG_0014, ERROR_MSG_0019
 from exceptions.tools_exception import ValueTypeError
 from models.tools_model import WeChatNoticeModel, TestReportModel
-from tools.base_request.request_tool import RequestTool
 from tools.log import log
 
 
@@ -56,7 +57,7 @@ class WeChatSend:
         :return:
         """
         _data = {"msgtype": "markdown", "markdown": {"content": content}}
-        res = RequestTool.internal_http(url=self.notice_config.webhook, method='POST', json=_data, headers=self.headers)
+        res = requests.post(url=self.notice_config.webhook, json=_data, headers=self.headers)
         if res.json()['errcode'] != 0:
             log.error(res.text)
             raise SendMessageError(*ERROR_MSG_0018)
@@ -68,7 +69,7 @@ class WeChatSend:
         """
 
         _data = {"msgtype": "file", "file": {"media_id": self.__upload_file(file)}}
-        res = RequestTool.internal_http(url=self.notice_config.webhook, method='POST', json=_data, headers=self.headers)
+        res = requests.post(url=self.notice_config.webhook, json=_data, headers=self.headers)
         if res.json()['errcode'] != 0:
             log.error(res.json())
             raise SendMessageError(*ERROR_MSG_0020)
@@ -80,8 +81,8 @@ class WeChatSend:
         :return:
         """
         data = {"file": open(file, "rb")}
-        res = RequestTool.internal_http(url=self.notice_config.webhook, method='POST', file=data,
-                                        headers=self.headers).json()
+        res = requests.post(url=self.notice_config.webhook, file=data,
+                            headers=self.headers).json()
         return res['media_id']
 
     def send_text(self, content, mentioned_mobile_list=None):
@@ -99,8 +100,8 @@ class WeChatSend:
             if len(mentioned_mobile_list) >= 1:
                 for i in mentioned_mobile_list:
                     if isinstance(i, str):
-                        res = RequestTool.internal_http(url=self.notice_config.webhook, method='POST', json=_data,
-                                                        headers=self.headers)
+                        res = requests.post(url=self.notice_config.webhook, json=_data,
+                                            headers=self.headers)
                         if res.json()['errcode'] != 0:
                             log.error(res.json())
                             raise SendMessageError(*ERROR_MSG_0019)

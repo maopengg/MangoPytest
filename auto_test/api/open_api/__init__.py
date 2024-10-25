@@ -1,6 +1,6 @@
 from urllib.parse import urljoin
 
-from mangokit import DataProcessor, singleton
+from mangokit import DataProcessor, singleton, requests
 from pydantic import BaseModel, ConfigDict
 
 from auto_test.project_enum import WanAndroidEnum
@@ -46,10 +46,10 @@ def data_init():
     )
     login_url = f'user/login'
 
-    response = RequestTool.internal_http(url=urljoin(test_object.get('host'), login_url),
-                                         method="POST",
-                                         headers=data_model.headers,
-                                         data=data_model.user_info)
+    response = requests.request(url=urljoin(test_object.get('host'), login_url),
+                                method="POST",
+                                headers=data_model.headers,
+                                data=data_model.user_info)
     cookies = ''
     for k, v in response.cookies.items():
         _cookie = k + "=" + v + ";"

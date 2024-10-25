@@ -6,6 +6,7 @@
 import json
 
 import pandas
+from mangokit import requests
 
 from enums.api_enum import MethodEnum
 from enums.tools_enum import NoticeEnum, EnvironmentEnum, ClientEnum, StatusEnum
@@ -34,8 +35,7 @@ class DocumentData:
         headers = {
             'Content-Type': 'application/json'
         }
-        from tools.base_request.request_tool import RequestTool
-        response = RequestTool.internal_http(url, "POST", headers=headers, data=payload)
+        response = requests.post(url, headers=headers, data=payload)
         self.headers['Authorization'] = f'Bearer {response.json()["tenant_access_token"]}'
 
     def project(self):
@@ -117,13 +117,12 @@ class DocumentData:
         return df
 
     def cls(self, url):
-        from tools.base_request.request_tool import RequestTool
 
-        response = RequestTool.internal_http(url, "GET", headers=self.headers)
+        response = requests.get(url, headers=self.headers)
         response_dict = response.json()
         if response_dict.get('code') != 0:
             self.get_token()
-            response = RequestTool.internal_http(url, "GET", headers=self.headers)
+            response = requests.get(url, headers=self.headers)
             response_dict = response.json()
         data = response_dict['data']['valueRanges'][0]['values']
         return pandas.DataFrame(data[1:], columns=data[0])
