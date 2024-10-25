@@ -1,13 +1,12 @@
+from playwright.async_api import Page, BrowserContext
+
+from tools.base_page.web.browser import PlaywrightBrowser
+from tools.base_page.web.element import PlaywrightElement
+from tools.base_page.web.input_device import PlaywrightDeviceInput
+from tools.base_page.web.page import PlaywrightPage
 from mangokit import DataProcessor
-from playwright.sync_api import Page, BrowserContext
 
-from tools.base_page.web.device_Input import PlaywrightDeviceInput
-from tools.base_page.web.element_operation import PlaywrightElementOperation
-from tools.base_page.web.operation_browser import PlaywrightOperationBrowser
-from tools.base_page.web.operation_page import PlaywrightPageOperation
-
-
-class WebDevice(PlaywrightPageOperation, PlaywrightOperationBrowser, PlaywrightElementOperation, PlaywrightDeviceInput):
+class WebDevice(PlaywrightBrowser, PlaywrightElement, PlaywrightPage, PlaywrightDeviceInput):
 
     def __init__(self, page: Page, context: BrowserContext, data_processor: DataProcessor):
         self.page: Page = page

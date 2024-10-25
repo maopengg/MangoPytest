@@ -24,22 +24,22 @@ from tools.main_run import MainRun
 """
 pytest_command = [
     '-s',
+    '-v',
     '-W',
     'ignore:Module already imported:pytest.PytestWarning',
     '--alluredir',
     './report/tmp',
     "--clean-alluredir",
-    '-n 3',
-    '-v',
+    '-n 2',
+    '-p no:warnings'
 ]
 
 test_project = [
-    # {'project': ProjectEnum.WanAndroid, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.UI},
+    {'project': ProjectEnum.WanAndroid, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.UI},
     # {'project': ProjectEnum.WanAndroid, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.API},
     # {'project': ProjectEnum.BaiduTranslate, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.API},
-    {'project': ProjectEnum.Gitee, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.UI},
+    # {'project': ProjectEnum.Gitee, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.UI},
     # {'project': ProjectEnum.Mango, 'test_environment': EnvironmentEnum.TEST, 'type': AutoTestTypeEnum.API},
 ]
 
-if __name__ == '__main__':
-    MainRun(test_project=test_project, pytest_command=pytest_command)
+MainRun(test_project=test_project, pytest_command=pytest_command)

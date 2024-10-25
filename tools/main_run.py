@@ -3,10 +3,7 @@
 # @Description:
 # @Time   : 2024-02-19 10:07
 # @Author : 毛鹏
-# !/usr/bin/env python
-# -*- coding: utf-8 -*-
-# @Time   : 2023/08/07 11:01
-# @Author :
+
 import os
 
 import pytest

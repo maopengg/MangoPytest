@@ -13,13 +13,13 @@ class LoginAPI(RequestTool):
     data_model = WanAndroidDataModel()
 
     @request_data(1)
-    def api_login(self, data: ApiDataModel) -> ApiDataModel:
+    async def api_login(self, data: ApiDataModel) -> ApiDataModel:
         """
         登录接口
         @param data: ApiDataModel
         @return: ApiDataModel
         """
-        return self.http(data)
+        return await self.http(data)
 
-    def api_reset_password(self) -> ApiDataModel:
+    async def api_reset_password(self) -> ApiDataModel:
         pass

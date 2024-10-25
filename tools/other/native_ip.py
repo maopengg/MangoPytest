@@ -20,3 +20,7 @@ def get_host_ip():
         _s.close()
 
     return l_host
+
+
+if __name__ == '__main__':
+    print(get_host_ip())

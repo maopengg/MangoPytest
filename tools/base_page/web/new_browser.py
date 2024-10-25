@@ -24,6 +24,7 @@ class NewBrowser:
         self.web_config = web_config
         self.browser_path = ['chrome.exe', 'msedge.exe', 'firefox.exe', '苹果', '360se.exe']
         self.browser: Optional[Browser] = None
+        self.lock = asyncio.Lock()
 
     def new_browser(self):
         playwright = sync_playwright().start()

@@ -23,7 +23,6 @@ class TestTranslate(TranslateApi, CaseTool):
     @allure.title('英文翻译成中文')
     @case_data(4)
     def test_login01(self, data: ApiDataModel):
-        log.debug(str(data.model_dump()))
         appid = self.data_model.cache_data.get('app_id')
         secret_key = self.data_model.cache_data.get('secret_key')
         salt = self.data_processor.randint(left=32768, right=65536)
@@ -33,7 +32,6 @@ class TestTranslate(TranslateApi, CaseTool):
         data.test_case.params['salt'] = salt
         data.test_case.params['sign'] = sign
         data = self.translate(data)
-        log.debug(str(data.model_dump()))
         assert data.response.response_dict['trans_result'][0]['dst'] == "芒果"
         assert data.response.response_dict['trans_result'][0]['src'] == "mango"
 

@@ -32,8 +32,6 @@ class BasePage(WebDevice):
                     SourcesData.ui_element['module_name'] == module_name)].to_dict(orient='records')
         if not self.element_list:
             raise UiElementIsNullError(*ERROR_MSG_0346)
-        else:
-            pass
         d = re.DEBUG
 
     @retry(stop_max_attempt_number=5, wait_fixed=1000)
