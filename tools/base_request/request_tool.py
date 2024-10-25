@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# @Project: auto_test
+# @Project: 芒果测试平台
 # @Description: 
 # @Time   : 2023-09-04 17:23
 # @Author : 毛鹏
@@ -11,13 +11,13 @@ from requests.models import Response
 
 from models.api_model import ApiDataModel, RequestModel, ResponseModel
 from tools.decorator.response import timer, log_decorator
-from tools.log_collector import log
+
 
 class RequestTool:
     data_processor: DataProcessor = None
 
     @log_decorator
-    async def http(self, data: ApiDataModel) -> ApiDataModel | Response:
+    def http(self, data: ApiDataModel) -> ApiDataModel | Response:
         """
         处理请求的数据，写入到request对象中
         @return:
@@ -37,12 +37,11 @@ class RequestTool:
                             path = self.data_processor.replace(v)
                             file.append((k, (file_name, open(path, 'rb'))))
                     data.request.file = file
-        data.response = await self.http_request(data.request)
-        log.warning(data.response)
+        data.response = self.http_request(data.request)
         return data
 
     @timer
-    async def http_request(self, request_model: RequestModel) -> ResponseModel | Response:
+    def http_request(self, request_model: RequestModel) -> ResponseModel | Response:
         """
         全局请求统一处理
         @param request_model: RequestDataModel

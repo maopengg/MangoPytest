@@ -16,7 +16,6 @@ from exceptions.error_msg import ERROR_MSG_0043, ERROR_MSG_0344, ERROR_MSG_0346
 from exceptions.ui_exception import ElementIsEmptyError, UiElementLocatorError, UiElementIsNullError
 from sources import SourcesData
 from tools.base_page.web import WebDevice
-from tools.log_collector import log
 
 
 class BasePage(WebDevice):

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# @Project: auto_test
+# @Project: 芒果测试平台
 # @Description: 
 # @Time   : 2024-02-20 11:04
 # @Author : 毛鹏
@@ -23,11 +23,11 @@ class LoginPage(BasePage):
         self.url = urljoin(data_model.base_data_model.host, '/index')
 
     # 查询操作
-    async def login(self, username: str, password: str):
-        await self.w_click(await self.element('登录按钮'))
-        await self.w_input(await self.element('用户名'), username)
-        await self.w_input(await self.element('密码'), password)
-        await self.w_click(await self.element('登录'))
+    def login(self, username: str, password: str):
+        self.w_click(self.element('登录按钮'))
+        self.w_input(self.element('用户名'), username)
+        self.w_input(self.element('密码'), password)
+        self.w_click(self.element('登录'))
 
 
 if __name__ == '__main__':

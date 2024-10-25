@@ -14,8 +14,8 @@ class TranslateApi(RequestTool):
     data_model: BaiduTranslateModel = BaiduTranslateModel()
 
     @request_data(2)
-    async def translate(self, data: ApiDataModel = None):
-        return await self.http(data)
+    def translate(self, data: ApiDataModel = None):
+        return self.http(data)
 
 
 if __name__ == '__main__':

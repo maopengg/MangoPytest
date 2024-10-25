@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# @Project: auto_test
+# @Project: 芒果测试平台
 # @Description: 
 # @Time   : 2024-04-23 18:09
 # @Author : 毛鹏
@@ -19,10 +19,9 @@ from tools.decorator.response import case_data
 class TestIndex(IndexAPI, CaseTool):
     data_processor: DataProcessor = DataProcessor()
 
-    @pytest.mark.asyncio
     @allure.title('获取菜单信息')
     @case_data(11)
-    async def test_01(self, data: ApiDataModel):
+    def test_01(self, data: ApiDataModel):
         data = self.api_menu(data)
         self.ass_response_whole(data.response.response_dict, eval(data.test_case.ass_response_whole))
 

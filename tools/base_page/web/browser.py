@@ -3,7 +3,7 @@
 # @Description: 
 # @Time   : 2023-04-25 22:33
 # @Author : 毛鹏
-import asyncio
+import time
 
 from playwright.async_api import Locator
 from playwright.async_api import Page, BrowserContext
@@ -19,39 +19,39 @@ class PlaywrightBrowser:
     url: str = None
 
     @classmethod
-    async def w_wait_for_timeout(cls, _time: int):
+    def w_wait_for_timeout(cls, _time: int):
         """强制等待"""
-        await asyncio.sleep(int(_time))
+        time.sleep(int(_time))
 
-    async def w_goto(self, url=None):
+    def w_goto(self, url=None):
         """打开URL"""
         try:
             if url:
-                await self.page.goto(url, timeout=60000)
+                self.page.goto(url, timeout=60000)
             else:
                 if self.page is None:
-                    self.page = await self.context.new_page()
-                await self.page.goto(self.url, timeout=60000)
-            await asyncio.sleep(2)
+                    self.page = self.context.new_page()
+                self.page.goto(self.url, timeout=60000)
+            time.sleep(2)
         except TimeoutError:
             raise UiTimeoutError(*ERROR_MSG_0038, value=(url if url else self.url,))
 
-    async def w_screenshot(self, path: str, full_page=True):
+    def w_screenshot(self, path: str, full_page=True):
         """整个页面截图"""
-        await self.page.screenshot(path=path, full_page=full_page)
+        self.page.screenshot(path=path, full_page=full_page)
 
     @classmethod
-    async def w_ele_screenshot(cls, locating: Locator, path: str):
+    def w_ele_screenshot(cls, locating: Locator, path: str):
         """元素截图"""
-        await locating.screenshot(path=path)
+        locating.screenshot(path=path)
 
-    async def w_alert(self):
+    def w_alert(self):
         """设置弹窗不予处理"""
         self.page.on("dialog", lambda dialog: dialog.accept())
 
-    async def w_download(self, save_path: str):
+    def w_download(self, save_path: str):
         """下载文件"""
-        async with self.page.expect_download() as download_info:
-            await self.page.get_by_text("Download file").click()
-        download = await download_info.value
-        await download.save_as(save_path)
+        with self.page.expect_download() as download_info:
+            self.page.get_by_text("Download file").click()
+        download = download_info.value
+        download.save_as(save_path)

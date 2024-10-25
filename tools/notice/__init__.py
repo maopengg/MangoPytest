@@ -6,6 +6,8 @@
 import json
 from datetime import datetime
 
+from mangokit.tools.other.native_ip import get_host_ip
+
 from auto_test.project_enum import ProjectEnum
 from enums.tools_enum import ClientNameEnum, NoticeEnum, EnvironmentEnum, AutoTestTypeEnum
 from enums.tools_enum import StatusEnum
@@ -16,7 +18,6 @@ from sources import SourcesData
 from tools import InitPath
 from tools.notice.mail import SendEmail
 from tools.notice.wechat import WeChatSend
-from tools.other.native_ip import get_host_ip
 
 
 class NoticeMain:

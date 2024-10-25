@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# @Project: auto_test
+# @Project: 芒果测试平台
 # @Description:
 # @Time   : 2024-02-19 10:07
 # @Author : 毛鹏
@@ -7,6 +7,7 @@
 import os
 
 import pytest
+from mangokit.tools.other.native_ip import get_host_ip
 
 from auto_test.project_enum import ProjectPaths
 from exceptions.error_msg import ERROR_MSG_0007
@@ -14,9 +15,8 @@ from exceptions.tools_exception import TestProjectError
 from models.tools_model import CaseRunModel
 from settings.settings import IS_TEST_REPORT
 from tools.files.zip_files import zip_files
-from tools.log_collector import log
+from tools.log import log
 from tools.notice import NoticeMain
-from tools.other.native_ip import get_host_ip
 
 
 class MainRun:

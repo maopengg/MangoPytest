@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# @Project: auto_test
+# @Project: 芒果测试平台
 # @Description: 
 # @Time   : 2023-08-08 15:30
 # @Author : 毛鹏
@@ -12,7 +12,6 @@ from auto_test.api.baidu_translate.modules_api.translate import TranslateApi
 from models.api_model import ApiDataModel
 from tools.base_request.case_tool import CaseTool
 from tools.decorator.response import case_data
-from tools.log_collector import log
 
 
 @allure.epic('演示-API自动化-第三方API-百度翻译')

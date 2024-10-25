@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description: 企微通知封装
+# @Description:
 # @Time   : 2022-11-04 22:05
 # @Author : 毛鹏
 
@@ -10,7 +10,7 @@ from exceptions.error_msg import ERROR_MSG_0018, ERROR_MSG_0020, ERROR_MSG_0013,
 from exceptions.tools_exception import ValueTypeError
 from models.tools_model import WeChatNoticeModel, TestReportModel
 from tools.base_request.request_tool import RequestTool
-from tools.log_collector import log
+from tools.log import log
 
 
 class WeChatSend:

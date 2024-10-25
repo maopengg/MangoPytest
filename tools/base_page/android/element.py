@@ -7,7 +7,7 @@ from autotest.ui.driver.android.android_base import AndroidBase, ElementNotFound
 from tools.data_processor import CacheTool
 from uiautomator2 import UiObject
 
-from tools.log_collector import log
+from tools.log import log
 
 
 class UiautomatorElementOperation(AndroidBase):

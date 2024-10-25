@@ -4,21 +4,21 @@
 # @Author : 毛鹏
 import functools
 import json
+import time
 
 import allure
-import time
 from requests.models import Response
 
 from enums.api_enum import MethodEnum
 from exceptions import PytestAutoTestError
 from models.api_model import ApiDataModel, ResponseModel, TestCaseModel, RequestModel, ApiInfoModel
 from settings.settings import PRINT_EXECUTION_RESULTS, REQUEST_TIMEOUT_FAILURE_TIME
-from tools.log_collector import log
+from tools.log import log
 
 
 def case_data(case_id: int):
     def decorator(func):
-        async def wrapper(*args, **kwargs):
+        def wrapper(*args, **kwargs):
             from sources import SourcesData
             test_case_dict: dict = SourcesData \
                 .api_test_case[SourcesData.api_test_case['id'] == case_id] \
@@ -26,7 +26,7 @@ def case_data(case_id: int):
                 .to_dict()
             allure.attach(json.dumps(test_case_dict, ensure_ascii=False), '用例数据')
             try:
-                await func(
+                func(
                     *args,
                     **kwargs,
                     data=ApiDataModel(base_data=args[0].data_model.base_data_model,
@@ -51,7 +51,7 @@ def request_data(api_info_id):
     def decorator(func):
 
         # @functools.wraps(func)
-        async def wrapper(*args, **kwargs) -> ApiDataModel:
+        def wrapper(*args, **kwargs) -> ApiDataModel:
             data: ApiDataModel = kwargs.get('data')
             if len(args) == 2:
                 data: ApiDataModel = args[1]
@@ -71,7 +71,7 @@ def request_data(api_info_id):
                 file=data.test_case.file,
             )
             # try:
-            res_args = await func(*args, **kwargs)
+            res_args = func(*args, **kwargs)
             # except TypeError:
             #     raise CaseParameterError(*ERROR_MSG_0334)
             allure.attach(str(data.request.url), 'URL')
@@ -103,9 +103,9 @@ def timer(func):
     """
 
     @functools.wraps(func)
-    async def swapper(*args, **kwargs) -> ResponseModel:
+    def swapper(*args, **kwargs) -> ResponseModel:
         start = time.time()
-        response: Response = await func(*args, **kwargs)
+        response: Response = func(*args, **kwargs)
         log.warning(response.json())
         response_time = time.time() - start
         # 计算时间戳毫米级别，如果时间大于number，则打印 函数名称 和运行时间
@@ -141,8 +141,8 @@ def log_decorator(func):
     """
 
     @functools.wraps(func)
-    async def swapper(*args, **kwargs) -> ApiDataModel:
-        data = await func(*args, **kwargs)
+    def swapper(*args, **kwargs) -> ApiDataModel:
+        data = func(*args, **kwargs)
         # 判断日志开关为开启状态
         if PRINT_EXECUTION_RESULTS:
             _log_msg = f"\n{'=' * 100}\n" \

@@ -27,7 +27,7 @@ from exceptions.error_msg import ERROR_MSG_0023
 from exceptions.ui_exception import *
 from tools import InitPath
 from tools.assertion.public_assertion import PublicAssertion
-from tools.log_collector import log
+from tools.log import log
 
 
 class AndroidDriver(UiautomatorEquipmentDevice,

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# @Project: auto_test
+# @Project: 芒果测试平台
 # @Description: 
 # @Time   : 2024-04-01 16:04
 # @Author : 毛鹏
@@ -9,7 +9,7 @@ from playwright.sync_api import Page, BrowserContext
 
 from auto_test.ui.gitee import GiteeDataModel
 from tools.base_page import BasePage
-from tools.log_collector import log
+from tools.log import log
 
 
 class OpenSourcePage(BasePage):
@@ -23,7 +23,7 @@ class OpenSourcePage(BasePage):
         super().__init__(project_id, module_name, context_page, data_model.data_processor)
         self.url = urljoin(data_model.base_data_model.host, '/explore')
 
-    async def search_for_open_source_projects(self, name: str):
+    def search_for_open_source_projects(self, name: str):
         log.error(f'收到的名称是：{name}')
-        await self.w_input(await self.element('开源搜索框'), name)
-        await self.w_keys('Enter')
+        self.w_input(self.element('开源搜索框'), name)
+        self.w_keys('Enter')

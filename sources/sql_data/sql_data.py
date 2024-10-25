@@ -4,7 +4,7 @@ from mangokit import SQLiteConnect
 from exceptions.error_msg import ERROR_MSG_0331
 from exceptions.ui_exception import UiInitialError
 from tools import InitPath
-from tools.database.sql_statement import *
+from tools.sql_statement import *
 
 
 class SqlData:

@@ -11,7 +11,7 @@ from enums.tools_enum import EnvironmentEnum, StatusEnum
 from exceptions.error_msg import *
 from exceptions.ui_exception import UiInitialError
 from sources import SourcesData
-from tools.log_collector import log
+from tools.log import log
 
 
 class ProjectPublicMethods:

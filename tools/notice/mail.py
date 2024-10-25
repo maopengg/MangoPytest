@@ -12,7 +12,7 @@ from enums.tools_enum import ClientNameEnum
 from exceptions.api_exception import SendMessageError
 from exceptions.error_msg import ERROR_MSG_0017, ERROR_MSG_0016
 from models.tools_model import EmailNoticeModel, TestReportModel
-from tools.log_collector import log
+from tools.log import log
 
 
 class SendEmail:

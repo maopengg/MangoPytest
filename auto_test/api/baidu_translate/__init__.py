@@ -1,12 +1,11 @@
+from mangokit import singleton, DataClean
 from pydantic import BaseModel, ConfigDict
 
 from auto_test.project_enum import BaiduTranslateEnum
 from enums.tools_enum import EnvironmentEnum
 from models.api_model import ApiBaseDataModel
-from mangokit import singleton, DataClean
-
-from tools.log_collector import log
-from tools.other.project_public_methods import ProjectPublicMethods
+from tools.log import log
+from tools.project_public_methods import ProjectPublicMethods
 
 
 @singleton

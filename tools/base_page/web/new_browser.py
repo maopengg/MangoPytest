@@ -5,6 +5,7 @@
 import ctypes
 import os
 import string
+import threading
 from typing import Optional
 
 from mangokit import singleton
@@ -24,7 +25,7 @@ class NewBrowser:
         self.web_config = web_config
         self.browser_path = ['chrome.exe', 'msedge.exe', 'firefox.exe', '苹果', '360se.exe']
         self.browser: Optional[Browser] = None
-        self.lock = asyncio.Lock()
+        self.lock = threading.Lock()
 
     def new_browser(self):
         playwright = sync_playwright().start()
@@ -49,8 +50,9 @@ class NewBrowser:
             raise BrowserPathError(*ERROR_MSG_0040, error=error)
 
     def new_context_page(self) -> tuple[BrowserContext, Page]:
-        if self.browser is None:
-            self.new_browser()
+        with self.lock:
+            if self.browser is None:
+                self.new_browser()
 
         context = self.browser.new_context(no_viewport=True)
         return context, context.new_page()
