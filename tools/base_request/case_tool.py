@@ -24,4 +24,3 @@ class CaseTool(Assertion):
     def assertion(self, data: ApiDataModel):
         if data.test_case.ass_response_whole:
             self.ass_response_whole(data.response.response_dict, data.test_case.ass_response_whole)
-            a
