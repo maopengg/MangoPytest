@@ -6,18 +6,16 @@
 import json
 from datetime import datetime
 
+from mangokit import EmailSend, WeChatSend, EmailNoticeModel, WeChatNoticeModel, TestReportModel
 from mangokit.tools.other.native_ip import get_host_ip
 
 from auto_test.project_enum import ProjectEnum
 from enums.tools_enum import ClientNameEnum, NoticeEnum, EnvironmentEnum, AutoTestTypeEnum
 from enums.tools_enum import StatusEnum
-from models.tools_model import CaseRunModel, WeChatNoticeModel, EmailNoticeModel
-from models.tools_model import TestReportModel
+from models.tools_model import CaseRunModel
 from settings.settings import SEND_USER, EMAIL_HOST, STAMP_KEY
 from sources import SourcesData
 from tools import InitPath
-from tools.notice.mail import SendEmail
-from tools.notice.wechat import WeChatSend
 
 
 class NoticeMain:
@@ -54,7 +52,7 @@ class NoticeMain:
         发送邮件
         """
         user_list = ['729164035@qq.com', ]
-        email = SendEmail(EmailNoticeModel(
+        email = EmailSend(EmailNoticeModel(
             send_user=SEND_USER,
             email_host=EMAIL_HOST,
             stamp_key=STAMP_KEY,
@@ -67,7 +65,7 @@ class NoticeMain:
         wechat.send_wechat_notification()
 
     def __wend_mail_send(self, send_list: list):
-        email = SendEmail(EmailNoticeModel(
+        email = EmailSend(EmailNoticeModel(
             send_user=SEND_USER,
             email_host=EMAIL_HOST,
             stamp_key=STAMP_KEY,
@@ -127,4 +125,4 @@ if __name__ == '__main__':
         {'project': ProjectEnum.WanAndroid, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.API}
     ]
     data1: list[CaseRunModel] = [CaseRunModel(**i) for i in test_project]
-    NoticeMain(data1).notice_main()
+    NoticeMain(data1).email_alert('11')
