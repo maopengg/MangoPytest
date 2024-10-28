@@ -45,5 +45,5 @@ class ProjectPaths:
         with open(cls.paths, 'r') as file:
             data = json.load(file)
         data[project_name]['test_environment'] = value
-        with open(fr"{InitPath.project_root_directory}\auto_test\data.json", 'w') as file:
+        with open(fr"{InitPath.project_root_directory}\tools\project_path\data.json", 'w') as file:
             json.dump(data, file)

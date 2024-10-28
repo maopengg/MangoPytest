@@ -6,9 +6,11 @@
 from mangokit import MysqlConnect, MysqlConingModel
 from pydantic_core._pydantic_core import ValidationError
 
-from enums.tools_enum import EnvironmentEnum, StatusEnum
+from enums.tools_enum import EnvironmentEnum, StatusEnum, AutoTestTypeEnum
 from exceptions.error_msg import *
 from exceptions.ui_exception import UiInitialError
+from models.api_model import ApiBaseDataModel
+from models.ui_model import UiBaseDataModel
 from sources import SourcesData
 from tools.log import log
 from tools.project_path.project_path import ProjectPaths
@@ -55,3 +57,34 @@ class ProjectPublicMethods:
                 raise UiInitialError(*ERROR_MSG_0333)
 
         return mysql_config_model, mysql_connect
+
+    @classmethod
+    def get_data_model(cls, model, project_enum, _type: AutoTestTypeEnum):
+        test_environment, project, test_object = cls.get_project_test_object(
+            project_name=project_enum.NAME.value,
+            test_environment=EnvironmentEnum.PRO)
+        mysql_config_model, mysql_connect = cls.get_mysql_info(test_object)
+        if _type == AutoTestTypeEnum.API:
+            return model(
+                test_environment=test_environment,
+                base_data_model=ApiBaseDataModel(
+                    test_object=test_object,
+                    project=project,
+                    host=test_object.get('host'),
+                    is_database_assertion=bool(test_object.get('is_db')),
+                    mysql_config_model=mysql_config_model,
+                    mysql_connect=mysql_connect,
+                )
+            )
+        else:
+            return model(
+                test_environment=test_environment,
+                base_data_model=UiBaseDataModel(
+                    test_object=test_object,
+                    project=project,
+                    host=test_object.get('host'),
+                    is_database_assertion=bool(test_object.get('is_db')),
+                    mysql_config_model=mysql_config_model,
+                    mysql_connect=mysql_connect,
+                )
+            )
