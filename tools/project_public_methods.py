@@ -40,7 +40,6 @@ class ProjectPublicMethods:
                 .get_project(**{'name': project_name})
             test_object = SourcesData \
                 .get_test_object(**{'project_id': project.get('id'), 'type': test_environment})
-        log.debug(f'{test_object, project}')
         return test_environment, project, test_object
 
     @staticmethod
