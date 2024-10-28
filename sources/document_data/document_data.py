@@ -64,6 +64,7 @@ class DocumentData:
                 df['环境类型'] = df['环境类型'].map(EnvironmentEnum.reversal_obj())
                 df['客户端类型'] = df['客户端类型'].map(ClientEnum.reversal_obj())
                 df['是否通知'] = df['是否通知'].map(StatusEnum.reversal_obj())
+                df['是否默认使用'] = df['是否默认使用'].map(StatusEnum.reversal_obj())
                 df['数据库-查询'] = df['数据库-查询'].map(StatusEnum.reversal_obj())
                 df['数据库-增删改'] = df['数据库-增删改'].map(StatusEnum.reversal_obj())
                 df = df.rename(columns={'ID': 'id',
@@ -71,6 +72,7 @@ class DocumentData:
                                         '环境类型': 'type',
                                         '名称': 'name',
                                         '客户端类型': 'client_type',
+                                        '是否默认使用': 'is_use',
                                         '是否通知': 'is_notice',
                                         '数据库-查询': 'db_c_status',
                                         '数据库-增删改': 'db_rud_status',

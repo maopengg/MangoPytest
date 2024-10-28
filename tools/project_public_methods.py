@@ -6,7 +6,7 @@
 from mangokit import MysqlConnect, MysqlConingModel
 from pydantic_core._pydantic_core import ValidationError
 
-from enums.tools_enum import EnvironmentEnum, StatusEnum, AutoTestTypeEnum
+from enums.tools_enum import StatusEnum, AutoTestTypeEnum
 from exceptions.error_msg import *
 from exceptions.ui_exception import UiInitialError
 from models.api_model import ApiBaseDataModel
@@ -19,9 +19,7 @@ from tools.project_path.project_path import ProjectPaths
 class ProjectPublicMethods:
 
     @staticmethod
-    def get_project_test_object(
-            project_name: str,
-            test_environment: EnvironmentEnum) -> tuple[int, dict, dict]:
+    def get_project_test_object(project_name: str, ) -> tuple[int, dict, dict]:
         # 从共享的字典中获取实例
         try:
             project_dict = ProjectPaths.check()[project_name]
@@ -30,14 +28,19 @@ class ProjectPublicMethods:
             project_dict = ProjectPaths.check()[project_name]
 
         if project_dict.get('test_environment') is None:
-            test_environment: int = test_environment.value
+            project: dict = SourcesData \
+                .get_project(**{'name': project_name})
+            test_object = SourcesData \
+                .get_test_object(**{'project_id': project.get('id'), 'is_use': 1})
+            test_environment: int = test_object.get('type')
             log.warning(f'项目：{project_name}未获取到测试环境变量，请检查！')
         else:
             test_environment: int = project_dict.get('test_environment')
-        project: dict = SourcesData \
-            .get_project(**{'name': project_name})
-        test_object = SourcesData \
-            .get_test_object(**{'project_id': project.get('id'), 'type': test_environment})
+            project: dict = SourcesData \
+                .get_project(**{'name': project_name})
+            test_object = SourcesData \
+                .get_test_object(**{'project_id': project.get('id'), 'type': test_environment})
+        log.debug(f'{test_object, project}')
         return test_environment, project, test_object
 
     @staticmethod
@@ -60,9 +63,7 @@ class ProjectPublicMethods:
 
     @classmethod
     def get_data_model(cls, model, project_enum, _type: AutoTestTypeEnum):
-        test_environment, project, test_object = cls.get_project_test_object(
-            project_name=project_enum.NAME.value,
-            test_environment=EnvironmentEnum.PRO)
+        test_environment, project, test_object = cls.get_project_test_object(project_name=project_enum.NAME.value)
         mysql_config_model, mysql_connect = cls.get_mysql_info(test_object)
         if _type == AutoTestTypeEnum.API:
             return model(

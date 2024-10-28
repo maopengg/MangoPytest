@@ -7,4 +7,4 @@ from mangokit import set_log
 
 from tools import InitPath
 
-log = set_log(InitPath.logs_dir)
+log = set_log(InitPath.logs_dir, True)
