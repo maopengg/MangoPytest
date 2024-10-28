@@ -6,7 +6,7 @@
 from mangokit import DataProcessor, singleton
 from pydantic import BaseModel, ConfigDict
 
-from auto_test.project_enum import GiteeEnum
+from auto_test.project_config import GiteeEnum
 from enums.tools_enum import EnvironmentEnum
 from models.ui_model import UiBaseDataModel
 from tools.log import log

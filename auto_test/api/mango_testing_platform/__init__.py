@@ -3,7 +3,7 @@ from urllib.parse import urljoin
 from mangokit import DataProcessor, singleton, requests
 from pydantic import BaseModel, ConfigDict
 
-from auto_test.project_enum import MangoTestingPlatformEnum
+from auto_test.project_config import MangoTestingPlatformEnum
 from enums.tools_enum import EnvironmentEnum
 from models.api_model import ApiBaseDataModel
 from tools.log import log

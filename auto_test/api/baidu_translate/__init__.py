@@ -1,7 +1,7 @@
 from mangokit import singleton, DataClean
 from pydantic import BaseModel, ConfigDict
 
-from auto_test.project_enum import BaiduTranslateEnum
+from auto_test.project_config import BaiduTranslateEnum
 from enums.tools_enum import EnvironmentEnum
 from models.api_model import ApiBaseDataModel
 from tools.log import log

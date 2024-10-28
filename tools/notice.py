@@ -9,7 +9,7 @@ from datetime import datetime
 from mangokit import EmailSend, WeChatSend, EmailNoticeModel, WeChatNoticeModel, TestReportModel
 from mangokit.tools.other.native_ip import get_host_ip
 
-from auto_test.project_enum import ProjectEnum
+from auto_test.project_config import ProjectEnum
 from enums.tools_enum import ClientNameEnum, NoticeEnum, EnvironmentEnum, AutoTestTypeEnum
 from enums.tools_enum import StatusEnum
 from models.tools_model import CaseRunModel

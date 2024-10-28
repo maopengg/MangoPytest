@@ -3,8 +3,7 @@
 # @Description:
 # @Time   : 2024-02-19 10:07
 # @Author : 毛鹏
-
-from auto_test.project_enum import ProjectEnum
+from auto_test.project_config import ProjectEnum
 from enums.tools_enum import EnvironmentEnum, AutoTestTypeEnum
 from tools.main_run import MainRun
 

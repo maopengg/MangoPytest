@@ -6,7 +6,7 @@
 
 from pydantic import BaseModel
 
-from auto_test.project_enum import ProjectEnum
+from auto_test.project_config import ProjectEnum
 from enums.tools_enum import AutoTestTypeEnum, EnvironmentEnum
 
 

@@ -6,12 +6,12 @@
 from mangokit import MysqlConnect, MysqlConingModel
 from pydantic_core._pydantic_core import ValidationError
 
-from auto_test.project_enum import ProjectPaths
 from enums.tools_enum import EnvironmentEnum, StatusEnum
 from exceptions.error_msg import *
 from exceptions.ui_exception import UiInitialError
 from sources import SourcesData
 from tools.log import log
+from tools.project_path.project_path import ProjectPaths
 
 
 class ProjectPublicMethods:

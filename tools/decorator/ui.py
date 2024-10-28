@@ -19,9 +19,9 @@ def case_data(title, parametrize):
         def wrapper(self, data):
             # 根据参数数量动态选择参数
             browser = NewBrowser(WEBConfigModel(browser_type=BrowserTypeEnum.CHROMIUM))
-            setup_context_page = browser.new_context_page()
-            return func(self, setup_context_page, data)
-
-        return wrapper
+            context, page = browser.new_context_page()
+            func(self, (context, page), data)
+            context.close()
+            page.close()
 
     return decorator

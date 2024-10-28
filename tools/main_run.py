@@ -9,7 +9,6 @@ import os
 import pytest
 from mangokit.tools.other.native_ip import get_host_ip
 
-from auto_test.project_enum import ProjectPaths
 from exceptions.error_msg import ERROR_MSG_0007
 from exceptions.tools_exception import TestProjectError
 from models.tools_model import CaseRunModel
@@ -17,6 +16,7 @@ from settings.settings import IS_TEST_REPORT
 from tools.files.zip_files import zip_files
 from tools.log import log
 from tools.notice import NoticeMain
+from tools.project_path.project_path import ProjectPaths
 
 
 class MainRun:

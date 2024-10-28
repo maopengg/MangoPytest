@@ -51,4 +51,4 @@ Thumbs.db
 /mvnw.cmd
 /mvnw
 /logs/*
-/auto_test/data.json
+/tools/project_path/data.json
