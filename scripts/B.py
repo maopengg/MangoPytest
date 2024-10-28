@@ -1,43 +1,31 @@
-import multiprocessing
-import threading
+import json
+
+import requests
+from jsonschema import Draft7Validator
+
+# 发送请求并获取响应
+response = requests.get('https://api.example.com/resource')
+data = response.json()
+
+# 生成 JSON Schema
+validator = Draft7Validator.check_schema(data)
+schema = validator.schema
+
+# 保存到 schema.json
+with open('schema.json', 'w') as f:
+    json.dump(schema, f, indent=2)
+
+# 加载 JSON Schema
+with open('schema.json') as f:
+    schema = f.read()
 
 
-class Singleton:
-    _instance = None
+def test_api_response():
+    # 发送请求
+    response = requests.get('https://api.example.com/resource')
 
-    @staticmethod
-    def getInstance():
-        if Singleton._instance is None:
-            Singleton._instance = Singleton()
-        return Singleton._instance
+    # 验证响应状态码
+    assert response.status_code == 200
 
-
-class SharedData:
-    def __init__(self, singleton):
-        self.singleton = singleton
-
-
-# 多线程示例
-singleton = Singleton.getInstance()
-shared_data = SharedData(singleton)
-
-thread1 = threading.Thread(target=modify_singleton, args=(shared_data, 10))
-thread2 = threading.Thread(target=get_singleton_value, args=(shared_data,))
-
-thread1.start()
-thread2.start()
-thread1.join()
-thread2.join()
-
-# 多进程示例
-if __name__ == '__main__':
-    singleton = Singleton.getInstance()
-    shared_data = SharedData(singleton)
-
-    process1 = multiprocessing.Process(target=modify_singleton, args=(shared_data, 20))
-    process2 = multiprocessing.Process(target=get_singleton_value, args=(shared_data,))
-
-    process1.start()
-    process2.start()
-    process1.join()
-    process2.join()
+    # 验证响应 JSON 格式
+    validate(instance=response.json(), schema=schema)

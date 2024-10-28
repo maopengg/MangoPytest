@@ -9,6 +9,14 @@ from enums.tools_enum import EnvironmentEnum, AutoTestTypeEnum
 from tools.main_run import MainRun
 
 """
+失败重试方式:
+1、可在命令行 –reruns=1 reruns_delay=2 失败后重运行1次，延时2s
+2、使用装饰器进行失败重运行
+@pytest.mark.flaky(reruns=1, reruns_delay=2)
+使用方式：
+命令行参数：–reruns n（重新运行次数），–reruns-delay m（等待运行秒数）
+装饰器参数：reruns=n（重新运行次数），reruns_delay=m（等待运行秒数）
+
     --reruns: 失败重跑次数
     --count: 重复执行次数
     -v: 显示错误位置以及错误的详细信息
