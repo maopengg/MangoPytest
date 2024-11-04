@@ -48,4 +48,6 @@ class MainRun:
         NoticeMain(self.data).notice_main()
         if IS_TEST_REPORT:
             os.system(r"allure generate ./report/tmp -o ./report/html --clean")
+        NoticeMain(self.data).notice_main()
+        if IS_TEST_REPORT:
             os.system(f"allure serve ./report/tmp -h {get_host_ip()} -p 9997")

@@ -28,15 +28,15 @@ class NoticeMain:
     def notice_main(self):
         for i in self.case_run_model:
             self.test_environment = EnvironmentEnum.get_value(i.test_environment.value)
-
             self.result_list = SourcesData \
-                .project[SourcesData.project['name'] == i.project.value] \
+                .test_object[SourcesData.project['name'] == i.project.value] \
                 .to_dict(orient='records')
             if self.result_list:
                 if self.result_list[0].get('is_notice') == StatusEnum.SUCCESS.value:
                     notice_list = SourcesData \
-                        .project[SourcesData.notice_config['project_id'] == self.result_list[0].get('id')] \
+                        .notice_config[SourcesData.notice_config['project_id'] == self.result_list[0].get('project_id')] \
                         .to_dict(orient='records')
+                    print(notice_list)
                     for notice in notice_list:
                         if notice.get('type') == NoticeEnum.MAIL.value:
                             try:
