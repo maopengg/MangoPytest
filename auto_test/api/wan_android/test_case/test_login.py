@@ -20,16 +20,12 @@ from tools.decorator.response import case_data
 class TestLogin(LoginAPI, CaseTool):
     data_processor: DataProcessor = DataProcessor()
 
-    @allure.title('正确的账号，正确的密码，进行登录')
-    @allure.description('测试账号登录')
     @case_data(1)
     def test_01(self, data: ApiDataModel):
         data = self.api_login(data)
         time.sleep(5)
         assert data.response.response_dict['data']['nickname'] == "maopeng"
 
-    @allure.title('正确的账号，错误的密码，进行登录')
-    @allure.description('测试账号登录')
     @case_data(2)
     def test_02(self, data: ApiDataModel):
         data = self.api_login(data)
@@ -41,7 +37,6 @@ class TestLogin(LoginAPI, CaseTool):
             allure.attach(expected_error_msg, 'Expected Error Message', allure.attachment_type.TEXT)
             allure.attach(actual_error_msg, 'Actual Error Message', allure.attachment_type.TEXT)
 
-    @allure.title('错误的账号，错误的密码，进行登录')
     @case_data(3)
     def test_03(self, data: ApiDataModel):
         data = self.api_login(data)

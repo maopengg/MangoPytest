@@ -4,9 +4,9 @@
 # @Author : 毛鹏
 import functools
 import json
-import time
 
 import allure
+import time
 from requests.models import Response
 
 from enums.api_enum import MethodEnum
@@ -18,12 +18,15 @@ from tools.log import log
 
 def case_data(case_id: int):
     def decorator(func):
+        from sources import SourcesData
+        test_case_dict: dict = SourcesData \
+            .api_test_case[SourcesData.api_test_case['id'] == case_id] \
+            .squeeze() \
+            .to_dict()
+
+        @allure.title(test_case_dict.get('name'))
+        # @allure.description('测试账号登录')
         def wrapper(*args, **kwargs):
-            from sources import SourcesData
-            test_case_dict: dict = SourcesData \
-                .api_test_case[SourcesData.api_test_case['id'] == case_id] \
-                .squeeze() \
-                .to_dict()
             allure.attach(json.dumps(test_case_dict, ensure_ascii=False), '用例数据')
             try:
                 func(

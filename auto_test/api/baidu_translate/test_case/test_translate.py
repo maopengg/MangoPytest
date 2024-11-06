@@ -19,7 +19,6 @@ from tools.decorator.response import case_data
 class TestTranslate(TranslateApi, CaseTool):
     data_processor: DataProcessor = DataProcessor()
 
-    @allure.title('英文翻译成中文')
     @case_data(4)
     def test_login01(self, data: ApiDataModel):
         appid = self.data_model.cache_data.get('app_id')
