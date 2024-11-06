@@ -33,7 +33,6 @@ class TestTranslate(TranslateApi, CaseTool):
         assert data.response.response_dict['trans_result'][0]['dst'] == "芒果"
         assert data.response.response_dict['trans_result'][0]['src'] == "mango"
 
-    @allure.title('中文翻译成英文')
     @case_data(5)
     def test_login02(self, data: ApiDataModel):
         appid = self.data_model.cache_data.get('app_id')
