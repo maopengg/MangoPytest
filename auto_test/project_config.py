@@ -14,6 +14,7 @@ class ProjectEnum(BaseEnum):
     BaiduTranslate = 'BaiduTranslate'
     Gitee = 'Gitee'
     Mango = 'MangoTestingPlatform'
+    Z_TOOL = '智投'
 
 
 class CDPEnum(BaseEnum):
@@ -41,3 +42,8 @@ class GiteeEnum(BaseEnum):
 class MangoTestingPlatformEnum(BaseEnum):
     NAME = ProjectEnum.Mango.value
     API_PATH = fr"{InitPath.project_root_directory}\auto_test\api\mango_testing_platform\test_case"
+
+
+class ZtoolEnum(BaseEnum):
+    NAME = ProjectEnum.Z_TOOL.value
+    API_PATH = fr"{InitPath.project_root_directory}\auto_test\api\z_tool\test_case"

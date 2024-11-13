@@ -6,6 +6,7 @@
 
 from models.api_model import ApiDataModel
 from tools.assertion import Assertion
+from tools.log import log
 
 
 class CaseTool(Assertion):
@@ -18,9 +19,9 @@ class CaseTool(Assertion):
         @return: 响应结果
         """
         res: ApiDataModel = func(data=data)
-        self.assertion(res)
         return res
 
-    def assertion(self, data: ApiDataModel):
+    def ass_main(self, data: ApiDataModel) -> ApiDataModel:
         if data.test_case.ass_response_whole:
             self.ass_response_whole(data.response.response_dict, data.test_case.ass_response_whole)
+        return data

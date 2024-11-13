@@ -32,6 +32,9 @@ class ProjectPaths:
                 },
                 MangoTestingPlatformEnum.NAME.value: {
                     AutoTestTypeEnum.API.value: MangoTestingPlatformEnum.API_PATH.value
+                },
+                ZtoolEnum.NAME.value: {
+                    AutoTestTypeEnum.API.value: ZtoolEnum.API_PATH.value
                 }
             }, file)
 

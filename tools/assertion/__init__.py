@@ -3,13 +3,29 @@
 # @Description: 
 # @Time   : 2023/4/6 13:36
 # @Author : 毛鹏
-from collections import Counter
+
+from deepdiff import DeepDiff
 
 from tools.assertion.public_assertion import PublicAssertion
+
 
 
 class Assertion(PublicAssertion):
 
     @classmethod
-    def ass_response_whole(cls, response_dict, case_ass):
-        assert Counter(response_dict) == Counter(case_ass)
+    def ass_response_whole(cls, actual, expect):
+        # 创建一个只包含 case_ass 中字段的字典
+        filtered_actual = {key: actual[key] for key in expect if key in actual}
+
+        # 处理 nested dictionary
+        for key in expect.keys():
+            if isinstance(expect[key], dict):
+                filtered_actual[key] = {k: actual[key][k] for k in expect[key] if k in actual[key]}
+
+        # 使用 DeepDiff 进行比较
+        diff = DeepDiff(filtered_actual, expect, ignore_order=True)
+        assert not diff, f"字典不匹配: {diff}"
+
+
+if __name__ == '__main__':
+    Assertion.ass_response_whole(response_dict, case_ass)

@@ -14,7 +14,10 @@ from exceptions.tools_exception import JsonSerializationError
 
 def json_serialize(data: str | None):
     try:
-        return json.loads(data) if data else None
+        if isinstance(data, str):
+            return json.loads(data)
+        else:
+            return data
     except (json.decoder.JSONDecodeError, TypeError):
         raise JsonSerializationError(*ERROR_MSG_0345, value=(data,))
 
@@ -28,7 +31,7 @@ class TestCaseModel(BaseModel):
     json_data: dict | list[dict] | None = None
     file: dict | None = None
     other_data: dict | None = None
-    ass_response_whole: str | None = None
+    ass_response_whole: dict | None = None
     ass_response_value: str | None = None
     ass_sql: str | None = None
     front_sql: str | None = None
@@ -47,7 +50,7 @@ class TestCaseModel(BaseModel):
             json_data=json_serialize(data.get('json')),
             file=json_serialize(data.get('file')),
             other_data=json_serialize(data.get('other_data')),
-            ass_response_whole=data.get('ass_response_whole'),
+            ass_response_whole=json_serialize(data.get('ass_response_whole')),
             ass_response_value=data.get('ass_response_value'),
             ass_sql=data.get('ass_sql'),
             front_sql=data.get('front_sql'),
@@ -126,4 +129,5 @@ class ApiDataModel(BaseModel):
 
 
 if __name__ == '__main__':
-    json_serialize(str({"Content-Type": 'application/x-www-form-urlencoded'}))
+    data_str = '{ "resCode": 100005,"resData": null,"resExt": null, "resMsg": "用户名或密码不对!", "resSuccess": false}'
+    print(json_serialize(data_str))

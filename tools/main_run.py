@@ -45,7 +45,6 @@ class MainRun:
         log.info(f"开始执行测试任务......")
         pytest.main(self.pytest_command)
         # 发送通知
-        NoticeMain(self.data).notice_main()
         if IS_TEST_REPORT:
             os.system(r"allure generate ./report/tmp -o ./report/html --clean")
         NoticeMain(self.data).notice_main()

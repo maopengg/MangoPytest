@@ -11,6 +11,7 @@ from requests.models import Response
 
 from models.api_model import ApiDataModel, RequestModel, ResponseModel
 from tools.decorator.response import timer, log_decorator
+from tools.log import log
 
 
 class RequestTool:
@@ -47,6 +48,7 @@ class RequestTool:
         @param request_model: RequestDataModel
         @return: ApiDataModel
         """
+        log.debug(f'请求前置：{request_model.model_dump_json()}')
         return requests.request(
             method=request_model.method,
             url=request_model.url,
@@ -56,3 +58,10 @@ class RequestTool:
             json=request_model.json_data,
             files=request_model.file,
         )
+
+
+if __name__ == '__main__':
+    requests1 = RequestTool()
+    response :ResponseModel = requests1.http_request(RequestModel(
+        **{}))
+    print(response.response_text)

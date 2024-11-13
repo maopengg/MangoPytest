@@ -9,7 +9,6 @@ import pytest
 from enums.ui_enum import BrowserTypeEnum
 from models.ui_model import WEBConfigModel
 from tools.base_page.web.new_browser import NewBrowser
-from tools.log import log
 
 
 def case_data(title, parametrize):

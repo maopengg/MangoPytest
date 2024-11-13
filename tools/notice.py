@@ -36,7 +36,6 @@ class NoticeMain:
                     notice_list = SourcesData \
                         .notice_config[SourcesData.notice_config['project_id'] == self.result_list[0].get('project_id')] \
                         .to_dict(orient='records')
-                    print(notice_list)
                     for notice in notice_list:
                         if notice.get('type') == NoticeEnum.MAIL.value:
                             try:
