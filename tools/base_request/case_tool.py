@@ -6,12 +6,11 @@
 
 from models.api_model import ApiDataModel
 from tools.assertion import Assertion
-from tools.log import log
 
 
 class CaseTool(Assertion):
 
-    def case_run(self, func, data: ApiDataModel) -> ApiDataModel:
+    def case_run_mian(self, func, data: ApiDataModel) -> ApiDataModel:
         """
         公共请求方法
         @param func: 接口函数

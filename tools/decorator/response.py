@@ -50,8 +50,9 @@ def case_data(case_id: int | list[int] | None = None, case_name: str | list[str]
 
         @pytest.mark.parametrize("test_case", test_case_list)
         def wrapper(self, test_case):
-            allure.title(test_case.get('name', '默认名称'))
+            allure.dynamic.title(test_case.get('name'))
             allure.attach(json.dumps(test_case, ensure_ascii=False), '用例数据')
+
             data = ApiDataModel(base_data=self.data_model.base_data_model, test_case=TestCaseModel.get_obj(test_case))
             try:
                 func(self, data=data)
