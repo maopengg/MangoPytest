@@ -31,7 +31,7 @@ class ProjectPublicMethods:
             project: dict = SourcesData \
                 .get_project(**{'name': project_name})
             test_object = SourcesData \
-                .get_test_object(**{'project_id': project.get('id'), 'is_use': 1})
+                .get_test_object(**{'project_name': project.get('name'), 'is_use': 1})
             test_environment: int = test_object.get('type')
             log.warning(f'项目：{project_name}未获取到测试环境变量，请检查！')
         else:
@@ -39,7 +39,7 @@ class ProjectPublicMethods:
             project: dict = SourcesData \
                 .get_project(**{'name': project_name})
             test_object = SourcesData \
-                .get_test_object(**{'project_id': project.get('id'), 'type': test_environment})
+                .get_test_object(**{'project_name': project.get('name'), 'type': test_environment})
         return test_environment, project, test_object
 
     @staticmethod

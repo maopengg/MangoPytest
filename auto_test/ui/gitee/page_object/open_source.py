@@ -6,7 +6,7 @@
 from urllib.parse import urljoin
 
 from playwright.sync_api import Page, BrowserContext
-
+from auto_test.project_config import ProjectEnum
 from auto_test.ui.gitee import GiteeDataModel
 from tools.base_page import BasePage
 from tools.log import log
@@ -18,9 +18,9 @@ class OpenSourcePage(BasePage):
     """
 
     def __init__(self, context_page: tuple[BrowserContext, Page], data_model: GiteeDataModel):
-        project_id = 6
+        project_name = ProjectEnum.Gitee.value
         module_name = '开源'
-        super().__init__(project_id, module_name, context_page, data_model.data_processor)
+        super().__init__(project_name, module_name, context_page, data_model.data_processor)
         self.url = urljoin(data_model.base_data_model.host, '/explore')
 
     def search_for_open_source_projects(self, name: str):

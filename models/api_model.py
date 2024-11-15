@@ -24,7 +24,7 @@ def json_serialize(data: str | None):
 
 class TestCaseModel(BaseModel):
     id: int
-    project_id: int
+    project_name: str
     name: str
     params: dict | list[dict] | None = None
     data: dict | list[dict] | None = None
@@ -43,7 +43,7 @@ class TestCaseModel(BaseModel):
     def get_obj(cls, data: dict):
         return cls(
             id=data['id'],
-            project_id=data['project_id'],
+            project_name=data['project_name'],
             name=data['name'],
             params=json_serialize(data.get('params')),
             data=json_serialize(data.get('data')),
@@ -62,7 +62,7 @@ class TestCaseModel(BaseModel):
 
 class ApiInfoModel(BaseModel):
     id: int
-    project_id: int
+    project_name: str
     name: str
     client_type: int
     method: int
@@ -73,7 +73,7 @@ class ApiInfoModel(BaseModel):
     def get_obj(cls, data: dict):
         return cls(
             id=data['id'],
-            project_id=data['project_id'],
+            project_name=data['project_name'],
             name=data['name'],
             client_type=data['client_type'],
             method=data['method'],
@@ -128,6 +128,5 @@ class ApiDataModel(BaseModel):
     response: ResponseModel | None = None
 
 
-if __name__ == '__main__':
-    data_str = '{ "resCode": 100005,"resData": null,"resExt": null, "resMsg": "用户名或密码不对!", "resSuccess": false}'
-    print(json_serialize(data_str))
+if __name__ == '__main__': 
+    print(TestCaseModel.get_obj(data_str))

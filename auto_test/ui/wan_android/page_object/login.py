@@ -7,6 +7,7 @@ from urllib.parse import urljoin
 
 from playwright.sync_api import Page, BrowserContext
 
+from auto_test.project_config import ProjectEnum
 from auto_test.ui.wan_android import WanAndroidDataModel
 from tools.base_page import BasePage
 
@@ -17,9 +18,9 @@ class LoginPage(BasePage):
     """
 
     def __init__(self, context_page: tuple[BrowserContext, Page], data_model: WanAndroidDataModel):
-        project_id = 4
+        project_name = ProjectEnum.WanAndroid.value
         module_name = '登录'
-        super().__init__(project_id, module_name, context_page, data_model.data_processor)
+        super().__init__(project_name, module_name, context_page, data_model.data_processor)
         self.url = urljoin(data_model.base_data_model.host, '/index')
 
     # 查询操作

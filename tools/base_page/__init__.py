@@ -20,14 +20,14 @@ from tools.base_page.web import WebDevice
 
 class BasePage(WebDevice):
 
-    def __init__(self, project_id: int,
+    def __init__(self, project_name: str,
                  module_name: str,
                  context_page: tuple[BrowserContext, Page],
                  data_processor: DataProcessor):
         context, page = context_page
         super().__init__(page, context, data_processor)
         self.element_list: list[dict] = SourcesData.ui_element[
-            (SourcesData.ui_element['project_id'] == project_id) & (
+            (SourcesData.ui_element['project_name'] == project_name) & (
                     SourcesData.ui_element['module_name'] == module_name)].to_dict(orient='records')
         if not self.element_list:
             raise UiElementIsNullError(*ERROR_MSG_0346)

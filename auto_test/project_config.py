@@ -10,10 +10,10 @@ from tools import InitPath
 
 class ProjectEnum(BaseEnum):
     CDP = 'CDP'
-    WanAndroid = 'WanAndroid'
-    BaiduTranslate = 'BaiduTranslate'
-    Gitee = 'Gitee'
-    Mango = 'MangoTestingPlatform'
+    WanAndroid = '玩安卓'
+    BaiduTranslate = '百度翻译'
+    Gitee = 'gitee'
+    Mango = '芒果测试平台'
     Z_TOOL = '智投'
 
 

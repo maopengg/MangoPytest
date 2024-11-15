@@ -43,7 +43,10 @@ class DocumentData:
             if i.get('title') == '项目信息':
                 url = f"{self.url}{PROJECT[0]}/values_batch_get?ranges={i.get('sheet_id')}{self.parameter}"
                 df = self.cls(url)
-                df = df.rename(columns={'ID': 'id', '名称': 'name'})
+                df = df.rename(columns={
+                    'ID': 'id',
+                    '名称': 'name'
+                })
                 return df
 
     def notice_config(self):
@@ -52,7 +55,12 @@ class DocumentData:
                 url = f"{self.url}{PROJECT[0]}/values_batch_get?ranges={i.get('sheet_id')}{self.parameter}"
                 df = self.cls(url)
                 df['类型'] = df['类型'].map(NoticeEnum.reversal_obj())
-                df = df.rename(columns={'ID': 'id', '项目ID': 'project_id', '类型': 'type', '配置': 'config'})
+                df = df.rename(columns={
+                    'ID': 'id',
+                    '项目名称': 'project_name',
+                    '类型': 'type',
+                    '配置': 'config'
+                })
 
                 return df
 
@@ -67,16 +75,17 @@ class DocumentData:
                 df['是否默认使用'] = df['是否默认使用'].map(StatusEnum.reversal_obj())
                 df['数据库-查询'] = df['数据库-查询'].map(StatusEnum.reversal_obj())
                 df['数据库-增删改'] = df['数据库-增删改'].map(StatusEnum.reversal_obj())
-                df = df.rename(columns={'ID': 'id',
-                                        '项目ID': 'project_id',
-                                        '环境类型': 'type',
-                                        '名称': 'name',
-                                        '客户端类型': 'client_type',
-                                        '是否默认使用': 'is_use',
-                                        '是否通知': 'is_notice',
-                                        '数据库-查询': 'db_c_status',
-                                        '数据库-增删改': 'db_rud_status',
-                                        })
+                df = df.rename(columns={
+                    'ID': 'id',
+                    '项目名称': 'project_name',
+                    '环境类型': 'type',
+                    '名称': 'name',
+                    '客户端类型': 'client_type',
+                    '是否默认使用': 'is_use',
+                    '是否通知': 'is_notice',
+                    '数据库-查询': 'db_c_status',
+                    '数据库-增删改': 'db_rud_status',
+                })
                 return df
 
     def api_info(self):
@@ -84,38 +93,41 @@ class DocumentData:
         df = self.cls(url)
         df['客户端类型'] = df['客户端类型'].map(ClientEnum.reversal_obj())
         df['请求方法'] = df['请求方法'].map(MethodEnum.reversal_obj())
-        df = df.rename(columns={'ID': 'id',
-                                '项目ID': 'project_id',
-                                '接口名称': 'name',
-                                '客户端类型': 'client_type',
-                                '请求方法': 'method',
-                                '请求头': 'headers',
-                                })
+        df = df.rename(columns={
+            'ID': 'id',
+            '项目名称': 'project_name',
+            '接口名称': 'name',
+            '客户端类型': 'client_type',
+            '请求方法': 'method',
+            '请求头': 'headers',
+        })
         return df
 
     def api_test_case(self):
         url = f"{self.url}{API_TEST_CASE[0]}/values_batch_get?ranges={API_TEST_CASE[1][0].get('sheet_id')}{self.parameter}"
         df = self.cls(url)
-        df = df.rename(columns={'ID': 'id',
-                                '项目ID': 'project_id',
-                                '用例名称': 'name',
-                                })
+        df = df.rename(columns={
+            'ID': 'id',
+            '项目名称': 'project_name',
+            '用例名称': 'name',
+        })
         return df
 
     def ui_element(self):
         url = f"{self.url}{UI_ELEMENT[0]}/values_batch_get?ranges={UI_ELEMENT[1][0].get('sheet_id')}{self.parameter}"
         df = self.cls(url)
         df['定位方式'] = df['定位方式'].map(ElementExpEnum.reversal_obj())
-        df = df.rename(columns={'ID': 'id',
-                                '项目ID': 'project_id',
-                                '模块名称': 'module_name',
-                                '页面名称': 'page_name',
-                                '元素名称': 'ele_name',
-                                '定位方式': 'method',
-                                '表达式': 'locator',
-                                '下标': 'nth',
-                                '等待': 'sleep',
-                                })
+        df = df.rename(columns={
+            'ID': 'id',
+            '项目名称': 'project_name',
+            '模块名称': 'module_name',
+            '页面名称': 'page_name',
+            '元素名称': 'ele_name',
+            '定位方式': 'method',
+            '表达式': 'locator',
+            '下标': 'nth',
+            '等待': 'sleep',
+        })
         return df
 
     def cls(self, url):
