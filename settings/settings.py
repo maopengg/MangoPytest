@@ -23,6 +23,7 @@ PROJECT = ("StFhs7b34h410ktn4FBc9qJsn8e", [{"sheet_id": "8d41b9", "title": "项�
                                            {"sheet_id": "58AgAa", "title": "通知配置"},
                                            {"sheet_id": "RwlKtG", "title": "测试环境"}])
 UI_ELEMENT = ("ZQfZsC7IShpkGytZLoKc1gbXnPS", [{"sheet_id": "9f326e", "title": "Sheet1"}])
+UI_TEST_CASE = ("XKB6sKVOoh3hYxtRjikct7chnsd", [{"sheet_id": "966e57", "title": "Sheet1"}])
 
 # ↑-----------------------------------飞书共享文档数据源-----------------------------------↑
 # ↓-------------------------------------API自动化配置-------------------------------------↓

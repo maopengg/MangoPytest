@@ -3,10 +3,22 @@
 # @Description: 
 # @Time   : 2024-01-17 11:11
 # @Author : 毛鹏
-from mangokit import MysqlConingModel, MysqlConnect
+import json
+
+from mangokit import MysqlConingModel, MysqlConnect, DataClean
 from pydantic import BaseModel, ConfigDict
 
 from enums.ui_enum import ElementExpEnum, BrowserTypeEnum
+
+
+def json_serialize(data: str | None):
+    try:
+        if isinstance(data, str):
+            return json.loads(data)
+        else:
+            return data
+    except (json.decoder.JSONDecodeError, TypeError):
+        return data
 
 
 class WEBConfigModel(BaseModel):
@@ -36,6 +48,22 @@ class ElementModel(BaseModel):
     locator2: str | None = None
 
 
+class UiTestCaseModel(BaseModel):
+    id: int
+    project_name: str
+    name: str
+    data: dict | list[dict] | None = None
+
+    @classmethod
+    def get_obj(cls, data: dict):
+        return cls(
+            id=data['id'],
+            project_name=data['project_name'],
+            name=data['name'],
+            data=json_serialize(data.get('data')),
+        )
+
+
 class UiBaseDataModel(BaseModel):
     """
         每个自动化的项目要在这里设置全局通用的变量，如域名，测试环境，请求头等信息，后面在发生真正请求时，会使用这这里面的信息
@@ -48,3 +76,10 @@ class UiBaseDataModel(BaseModel):
     mysql_config_model: MysqlConingModel | None = None
     mysql_connect: MysqlConnect | None = None
     other_data: dict | None = None  # 其他数据
+
+
+class UiDataModel(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    base_data: UiBaseDataModel  # 基础信息
+    test_case: UiTestCaseModel  # 测试用例信息
+    data_clean: DataClean = DataClean()  # 缓存数据

@@ -38,6 +38,7 @@ class SourcesData:
             notice_config = r.notice_config()
             api_info = r.api_info()
             api_test_case = r.api_test_case()
+            ui_test_case = r.ui_test_case()
             ui_element = r.ui_element()
         except AssertionError:
             raise GetProjectDataError(*ERROR_MSG_0347)

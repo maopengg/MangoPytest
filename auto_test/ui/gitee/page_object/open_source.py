@@ -24,6 +24,6 @@ class OpenSourcePage(BasePage):
         self.url = urljoin(data_model.base_data_model.host, '/explore')
 
     def search_for_open_source_projects(self, name: str):
-        log.error(f'收到的名称是：{name}')
+        log.debug(f'收到的名称是：{name}')
         self.w_input(self.element('开源搜索框'), name)
         self.w_keys('Enter')

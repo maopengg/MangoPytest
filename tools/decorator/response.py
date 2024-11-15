@@ -13,7 +13,7 @@ from requests.models import Response
 from enums.api_enum import MethodEnum
 from exceptions import PytestAutoTestError
 from exceptions.error_msg import ERROR_MSG_0350
-from models.api_model import ApiDataModel, ResponseModel, TestCaseModel, RequestModel, ApiInfoModel
+from models.api_model import ApiDataModel, ResponseModel, ApiTestCaseModel, RequestModel, ApiInfoModel
 from settings.settings import PRINT_EXECUTION_RESULTS, REQUEST_TIMEOUT_FAILURE_TIME
 from tools.log import log
 
@@ -53,7 +53,8 @@ def case_data(case_id: int | list[int] | None = None, case_name: str | list[str]
             allure.dynamic.title(test_case.get('name'))
             allure.attach(json.dumps(test_case, ensure_ascii=False), '用例数据')
 
-            data = ApiDataModel(base_data=self.data_model.base_data_model, test_case=TestCaseModel.get_obj(test_case))
+            data = ApiDataModel(base_data=self.data_model.base_data_model,
+                                test_case=ApiTestCaseModel.get_obj(test_case))
             try:
                 func(self, data=data)
                 self.ass_main(data)

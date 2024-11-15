@@ -4,29 +4,22 @@
 # @Time   : 2024-02-20 11:11
 # @Author : 毛鹏
 import allure
+from mangokit import DataProcessor
 
 from auto_test.ui.wan_android import WanAndroidDataModel
 from auto_test.ui.wan_android.page_object.login import LoginPage
+from models.ui_model import UiDataModel
 from tools.decorator.ui import case_data
 
 
 @allure.epic('演示-UI自动化-WEB项目-玩安卓')
 @allure.feature('登录模块')
 class TestLogin:
+    data_model: WanAndroidDataModel = WanAndroidDataModel()
+    data_processor: DataProcessor = DataProcessor()
 
-    def setup_class(self):
-        self.data_model: WanAndroidDataModel = WanAndroidDataModel()
-
-    def teardown_class(self):
-        pass
-
-    @case_data('玩安卓登录用例', [
-        {'username': 'maopeng', 'password': '729164035'},
-        {'username': 'maopeng', 'password': '7291640351'},
-        {'username': 'maopeng1', 'password': '729164035'},
-    ])
-    def test_login1(self, setup_context_page, data):
-        username, password = data['username'], data['password']
-        login_page = LoginPage(setup_context_page, self.data_model)
+    @case_data([3, 4, 5])
+    def test_01(self, execution_context, data: UiDataModel):
+        login_page = LoginPage(execution_context, self.data_model)
         login_page.w_goto()
-        login_page.login(username, password)
+        login_page.login(data.test_case.data.get('username'), data.test_case.data.get('password'))

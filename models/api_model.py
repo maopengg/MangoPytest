@@ -22,7 +22,7 @@ def json_serialize(data: str | None):
         raise JsonSerializationError(*ERROR_MSG_0345, value=(data,))
 
 
-class TestCaseModel(BaseModel):
+class ApiTestCaseModel(BaseModel):
     id: int
     project_name: str
     name: str
@@ -122,11 +122,7 @@ class ApiDataModel(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     base_data: ApiBaseDataModel  # 基础信息
-    test_case: TestCaseModel  # 测试用例信息
+    test_case: ApiTestCaseModel  # 测试用例信息
     data_clean: DataClean = DataClean()  # 缓存数据
     request: RequestModel | None = None
     response: ResponseModel | None = None
-
-
-if __name__ == '__main__': 
-    print(TestCaseModel.get_obj(data_str))

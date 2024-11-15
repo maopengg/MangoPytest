@@ -11,7 +11,7 @@ from mangokit import requests
 from enums.api_enum import MethodEnum
 from enums.tools_enum import NoticeEnum, EnvironmentEnum, ClientEnum, StatusEnum
 from enums.ui_enum import ElementExpEnum
-from settings.settings import PROJECT, API_TEST_CASE, API_INFO, UI_ELEMENT, APP_ID, APP_SECRET
+from settings.settings import PROJECT, API_TEST_CASE, API_INFO, UI_ELEMENT, APP_ID, APP_SECRET, UI_TEST_CASE
 
 
 class DocumentData:
@@ -127,6 +127,16 @@ class DocumentData:
             '表达式': 'locator',
             '下标': 'nth',
             '等待': 'sleep',
+        })
+        return df
+
+    def ui_test_case(self):
+        url = f"{self.url}{UI_TEST_CASE[0]}/values_batch_get?ranges={UI_TEST_CASE[1][0].get('sheet_id')}{self.parameter}"
+        df = self.cls(url)
+        df = df.rename(columns={
+            'ID': 'id',
+            '项目名称': 'project_name',
+            '用例名称': 'name',
         })
         return df
 
