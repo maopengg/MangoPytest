@@ -25,7 +25,3 @@ class Assertion(PublicAssertion):
         # 使用 DeepDiff 进行比较
         diff = DeepDiff(filtered_actual, expect, ignore_order=True)
         assert not diff, f"字典不匹配: {diff}"
-
-
-if __name__ == '__main__':
-    Assertion.ass_response_whole(response_dict, case_ass)

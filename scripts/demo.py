@@ -1,35 +1,11 @@
-import pytest
-from playwright.sync_api import Page, expect
-from playwright.sync_api import sync_playwright
 
-
-@pytest.fixture(scope='function')
-def setup_context_page():
-    with sync_playwright as p:
-        browser = p.chromium.launch(headless=False,
-                                    executable_path=r'C:\Program Files\Google\Chrome\Application\chrome.exe')
-        page = browser.new_page()
-        return page
-
-
-def test_example(page: Page) -> None:
-    page.goto("https://www.baidu.com/")
-    page.get_by_role("link", name="登录").click()
-    page.get_by_placeholder("手机号/用户名/邮箱").click()
-    page.get_by_placeholder("手机号/用户名/邮箱").fill("18311527751")
-    page.get_by_text(
-        "扫码登录账号登录短信登录验证即登录，未注册将自动创建百度账号发送验证码收不到短信验证码?物联网卡手机号未修改，被限制登录去解禁您账号存在安全风险被限制登录去解禁").click()
-    page.get_by_text("扫码登录账号登录短信登录").click()
-    page.get_by_placeholder("请输入手机号").click()
-    page.get_by_placeholder("请输入手机号").fill("18311527751")
-    page.get_by_role("textbox", name="验证码").click()
-    page.get_by_role("textbox", name="验证码").click()
-    page.get_by_role("checkbox", name="阅读并接受").check()
-    page.get_by_role("textbox", name="验证码").click()
-    page.get_by_role("textbox", name="验证码").click()
-    page.get_by_role("button", name="发送验证码").click()
-    page.get_by_role("textbox", name="验证码").click()
-    page.get_by_role("textbox", name="验证码").click()
-    page.get_by_role("textbox", name="验证码").fill("969439")
-    page.get_by_role("button", name="登录").click()
-    expect(page.locator("#su")).to_contain_text("百度一下")
+if __name__ == '__main__':
+    print(len(["84167", "85200", "114860", "124509", "129915", "148201", "153297", "215322", "219999", "230577", "233062",
+               "233682", "249587", "265330", "266011", "270959", "292550", "305564", "331588", "333021", "334248", "366262",
+               "383616", "408098", "444268", "472921", "649329", "749970", "749979", "788321", "830172", "841974", "843015",
+               "1035888", "1236832", "1264316", "1308345", "1383932", "1744067", "2018144", "2107220", "2265693", "2277971",
+               "2324488", "2330685", "2383503", "2440615", "5004188", "5069071", "5072027", "420212", "5197623", "5238614",
+               "5238672", "5278483", "5280305", "5292272", "455620", "5306518", "5308538", "5371929", "5370975", "5388721",
+               "5422106", "5424245", "5444864", "5448486", "5450584", "5478564", "5517067", "5517296", "5535308", "5542212",
+               "314959", "331063", "302610", "377974", "671615", "742260", "766036", "1546130", "2351698", "2452170",
+               "5542577", "5573056", "5584963", "5607092", "5628074", "5628151", "5633838", "5642104", "5654888"]))

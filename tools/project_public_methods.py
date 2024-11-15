@@ -23,7 +23,7 @@ class ProjectPublicMethods:
         # 从共享的字典中获取实例
         try:
             project_dict = ProjectPaths.check()[project_name]
-        except KeyError:
+        except (KeyError, FileNotFoundError):
             ProjectPaths.init()
             project_dict = ProjectPaths.check()[project_name]
 

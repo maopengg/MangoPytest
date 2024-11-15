@@ -11,7 +11,7 @@ def batch_test():
     for root, dirs, files in os.walk(file_dir):
         for str_filename in files:
             # Full.txt fiddler保存下来的所有txt文件，需要Full.txt后缀格式，可以自己手动修改后缀格式
-            if str_filename.endswith('5_Full.txt'):
+            if str_filename.endswith('6_Full.txt'):
                 return_list.append(str_filename)
         # print(return_list)
         return return_list
@@ -39,7 +39,7 @@ class FidToPy(object):
             if "Cookie: " in i:
                 break
             info += i + "\n"
-        headers = split("\n")
+        headers = info.split("\n")
         while "" in headers:
             headers.remove("")
         for i in headers:
@@ -75,11 +75,11 @@ class FidToPy(object):
         info_url = "url = \'{}\'\n".format(self.url_list[1])
         info_headers = "headers = {}\n".format(self.headers)
         info_cookies = "cookies = {}\n".format(self.cookies)
-        info_data = "test_case = {}\n\n".format(self.data)
+        info_data = "case_run = {}\n\n".format(self.data)
         if "GET" in self.url_list[0]:
             info_req = "html = requests.get(url, headers=headers, verify=False, cookies=cookies)\n"
         else:
-            info_req = "html = requests.post(url, headers=headers, verify=False, cookies=cookies, json=test_case)\n"
+            info_req = "html = requests.post(url, headers=headers, verify=False, cookies=cookies, case_run=case_run)\n"
         info_end = "print(len(html.text))\nprint(html.text)\n"
         text = info_beg + info_url + info_headers + info_cookies + info_data + info_req + info_end
         print(text)
@@ -89,7 +89,7 @@ class FidToPy(object):
         print(self.save_name, "文件保存!")
 
     def read_infos(self):
-        with open(self.str_filename, "r+", encoding="latin1") as p:
+        with open(self.str_filename, "r+", encoding="utf-8") as p:
             old_line = ""
             for line in p:
                 if old_line == b"\n" and line.encode() == b"\n":
@@ -107,7 +107,7 @@ class FidToPy(object):
         print("self.url_list:", self.url_list)
         print("self.headers:", self.headers)
         print("self.cookies:", self.cookies)
-        print("self.test_case:", self.data)
+        print("self.data:", self.data)
         self.get_req(self.save_name)
 
 

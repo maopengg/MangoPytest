@@ -177,7 +177,7 @@ def log_decorator(func):
                        f"请求路径: {data.response.url}\n" \
                        f"请求方式: {data.response.method}\n" \
                        f"请求头:   {data.request.headers}\n" \
-                       f"请求内容: {data.request.params}{data.request.json_data}{data.request.data}\n" \
+                       f"请求内容: params->{data.request.params}json->{data.request.json_data}表单->{data.request.data}文件->{data.request.file}\n" \
                        f"接口响应内容: {data.response.response_text}\n" \
                        f"接口响应时长: {data.response.response_time} ms\n" \
                        f"Http状态码: {data.response.status_code}\n" \
