@@ -9,19 +9,17 @@ from deepdiff import DeepDiff
 from tools.assertion.public_assertion import PublicAssertion
 
 
-
 class Assertion(PublicAssertion):
 
     @classmethod
-    def ass_response_whole(cls, actual, expect):
-        # 创建一个只包含 case_ass 中字段的字典
+    def ass_response_whole(cls, actual: dict, expect: dict):
         filtered_actual = {key: actual[key] for key in expect if key in actual}
-
-        # 处理 nested dictionary
         for key in expect.keys():
             if isinstance(expect[key], dict):
-                filtered_actual[key] = {k: actual[key][k] for k in expect[key] if k in actual[key]}
+                if actual.get(key) is not None:
+                    filtered_actual[key] = {k: actual[key][k] for k in expect[key] if k in actual[key]}
+                else:
+                    filtered_actual[key] = {}
 
-        # 使用 DeepDiff 进行比较
         diff = DeepDiff(filtered_actual, expect, ignore_order=True)
         assert not diff, f"字典不匹配: {diff}"
