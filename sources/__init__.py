@@ -64,6 +64,10 @@ class SourcesData:
         return cls.get(cls.api_test_case, is_dict, **kwargs)
 
     @classmethod
+    def get_ui_test_case(cls, is_dict=True, **kwargs):
+        return cls.get(cls.ui_test_case, is_dict, **kwargs)
+
+    @classmethod
     def get_ui_element(cls, is_dict=True, **kwargs):
         return cls.get(cls.ui_element, is_dict, **kwargs)
 
