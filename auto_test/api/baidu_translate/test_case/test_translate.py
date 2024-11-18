@@ -23,7 +23,7 @@ class TestTranslate(TranslateApi, CaseTool):
     def test_login01(self, data: ApiDataModel):
         appid = self.data_model.cache_data.get('app_id')
         secret_key = self.data_model.cache_data.get('secret_key')
-        salt = self.data_processor.randint(left=32768, right=65536)
+        salt = self.data_processor.randint(data={'left': 32768, 'right': 65536})
         query = data.test_case.params.get('q')
         sign = self.data_processor.md5_32_small(data=appid + query + str(salt) + secret_key)
         data.test_case.params['appid'] = appid
@@ -37,7 +37,7 @@ class TestTranslate(TranslateApi, CaseTool):
     def test_login02(self, data: ApiDataModel):
         appid = self.data_model.cache_data.get('app_id')
         secret_key = self.data_model.cache_data.get('secret_key')
-        salt = self.data_processor.randint(left=32768, right=65536)
+        salt = self.data_processor.randint(data={'left': 32768, 'right': 65536})
         query = data.test_case.params.get('q')
         sign = self.data_processor.md5_32_small(data=appid + query + str(salt) + secret_key)
         data.test_case.params['appid'] = appid
