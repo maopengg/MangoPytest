@@ -39,7 +39,9 @@ class RequestTool:
                             i: dict = i
                             for k, v in i.items():
                                 file_name = self.data_processor \
-                                    .identify_parentheses(v)[0].replace('(', '').replace(')', '')
+                                    .identify_parentheses(v)[0] \
+                                    .replace('(', '') \
+                                    .replace(')', '')
                                 if is_replace:
                                     path = self.data_processor.replace(v)
                                     file.append((k, (file_name, open(path, 'rb'))))
