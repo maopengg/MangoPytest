@@ -6,16 +6,16 @@
 
 from urllib.parse import urljoin
 
-from mangokit import requests, DataProcessor
+from mangokit import requests
 from requests.models import Response
-
+from tools.obtain_test_data import ObtainTestData
 from models.api_model import ApiDataModel, RequestModel, ResponseModel
 from tools.decorator.response import timer, log_decorator
 from tools.log import log
 
 
 class RequestTool:
-    data_processor: DataProcessor = None
+    test_data: ObtainTestData = None
 
     @log_decorator
     def http(self, data: ApiDataModel, is_replace=True) -> ApiDataModel | Response:
@@ -30,7 +30,7 @@ class RequestTool:
             for key, value in data.request:
                 if value is not None and key != 'file':
                     if is_replace:
-                        value = self.data_processor.replace(value)
+                        value = self.test_data.replace(value)
                         setattr(data.request, key, value)
                 elif key == 'file':
                     if data.request.file:
@@ -38,12 +38,12 @@ class RequestTool:
                         for i in data.request.file:
                             i: dict = i
                             for k, v in i.items():
-                                file_name = self.data_processor \
+                                file_name = self.test_data \
                                     .identify_parentheses(v)[0] \
                                     .replace('(', '') \
                                     .replace(')', '')
                                 if is_replace:
-                                    path = self.data_processor.replace(v)
+                                    path = self.test_data.replace(v)
                                     file.append((k, (file_name, open(path, 'rb'))))
                         data.request.file = file
         data.response = self.http_request(data.request)
@@ -70,6 +70,6 @@ class RequestTool:
 
 if __name__ == '__main__':
     requests1 = RequestTool()
-    response :ResponseModel = requests1.http_request(RequestModel(
+    response: ResponseModel = requests1.http_request(RequestModel(
         **{}))
     print(response.response_text)

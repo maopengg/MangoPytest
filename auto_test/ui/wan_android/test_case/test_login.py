@@ -4,8 +4,7 @@
 # @Time   : 2024-02-20 11:11
 # @Author : 毛鹏
 import allure
-from mangokit import DataProcessor
-
+from tools.obtain_test_data import ObtainTestData
 from auto_test.ui.wan_android import WanAndroidDataModel
 from auto_test.ui.wan_android.page_object.login import LoginPage
 from models.ui_model import UiDataModel
@@ -16,7 +15,7 @@ from tools.decorator.ui import case_data
 @allure.feature('登录模块')
 class TestLogin:
     data_model: WanAndroidDataModel = WanAndroidDataModel()
-    data_processor: DataProcessor = DataProcessor()
+    test_data: ObtainTestData = ObtainTestData()
 
     @case_data([3, 4, 5])
     def test_01(self, execution_context, data: UiDataModel):

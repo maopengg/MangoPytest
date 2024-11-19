@@ -20,7 +20,7 @@ class LoginPage(BasePage):
     def __init__(self, context_page: tuple[BrowserContext, Page], data_model: WanAndroidDataModel):
         project_name = ProjectEnum.WanAndroid.value
         module_name = '登录'
-        super().__init__(project_name, module_name, context_page, data_model.data_processor)
+        super().__init__(project_name, module_name, context_page, data_model.test_data)
         self.url = urljoin(data_model.base_data_model.host, '/index')
 
     # 查询操作

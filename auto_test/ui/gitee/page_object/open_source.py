@@ -20,7 +20,7 @@ class OpenSourcePage(BasePage):
     def __init__(self, context_page: tuple[BrowserContext, Page], data_model: GiteeDataModel):
         project_name = ProjectEnum.Gitee.value
         module_name = '开源'
-        super().__init__(project_name, module_name, context_page, data_model.data_processor)
+        super().__init__(project_name, module_name, context_page, data_model.test_data)
         self.url = urljoin(data_model.base_data_model.host, '/explore')
 
     def search_for_open_source_projects(self, name: str):

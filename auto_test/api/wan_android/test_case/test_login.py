@@ -7,8 +7,7 @@ import time
 
 import allure
 import pytest
-from mangokit import DataProcessor
-
+from tools.obtain_test_data import ObtainTestData
 from auto_test.api.wan_android.modules_api.login import LoginAPI
 from models.api_model import ApiDataModel
 from tools.base_request.case_tool import CaseTool
@@ -18,7 +17,7 @@ from tools.decorator.response import case_data
 @allure.epic('演示-API自动化-常规API-玩安卓')
 @allure.feature('登录模块')
 class TestLogin(LoginAPI, CaseTool):
-    data_processor: DataProcessor = DataProcessor()
+    test_data: ObtainTestData = ObtainTestData()
 
     @case_data(1)
     def test_01(self, data: ApiDataModel):

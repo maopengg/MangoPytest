@@ -2,9 +2,7 @@
 # @Project: 芒果测试平台# @Description:
 # @Time   : 2023-09-09 23:17
 # @Author : 毛鹏
-from autotest.ui.driver.android.android_base import AndroidBase, ElementNotFoundError, \
-    ElementNotDisappearError
-from tools.data_processor import CacheTool
+
 from uiautomator2 import UiObject
 
 from tools.log import log

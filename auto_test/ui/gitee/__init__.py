@@ -3,13 +3,14 @@
 # @Description: 
 # @Time   : 2024-03-28 15:19
 # @Author : 毛鹏
-from mangokit import DataProcessor, singleton
+from mangokit import singleton
 from pydantic import BaseModel, ConfigDict
 
 from auto_test.project_config import GiteeEnum
 from enums.tools_enum import EnvironmentEnum, AutoTestTypeEnum
 from models.ui_model import UiBaseDataModel
 from tools.log import log
+from tools.obtain_test_data import ObtainTestData
 from tools.project_public_methods import ProjectPublicMethods
 
 
@@ -19,7 +20,7 @@ class GiteeDataModel(BaseModel):
 
     test_environment: EnvironmentEnum
     base_data_model: UiBaseDataModel
-    data_processor: DataProcessor = DataProcessor()
+    test_data: ObtainTestData = ObtainTestData()
     cache_data: dict = {}
 
 
@@ -29,7 +30,7 @@ def data_init():
     :return:
     """
     data_model: GiteeDataModel = ProjectPublicMethods.get_data_model(GiteeDataModel, GiteeEnum,
-                                                                          AutoTestTypeEnum.UI)
+                                                                     AutoTestTypeEnum.UI)
     log.info(f'{GiteeEnum.NAME.value}的UI在自动化基础信息设置完成！')
 
 

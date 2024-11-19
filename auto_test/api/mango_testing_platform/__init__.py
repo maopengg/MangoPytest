@@ -1,6 +1,6 @@
 from urllib.parse import urljoin
 
-from mangokit import DataProcessor, singleton, requests
+from mangokit import  singleton, requests
 from pydantic import BaseModel, ConfigDict
 
 from auto_test.project_config import MangoTestingPlatformEnum
@@ -8,7 +8,7 @@ from enums.tools_enum import EnvironmentEnum, AutoTestTypeEnum
 from models.api_model import ApiBaseDataModel
 from tools.log import log
 from tools.project_public_methods import ProjectPublicMethods
-
+from tools.obtain_test_data import ObtainTestData
 
 @singleton
 class MangoDataModel(BaseModel):
@@ -19,7 +19,7 @@ class MangoDataModel(BaseModel):
 
     test_environment: EnvironmentEnum
     base_data_model: ApiBaseDataModel
-    data_processor: DataProcessor = DataProcessor()
+    test_data: ObtainTestData = ObtainTestData()
     cache_data: dict = {}
 
 

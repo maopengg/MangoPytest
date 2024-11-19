@@ -5,18 +5,18 @@
 # @Author : 毛鹏
 import allure
 import pytest
-from mangokit import DataProcessor
 
 from auto_test.api.mango_testing_platform.modules_api.ui_auto.page_element import PageElementAPI
 from models.api_model import ApiDataModel
 from tools.base_request.case_tool import CaseTool
 from tools.decorator.response import case_data
+from tools.obtain_test_data import ObtainTestData
 
 
 @allure.epic('芒果测试平台')
 @allure.feature('页面对象')
 class TestPageElement(PageElementAPI, CaseTool):
-    data_processor: DataProcessor = DataProcessor()
+    test_data: ObtainTestData = ObtainTestData()
 
     @allure.title('获取type等于0的页面对象列表')
     @allure.description('测试页面元素的列表')

@@ -6,7 +6,7 @@ import json
 import re
 
 import allure
-from mangokit import DataProcessor
+from tools.obtain_test_data import ObtainTestData
 from playwright.sync_api import Locator
 from playwright.sync_api import Page, BrowserContext
 from retrying import retry
@@ -23,9 +23,9 @@ class BasePage(WebDevice):
     def __init__(self, project_name: str,
                  module_name: str,
                  context_page: tuple[BrowserContext, Page],
-                 data_processor: DataProcessor):
+                 test_data: ObtainTestData):
         context, page = context_page
-        super().__init__(page, context, data_processor)
+        super().__init__(page, context, test_data)
         self.element_list: list[dict] = SourcesData.ui_element[
             (SourcesData.ui_element['project_name'] == project_name) & (
                     SourcesData.ui_element['module_name'] == module_name)].to_dict(orient='records')

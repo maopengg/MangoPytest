@@ -6,18 +6,18 @@
 
 import allure
 import pytest
-from mangokit import DataProcessor
 
 from auto_test.api.mango_testing_platform.modules_api.login import LoginAPI
 from models.api_model import ApiDataModel
 from tools.base_request.case_tool import CaseTool
 from tools.decorator.response import case_data
+from tools.obtain_test_data import ObtainTestData
 
 
 @allure.epic('芒果测试平台')
 @allure.feature('登录模块')
 class TestLogin(LoginAPI, CaseTool):
-    data_processor: DataProcessor = DataProcessor()
+    test_data: ObtainTestData = ObtainTestData()
 
     @allure.title('正确的账号，正确的密码，进行登录')
     @allure.description('测试账号登录')

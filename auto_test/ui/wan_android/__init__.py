@@ -3,9 +3,9 @@
 # @Description:
 # @Time   : 2024-02-20 10:56
 # @Author : 毛鹏
-from mangokit import DataProcessor, singleton
+from mangokit import singleton
 from pydantic import BaseModel, ConfigDict
-
+from tools.obtain_test_data import ObtainTestData
 from auto_test.project_config import WanAndroidEnum
 from enums.tools_enum import EnvironmentEnum, AutoTestTypeEnum
 from models.ui_model import UiBaseDataModel
@@ -19,7 +19,7 @@ class WanAndroidDataModel(BaseModel):
 
     test_environment: EnvironmentEnum
     base_data_model: UiBaseDataModel
-    data_processor: DataProcessor = DataProcessor()
+    test_data: ObtainTestData = ObtainTestData()
     cache_data: dict = {}
 
 

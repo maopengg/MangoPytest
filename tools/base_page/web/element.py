@@ -31,7 +31,7 @@ class PlaywrightElement:
         """获取元素文本"""
         value = locating.inner_text()
         if set_cache_key:
-            self.data_processor.set_cache(key=set_cache_key, value=value)
+            self.test_data.set_cache(key=set_cache_key, value=value)
         return value
 
     @classmethod

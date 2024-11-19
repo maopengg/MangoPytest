@@ -5,8 +5,7 @@
 # @Author : 毛鹏
 
 import allure
-from mangokit import DataProcessor
-
+from tools.obtain_test_data import ObtainTestData
 from auto_test.ui.gitee import GiteeDataModel
 from auto_test.ui.gitee.page_object.home import HomePage
 from auto_test.ui.gitee.page_object.open_source import OpenSourcePage
@@ -18,7 +17,7 @@ from tools.decorator.ui import case_data
 @allure.feature('搜索自己的开源项目')
 class TestOpenSource:
     data_model: GiteeDataModel = GiteeDataModel()
-    data_processor: DataProcessor = DataProcessor()
+    test_data: ObtainTestData = ObtainTestData()
 
     @case_data([1, 2])
     def test_01(self, execution_context, data: UiDataModel):
