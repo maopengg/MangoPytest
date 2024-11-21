@@ -8,8 +8,7 @@ import json
 from mangokit import MysqlConingModel, MysqlConnect, DataClean
 from pydantic import BaseModel, ConfigDict
 
-from exceptions.error_msg import ERROR_MSG_0345
-from exceptions.tools_exception import JsonSerializationError
+from exceptions import *
 
 
 def json_serialize(data: str | None):
@@ -19,7 +18,7 @@ def json_serialize(data: str | None):
         else:
             return data
     except (json.decoder.JSONDecodeError, TypeError):
-        raise JsonSerializationError(*ERROR_MSG_0345, value=(data,))
+        raise ToolsError(*ERROR_MSG_0345, value=(data,))
 
 
 class ApiTestCaseModel(BaseModel):

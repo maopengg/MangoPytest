@@ -7,8 +7,7 @@ from mangokit import MysqlConnect, MysqlConingModel
 from pydantic_core._pydantic_core import ValidationError
 
 from enums.tools_enum import StatusEnum, AutoTestTypeEnum
-from exceptions.error_msg import *
-from exceptions.ui_exception import UiInitialError
+from exceptions import *
 from models.api_model import ApiBaseDataModel
 from models.ui_model import UiBaseDataModel
 from sources import SourcesData
@@ -56,7 +55,7 @@ class ProjectPublicMethods:
 
         except ValidationError:
             if test_object.get('is_db') == StatusEnum.SUCCESS.value:
-                raise UiInitialError(*ERROR_MSG_0333)
+                raise ToolsError(*ERROR_MSG_0333)
 
         return mysql_config_model, mysql_connect
 

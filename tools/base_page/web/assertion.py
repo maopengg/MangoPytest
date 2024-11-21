@@ -5,8 +5,7 @@
 
 from playwright.async_api import Locator, expect
 
-from exceptions.error_msg import ERROR_MSG_0037
-from exceptions.ui_exception import ElementIsEmptyError
+from exceptions import *
 
 
 class PlaywrightAssertion:
@@ -70,7 +69,7 @@ class PlaywrightAssertion:
             if value:
                 expect(value).to_have_count(int(count))
             else:
-                raise ElementIsEmptyError(*ERROR_MSG_0037)
+                raise UiError(*ERROR_MSG_0037)
 
     @staticmethod
     def w_to_element_exists(value: Locator):

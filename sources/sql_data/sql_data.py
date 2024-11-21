@@ -1,8 +1,7 @@
 import pandas
 from mangokit import SQLiteConnect
 
-from exceptions.error_msg import ERROR_MSG_0331
-from exceptions.ui_exception import UiInitialError
+from exceptions import *
 from tools import InitPath
 from tools.sql_statement import *
 
@@ -34,7 +33,7 @@ class SqlData:
         try:
             data = self.sql_connect.execute(sql)
         except IndexError:
-            raise UiInitialError(*ERROR_MSG_0331)
+            raise ToolsError(*ERROR_MSG_0331)
         return pandas.DataFrame(data)
 
 

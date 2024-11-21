@@ -4,12 +4,10 @@
 # @Time   : 2023-04-25 22:33
 # @Author : 毛鹏
 import time
-
 from playwright.async_api import Locator
 from playwright.async_api import Page, BrowserContext
 
-from exceptions.error_msg import ERROR_MSG_0038
-from exceptions.ui_exception import UiTimeoutError
+from exceptions import *
 
 
 class PlaywrightBrowser:
@@ -34,7 +32,7 @@ class PlaywrightBrowser:
                 self.page.goto(self.url, timeout=60000)
             time.sleep(2)
         except TimeoutError:
-            raise UiTimeoutError(*ERROR_MSG_0038, value=(url if url else self.url,))
+            raise UiError(*ERROR_MSG_0038, value=(url if url else self.url,))
 
     def w_screenshot(self, path: str, full_page=True):
         """整个页面截图"""

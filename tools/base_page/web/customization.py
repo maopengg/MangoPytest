@@ -3,13 +3,12 @@
 # @Description: 
 # @Time   : 2023-04-26 22:22
 # @Author : 毛鹏
-import time
 from typing import Optional
 
+import time
 from playwright.sync_api import Locator, BrowserContext, Page
 
-from exceptions.error_msg import ERROR_MSG_0022
-from exceptions.ui_exception import ElementIsEmptyError
+from exceptions import *
 
 
 class PlaywrightCustomization:
@@ -31,7 +30,7 @@ class PlaywrightCustomization:
                 if locator.count() > 0:
                     break
             if locator is None:
-                raise ElementIsEmptyError(*ERROR_MSG_0022)
+                raise UiError(*ERROR_MSG_0022)
             locator.fill(str(data))
 
     def w_click_right_coordinate(self, locating: Locator):

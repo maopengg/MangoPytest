@@ -12,8 +12,7 @@ from mangokit import singleton
 from playwright.sync_api import sync_playwright, Page, BrowserContext, Browser, Error
 
 from enums.ui_enum import BrowserTypeEnum
-from exceptions.error_msg import ERROR_MSG_0039, ERROR_MSG_0040
-from exceptions.ui_exception import BrowserPathError
+from exceptions import *
 from models.ui_model import WEBConfigModel
 from settings.settings import BROWSER_IS_MAXIMIZE
 
@@ -36,7 +35,7 @@ class NewBrowser:
         elif self.web_config.browser_type == BrowserTypeEnum.WEBKIT:
             browser = playwright.webkit
         else:
-            raise BrowserPathError(*ERROR_MSG_0039)
+            raise UiError(*ERROR_MSG_0039)
         try:
             self.web_config.browser_path = self.web_config.browser_path if self.web_config.browser_path else self.__search_path()
             if BROWSER_IS_MAXIMIZE:
@@ -47,7 +46,7 @@ class NewBrowser:
                 self.browser = browser.launch(headless=self.web_config.is_headless,
                                               executable_path=self.web_config.browser_path)
         except Error as error:
-            raise BrowserPathError(*ERROR_MSG_0040, error=error)
+            raise UiError(*ERROR_MSG_0040, error=error)
 
     def new_context_page(self) -> tuple[BrowserContext, Page]:
         with self.lock:

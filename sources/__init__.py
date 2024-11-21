@@ -7,8 +7,7 @@
 from pandas.core.frame import DataFrame
 
 from enums.tools_enum import SourcesTypeEnum
-from exceptions.error_msg import ERROR_MSG_0347, ERROR_MSG_0348, ERROR_MSG_0349
-from exceptions.tools_exception import GetProjectDataError, DataFrameQueryNullError, DataFrameQueryManyError
+from exceptions import *
 from settings.settings import SOURCES_TYPE
 from sources.document_data.document_data import DocumentData
 from sources.sql_data.sql_data import SqlData
@@ -41,7 +40,7 @@ class SourcesData:
             ui_test_case = r.ui_test_case()
             ui_element = r.ui_element()
         except AssertionError:
-            raise GetProjectDataError(*ERROR_MSG_0347)
+            raise ToolsError(*ERROR_MSG_0347)
 
     @classmethod
     def get_test_object(cls, is_dict=True, **kwargs):
@@ -81,14 +80,14 @@ class SourcesData:
                 conditions = conditions & (df[key] == value)
         result = df[conditions]
         if result.empty:
-            raise DataFrameQueryNullError(*ERROR_MSG_0349, value=(str(kwargs),))
+            raise ToolsError(*ERROR_MSG_0349, value=(str(kwargs),))
         elif len(result) == 1:
             data = result.squeeze().to_dict()
         else:
             data = result.to_dict(orient='records')
         if is_dict:
             if isinstance(data, list):
-                raise DataFrameQueryManyError(*ERROR_MSG_0348, value=(str(kwargs),))
+                raise ToolsError(*ERROR_MSG_0348, value=(str(kwargs),))
         return data
 
 

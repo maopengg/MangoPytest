@@ -8,8 +8,7 @@ import time
 
 from playwright.async_api import Page, BrowserContext, Locator, Error
 
-from exceptions.error_msg import ERROR_MSG_0035
-from exceptions.ui_exception import UploadElementInputError
+from exceptions import *
 
 
 class PlaywrightElement:
@@ -44,7 +43,7 @@ class PlaywrightElement:
                 for file in file_path:
                     locating.set_input_files(file)
         except Error:
-            raise UploadElementInputError(*ERROR_MSG_0035)
+            raise UiError(*ERROR_MSG_0035)
         # with self.page.expect_file_chooser() as fc_info:
         #     locating.click()
         # file_chooser = fc_info.value
