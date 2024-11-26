@@ -36,17 +36,6 @@ class ClientNameEnum(BaseEnum):
     PLATFORM_ENGLISH = 'AutoTest'
 
 
-class AutoTestTypeEnum(BaseEnum):
-    """自动测试类型"""
-    UI = 0
-    API = 1
-    PERF = 2
-
-    @classmethod
-    def obj(cls):
-        return {0: "前端", 1: "接口", 2: "性能"}
-
-
 class EnvironmentEnum(BaseEnum):
     """测试环境枚举"""
     DEV = 0
