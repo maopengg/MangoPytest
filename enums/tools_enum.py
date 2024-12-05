@@ -50,6 +50,17 @@ class EnvironmentEnum(BaseEnum):
         return {0: "开发环境", 1: "测试环境", 2: "预发环境", 3: "验收环境", 4: "仿真环境", 5: "生产环境", }
 
 
+class AutoTestTypeEnum(BaseEnum):
+    """自动测试类型"""
+    UI = 0
+    API = 1
+    PERF = 2
+
+    @classmethod
+    def obj(cls):
+        return {0: "前端", 1: "接口", 2: "性能"}
+
+
 class AssEnum(BaseEnum):
     response = 0
     sql = 1
