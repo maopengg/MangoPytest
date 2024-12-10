@@ -5,6 +5,7 @@
 # @Author : 毛鹏
 import json
 
+
 from auto_test.project_config import *
 from enums.tools_enum import AutoTestTypeEnum
 
@@ -50,3 +51,12 @@ class ProjectPaths:
         data[project_name]['test_environment'] = value
         with open(fr"{InitPath.project_root_directory}\tools\project_path\data.json", 'w') as file:
             json.dump(data, file)
+
+    @classmethod
+    def get_project_path(cls, project_name: str):
+        if project_name == ProjectEnum.Z_TOOL.value:
+            return ZtoolEnum.UPLOAD.value
+
+
+if __name__ == '__main__':
+    print(ProjectPaths.get_project_path('智投'))

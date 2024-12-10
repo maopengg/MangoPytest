@@ -47,3 +47,5 @@ class MangoTestingPlatformEnum(BaseEnum):
 class ZtoolEnum(BaseEnum):
     NAME = ProjectEnum.Z_TOOL.value
     API_PATH = fr"{InitPath.project_root_directory}\auto_test\api\z_tool\test_case"
+    DOWNLOAD = fr"{InitPath.project_root_directory}\auto_test\api\z_tool\download"
+    UPLOAD = fr"{InitPath.project_root_directory}\auto_test\api\z_tool\upload"

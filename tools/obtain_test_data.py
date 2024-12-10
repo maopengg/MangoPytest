@@ -3,9 +3,11 @@
 # @Description: 
 # @Time   : 2024-11-19 11:36
 # @Author : 毛鹏
-from datetime import date
+from datetime import date, datetime, timedelta
 
 from mangokit import DataProcessor
+
+from tools.project_path.project_path import ProjectPaths
 
 
 class ObtainTestData(DataProcessor):
@@ -14,8 +16,10 @@ class ObtainTestData(DataProcessor):
         super().__init__()
 
     @classmethod
-    def get_file(cls, data):
-        pass
+    def get_file_path(cls, project_name, file_name):
+        """获取文件地址"""
+        project_path = ProjectPaths.get_project_path(project_name)
+        return f'{project_path}/{file_name}'
 
     @classmethod
     def time_now_hms(cls):

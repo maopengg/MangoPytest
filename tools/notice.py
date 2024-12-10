@@ -34,8 +34,7 @@ class NoticeMain:
             if self.result_list:
                 if self.result_list[0].get('is_notice') == StatusEnum.SUCCESS.value:
                     notice_list = SourcesData \
-                        .notice_config[
-                        SourcesData.notice_config['project_name'] == self.result_list[0].get('project_name')] \
+                        .notice_config[SourcesData.notice_config['project_name'] == self.result_list[0].get('project_name')] \
                         .to_dict(orient='records')
                     for notice in notice_list:
                         if notice.get('type') == NoticeEnum.MAIL.value:

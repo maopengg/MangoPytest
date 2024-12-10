@@ -113,7 +113,7 @@ def request_data(api_info_id):
             if data.request.json_data:
                 allure.attach(json.dumps(data.request.json_data, ensure_ascii=False), 'JSON')
             if data.request.file:
-                allure.attach(json.dumps(data.request.file, ensure_ascii=False), '文件')
+                allure.attach(str(data.request.file), '文件')
             allure.attach(str(data.response.status_code), '响应状态码')
             allure.attach(str(data.response.response_time * 1000), '响应时间（毫秒）')
             allure.attach(json.dumps(data.response.response_dict, ensure_ascii=False), '响应结果')

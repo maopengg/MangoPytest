@@ -28,7 +28,7 @@ class ApiTestCaseModel(BaseModel):
     params: dict | list[dict] | None = None
     data: dict | list[dict] | None = None
     json_data: dict | list[dict] | None = None
-    file: dict | None = None
+    file: list | None = None
     other_data: dict | None = None
     ass_response_whole: dict | None = None
     ass_response_value: str | None = None
@@ -88,7 +88,7 @@ class RequestModel(BaseModel):
     params: dict | None = None
     data: str | dict | None = None
     json_data: dict | None = None
-    file: dict | None = None
+    file: list | None = None
 
 
 class ResponseModel(BaseModel):

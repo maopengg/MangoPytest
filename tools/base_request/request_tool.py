@@ -8,11 +8,10 @@ from urllib.parse import urljoin
 
 from mangokit import requests
 from requests.models import Response
-
+from tools.obtain_test_data import ObtainTestData
 from models.api_model import ApiDataModel, RequestModel, ResponseModel
 from tools.decorator.response import timer, log_decorator
 from tools.log import log
-from tools.obtain_test_data import ObtainTestData
 
 
 class RequestTool:
@@ -26,6 +25,7 @@ class RequestTool:
         :param is_replace: 是否过滤请求中的${}, 如果数据本身就有${}，那需要传false
         :return:
         """
+        log.debug(f'格式化之前的请求格式：{data.request.model_dump_json()}')
         data.request.url = urljoin(data.base_data.host, data.request.url)
         if is_replace:
             for key, value in data.request:
@@ -37,15 +37,9 @@ class RequestTool:
                     if data.request.file:
                         file = []
                         for i in data.request.file:
-                            i: dict = i
                             for k, v in i.items():
-                                file_name = self.test_data \
-                                    .identify_parentheses(v)[0] \
-                                    .replace('(', '') \
-                                    .replace(')', '')
-                                if is_replace:
-                                    path = self.test_data.replace(v)
-                                    file.append((k, (file_name, open(path, 'rb'))))
+                                file_path = self.test_data.get_file_path(data.base_data.project.get('name'), v)
+                                file.append((k, (v, open(file_path, 'rb'))))
                         data.request.file = file
         data.response = self.http_request(data.request)
         return data
@@ -57,7 +51,7 @@ class RequestTool:
         @param request_model: RequestDataModel
         @return: ApiDataModel
         """
-        log.debug(f'请求前置：{request_model.model_dump_json()}')
+        log.debug(f'请求前置：{request_model.model_dump()}')
         return requests.request(
             method=request_model.method,
             url=request_model.url,
