@@ -1,4 +1,3 @@
-from tools.obtain_test_data import ObtainTestData
 from playwright.async_api import Page, BrowserContext
 
 from tools.base_page.web.browser import PlaywrightBrowser
@@ -6,6 +5,7 @@ from tools.base_page.web.customization import PlaywrightCustomization
 from tools.base_page.web.element import PlaywrightElement
 from tools.base_page.web.input_device import PlaywrightDeviceInput
 from tools.base_page.web.page import PlaywrightPage
+from tools.obtain_test_data import ObtainTestData
 
 
 class WebDevice(PlaywrightBrowser, PlaywrightElement, PlaywrightPage, PlaywrightDeviceInput, PlaywrightCustomization):

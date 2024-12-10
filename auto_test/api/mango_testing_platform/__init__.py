@@ -1,14 +1,15 @@
 from urllib.parse import urljoin
 
-from mangokit import  singleton, requests
+from mangokit import singleton, requests
 from pydantic import BaseModel, ConfigDict
 
 from auto_test.project_config import MangoTestingPlatformEnum
 from enums.tools_enum import EnvironmentEnum, AutoTestTypeEnum
 from models.api_model import ApiBaseDataModel
 from tools.log import log
-from tools.project_public_methods import ProjectPublicMethods
 from tools.obtain_test_data import ObtainTestData
+from tools.project_public_methods import ProjectPublicMethods
+
 
 @singleton
 class MangoDataModel(BaseModel):
@@ -29,7 +30,7 @@ def data_init():
     :return:
     """
     data_model: MangoDataModel = ProjectPublicMethods.get_data_model(MangoDataModel, MangoTestingPlatformEnum,
-                                                                          AutoTestTypeEnum.API)
+                                                                     AutoTestTypeEnum.API)
     login_url = f'login'
     try:
         response = requests.request(url=urljoin(data_model.base_data_model.test_object.get('host'), login_url),

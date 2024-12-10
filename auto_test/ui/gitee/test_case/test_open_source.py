@@ -5,12 +5,13 @@
 # @Author : 毛鹏
 
 import allure
-from tools.obtain_test_data import ObtainTestData
+
 from auto_test.ui.gitee import GiteeDataModel
 from auto_test.ui.gitee.page_object.home import HomePage
 from auto_test.ui.gitee.page_object.open_source import OpenSourcePage
 from models.ui_model import UiDataModel
 from tools.decorator.ui import case_data
+from tools.obtain_test_data import ObtainTestData
 
 
 @allure.epic('演示-UI自动化-WEB项目-Gitee')

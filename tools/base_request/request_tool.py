@@ -8,10 +8,11 @@ from urllib.parse import urljoin
 
 from mangokit import requests
 from requests.models import Response
-from tools.obtain_test_data import ObtainTestData
+
 from models.api_model import ApiDataModel, RequestModel, ResponseModel
 from tools.decorator.response import timer, log_decorator
 from tools.log import log
+from tools.obtain_test_data import ObtainTestData
 
 
 class RequestTool:

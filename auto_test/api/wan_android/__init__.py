@@ -2,11 +2,12 @@ from urllib.parse import urljoin
 
 from mangokit import singleton, requests
 from pydantic import BaseModel, ConfigDict
-from tools.obtain_test_data import ObtainTestData
+
 from auto_test.project_config import WanAndroidEnum
 from enums.tools_enum import EnvironmentEnum, AutoTestTypeEnum
 from models.api_model import ApiBaseDataModel
 from tools.log import log
+from tools.obtain_test_data import ObtainTestData
 from tools.project_public_methods import ProjectPublicMethods
 
 

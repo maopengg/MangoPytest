@@ -6,6 +6,7 @@
 from urllib.parse import urljoin
 
 from playwright.sync_api import Page, BrowserContext
+
 from auto_test.project_config import ProjectEnum
 from auto_test.ui.gitee import GiteeDataModel
 from tools.base_page import BasePage

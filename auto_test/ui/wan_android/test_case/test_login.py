@@ -4,11 +4,12 @@
 # @Time   : 2024-02-20 11:11
 # @Author : 毛鹏
 import allure
-from tools.obtain_test_data import ObtainTestData
+
 from auto_test.ui.wan_android import WanAndroidDataModel
 from auto_test.ui.wan_android.page_object.login import LoginPage
 from models.ui_model import UiDataModel
 from tools.decorator.ui import case_data
+from tools.obtain_test_data import ObtainTestData
 
 
 @allure.epic('演示-UI自动化-WEB项目-玩安卓')
