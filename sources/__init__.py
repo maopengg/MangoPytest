@@ -74,10 +74,15 @@ class SourcesData:
     def get(cls, df: DataFrame, is_dict: bool, **kwargs) -> list[dict] | dict | None:
         conditions = None
         for key, value in kwargs.items():
-            if conditions is None:
-                conditions = (df[key] == value)
+            if isinstance(value, list):
+                condition = df[key].isin(value)
             else:
-                conditions = conditions & (df[key] == value)
+                condition = (df[key] == value)
+            if conditions is None:
+                conditions = condition
+            else:
+                conditions = conditions & condition
+
         result = df[conditions]
         if result.empty:
             raise ToolsError(*ERROR_MSG_0349, value=(str(kwargs),))
@@ -85,15 +90,19 @@ class SourcesData:
             data = result.squeeze().to_dict()
         else:
             data = result.to_dict(orient='records')
-        if is_dict:
-            if isinstance(data, list):
-                raise ToolsError(*ERROR_MSG_0348, value=(str(kwargs),))
-        return data
+        if isinstance(data, list) and is_dict:
+            raise ToolsError(*ERROR_MSG_0348, value=(str(kwargs),))
+        elif isinstance(data, list) and not is_dict:
+            return data
+        elif isinstance(data, dict) and is_dict:
+            return data
+        elif isinstance(data, dict) and not is_dict:
+            return [data, ]
 
 
 if __name__ == '__main__':
     print(SourcesData.project)
     print(SourcesData.test_object)
     project: dict = SourcesData \
-        .get_test_object(**{'name': 'CDP预发环境'})
-    print(project)
+        .get_api_test_case(False, **{'id': [1]})
+    print(type(project), project)

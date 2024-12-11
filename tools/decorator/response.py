@@ -20,41 +20,24 @@ from tools.log import log
 
 def case_data(case_id: int | list[int] | None = None, case_name: str | list[str] | None = None):
     def decorator(func):
+        log.debug(f'开始查询用例，用例ID:{case_id} 用例名称：{case_name}')
         from sources import SourcesData
-        if isinstance(case_id, int):
-            case_id_list = [case_id]
-        else:
-            case_id_list = case_id
-        if isinstance(case_name, str):
-            case_name_list = [case_name]
-        else:
-            case_name_list = case_name
-
-        test_case_list: list = []
-        if case_id_list:
-            for i in case_id_list:
-                test_case_dict: dict = SourcesData \
-                    .api_test_case[SourcesData.api_test_case['id'] == i] \
-                    .squeeze() \
-                    .to_dict()
-                test_case_list.append(test_case_dict)
-        elif case_name_list:
-            for i in case_name_list:
-                test_case_dict: dict = SourcesData \
-                    .api_test_case[SourcesData.api_test_case['name'] == i] \
-                    .squeeze() \
-                    .to_dict()
-                test_case_list.append(test_case_dict)
+        if case_id:
+            test_case_list = SourcesData.get_api_test_case(False, **{'id': case_id})
+        elif case_name:
+            test_case_list = SourcesData.get_api_test_case(False, **{'name': case_name})
         else:
             raise PytestAutoTestError(*ERROR_MSG_0350)
 
         @pytest.mark.parametrize("test_case", test_case_list)
         def wrapper(self, test_case):
+            test_case_model = ApiTestCaseModel.get_obj(test_case)
+            log.debug(f'准备开始执行用例，数据：{test_case_model.model_dump_json()}')
             allure.dynamic.title(test_case.get('name'))
             allure.attach(json.dumps(test_case, ensure_ascii=False), '用例数据')
 
             data = ApiDataModel(base_data=self.data_model.base_data_model,
-                                test_case=ApiTestCaseModel.get_obj(test_case))
+                                test_case=test_case_model)
             try:
                 func(self, data=data)
                 self.ass_main(data)
@@ -62,10 +45,10 @@ def case_data(case_id: int | list[int] | None = None, case_name: str | list[str]
                 log.error(error.msg)
                 allure.attach(error.msg, '发生已知异常')
                 raise error
-            except Exception as error:
-                log.error(error)
-                allure.attach(error, '发生未知异常')
-                raise error
+            # except Exception as error:
+            #     log.error(error)
+            #     allure.attach(error, '发生未知异常')
+            #     raise error
 
         return wrapper
 
@@ -82,16 +65,14 @@ def request_data(api_info_id):
 
         # @functools.wraps(func)
         def wrapper(*args, **kwargs) -> ApiDataModel:
+            log.debug(f'开始查询接口数据，ID：{api_info_id}')
             data: ApiDataModel = kwargs.get('data')
             if len(args) == 2:
                 data: ApiDataModel = args[1]
             from sources import SourcesData
-            api_info_dict: dict = SourcesData \
-                .api_info[SourcesData.api_info['id'] == api_info_id] \
-                .squeeze() \
-                .to_dict()
+            api_info_dict = SourcesData.get_api_info(**{'id': api_info_id})
             api_info_model = ApiInfoModel.get_obj(api_info_dict)
-            log.debug(f"{api_info_id}-----{api_info_model.model_dump_json()}")
+            log.debug(f'查询到接口的数据，接口ID：{api_info_model.model_dump_json()}')
             data.request = RequestModel(
                 url=api_info_model.url,
                 method=MethodEnum.get_value(api_info_model.method),
@@ -101,7 +82,7 @@ def request_data(api_info_id):
                 json_data=data.test_case.json_data,
                 file=data.test_case.file,
             )
-            log.debug(f'请求调用http之前的request：{data.request.model_dump_json()}')
+            log.debug(f'默认准备好的请求，数据：{data.request.model_dump_json()}')
             res_args = func(*args, **kwargs)
             allure.attach(str(data.request.url), 'URL')
             allure.attach(str(data.request.method), '请求方法')
@@ -136,7 +117,6 @@ def timer(func):
         start = time.time()
         response: Response = func(*args, **kwargs)
         response_time = time.time() - start
-        # 计算时间戳毫米级别，如果时间大于number，则打印 函数名称 和运行时间
         if response_time > REQUEST_TIMEOUT_FAILURE_TIME:
             log.error(
                 f"\n{'=' * 100}\n"
@@ -148,16 +128,17 @@ def timer(func):
             response_dict = response.json()
         except json.JSONDecodeError:
             response_dict = '您可以检查返回的值是否是json，如果不是，就不要使用response_dict'
-
+        log.debug(f'请求的结果，response：{response.text}')
         data: RequestModel = args[1]
-        return ResponseModel(url=response.url,
-                             status_code=response.status_code,
-                             method=data.method,
-                             headers=response.headers,
-                             response_text=response.text,
-                             response_dict=response_dict,
-                             response_time=response_time
-                             )
+        return ResponseModel(
+            url=response.url,
+            status_code=response.status_code,
+            method=data.method,
+            headers=response.headers,
+            response_text=response.text,
+            response_dict=response_dict,
+            response_time=response_time
+        )
 
     return swapper
 
@@ -171,18 +152,21 @@ def log_decorator(func):
     @functools.wraps(func)
     def swapper(*args, **kwargs) -> ApiDataModel:
         data = func(*args, **kwargs)
-        # 判断日志开关为开启状态
+        log.debug(f'用例执行完成，整个响应体：{data.response.model_dump_json()}')
         if PRINT_EXECUTION_RESULTS:
-            _log_msg = f"\n{'=' * 100}\n" \
+            _log_msg = f"\n{'=' * 200}\n" \
                        f"用例标题: {data.test_case.name}\n" \
                        f"请求路径: {data.response.url}\n" \
                        f"请求方式: {data.response.method}\n" \
-                       f"请求头:   {data.request.headers}\n" \
-                       f"请求内容: params->{data.request.params}json->{data.request.json_data}表单->{data.request.data}文件->{data.request.file}\n" \
-                       f"接口响应内容: {data.response.response_text}\n" \
-                       f"接口响应时长: {data.response.response_time} ms\n" \
+                       f"请 求 头:  {data.request.headers}\n" \
+                       f"请求params：{data.request.params}\n" \
+                       f"请求data：{data.request.data}\n" \
+                       f"请求json：{data.request.json_data}\n" \
+                       f"请求文件：{data.request.file}\n" \
                        f"Http状态码: {data.response.status_code}\n" \
-                       f"{'=' * 100}"
+                       f"接口响应时长: {data.response.response_time} ms\n" \
+                       f"接口响应内容: {data.response.response_text}\n" \
+                       f"{'=' * 200}"
             if data.response.status_code == 200 or data.response.status_code == 300:
                 log.info(_log_msg)
             else:

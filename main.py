@@ -26,6 +26,7 @@ from tools.main_run import MainRun
     --maxfail: 设置最大失败次数，当超出这个阈值时，则不会在执行测试用例
     "--reruns=3", "--reruns-delay=2"
     -n 4: 代表使用多线程执行用例，4是线程数
+    '--dist=loadscope',  # 确保每个文件在单独的进程中运行
     '-p no:warnings' 忽略警告
     'ignore:Module already imported:pytest.PytestWarning' 特定警告
     "--clean-alluredir",清空目录
@@ -39,7 +40,8 @@ pytest_command = [
     '--alluredir',
     './report/tmp',
     "--clean-alluredir",
-    '-n 2',
+    '-n 3',
+    '--dist=loadscope',
     '-p no:warnings'
 ]
 

@@ -97,7 +97,7 @@ class ResponseModel(BaseModel):
     method: str
     headers: dict
     response_text: str
-    response_dict: dict | str
+    response_dict: dict | list | None = None
     response_time: int | float | None = None
 
 
