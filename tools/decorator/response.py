@@ -128,14 +128,15 @@ def timer(func):
             response_dict = response.json()
         except json.JSONDecodeError:
             response_dict = '您可以检查返回的值是否是json，如果不是，就不要使用response_dict'
-        log.debug(f'请求的结果，response：{response.text}')
+        formatted_response = ''.join(response.text.split())
+        log.debug(f'请求的结果，response：{formatted_response}')
         data: RequestModel = args[1]
         return ResponseModel(
             url=response.url,
             status_code=response.status_code,
             method=data.method,
             headers=response.headers,
-            response_text=response.text,
+            response_text=formatted_response,
             response_dict=response_dict,
             response_time=response_time
         )
@@ -158,15 +159,19 @@ def log_decorator(func):
                        f"用例标题: {data.test_case.name}\n" \
                        f"请求路径: {data.response.url}\n" \
                        f"请求方式: {data.response.method}\n" \
-                       f"请 求 头:  {data.request.headers}\n" \
-                       f"请求params：{data.request.params}\n" \
-                       f"请求data：{data.request.data}\n" \
-                       f"请求json：{data.request.json_data}\n" \
-                       f"请求文件：{data.request.file}\n" \
-                       f"Http状态码: {data.response.status_code}\n" \
-                       f"接口响应时长: {data.response.response_time} ms\n" \
-                       f"接口响应内容: {data.response.response_text}\n" \
-                       f"{'=' * 200}"
+                       f"请 求 头:  {data.request.headers}\n"
+            if data.request.params is not None:
+                _log_msg += f"请求params：{data.request.params}\n"
+            if data.request.data is not None:
+                _log_msg += f"请求data：{data.request.data}\n"
+            if data.request.json_data is not None:
+                _log_msg += f"请求json：{data.request.json_data}\n"
+            if data.request.file is not None:
+                _log_msg += f"请求文件：{data.request.file}\n"
+            _log_msg += f"Http状态码: {data.response.status_code}\n" \
+                        f"接口响应时长: {data.response.response_time} ms\n" \
+                        f"接口响应内容: {data.response.response_text}\n" \
+                        f"{'=' * 200}"
             if data.response.status_code == 200 or data.response.status_code == 300:
                 log.info(_log_msg)
             else:
