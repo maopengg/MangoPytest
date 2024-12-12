@@ -7,7 +7,7 @@ allure-pytest==2.13.5
 allure-python-commons==2.13.5
 
 playwright
-uiautomator2~=3.2.6
+uiautomator2==3.2.5
 uiautodev
 
 assertpy==1.1
