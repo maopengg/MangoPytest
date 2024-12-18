@@ -4,7 +4,7 @@
 # @Time   : 2023-08-11 11:08
 # @Author : 毛鹏
 # ↓-------------------------------------是否开启调试-------------------------------------↓
-IS_DEBUG = True
+IS_DEBUG = False
 # ↑-------------------------------------是否开启调试-------------------------------------↑
 # ↓---------------------------------是否在运行结束后生成报告--------------------------------↓
 IS_TEST_REPORT = True
@@ -28,15 +28,25 @@ SOURCES_TYPE = SourcesTypeEnum.DOCUMENT
 # ↑--------------------------------------数据源选择--------------------------------------↑
 
 # ↓-----------------------------------飞书共享文档数据源-----------------------------------↓
-APP_ID = "cli_a680e4c8c5be100c"
-APP_SECRET = "uKEDeCAamlviajfBrxXjBhiSKnxONf6x"
-API_INFO = ("LntEsBf88h8KDXtjmKNcHgwSnoc", [{"sheet_id": "ef820e", "title": "Sheet1"}])
-API_TEST_CASE = ("XLcrsEVLkhdDQvtWaJQc4uennvb", [{"sheet_id": "e8f425", "title": "Sheet1"}])
-PROJECT = ("StFhs7b34h410ktn4FBc9qJsn8e", [{"sheet_id": "8d41b9", "title": "项目信息"},
-                                           {"sheet_id": "58AgAa", "title": "通知配置"},
-                                           {"sheet_id": "RwlKtG", "title": "测试环境"}])
-UI_ELEMENT = ("ZQfZsC7IShpkGytZLoKc1gbXnPS", [{"sheet_id": "9f326e", "title": "Sheet1"}])
-UI_TEST_CASE = ("XKB6sKVOoh3hYxtRjikct7chnsd", [{"sheet_id": "966e57", "title": "Sheet1"}])
+APP_ID = "cli_a680e4c8c5be100c"  # 飞书的权限
+APP_SECRET = "uKEDeCAamlviajfBrxXjBhiSKnxONf6x"  # 飞书的权限
+API_INFO = ("LntEsBf88h8KDXtjmKNcHgwSnoc", [  # API信息表
+    {"sheet_id": "ef820e", "title": "Sheet1"}
+])
+API_TEST_CASE = ("XLcrsEVLkhdDQvtWaJQc4uennvb", [  # API测试用例表
+    {"sheet_id": "e8f425", "title": "Sheet1"}
+])
+PROJECT = ("StFhs7b34h410ktn4FBc9qJsn8e", [  # 项目配置表
+    {"sheet_id": "8d41b9", "title": "项目信息"},
+    {"sheet_id": "58AgAa", "title": "通知配置"},
+    {"sheet_id": "RwlKtG", "title": "测试环境"}
+])
+UI_ELEMENT = ("ZQfZsC7IShpkGytZLoKc1gbXnPS", [  # UI元素表
+    {"sheet_id": "9f326e", "title": "Sheet1"}
+])
+UI_TEST_CASE = ("XKB6sKVOoh3hYxtRjikct7chnsd", [  # UI测试用例表
+    {"sheet_id": "966e57", "title": "Sheet1"}
+])
 
 # ↑-----------------------------------飞书共享文档数据源-----------------------------------↑
 

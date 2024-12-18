@@ -66,6 +66,7 @@ class ApiInfoModel(BaseModel):
     client_type: int
     method: int
     url: str
+    json_data: dict | None = None
     headers: dict | None = None
 
     @classmethod
@@ -78,6 +79,7 @@ class ApiInfoModel(BaseModel):
             method=data['method'],
             url=data['url'],
             headers=json_serialize(data.get('headers')),
+            json_data=json_serialize(data.get('JSON')),
         )
 
 

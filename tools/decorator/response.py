@@ -79,7 +79,7 @@ def request_data(api_info_id):
                 headers=api_info_model.headers if api_info_model.headers else data.base_data.headers,
                 params=data.test_case.params,
                 data=data.test_case.data,
-                json_data=data.test_case.json_data,
+                json_data=data.test_case.json_data if data.test_case.json_data else api_info_model.json_data,
                 file=data.test_case.file,
             )
             log.debug(f'默认准备好的请求，数据：{data.request.model_dump_json()}')
