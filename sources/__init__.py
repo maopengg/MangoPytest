@@ -9,8 +9,9 @@ from pandas.core.frame import DataFrame
 from enums.tools_enum import SourcesTypeEnum
 from exceptions import *
 from settings.settings import SOURCES_TYPE
-from sources.document_data.document_data import DocumentData
-from sources.sql_data.sql_data import SqlData
+from sources.excel.excel_data import ExcelData
+from sources.feishu.document_data import DocumentData
+from sources.sql.sql_data import SqlData
 
 
 class SourcesData:
@@ -20,27 +21,22 @@ class SourcesData:
     api_info: DataFrame = None
     api_test_case: DataFrame = None
     ui_element: DataFrame = None
-
-    if SOURCES_TYPE == SourcesTypeEnum.SQL:
-        r = SqlData()
+    try:
+        if SOURCES_TYPE == SourcesTypeEnum.SQL:
+            r = SqlData()
+        elif SOURCES_TYPE == SourcesTypeEnum.EXCEL:
+            r = ExcelData()
+        else:
+            r = DocumentData()
         project = r.project()
         test_object = r.test_object()
         notice_config = r.notice_config()
         api_info = r.api_info()
         api_test_case = r.api_test_case()
+        ui_test_case = r.ui_test_case()
         ui_element = r.ui_element()
-    else:
-        try:
-            r = DocumentData()
-            project = r.project()
-            test_object = r.test_object()
-            notice_config = r.notice_config()
-            api_info = r.api_info()
-            api_test_case = r.api_test_case()
-            ui_test_case = r.ui_test_case()
-            ui_element = r.ui_element()
-        except AssertionError:
-            raise ToolsError(*ERROR_MSG_0347)
+    except AssertionError:
+        raise ToolsError(*ERROR_MSG_0347)
 
     @classmethod
     def get_test_object(cls, is_dict=True, **kwargs):
@@ -101,8 +97,7 @@ class SourcesData:
 
 
 if __name__ == '__main__':
-    print(SourcesData.project)
-    print(SourcesData.test_object)
+    print(SourcesData.api_test_case)
     project: dict = SourcesData \
         .get_api_test_case(False, **{'id': [1]})
-    print(type(project), project)
+    print(project)
