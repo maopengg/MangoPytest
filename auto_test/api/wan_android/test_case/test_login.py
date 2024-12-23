@@ -22,7 +22,6 @@ class TestLogin(LoginAPI, CaseTool):
     @case_data(1)
     def test_01(self, data: ApiDataModel):
         data = self.api_login(data)
-        time.sleep(5)
         assert data.response.response_dict['data']['nickname'] == "maopeng"
 
     @case_data(2)

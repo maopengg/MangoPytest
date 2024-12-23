@@ -4,7 +4,7 @@
 # @Time   : 2024-04-01 22:11
 # @Author : 毛鹏
 
-import pandas
+import pandas as pd
 
 from enums.api_enum import MethodEnum
 from enums.tools_enum import NoticeEnum, EnvironmentEnum, ClientEnum, StatusEnum
@@ -107,10 +107,11 @@ class ExcelData:
 
     def cls(self, file_path: str, sheet_name=None):
         if sheet_name is None:
-            return pandas.read_excel(file_path)
+            df = pd.read_excel(file_path)
         else:
-            return pandas.read_excel(file_path, sheet_name=sheet_name)
+            df = pd.read_excel(file_path, sheet_name=sheet_name)
+        return df.map(lambda x: None if pd.isna(x) else x)
 
 
 if __name__ == '__main__':
-    print(ExcelData().notice_config())
+    print(ExcelData().api_test_case())

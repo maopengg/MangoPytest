@@ -5,7 +5,6 @@
 # @Author : 毛鹏
 import json
 from datetime import datetime
-
 from mangokit import EmailSend, WeChatSend, EmailNoticeModel, WeChatNoticeModel, TestReportModel
 from mangokit.tools.other.native_ip import get_host_ip
 
@@ -22,20 +21,19 @@ class NoticeMain:
 
     def __init__(self, case_run_model: list[CaseRunModel]):
         self.case_run_model = case_run_model
-        self.result_list = None
+        self.result_dict = None
         self.test_environment = None
 
     def notice_main(self):
         for i in self.case_run_model:
             self.test_environment = EnvironmentEnum.get_value(i.test_environment.value)
-            self.result_list = SourcesData \
-                .test_object[SourcesData.project['name'] == i.project.value] \
-                .to_dict(orient='records')
-            if self.result_list:
-                if self.result_list[0].get('is_notice') == StatusEnum.SUCCESS.value:
-                    notice_list = SourcesData \
-                        .notice_config[SourcesData.notice_config['project_name'] == self.result_list[0].get('project_name')] \
-                        .to_dict(orient='records')
+            self.result_dict = SourcesData.get_test_object(project_name=i.project.value, type=i.test_environment.value)
+            if self.result_dict:
+                if self.result_dict.get('is_notice') == StatusEnum.SUCCESS.value:
+                    notice_list = SourcesData.get_notice_config(
+                        is_dict=False,
+                        project_name=self.result_dict.get('project_name')
+                    )
                     for notice in notice_list:
                         if notice.get('type') == NoticeEnum.MAIL.value:
                             try:
@@ -98,8 +96,8 @@ class NoticeMain:
                 # 收集用例运行时长
                 time = _time if statistic['total'] == 0 else round(_time['duration'] / 1000, 2)
                 try:
-                    return TestReportModel(project_id=self.result_list[0].get('id'),
-                                           project_name=self.result_list[0].get('name'),
+                    return TestReportModel(project_id=self.result_dict.get('id'),
+                                           project_name=self.result_dict.get('name'),
                                            test_environment=self.test_environment,
                                            ip=get_host_ip(),
                                            case_sum=statistic['total'],

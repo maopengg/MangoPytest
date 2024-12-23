@@ -54,7 +54,7 @@ UI_TEST_CASE = ("XKB6sKVOoh3hYxtRjikct7chnsd", [  # UI测试用例表
 
 EMAIL_HOST = 'smtp.qq.com'  # 发送邮件host，这个是QQ邮箱
 SEND_USER = '729164035@qq.com'  # 发送用户
-STAMP_KEY = 'lqfzvjbpfcwtbecg'  # 用户的key
+STAMP_KEY = 'trwymxhsefpobdba'  # 用户的key
 
 # ↑---------------------------------------邮件配置---------------------------------------↑
 # ↓------------------------------------全局请求代理设置------------------------------------↓
