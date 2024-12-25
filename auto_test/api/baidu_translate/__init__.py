@@ -15,7 +15,7 @@ class BaiduTranslateModel(BaseModel):
     user_info: dict | None = None
     headers: dict | None = None
     test_environment: int
-    base_data_model: ApiBaseDataModel
+    base_data: ApiBaseDataModel
     data_clean: DataClean = DataClean()
     cache_data: dict = {}
 

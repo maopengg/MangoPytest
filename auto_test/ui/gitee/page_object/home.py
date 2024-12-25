@@ -21,7 +21,7 @@ class HomePage(BasePage):
         project_name = ProjectEnum.Gitee.value
         module_name = '首页'
         super().__init__(project_name, module_name, context_page, data_model.test_data)
-        self.url = urljoin(data_model.base_data_model.host, '')
+        self.url = urljoin(data_model.base_data.host, '')
 
     def click_open_source(self):
         self.w_click(self.element('菜单-开源'))

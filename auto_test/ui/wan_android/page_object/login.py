@@ -21,7 +21,7 @@ class LoginPage(BasePage):
         project_name = ProjectEnum.WanAndroid.value
         module_name = '登录'
         super().__init__(project_name, module_name, context_page, data_model.test_data)
-        self.url = urljoin(data_model.base_data_model.host, '/index')
+        self.url = urljoin(data_model.base_data.host, '/index')
 
     # 查询操作
     def login(self, username: str, password: str):

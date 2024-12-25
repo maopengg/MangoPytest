@@ -48,7 +48,7 @@ def case_data(case_id: int | list[int] | None = None, case_name: str | list[str]
             allure.dynamic.title(test_case.get('name'))
             browser = NewBrowser(WEBConfigModel(browser_type=BrowserTypeEnum.CHROMIUM))
             context, page = browser.new_context_page()
-            data = UiDataModel(base_data=self.data_model.base_data_model, test_case=UiTestCaseModel.get_obj(test_case))
+            data = UiDataModel(base_data=self.data_model.base_data, test_case=UiTestCaseModel.get_obj(test_case))
             func(self, execution_context=(context, page), data=data)
             context.close()
             page.close()

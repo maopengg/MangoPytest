@@ -19,7 +19,7 @@ class WanAndroidDataModel(BaseModel):
     headers: dict = {'Content-Type': 'application/x-www-form-urlencoded'}
 
     test_environment: EnvironmentEnum
-    base_data_model: ApiBaseDataModel
+    base_data: ApiBaseDataModel
     test_data: ObtainTestData = ObtainTestData()
     cache_data: dict = {}
 
@@ -32,7 +32,7 @@ def data_init():
     data_model: WanAndroidDataModel = ProjectPublicMethods.get_data_model(WanAndroidDataModel, WanAndroidEnum,
                                                                           AutoTestTypeEnum.API)
     login_url = f'user/login'
-    response = requests.request(url=urljoin(data_model.base_data_model.test_object.get('host'), login_url),
+    response = requests.request(url=urljoin(data_model.base_data.test_object.get('host'), login_url),
                                 method="POST",
                                 headers=data_model.headers,
                                 data=data_model.user_info)
@@ -43,7 +43,7 @@ def data_init():
         cookies += _cookie
         # 将登录接口中的cookie写入缓存中，其中login_cookie是缓存名称
     data_model.headers['cookie'] = cookies
-    data_model.base_data_model.headers = data_model.headers
+    data_model.base_data.headers = data_model.headers
     log.info(f'{WanAndroidEnum.NAME.value}的API在自动化基础信息设置完成！')
 
 

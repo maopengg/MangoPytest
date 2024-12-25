@@ -19,7 +19,7 @@ class MangoDataModel(BaseModel):
     headers: dict = {}
 
     test_environment: EnvironmentEnum
-    base_data_model: ApiBaseDataModel
+    base_data: ApiBaseDataModel
     test_data: ObtainTestData = ObtainTestData()
     cache_data: dict = {}
 
@@ -33,12 +33,12 @@ def data_init():
                                                                      AutoTestTypeEnum.API)
     login_url = f'login'
     try:
-        response = requests.request(url=urljoin(data_model.base_data_model.test_object.get('host'), login_url),
+        response = requests.request(url=urljoin(data_model.base_data.test_object.get('host'), login_url),
                                     method="POST",
                                     headers=data_model.headers,
                                     data=data_model.user_info)
         data_model.headers['Authorization'] = response.json()['data']['token']
-        data_model.base_data_model.headers = data_model.headers
+        data_model.base_data.headers = data_model.headers
         log.info(f'{MangoTestingPlatformEnum.NAME.value}的API在自动化基础信息设置完成！')
     except Exception as error:
         log.warning(f'{MangoTestingPlatformEnum.NAME.value}的服务未启动，请先启动服务再进行测试！')

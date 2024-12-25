@@ -18,7 +18,7 @@ class WanAndroidDataModel(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     test_environment: EnvironmentEnum
-    base_data_model: UiBaseDataModel
+    base_data: UiBaseDataModel
     test_data: ObtainTestData = ObtainTestData()
     cache_data: dict = {}
 

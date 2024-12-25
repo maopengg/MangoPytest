@@ -66,7 +66,7 @@ class ProjectPublicMethods:
         if _type == AutoTestTypeEnum.API:
             return model(
                 test_environment=test_environment,
-                base_data_model=ApiBaseDataModel(
+                base_data=ApiBaseDataModel(
                     test_object=test_object,
                     project=project,
                     host=test_object.get('host'),
@@ -78,7 +78,7 @@ class ProjectPublicMethods:
         else:
             return model(
                 test_environment=test_environment,
-                base_data_model=UiBaseDataModel(
+                base_data=UiBaseDataModel(
                     test_object=test_object,
                     project=project,
                     host=test_object.get('host'),
