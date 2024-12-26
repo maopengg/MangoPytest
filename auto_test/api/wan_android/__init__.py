@@ -27,7 +27,6 @@ class WanAndroidDataModel(BaseModel):
 def data_init():
     """
     登录接口，获取通用token
-    :return:
     """
     data_model: WanAndroidDataModel = ProjectPublicMethods.get_data_model(WanAndroidDataModel, WanAndroidEnum,
                                                                           AutoTestTypeEnum.API)
@@ -39,9 +38,7 @@ def data_init():
     cookies = ''
     for k, v in response.cookies.items():
         _cookie = k + "=" + v + ";"
-        # 拿到登录的cookie内容，cookie拿到的是字典类型，转换成对应的格式
         cookies += _cookie
-        # 将登录接口中的cookie写入缓存中，其中login_cookie是缓存名称
     data_model.headers['cookie'] = cookies
     data_model.base_data.headers = data_model.headers
     log.info(f'{WanAndroidEnum.NAME.value}的API在自动化基础信息设置完成！')

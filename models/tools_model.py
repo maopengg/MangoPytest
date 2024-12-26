@@ -16,6 +16,10 @@ class CaseRunModel(BaseModel):
     test_environment: EnvironmentEnum
 
 
+class CaseRunListModel(BaseModel):
+    case_run: list[CaseRunModel]
+
+
 class TestMetrics(BaseModel):
     """ 用例执行数据 """
     passed: int
@@ -25,3 +29,5 @@ class TestMetrics(BaseModel):
     total: int
     pass_rate: float
     time: float
+
+

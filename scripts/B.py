@@ -1,31 +1,16 @@
-import json
-
-import requests
-from jsonschema import Draft7Validator
-
-# 发送请求并获取响应
-response = requests.get('https://api.example.com/resource')
-data = response.json()
-
-# 生成 JSON Schema
-validator = Draft7Validator.check_schema(data)
-schema = validator.schema
-
-# 保存到 schema.json
-with open('schema.json', 'w') as f:
-    json.dump(schema, f, indent=2)
-
-# 加载 JSON Schema
-with open('schema.json') as f:
-    schema = f.read()
+from multiprocessing import Process, Manager
 
 
-def test_api_response():
-    # 发送请求
-    response = requests.get('https://api.example.com/resource')
+def f(shared_dict):
+    shared_dict['key'] = 'value'  # 修改共享字典
 
-    # 验证响应状态码
-    assert response.status_code == 200
 
-    # 验证响应 JSON 格式
-    validate(instance=response.json(), schema=schema)
+if __name__ == '__main__':
+    manager = Manager()
+    shared_dict = manager.dict()  # 创建一个共享字典
+
+    p = Process(target=f, args=(shared_dict,))
+    p.start()
+    p.join()
+
+    print(f'共享的字典: {shared_dict}')

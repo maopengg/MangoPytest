@@ -16,6 +16,11 @@ class ProjectEnum(BaseEnum):
     Mango = '芒果测试平台'
     Z_TOOL = '智投'
 
+class ZtoolEnum(BaseEnum):
+    NAME = ProjectEnum.Z_TOOL.value
+    API_PATH = fr"{InitPath.project_root_directory}\auto_test\api\z_tool\test_case"
+    DOWNLOAD = fr"{InitPath.project_root_directory}\auto_test\api\z_tool\download"
+    UPLOAD = fr"{InitPath.project_root_directory}\auto_test\api\z_tool\upload"
 
 class CDPEnum(BaseEnum):
     NAME = ProjectEnum.CDP.value
@@ -49,3 +54,4 @@ class ZtoolEnum(BaseEnum):
     API_PATH = fr"{InitPath.project_root_directory}\auto_test\api\z_tool\test_case"
     DOWNLOAD = fr"{InitPath.project_root_directory}\auto_test\api\z_tool\download"
     UPLOAD = fr"{InitPath.project_root_directory}\auto_test\api\z_tool\upload"
+

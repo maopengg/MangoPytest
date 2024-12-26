@@ -2,12 +2,11 @@
 # @Description:
 # @Time   : 2023-08-08 11:48
 # @Author : 毛鹏
+import allure
 import functools
 import json
-import time
-
-import allure
 import pytest
+import time
 from requests.models import Response
 
 from enums.api_enum import MethodEnum
@@ -23,12 +22,13 @@ def case_data(case_id: int | list[int] | None = None, case_name: str | list[str]
         log.debug(f'开始查询用例，用例ID:{case_id} 用例名称：{case_name}')
         from sources import SourcesData
         if case_id:
-            test_case_list = SourcesData.get_api_test_case(False, **{'id': case_id})
+            test_case_list = SourcesData.get_api_test_case(is_dict=False, id=case_id)
         elif case_name:
-            test_case_list = SourcesData.get_api_test_case(False, **{'name': case_name})
+            test_case_list = SourcesData.get_api_test_case(is_dict=False, name=case_name)
         else:
             raise PytestAutoTestError(*ERROR_MSG_0350)
 
+        @pytest.mark.flaky(reruns=3)
         @pytest.mark.parametrize("test_case", test_case_list)
         def wrapper(self, test_case):
             test_case_model = ApiTestCaseModel.get_obj(test_case)
@@ -41,14 +41,11 @@ def case_data(case_id: int | list[int] | None = None, case_name: str | list[str]
             try:
                 func(self, data=data)
                 self.ass_main(data)
+                # allure.attach(self.test_data.get_all(), '缓存数据')
             except PytestAutoTestError as error:
                 log.error(error.msg)
                 allure.attach(error.msg, '发生已知异常')
                 raise error
-            # except Exception as error:
-            #     log.error(error)
-            #     allure.attach(error, '发生未知异常')
-            #     raise error
 
         return wrapper
 
@@ -70,7 +67,7 @@ def request_data(api_info_id):
             if len(args) == 2:
                 data: ApiDataModel = args[1]
             from sources import SourcesData
-            api_info_dict = SourcesData.get_api_info(**{'id': api_info_id})
+            api_info_dict = SourcesData.get_api_info(id=api_info_id)
             api_info_model = ApiInfoModel.get_obj(api_info_dict)
             log.debug(f'查询到接口的数据，接口ID：{api_info_model.model_dump_json()}')
             data.request = RequestModel(
@@ -98,7 +95,6 @@ def request_data(api_info_id):
             allure.attach(str(data.response.status_code), '响应状态码')
             allure.attach(str(data.response.response_time * 1000), '响应时间（毫秒）')
             allure.attach(json.dumps(data.response.response_dict, ensure_ascii=False), '响应结果')
-
             return res_args
 
         return wrapper
@@ -126,8 +122,9 @@ def timer(func):
                 f"{'=' * 100}")
         try:
             response_dict = response.json()
-        except json.JSONDecodeError:
-            response_dict = '您可以检查返回的值是否是json，如果不是，就不要使用response_dict'
+        except json.JSONDecodeError as error:
+            response_dict = {'error_msg': '您可以检查返回的值是否是json，如果不是，就不要使用response_dict',
+                             'error': str(error)}
         formatted_response = ''.join(response.text.split())
         log.debug(f'请求的结果，response：{formatted_response}')
         data: RequestModel = args[1]
@@ -138,7 +135,8 @@ def timer(func):
             headers=response.headers,
             response_text=formatted_response,
             response_dict=response_dict,
-            response_time=response_time
+            response_time=response_time,
+            content=response.content
         )
 
     return swapper
@@ -153,7 +151,7 @@ def log_decorator(func):
     @functools.wraps(func)
     def swapper(*args, **kwargs) -> ApiDataModel:
         data = func(*args, **kwargs)
-        log.debug(f'用例执行完成，整个响应体：{data.response.model_dump_json()}')
+        log.debug(f'用例执行完成，整个响应体：{data.response.model_dump()}')
         if PRINT_EXECUTION_RESULTS:
             _log_msg = f"\n{'=' * 200}\n" \
                        f"用例标题: {data.test_case.name}\n" \

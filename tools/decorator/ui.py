@@ -11,35 +11,17 @@ from exceptions import PytestAutoTestError
 from exceptions.error_msg import ERROR_MSG_0350
 from models.ui_model import WEBConfigModel, UiDataModel, UiTestCaseModel
 from tools.base_page.web.new_browser import NewBrowser
+from tools.log import log
 
 
 def case_data(case_id: int | list[int] | None = None, case_name: str | list[str] | None = None):
     def decorator(func):
+        log.debug(f'开始查询用例，用例ID:{case_id} 用例名称：{case_name}')
         from sources import SourcesData
-        if isinstance(case_id, int):
-            case_id_list = [case_id]
-        else:
-            case_id_list = case_id
-        if isinstance(case_name, str):
-            case_name_list = [case_name]
-        else:
-            case_name_list = case_name
-
-        test_case_list: list = []
-        if case_id_list:
-            for i in case_id_list:
-                test_case_dict: dict = SourcesData \
-                    .ui_test_case.loc[SourcesData.api_test_case['id'] == i] \
-                    .squeeze() \
-                    .to_dict()
-                test_case_list.append(test_case_dict)
-        elif case_name_list:
-            for i in case_name_list:
-                test_case_dict: dict = SourcesData. \
-                    ui_test_case.loc[SourcesData.api_test_case['name'] == i] \
-                    .squeeze() \
-                    .to_dict()
-                test_case_list.append(test_case_dict)
+        if case_id:
+            test_case_list = SourcesData.get_ui_test_case(is_dict=False, id=case_id)
+        elif case_name:
+            test_case_list = SourcesData.get_ui_test_case(is_dict=False, name=case_name)
         else:
             raise PytestAutoTestError(*ERROR_MSG_0350)
 

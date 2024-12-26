@@ -25,10 +25,10 @@ class ApiTestCaseModel(BaseModel):
     id: int
     project_name: str
     name: str
-    params: dict | list[dict] | None = None
-    data: dict | list[dict] | None = None
-    json_data: dict | list[dict] | None = None
-    file: list | None = None
+    params: dict | list[dict] | list | None = None
+    data: dict | list[dict] | list | None = None
+    json_data: dict | list[dict] | list | None = None
+    file: list[dict] | None = None
     other_data: dict | None = None
     ass_response_whole: dict | None = None
     ass_response_value: str | None = None
@@ -66,7 +66,7 @@ class ApiInfoModel(BaseModel):
     client_type: int
     method: int
     url: str
-    json_data: dict | None = None
+    json_data: dict | list | None = None
     headers: dict | None = None
 
     @classmethod
@@ -89,7 +89,7 @@ class RequestModel(BaseModel):
     headers: dict | None = None
     params: dict | None = None
     data: str | dict | None = None
-    json_data: dict | None = None
+    json_data: dict | list | None = None
     file: list | None = None
 
 
@@ -101,6 +101,7 @@ class ResponseModel(BaseModel):
     response_text: str
     response_dict: dict | list | None = None
     response_time: int | float | None = None
+    content: bytes | None = None
 
 
 class ApiBaseDataModel(BaseModel):
@@ -116,7 +117,6 @@ class ApiBaseDataModel(BaseModel):
     is_database_assertion: bool
     mysql_config_model: MysqlConingModel | None = None
     mysql_connect: MysqlConnect | None = None
-    other_data: dict | None = None  # 其他数据
 
 
 class ApiDataModel(BaseModel):
@@ -127,3 +127,4 @@ class ApiDataModel(BaseModel):
     data_clean: DataClean = DataClean()  # 缓存数据
     request: RequestModel | None = None
     response: ResponseModel | None = None
+    other_data: dict = {}  # 其他数据

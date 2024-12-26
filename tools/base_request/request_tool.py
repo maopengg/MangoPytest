@@ -3,15 +3,15 @@
 # @Description: 
 # @Time   : 2023-09-04 17:23
 # @Author : 毛鹏
-
-from urllib.parse import urljoin
-
+import os
 from mangokit import requests
 from requests.models import Response
-from tools.obtain_test_data import ObtainTestData
+from urllib.parse import urljoin
+
 from models.api_model import ApiDataModel, RequestModel, ResponseModel
 from tools.decorator.response import timer, log_decorator
 from tools.log import log
+from tools.obtain_test_data import ObtainTestData
 
 
 class RequestTool:
@@ -23,6 +23,7 @@ class RequestTool:
         处理请求的数据，写入到request对象中
         :param data: ApiDataModel
         :param is_replace: 是否过滤请求中的${}, 如果数据本身就有${}，那需要传false
+        :param is_request: 是否发起请求
         :return:
         """
         log.debug(f'清洗请求数据之前，请求数据：{data.request.model_dump_json()}')
@@ -39,8 +40,15 @@ class RequestTool:
                         file = []
                         for i in data.request.file:
                             for k, v in i.items():
-                                file_path = self.test_data.get_file_path(data.base_data.project.get('name'), v)
-                                file.append((k, (v, open(file_path, 'rb'))))
+                                if 'get_file' not in v:
+                                    v = self.test_data.replace(v)
+                                if os.path.isabs(v):
+                                    log.debug(f'文件路径为绝对路径，直接使用')
+                                    file_path = v
+                                else:
+                                    file_path = self.test_data.get_file(data.base_data.project.get('name'), v)
+                                file_name = os.path.basename(file_path)
+                                file.append((k, (file_name, open(file_path, 'rb'))))
                         data.request.file = file
         log.debug(f'清洗请求数据之后，请求数据：{data.request.model_dump()}')
         data.response = self.http_request(data.request)
@@ -48,6 +56,15 @@ class RequestTool:
 
     @timer
     def http_request(self, request_model: RequestModel) -> ResponseModel | Response:
+        """
+        带装饰器，进行内部数据格式化的请求
+        @param request_model: RequestDataModel
+        @return: ApiDataModel
+        """
+        return self.custom_http(request_model)
+
+    @staticmethod
+    def custom_http(request_model: RequestModel) -> Response:
         """
         全局请求统一处理
         @param request_model: RequestDataModel

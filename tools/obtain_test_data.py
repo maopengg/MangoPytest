@@ -16,7 +16,7 @@ class ObtainTestData(DataProcessor):
         super().__init__()
 
     @classmethod
-    def get_file_path(cls, project_name, file_name):
+    def get_file(cls, project_name, file_name):
         """获取文件地址"""
         project_path = ProjectPaths.get_project_path(project_name)
         return f'{project_path}/{file_name}'

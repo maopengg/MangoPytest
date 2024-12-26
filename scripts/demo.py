@@ -1,5 +1,4 @@
-data = {'key': []}
-if data.get('key'):
-     print(1)
-else:
-     print(2)
+import pandas as pd
+
+file = pd.read_excel(r"D:\taodan\ptyhon\PytestAutoTest\auto_test\api\z_tool\download\lnjSEpQvnK.xlsx")
+print(file)

@@ -25,20 +25,15 @@ class ProjectPublicMethods:
         except (KeyError, FileNotFoundError):
             ProjectPaths.init()
             project_dict = ProjectPaths.check()[project_name]
+        project: dict = SourcesData.get_project(name=project_name)
 
         if project_dict.get('test_environment') is None:
-            project: dict = SourcesData \
-                .get_project(**{'name': project_name})
-            test_object = SourcesData \
-                .get_test_object(**{'project_name': project.get('name'), 'is_use': 1})
+            test_object = SourcesData.get_test_object(project_name=project.get('name'), is_use=StatusEnum.SUCCESS.value)
             test_environment: int = test_object.get('type')
             log.warning(f'项目：{project_name}未获取到测试环境变量，请检查！')
         else:
             test_environment: int = project_dict.get('test_environment')
-            project: dict = SourcesData \
-                .get_project(**{'name': project_name})
-            test_object = SourcesData \
-                .get_test_object(**{'project_name': project.get('name'), 'type': test_environment})
+            test_object = SourcesData.get_test_object(project_name=project.get('name'), type=test_environment)
         return test_environment, project, test_object
 
     @staticmethod

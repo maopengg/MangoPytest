@@ -5,12 +5,11 @@
 # @Author : 毛鹏
 
 import os
-
 import pytest
 from mangokit.tools.other.native_ip import get_host_ip
 
 from exceptions import *
-from models.tools_model import CaseRunModel
+from models.tools_model import CaseRunListModel
 from settings.settings import IS_TEST_REPORT
 from tools.files.zip_files import zip_files
 from tools.log import log
@@ -21,7 +20,10 @@ from tools.project_path.project_path import ProjectPaths
 class MainRun:
 
     def __init__(self, test_project: list[dict], pytest_command: list):
-        self.data: list[CaseRunModel] = [CaseRunModel(**i) for i in test_project]
+        self.case_run_list: CaseRunListModel = CaseRunListModel(case_run=test_project)
+        os.environ['TEST_ENV'] = self.case_run_list.model_dump_json()
+        print(os.environ.get('TEST_ENV'))
+
         self.pytest_command = pytest_command
         # 压缩上一次执行结果，并且保存起来，方便后面查询
         zip_files()
@@ -30,7 +32,7 @@ class MainRun:
 
     def run(self):
         project_type_paths = ProjectPaths.check()
-        for case_run_model in self.data:
+        for case_run_model in self.case_run_list.case_run:
             project_key = case_run_model.project.value
             if project_key in project_type_paths:
                 ProjectPaths.update(project_key, case_run_model.test_environment.value)
@@ -46,6 +48,6 @@ class MainRun:
         # 发送通知
         if IS_TEST_REPORT:
             os.system(r"allure generate ./report/tmp -o ./report/html --clean")
-        NoticeMain(self.data).notice_main()
+        NoticeMain(self.case_run_list.case_run).notice_main()
         if IS_TEST_REPORT:
             os.system(f"allure serve ./report/tmp -h {get_host_ip()} -p 9997")
