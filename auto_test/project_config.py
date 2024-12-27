@@ -22,6 +22,7 @@ class ZtoolEnum(BaseEnum):
     DOWNLOAD = fr"{InitPath.project_root_directory}\auto_test\api\z_tool\download"
     UPLOAD = fr"{InitPath.project_root_directory}\auto_test\api\z_tool\upload"
 
+
 class CDPEnum(BaseEnum):
     NAME = ProjectEnum.CDP.value
     UI_PATH = fr"{InitPath.project_root_directory}\auto_test\ui\cdp\test_case"

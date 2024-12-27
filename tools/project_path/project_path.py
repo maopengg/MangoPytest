@@ -56,7 +56,3 @@ class ProjectPaths:
     def get_project_path(cls, project_name: str):
         if project_name == ProjectEnum.Z_TOOL.value:
             return ZtoolEnum.UPLOAD.value
-
-
-if __name__ == '__main__':
-    print(ProjectPaths.get_project_path('智投'))

@@ -25,7 +25,7 @@ from tools.main_run import MainRun
     -x: 一旦错误，则停止运行
     --maxfail: 设置最大失败次数，当超出这个阈值时，则不会在执行测试用例
     "--reruns=3", "--reruns-delay=2"
-    -n 4: 代表使用多线程执行用例，4是线程数
+    -n 4: 代表使用多线程执行用例，4是进程数
     '--dist=loadscope',  # 确保每个文件在单独的进程中运行
     '-p no:warnings' 忽略警告
     'ignore:Module already imported:pytest.PytestWarning' 特定警告
@@ -40,7 +40,7 @@ pytest_command = [
     '--alluredir',
     './report/tmp',
     "--clean-alluredir",
-    '-n 3',
+    '-n 5',
     '--dist=loadscope',
     '-p no:warnings'
 ]
@@ -52,5 +52,4 @@ test_project = [
     {'project': ProjectEnum.Gitee, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.UI},
     # {'project': ProjectEnum.Mango, 'test_environment': EnvironmentEnum.TEST, 'type': AutoTestTypeEnum.API},
 ]
-
 MainRun(test_project=test_project, pytest_command=pytest_command)

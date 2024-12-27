@@ -34,4 +34,4 @@ class Assertion(PublicAssertion):
     def ass_response_whole(cls, actual: dict, expect: dict):
         filtered_actual = filter_dict(actual, expect)
         diff = DeepDiff(filtered_actual, expect, ignore_order=True)
-        assert not diff, f"字典不匹配: {diff}"
+        assert not diff, f"预期：{expect}，实际：{filtered_actual}"

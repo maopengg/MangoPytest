@@ -22,8 +22,6 @@ class MainRun:
     def __init__(self, test_project: list[dict], pytest_command: list):
         self.case_run_list: CaseRunListModel = CaseRunListModel(case_run=test_project)
         os.environ['TEST_ENV'] = self.case_run_list.model_dump_json()
-        print(os.environ.get('TEST_ENV'))
-
         self.pytest_command = pytest_command
         # 压缩上一次执行结果，并且保存起来，方便后面查询
         zip_files()
@@ -42,6 +40,7 @@ class MainRun:
                     self.pytest_command.append(project_type_paths[project_key][str(case_run_model.type.value)])
             else:
                 raise ToolsError(*ERROR_MSG_0007)
+        # self.pytest_command.append(r'D:\GitCode\PytestAutoTest\auto_test\api\z_tool\test_case\test_report_assistant')
         # 执行用例
         log.info(f"开始执行测试任务......")
         pytest.main(self.pytest_command)

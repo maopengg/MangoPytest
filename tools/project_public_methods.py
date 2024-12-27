@@ -3,37 +3,51 @@
 # @Description: 
 # @Time   : 2024-03-17 19:10
 # @Author : 毛鹏
+import json
+
+import os
+
 from mangokit import MysqlConnect, MysqlConingModel
 from pydantic_core._pydantic_core import ValidationError
 
 from enums.tools_enum import StatusEnum, AutoTestTypeEnum
 from exceptions import *
 from models.api_model import ApiBaseDataModel
+from models.tools_model import CaseRunListModel
 from models.ui_model import UiBaseDataModel
 from sources import SourcesData
 from tools.log import log
-from tools.project_path.project_path import ProjectPaths
 
 
 class ProjectPublicMethods:
 
     @staticmethod
-    def get_project_test_object(project_name: str, ) -> tuple[int, dict, dict]:
+    def get_project_test_object(project_name: str, _type: AutoTestTypeEnum) -> tuple[int, dict, dict]:
         # 从共享的字典中获取实例
-        try:
-            project_dict = ProjectPaths.check()[project_name]
-        except (KeyError, FileNotFoundError):
-            ProjectPaths.init()
-            project_dict = ProjectPaths.check()[project_name]
+        # try:
+        #     project_dict = ProjectPaths.check()[project_name]
+        # except (KeyError, FileNotFoundError):
+        #     ProjectPaths.init()
+        #     project_dict = ProjectPaths.check()[project_name]
+        # os.environ['TEST_ENV'] = CaseRunListModel(**{"case_run":[{"project":"智投","type":1,"test_environment":1}]}).model_dump_json()
         project: dict = SourcesData.get_project(name=project_name)
-
-        if project_dict.get('test_environment') is None:
+        try:
+            case_list = CaseRunListModel(**json.loads(os.environ['TEST_ENV']))
+            test_object = None
+            test_environment = None
+            for i in case_list.case_run:
+                if i.project.value == project_name and _type == i.type:
+                    test_environment = i.test_environment.value
+                    test_object = SourcesData.get_test_object(
+                        project_name=project.get('name'),
+                        type=i.test_environment.value
+                    )
+        except KeyError:
             test_object = SourcesData.get_test_object(project_name=project.get('name'), is_use=StatusEnum.SUCCESS.value)
             test_environment: int = test_object.get('type')
-            log.warning(f'项目：{project_name}未获取到测试环境变量，请检查！')
-        else:
-            test_environment: int = project_dict.get('test_environment')
-            test_object = SourcesData.get_test_object(project_name=project.get('name'), type=test_environment)
+        if test_object is None or test_environment is None:
+            log.error(f'项目:{project_name}没有可用的测试对象')
+            raise ToolsError(*ERROR_MSG_0333)
         return test_environment, project, test_object
 
     @staticmethod
@@ -56,7 +70,7 @@ class ProjectPublicMethods:
 
     @classmethod
     def get_data_model(cls, model, project_enum, _type: AutoTestTypeEnum):
-        test_environment, project, test_object = cls.get_project_test_object(project_name=project_enum.NAME.value)
+        test_environment, project, test_object = cls.get_project_test_object(project_enum.NAME.value, _type)
         mysql_config_model, mysql_connect = cls.get_mysql_info(test_object)
         if _type == AutoTestTypeEnum.API:
             return model(
