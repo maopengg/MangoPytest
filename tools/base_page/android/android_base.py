@@ -5,9 +5,9 @@
 from time import sleep
 from typing import Optional
 
-from models.socket_model.ui_model import AndroidConfigModel
 from uiautomator2 import Device
 
+from models.ui_model import AndroidConfigModel
 from tools.log import log
 
 """
