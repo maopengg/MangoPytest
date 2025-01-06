@@ -6,7 +6,7 @@
 
 import os
 import pytest
-from mangokit.tools.other.native_ip import get_host_ip
+from mangokit.tools.method import get_host_ip
 
 from exceptions import *
 from models.tools_model import CaseRunListModel

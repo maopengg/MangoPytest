@@ -25,7 +25,7 @@ class BasePage(WebDevice):
                  test_data: ObtainTestData):
         context, page = context_page
         super().__init__(page, context, test_data)
-        self.element_list: list[dict] = SourcesData.get_ui_element(project_name=project_name, module_name=module_name)
+        self.element_list: list[dict] = SourcesData.get_ui_element(is_dict=False, project_name=project_name, module_name=module_name)
         if not self.element_list:
             raise UiError(*ERROR_MSG_0346)
         d = re.DEBUG
