@@ -11,7 +11,7 @@ from enums.tools_enum import AutoTestTypeEnum
 
 
 class ProjectPaths:
-    paths = fr"{InitPath.project_root_directory}\tools\project_path\data.json"
+    paths = fr"{project_dir.root_path()}\tools\project_path\data.json"
 
     @classmethod
     def init(cls):
@@ -49,7 +49,7 @@ class ProjectPaths:
         with open(cls.paths, 'r') as file:
             data = json.load(file)
         data[project_name]['test_environment'] = value
-        with open(fr"{InitPath.project_root_directory}\tools\project_path\data.json", 'w') as file:
+        with open(fr"{project_dir.root_path()}\tools\project_path\data.json", 'w') as file:
             json.dump(data, file)
 
     @classmethod

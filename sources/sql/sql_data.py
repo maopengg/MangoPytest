@@ -2,14 +2,14 @@ import pandas
 from mangokit import SQLiteConnect
 
 from exceptions import *
-from tools import InitPath
+from tools import project_dir
 from tools.sql_statement import *
 
 
 class SqlData:
 
     def __init__(self):
-        self.sql_connect = SQLiteConnect(fr'{InitPath.sqlite_dir}\data_storage.db')
+        self.sql_connect = SQLiteConnect(fr'{project_dir.root_path()}\sources\sql\data_storage.db')
 
     def project(self):
         return self.cls(sql_project)

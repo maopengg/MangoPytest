@@ -9,7 +9,8 @@ import pandas as pd
 from enums.api_enum import MethodEnum
 from enums.tools_enum import NoticeEnum, EnvironmentEnum, ClientEnum, StatusEnum
 from enums.ui_enum import ElementExpEnum
-from tools import InitPath
+from exceptions import ToolsError, ERROR_MSG_0351
+from tools import project_dir
 
 
 class ExcelData:
@@ -18,15 +19,15 @@ class ExcelData:
         pass
 
     def project(self):
-        df = self.cls(fr'{InitPath.project_root_directory}/sources/excel/项目基础信息.xlsx', '项目信息')
+        df = self.cls(fr'{project_dir.root_path()}/sources/excel/项目基础信息.xlsx', '项目信息')
         df = df.rename(columns={
             'ID': 'id',
             '名称': 'name'
         })
-        return df
+        return df.map(lambda x: None if pd.isna(x) else x)
 
     def notice_config(self):
-        df = self.cls(fr'{InitPath.project_root_directory}/sources/excel/项目基础信息.xlsx', '通知配置')
+        df = self.cls(fr'{project_dir.root_path()}/sources/excel/项目基础信息.xlsx', '通知配置')
         df['类型'] = df['类型'].map(NoticeEnum.reversal_obj())
         df = df.rename(columns={
             'ID': 'id',
@@ -34,10 +35,10 @@ class ExcelData:
             '类型': 'type',
             '配置': 'config'
         })
-        return df
+        return df.map(lambda x: None if pd.isna(x) else x)
 
     def test_object(self):
-        df = self.cls(fr'{InitPath.project_root_directory}/sources/excel/项目基础信息.xlsx', '测试环境')
+        df = self.cls(fr'{project_dir.root_path()}/sources/excel/项目基础信息.xlsx', '测试环境')
         df['环境类型'] = df['环境类型'].map(EnvironmentEnum.reversal_obj())
         df['客户端类型'] = df['客户端类型'].map(ClientEnum.reversal_obj())
         df['是否通知'] = df['是否通知'].map(StatusEnum.reversal_obj())
@@ -55,62 +56,89 @@ class ExcelData:
             '数据库-查询': 'db_c_status',
             '数据库-增删改': 'db_rud_status',
         })
-        return df
+        return df.map(lambda x: None if pd.isna(x) else x)
 
     def api_info(self):
-        df = self.cls(fr'{InitPath.project_root_directory}/sources/excel/接口信息.xlsx')
-        df['客户端类型'] = df['客户端类型'].map(ClientEnum.reversal_obj())
-        df['请求方法'] = df['请求方法'].map(MethodEnum.reversal_obj())
-        df = df.rename(columns={
-            'ID': 'id',
-            '项目名称': 'project_name',
-            '接口名称': 'name',
-            '客户端类型': 'client_type',
-            '请求方法': 'method',
-            '请求头': 'headers',
-        })
-        return df
+        all_sheets = self.cls(fr'{project_dir.root_path()}/sources/excel/接口信息.xlsx', sheet_name=None)
+        df_list = []
+        for sheet_name, df in all_sheets.items():
+            df['客户端类型'] = df['客户端类型'].map(ClientEnum.reversal_obj())
+            df['请求方法'] = df['请求方法'].map(MethodEnum.reversal_obj())
+            df = df.rename(columns={
+                'ID': 'id',
+                '项目名称': 'project_name',
+                '接口名称': 'name',
+                '客户端类型': 'client_type',
+                '请求方法': 'method',
+                '请求头': 'headers',
+            })
+            df_list.append(df.map(lambda x: None if pd.isna(x) else x))
+        combined_df = pd.concat(df_list, ignore_index=True)
+        duplicate_ids = combined_df[combined_df.duplicated(subset=['id'], keep=False)]
+        if not duplicate_ids.empty:
+            raise ToolsError(*ERROR_MSG_0351, value=('接口信息', ))
+        return combined_df
 
     def api_test_case(self):
-        df = self.cls(fr'{InitPath.project_root_directory}/sources/excel/API测试用例.xlsx')
-        df = df.rename(columns={
-            'ID': 'id',
-            '项目名称': 'project_name',
-            '用例名称': 'name',
-        })
-        return df
+        all_sheets = self.cls(fr'{project_dir.root_path()}/sources/excel/API测试用例.xlsx', sheet_name=None)
+        df_list = []
+        for sheet_name, df in all_sheets.items():
+            df = df.rename(columns={
+                'ID': 'id',
+                '项目名称': 'project_name',
+                '用例名称': 'name',
+            })
+            df_list.append(df.map(lambda x: None if pd.isna(x) else x))
+        combined_df = pd.concat(df_list, ignore_index=True)
+        duplicate_ids = combined_df[combined_df.duplicated(subset=['id'], keep=False)]
+        if not duplicate_ids.empty:
+            raise ToolsError(*ERROR_MSG_0351, value=('API测试用例', ))
+        # duplicate_ids = combined_df[combined_df.duplicated(subset=['name'], keep=False)]
+        # if not duplicate_ids.empty:
+        #     raise ToolsError(*ERROR_MSG_0352)
+        return combined_df
 
     def ui_element(self):
-        df = self.cls(fr'{InitPath.project_root_directory}/sources/excel/元素表.xlsx')
-        df['定位方式'] = df['定位方式'].map(ElementExpEnum.reversal_obj())
-        df = df.rename(columns={
-            'ID': 'id',
-            '项目名称': 'project_name',
-            '模块名称': 'module_name',
-            '页面名称': 'page_name',
-            '元素名称': 'ele_name',
-            '定位方式': 'method',
-            '表达式': 'locator',
-            '下标': 'nth',
-            '等待': 'sleep',
-        })
-        return df
+        all_sheets = self.cls(fr'{project_dir.root_path()}/sources/excel/元素表.xlsx', sheet_name=None)
+        df_list = []
+        for sheet_name, df in all_sheets.items():
+            df['定位方式'] = df['定位方式'].map(ElementExpEnum.reversal_obj())
+            df = df.rename(columns={
+                'ID': 'id',
+                '项目名称': 'project_name',
+                '模块名称': 'module_name',
+                '页面名称': 'page_name',
+                '元素名称': 'ele_name',
+                '定位方式': 'method',
+                '表达式': 'locator',
+                '下标': 'nth',
+                '等待': 'sleep',
+            })
+            df_list.append(df.map(lambda x: None if pd.isna(x) else x))
+        combined_df = pd.concat(df_list, ignore_index=True)
+        duplicate_ids = combined_df[combined_df.duplicated(subset=['id'], keep=False)]
+        if not duplicate_ids.empty:
+            raise ToolsError(*ERROR_MSG_0351, value=('UI元素表', ))
+        return combined_df
 
     def ui_test_case(self):
-        df = self.cls(fr'{InitPath.project_root_directory}/sources/excel/UI测试用例.xlsx')
-        df = df.rename(columns={
-            'ID': 'id',
-            '项目名称': 'project_name',
-            '用例名称': 'name',
-        })
-        return df
+        all_sheets = self.cls(fr'{project_dir.root_path()}/sources/excel/UI测试用例.xlsx', sheet_name=None)
+        df_list = []
+        for sheet_name, df in all_sheets.items():
+            df = df.rename(columns={
+                'ID': 'id',
+                '项目名称': 'project_name',
+                '用例名称': 'name',
+            })
+            df_list.append(df.map(lambda x: None if pd.isna(x) else x))
+        combined_df = pd.concat(df_list, ignore_index=True)
+        duplicate_ids = combined_df[combined_df.duplicated(subset=['id'], keep=False)]
+        if not duplicate_ids.empty:
+            raise ToolsError(*ERROR_MSG_0351, value=('UI测试用例', ))
+        return combined_df
 
-    def cls(self, file_path: str, sheet_name=None):
-        if sheet_name is None:
-            df = pd.read_excel(file_path)
-        else:
-            df = pd.read_excel(file_path, sheet_name=sheet_name)
-        return df.map(lambda x: None if pd.isna(x) else x)
+    def cls(self, file_path: str, sheet_name):
+        return pd.read_excel(file_path, sheet_name=sheet_name)
 
 
 if __name__ == '__main__':

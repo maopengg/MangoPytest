@@ -18,7 +18,7 @@ class PytestAutoTestError(Exception):
         if error:
             log.error(f'报错提示：{self.msg}， 报错内容：{error}')
         else:
-            log.error(f'报错提示：{self.msg}')
+            log.error(f'{self.msg}')
 
 
 class UiError(PytestAutoTestError):

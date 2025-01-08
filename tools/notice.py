@@ -14,7 +14,7 @@ from enums.tools_enum import StatusEnum
 from models.tools_model import CaseRunModel
 from settings.settings import SEND_USER, EMAIL_HOST, STAMP_KEY
 from sources import SourcesData
-from tools import InitPath
+from tools import project_dir
 
 
 class NoticeMain:
@@ -79,7 +79,7 @@ class NoticeMain:
     def get_case_count(self) -> TestReportModel:
         """ 统计用例数量 """
         try:
-            file_name = fr"{InitPath.project_root_directory}\report\html\widgets\summary.json"
+            file_name = fr"{project_dir.root_path()}\report\html\widgets\summary.json"
             with open(file_name, 'r', encoding='utf-8') as file:
                 data = json.load(file)
                 statistic = data['statistic']

@@ -50,5 +50,9 @@ Thumbs.db
 /.mvn/
 /mvnw.cmd
 /mvnw
-/logs/*
+logs/
+report/
+reports/
+download/
+
 /tools/project_path/data.json

@@ -3,34 +3,62 @@
 # @Description: 
 # @Time   : 2023-03-05 20:39
 # @Author : 毛鹏
+
 import os
 
 import sys
 
 
-class InitPath:
-    current_directory = os.path.abspath(__file__)
-    project_root_directory = os.path.dirname(os.path.dirname(current_directory))
-    current_dir2 = os.path.dirname(sys.executable)
-    if 'python.exe' not in sys.executable:
-        project_root_directory = current_dir2
-    logs_dir = os.path.join(project_root_directory, "logs")
-    sqlite_dir = os.path.join(project_root_directory, r"sources\sql_data")
-    report_dir = os.path.join(project_root_directory, "report")
-    reports_dir = os.path.join(project_root_directory, "reports")
-    if not os.path.exists(logs_dir):
-        os.makedirs(logs_dir)
-    if not os.path.exists(report_dir):
-        os.makedirs(report_dir)
-    if not os.path.exists(reports_dir):
-        os.makedirs(reports_dir)
+class ProjectDir:
+
+    def __init__(self):
+        self.folder_list = ['logs', 'report', 'reports', 'download']
+        self._root_path = self.init_project_path()
+        self.init_folder()
+
+    @staticmethod
+    def init_project_path():
+        current_directory = os.path.abspath(__file__)
+        project_root_directory = os.path.dirname(os.path.dirname(current_directory))
+        if 'python.exe' not in sys.executable:
+            project_root_directory = os.path.dirname(sys.executable)
+        return project_root_directory
+
+    def init_folder(self):
+        for i in self.folder_list:
+            subdirectory = os.path.join(self._root_path, i)
+            if not os.path.exists(subdirectory):
+                os.makedirs(subdirectory)
+
+    def root_path(self):
+        if getattr(sys, 'frozen', False):
+            return sys._MEIPASS
+        else:
+            return self._root_path
+
+    def cache_file(self):
+        return os.path.join(self.cache(), 'cache.db')
+
+    def cache(self):
+        return os.path.join(self.root_path(), 'cache')
+
+    def report(self, folder_name='report'):
+        return os.path.join(self.root_path(), folder_name)
+
+    def reports(self, folder_name='reports'):
+        return os.path.join(self.root_path(), folder_name)
+
+    def logs(self, folder_name='logs'):
+        return os.path.join(self.root_path(), folder_name)
+
+    def download(self, folder_name='download'):
+        return os.path.join(self.root_path(), folder_name)
 
 
-InitPath()
+project_dir = ProjectDir()
 if __name__ == '__main__':
-    print(InitPath.current_directory)
-    print(InitPath.project_root_directory)
-    print(InitPath.current_dir2)
-    print(InitPath.logs_dir)
-    print(InitPath.sqlite_dir)
-    print(InitPath.reports_dir)
+    print(project_dir.root_path())
+    print(project_dir.download())
+    print(project_dir.logs())
+    print(project_dir.reports())
+    print(project_dir.report())

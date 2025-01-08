@@ -23,13 +23,6 @@ class ProjectPublicMethods:
 
     @staticmethod
     def get_project_test_object(project_name: str, _type: AutoTestTypeEnum) -> tuple[int, dict, dict]:
-        # 从共享的字典中获取实例
-        # try:
-        #     project_dict = ProjectPaths.check()[project_name]
-        # except (KeyError, FileNotFoundError):
-        #     ProjectPaths.init()
-        #     project_dict = ProjectPaths.check()[project_name]
-        # os.environ['TEST_ENV'] = CaseRunListModel(**{"case_run":[{"project":"智投","type":1,"test_environment":1}]}).model_dump_json()
         project: dict = SourcesData.get_project(name=project_name)
         try:
             case_list = CaseRunListModel(**json.loads(os.environ['TEST_ENV']))
