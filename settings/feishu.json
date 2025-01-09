@@ -1,57 +1,60 @@
 {
-  "app_id": "app_id",
-  "app_secret": "app_secret",
+  "app_id": "cli_a680e4c8c5be100c",
+  "app_secret": "uKEDeCAamlviajfBrxXjBhiSKnxONf6x",
   "surface": {
     "api_info": {
-      "id": "api_info表ID",
+      "id": "LntEsBf88h8KDXtjmKNcHgwSnoc",
       "sheet": [
         {
-          "id": "sheet id (注意，这个对象有多少个就传多少个，多个sheet都会合并)",
-          "title": "Sheet 名称"
+          "id": "ef820e",
+          "title": "Sheet1"
         }
       ]
     },
     "api_test_case": {
-      "id": "api_test_case表ID",
+      "id": "XLcrsEVLkhdDQvtWaJQc4uennvb",
       "sheet": [
         {
-          "id": "（可以输入多个sheet对象）",
-          "title": ""
+          "id": "e8f425",
+          "title": "Sheet1"
+        },{
+          "id": "MkgrcY",
+          "title": "Sheet2"
         }
       ]
     },
     "project": {
-      "id": "project表ID",
+      "id": "StFhs7b34h410ktn4FBc9qJsn8e",
       "sheet": [
         {
-          "id": "(项目名称不要动，固定写法)",
+          "id": "8d41b9",
           "title": "项目信息"
         },
         {
-          "id": "(通知配置不要动，固定写法)",
+          "id": "58AgAa",
           "title": "通知配置"
         },
         {
-          "id": "测试环境不要动，固定写法)",
+          "id": "RwlKtG",
           "title": "测试环境"
         }
       ]
     },
     "ui_element": {
-      "id": "ui_element表ID",
+      "id": "ZQfZsC7IShpkGytZLoKc1gbXnPS",
       "sheet": [
         {
-          "id": "（可以输入多个sheet对象）",
-          "title": ""
+          "id": "9f326e",
+          "title": "Sheet1"
         }
       ]
     },
     "ui_test_case": {
-      "id": "ui_test_case表ID",
+      "id": "XKB6sKVOoh3hYxtRjikct7chnsd",
       "sheet": [
         {
-          "id": "（可以输入多个sheet对象）",
-          "title": ""
+          "id": "966e57",
+          "title": "Sheet1"
         }
       ]
     }

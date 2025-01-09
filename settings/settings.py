@@ -23,7 +23,7 @@ BROWSER_IS_MAXIMIZE = True  # 是否开启UI自动化浏览器全屏
 # ↓--------------------------------------数据源选择--------------------------------------↓
 from enums.tools_enum import SourcesTypeEnum
 
-SOURCES_TYPE = SourcesTypeEnum.EXCEL
+SOURCES_TYPE = SourcesTypeEnum.DOCUMENT
 
 # ↑--------------------------------------数据源选择--------------------------------------↑
 

@@ -188,4 +188,3 @@ class DocumentData:
         data = response_dict['data']['valueRanges'][0]['values']
         return pandas.DataFrame(data[1:], columns=data[0])
 
-
