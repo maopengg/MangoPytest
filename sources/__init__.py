@@ -97,7 +97,6 @@ class SourcesData:
 
 
 if __name__ == '__main__':
-    project: dict = SourcesData \
-        .get_api_test_case(False, **{'id': [206]})
-    print(project)
+    api_info_dict = SourcesData.get_api_info(id=1)
+    print(api_info_dict)
 

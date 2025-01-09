@@ -113,7 +113,7 @@ class DocumentData:
         duplicate_ids = combined_df[combined_df.duplicated(subset=['id'], keep=False)]
         if not duplicate_ids.empty:
             raise ToolsError(*ERROR_MSG_0351, value=("接口信息表", ))
-        return df_list
+        return combined_df
 
     def api_test_case(self):
         df_list = []
@@ -188,3 +188,5 @@ class DocumentData:
         data = response_dict['data']['valueRanges'][0]['values']
         return pandas.DataFrame(data[1:], columns=data[0])
 
+if __name__ == '__main__':
+    print(DocumentData().api_test_case())
