@@ -42,10 +42,11 @@ class AutoTestTypeEnum(BaseEnum):
     UI = 0
     API = 1
     PERF = 2
+    OTHER = 3
 
     @classmethod
     def obj(cls):
-        return {0: "前端", 1: "接口", 2: "性能"}
+        return {0: "前端", 1: "接口", 2: "性能", 3: "其他"}
 
 
 class EnvironmentEnum(BaseEnum):

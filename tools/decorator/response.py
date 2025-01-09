@@ -2,11 +2,12 @@
 # @Description:
 # @Time   : 2023-08-08 11:48
 # @Author : 毛鹏
-import allure
 import functools
 import json
-import pytest
 import time
+
+import allure
+import pytest
 from requests.models import Response
 
 from enums.api_enum import MethodEnum

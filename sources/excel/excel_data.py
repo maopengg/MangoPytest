@@ -76,7 +76,7 @@ class ExcelData:
         combined_df = pd.concat(df_list, ignore_index=True)
         duplicate_ids = combined_df[combined_df.duplicated(subset=['id'], keep=False)]
         if not duplicate_ids.empty:
-            raise ToolsError(*ERROR_MSG_0351, value=('接口信息', ))
+            raise ToolsError(*ERROR_MSG_0351, value=('接口信息',))
         return combined_df
 
     def api_test_case(self):
@@ -92,7 +92,7 @@ class ExcelData:
         combined_df = pd.concat(df_list, ignore_index=True)
         duplicate_ids = combined_df[combined_df.duplicated(subset=['id'], keep=False)]
         if not duplicate_ids.empty:
-            raise ToolsError(*ERROR_MSG_0351, value=('API测试用例', ))
+            raise ToolsError(*ERROR_MSG_0351, value=('API测试用例',))
         # duplicate_ids = combined_df[combined_df.duplicated(subset=['name'], keep=False)]
         # if not duplicate_ids.empty:
         #     raise ToolsError(*ERROR_MSG_0352)
@@ -118,7 +118,7 @@ class ExcelData:
         combined_df = pd.concat(df_list, ignore_index=True)
         duplicate_ids = combined_df[combined_df.duplicated(subset=['id'], keep=False)]
         if not duplicate_ids.empty:
-            raise ToolsError(*ERROR_MSG_0351, value=('UI元素表', ))
+            raise ToolsError(*ERROR_MSG_0351, value=('UI元素表',))
         return combined_df
 
     def ui_test_case(self):
@@ -134,7 +134,7 @@ class ExcelData:
         combined_df = pd.concat(df_list, ignore_index=True)
         duplicate_ids = combined_df[combined_df.duplicated(subset=['id'], keep=False)]
         if not duplicate_ids.empty:
-            raise ToolsError(*ERROR_MSG_0351, value=('UI测试用例', ))
+            raise ToolsError(*ERROR_MSG_0351, value=('UI测试用例',))
         return combined_df
 
     def cls(self, file_path: str, sheet_name):

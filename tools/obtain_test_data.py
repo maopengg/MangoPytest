@@ -3,11 +3,12 @@
 # @Description: 
 # @Time   : 2024-11-19 11:36
 # @Author : 毛鹏
-from datetime import date, datetime, timedelta
 
 from mangokit import DataProcessor
 
-from tools.project_path.project_path import ProjectPaths
+from auto_test.project_config import auto_test_project_config
+from exceptions import ToolsError, ERROR_MSG_0042
+from tools import project_dir
 
 
 class ObtainTestData(DataProcessor):
@@ -18,10 +19,10 @@ class ObtainTestData(DataProcessor):
     @classmethod
     def get_file(cls, project_name, file_name):
         """获取文件地址"""
-        project_path = ProjectPaths.get_project_path(project_name)
-        return f'{project_path}/{file_name}'
-
-
+        for i in auto_test_project_config:
+            if i.get('project_name') == project_name:
+                return fr'{project_dir.root_path()}\auto_test\{i.get("dir_name")}\upload\{file_name}'
+        raise ToolsError(*ERROR_MSG_0042)
 
 
 if __name__ == '__main__':

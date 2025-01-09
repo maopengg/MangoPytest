@@ -12,7 +12,7 @@ from mangokit import requests
 from enums.api_enum import MethodEnum
 from enums.tools_enum import NoticeEnum, EnvironmentEnum, ClientEnum, StatusEnum
 from enums.ui_enum import ElementExpEnum
-from exceptions import ToolsError, ERROR_MSG_0351, ERROR_MSG_0352
+from exceptions import ToolsError, ERROR_MSG_0351
 from models.tools_model import FeiShuModel
 from tools import project_dir
 
@@ -112,7 +112,7 @@ class DocumentData:
         combined_df = pandas.concat(df_list, ignore_index=True)
         duplicate_ids = combined_df[combined_df.duplicated(subset=['id'], keep=False)]
         if not duplicate_ids.empty:
-            raise ToolsError(*ERROR_MSG_0351, value=("接口信息表", ))
+            raise ToolsError(*ERROR_MSG_0351, value=("接口信息表",))
         return combined_df
 
     def api_test_case(self):
@@ -157,7 +157,7 @@ class DocumentData:
         combined_df = pd.concat(df_list, ignore_index=True)
         duplicate_ids = combined_df[combined_df.duplicated(subset=['id'], keep=False)]
         if not duplicate_ids.empty:
-            raise ToolsError(*ERROR_MSG_0351, value=('UI元素表', ))
+            raise ToolsError(*ERROR_MSG_0351, value=('UI元素表',))
         return combined_df
 
     def ui_test_case(self):
@@ -175,7 +175,7 @@ class DocumentData:
         combined_df = pd.concat(df_list, ignore_index=True)
         duplicate_ids = combined_df[combined_df.duplicated(subset=['id'], keep=False)]
         if not duplicate_ids.empty:
-            raise ToolsError(*ERROR_MSG_0351, value=('UI测试用例', ))
+            raise ToolsError(*ERROR_MSG_0351, value=('UI测试用例',))
         return combined_df
 
     def cls(self, url):
@@ -187,6 +187,7 @@ class DocumentData:
             response_dict = response.json()
         data = response_dict['data']['valueRanges'][0]['values']
         return pandas.DataFrame(data[1:], columns=data[0])
+
 
 if __name__ == '__main__':
     print(DocumentData().api_test_case())

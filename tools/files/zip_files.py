@@ -32,5 +32,3 @@ def zip_files():
                     file_path = os.path.join(root, file)
                     zipf.write(file_path, os.path.relpath(file_path, project_dir.report()))
         delete_directory_contents(project_dir.report())
-
-

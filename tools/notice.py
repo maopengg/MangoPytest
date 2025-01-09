@@ -5,6 +5,7 @@
 # @Author : 毛鹏
 import json
 from datetime import datetime
+
 from mangokit import EmailSend, WeChatSend, EmailNoticeModel, WeChatNoticeModel, TestReportModel
 from mangokit.tools.method import get_host_ip
 

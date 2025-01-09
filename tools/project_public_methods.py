@@ -4,7 +4,6 @@
 # @Time   : 2024-03-17 19:10
 # @Author : 毛鹏
 import json
-
 import os
 
 from mangokit import MysqlConnect, MysqlConingModel
@@ -62,8 +61,8 @@ class ProjectPublicMethods:
         return mysql_config_model, mysql_connect
 
     @classmethod
-    def get_data_model(cls, model, project_enum, _type: AutoTestTypeEnum):
-        test_environment, project, test_object = cls.get_project_test_object(project_enum.NAME.value, _type)
+    def get_data_model(cls, model, project_name: str, _type: AutoTestTypeEnum):
+        test_environment, project, test_object = cls.get_project_test_object(project_name, _type)
         mysql_config_model, mysql_connect = cls.get_mysql_info(test_object)
         if _type == AutoTestTypeEnum.API:
             return model(

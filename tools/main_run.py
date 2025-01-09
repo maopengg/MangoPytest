@@ -9,14 +9,13 @@ import os
 import pytest
 from mangokit.tools.method import get_host_ip
 
-from exceptions import *
+from auto_test.project_config import auto_test_project_config
 from models.tools_model import CaseRunListModel
 from settings.settings import IS_TEST_REPORT
 from tools import project_dir
 from tools.files.zip_files import zip_files
 from tools.log import log
 from tools.notice import NoticeMain
-from tools.project_path.project_path import ProjectPaths
 
 
 class MainRun:
@@ -26,21 +25,14 @@ class MainRun:
         os.environ['TEST_ENV'] = self.case_run_list.model_dump_json()
         self.pytest_command = pytest_command
         zip_files()
-        ProjectPaths.init()
         self.run()
 
     def run(self):
-        project_type_paths = ProjectPaths.check()
         for case_run_model in self.case_run_list.case_run:
-            project_key = case_run_model.project.value
-            if project_key in project_type_paths:
-                ProjectPaths.update(project_key, case_run_model.test_environment.value)
-                if str(case_run_model.type.value) not in project_type_paths[project_key]:
-                    raise ToolsError(*ERROR_MSG_0007)
-                if str(case_run_model.type.value) in project_type_paths[project_key]:
-                    self.pytest_command.append(project_type_paths[project_key][str(case_run_model.type.value)])
-            else:
-                raise ToolsError(*ERROR_MSG_0007)
+            for i in auto_test_project_config:
+                if i.get('project_name') == case_run_model.project \
+                        and case_run_model.type == i.get('type'):
+                    self.pytest_command.append(fr'{project_dir.root_path()}\auto_test\{i.get("dir_name")}\test_case')
         log.info(f"开始执行测试任务......")
         pytest.main(self.pytest_command)
         if IS_TEST_REPORT:

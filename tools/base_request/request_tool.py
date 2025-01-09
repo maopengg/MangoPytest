@@ -4,9 +4,10 @@
 # @Time   : 2023-09-04 17:23
 # @Author : 毛鹏
 import os
+from urllib.parse import urljoin
+
 from mangokit import requests
 from requests.models import Response
-from urllib.parse import urljoin
 
 from models.api_model import ApiDataModel, RequestModel, ResponseModel
 from tools.decorator.response import timer, log_decorator

@@ -99,4 +99,3 @@ class SourcesData:
 if __name__ == '__main__':
     api_info_dict = SourcesData.get_api_info(id=1)
     print(api_info_dict)
-
