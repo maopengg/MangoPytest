@@ -12,6 +12,7 @@ from pydantic_core._pydantic_core import ValidationError
 from enums.tools_enum import StatusEnum, AutoTestTypeEnum
 from exceptions import *
 from models.api_model import ApiBaseDataModel
+from models.other_model import OtherBaseDataModel
 from models.tools_model import CaseRunListModel
 from models.ui_model import UiBaseDataModel
 from sources import SourcesData
@@ -55,7 +56,7 @@ class ProjectPublicMethods:
             mysql_connect = MysqlConnect(mysql_config_model)
 
         except ValidationError:
-            if test_object.get('is_db') == StatusEnum.SUCCESS.value:
+            if test_object.get('db_c_status') == StatusEnum.SUCCESS.value or test_object.get('db_rud_status') == StatusEnum.SUCCESS.value:
                 raise ToolsError(*ERROR_MSG_0333)
 
         return mysql_config_model, mysql_connect
@@ -76,10 +77,22 @@ class ProjectPublicMethods:
                     mysql_connect=mysql_connect,
                 )
             )
-        else:
+        elif _type == AutoTestTypeEnum.UI:
             return model(
                 test_environment=test_environment,
                 base_data=UiBaseDataModel(
+                    test_object=test_object,
+                    project=project,
+                    host=test_object.get('host'),
+                    is_database_assertion=bool(test_object.get('is_db')),
+                    mysql_config_model=mysql_config_model,
+                    mysql_connect=mysql_connect,
+                )
+            )
+        else:
+            return model(
+                test_environment=test_environment,
+                base_data=OtherBaseDataModel(
                     test_object=test_object,
                     project=project,
                     host=test_object.get('host'),

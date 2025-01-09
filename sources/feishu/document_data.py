@@ -177,6 +177,22 @@ class DocumentData:
         if not duplicate_ids.empty:
             raise ToolsError(*ERROR_MSG_0351, value=('UI测试用例',))
         return combined_df
+    def other_test_case(self):
+        df_list = []
+        for i in self.config.surface.other_test_case.sheet:
+            url = f"{self.url}{self.config.surface.other_test_case.id}/values_batch_get?ranges={i.id}{self.parameter}"
+            df = self.cls(url)
+            df = df.rename(columns={
+                'ID': 'id',
+                '项目名称': 'project_name',
+                '用例名称': 'name',
+            })
+            df_list.append(df)
+        combined_df = pd.concat(df_list, ignore_index=True)
+        duplicate_ids = combined_df[combined_df.duplicated(subset=['id'], keep=False)]
+        if not duplicate_ids.empty:
+            raise ToolsError(*ERROR_MSG_0351, value=('其他类型测试用例',))
+        return combined_df
 
     def cls(self, url):
         response = requests.get(url, headers=self.headers)
@@ -190,4 +206,4 @@ class DocumentData:
 
 
 if __name__ == '__main__':
-    print(DocumentData().api_test_case())
+    print(DocumentData().other_test_case())

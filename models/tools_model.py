@@ -47,6 +47,7 @@ class SurfaceModel(BaseModel):
     project: SurfaceConfigModel
     ui_element: SurfaceConfigModel
     ui_test_case: SurfaceConfigModel
+    other_test_case: SurfaceConfigModel
 
 
 class FeiShuModel(BaseModel):

@@ -21,6 +21,7 @@ class SourcesData:
     api_info: DataFrame = None
     api_test_case: DataFrame = None
     ui_element: DataFrame = None
+    other_test_case: DataFrame = None
     try:
         if SOURCES_TYPE == SourcesTypeEnum.SQL:
             r = SqlData()
@@ -35,6 +36,7 @@ class SourcesData:
         api_test_case = r.api_test_case()
         ui_test_case = r.ui_test_case()
         ui_element = r.ui_element()
+        other_test_case = r.other_test_case()
     except AssertionError:
         raise ToolsError(*ERROR_MSG_0347)
 
@@ -61,6 +63,9 @@ class SourcesData:
     @classmethod
     def get_ui_test_case(cls, is_dict=True, **kwargs):
         return cls.get(cls.ui_test_case, is_dict, **kwargs)
+    @classmethod
+    def get_other_test_case(cls, is_dict=True, **kwargs):
+        return cls.get(cls.other_test_case, is_dict, **kwargs)
 
     @classmethod
     def get_ui_element(cls, is_dict=True, **kwargs):
