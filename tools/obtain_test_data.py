@@ -20,7 +20,7 @@ class ObtainTestData(DataProcessor):
     def get_file(cls, project_name, file_name):
         """获取文件地址"""
         for i in auto_test_project_config:
-            if i.get('project_name') == project_name:
+            if i.get('project_name').value == project_name:
                 return fr'{project_dir.root_path()}\auto_test\{i.get("dir_name")}\upload\{file_name}'
         raise ToolsError(*ERROR_MSG_0042)
 
