@@ -2,7 +2,6 @@
 # @Description:
 # @Time   : 2023-08-08 11:48
 # @Author : 毛鹏
-import json
 
 import allure
 import pytest
@@ -30,10 +29,11 @@ def case_data(case_id: int | list[int] | None = None, case_name: str | list[str]
             test_case_model = OtherTestCaseModel.get_obj(test_case)
             log.debug(f'准备开始执行用例，数据：{test_case_model.model_dump_json()}')
             allure.dynamic.title(test_case.get('name'))
-            allure.attach(json.dumps(test_case, ensure_ascii=False), '用例数据')
-
-            data = OtherDataModel(base_data=self.data_model.base_data,
-                                  test_case=test_case_model)
+            allure.attach(test_case_model.model_dump_json(), '用例数据')
+            data = OtherDataModel(
+                base_data=self.data_model.base_data,
+                test_case=test_case_model
+            )
             try:
                 func(self, data=data)
                 # allure.attach(self.test_data.get_all(), '缓存数据')

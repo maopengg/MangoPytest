@@ -15,13 +15,13 @@ from exceptions import PytestAutoTestError
 from exceptions.error_msg import ERROR_MSG_0350
 from models.api_model import ApiDataModel, ResponseModel, ApiTestCaseModel, RequestModel, ApiInfoModel
 from settings.settings import PRINT_EXECUTION_RESULTS, REQUEST_TIMEOUT_FAILURE_TIME
+from sources import SourcesData
 from tools.log import log
 
 
 def case_data(case_id: int | list[int] | None = None, case_name: str | list[str] | None = None):
     def decorator(func):
         log.debug(f'开始查询用例，用例ID:{case_id} 用例名称：{case_name}')
-        from sources import SourcesData
         if case_id:
             test_case_list = SourcesData.get_api_test_case(is_dict=False, id=case_id)
         elif case_name:
@@ -35,10 +35,11 @@ def case_data(case_id: int | list[int] | None = None, case_name: str | list[str]
             test_case_model = ApiTestCaseModel.get_obj(test_case)
             log.debug(f'准备开始执行用例，数据：{test_case_model.model_dump_json()}')
             allure.dynamic.title(test_case.get('name'))
-            allure.attach(json.dumps(test_case, ensure_ascii=False), '用例数据')
-
-            data = ApiDataModel(base_data=self.data_model.base_data,
-                                test_case=test_case_model)
+            allure.attach(test_case_model.model_dump_json(), '用例数据')
+            data = ApiDataModel(
+                base_data=self.data_model.base_data,
+                test_case=test_case_model
+            )
             try:
                 func(self, data=data)
                 self.ass_main(data)
@@ -54,22 +55,11 @@ def case_data(case_id: int | list[int] | None = None, case_name: str | list[str]
 
 
 def request_data(api_info_id):
-    """
-    处理请求的数据和结果，写入allure报告
-    :return:
-    """
-
     def decorator(func):
 
-        # @functools.wraps(func)
-        def wrapper(*args, **kwargs) -> ApiDataModel:
+        def wrapper(self, data: ApiDataModel) -> ApiDataModel:
             log.debug(f'开始查询接口数据，ID：{api_info_id}')
-            data: ApiDataModel = kwargs.get('data')
-            if len(args) == 2:
-                data: ApiDataModel = args[1]
-            from sources import SourcesData
-            api_info_dict = SourcesData.get_api_info(id=api_info_id)
-            api_info_model = ApiInfoModel.get_obj(api_info_dict)
+            api_info_model = ApiInfoModel.get_obj(SourcesData.get_api_info(id=api_info_id))
             log.debug(f'查询到接口的数据，接口ID：{api_info_model.model_dump_json()}')
             data.request = RequestModel(
                 url=api_info_model.url,
@@ -81,7 +71,7 @@ def request_data(api_info_id):
                 file=data.test_case.file,
             )
             log.debug(f'默认准备好的请求，数据：{data.request.model_dump_json()}')
-            res_args = func(*args, **kwargs)
+            res_args = func(self, data)
             allure.attach(str(data.request.url), 'URL')
             allure.attach(str(data.request.method), '请求方法')
             allure.attach(str(data.request.headers), '请求头')
@@ -95,7 +85,7 @@ def request_data(api_info_id):
                 allure.attach(str(data.request.file), '文件')
             allure.attach(str(data.response.status_code), '响应状态码')
             allure.attach(str(data.response.response_time * 1000), '响应时间（毫秒）')
-            allure.attach(json.dumps(data.response.response_dict, ensure_ascii=False), '响应结果')
+            allure.attach(data.response.response_text, '响应结果')
             return res_args
 
         return wrapper
@@ -104,15 +94,10 @@ def request_data(api_info_id):
 
 
 def timer(func):
-    """
-    封装统计函数执行时间装饰器
-    :return:
-    """
-
     @functools.wraps(func)
-    def swapper(*args, **kwargs) -> ResponseModel:
+    def swapper(self, request_model: RequestModel) -> ResponseModel:
         start = time.time()
-        response: Response = func(*args, **kwargs)
+        response: Response = func(self, request_model)
         response_time = time.time() - start
         if response_time > REQUEST_TIMEOUT_FAILURE_TIME:
             log.error(
@@ -124,15 +109,16 @@ def timer(func):
         try:
             response_dict = response.json()
         except json.JSONDecodeError as error:
-            response_dict = {'error_msg': '您可以检查返回的值是否是json，如果不是，就不要使用response_dict',
-                             'error': str(error)}
+            response_dict = {
+                'error_msg': '您可以检查返回的值是否是json，如果不是，就不要使用response_dict',
+                'error': str(error)
+            }
         formatted_response = ''.join(response.text.split())
         log.debug(f'请求的结果，response：{formatted_response}')
-        data: RequestModel = args[1]
         return ResponseModel(
             url=response.url,
             status_code=response.status_code,
-            method=data.method,
+            method=request_model.method,
             headers=response.headers,
             response_text=formatted_response,
             response_dict=response_dict,
@@ -144,14 +130,9 @@ def timer(func):
 
 
 def log_decorator(func):
-    """
-    封装日志装饰器, 打印请求信息
-    :return:
-    """
-
     @functools.wraps(func)
-    def swapper(*args, **kwargs) -> ApiDataModel:
-        data = func(*args, **kwargs)
+    def swapper(self, data: ApiDataModel) -> ApiDataModel:
+        data = func(self, data)
         log.debug(f'用例执行完成，整个响应体：{data.response.model_dump()}')
         if PRINT_EXECUTION_RESULTS:
             _log_msg = f"\n{'=' * 200}\n" \

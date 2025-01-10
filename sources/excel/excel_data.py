@@ -136,6 +136,21 @@ class ExcelData:
         if not duplicate_ids.empty:
             raise ToolsError(*ERROR_MSG_0351, value=('UI测试用例',))
         return combined_df
+    def other_test_case(self):
+        all_sheets = self.cls(fr'{project_dir.root_path()}/sources/excel/其他类型测试用例.xlsx', sheet_name=None)
+        df_list = []
+        for sheet_name, df in all_sheets.items():
+            df = df.rename(columns={
+                'ID': 'id',
+                '项目名称': 'project_name',
+                '用例名称': 'name',
+            })
+            df_list.append(df.map(lambda x: None if pd.isna(x) else x))
+        combined_df = pd.concat(df_list, ignore_index=True)
+        duplicate_ids = combined_df[combined_df.duplicated(subset=['id'], keep=False)]
+        if not duplicate_ids.empty:
+            raise ToolsError(*ERROR_MSG_0351, value=('其他测试用例',))
+        return combined_df
 
     def cls(self, file_path: str, sheet_name):
         return pd.read_excel(file_path, sheet_name=sheet_name)
