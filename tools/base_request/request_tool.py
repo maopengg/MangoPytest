@@ -4,6 +4,7 @@
 # @Time   : 2023-09-04 17:23
 # @Author : 毛鹏
 import os
+from typing import Optional
 from urllib.parse import urljoin
 
 from mangokit import requests
@@ -16,7 +17,7 @@ from tools.obtain_test_data import ObtainTestData
 
 
 class RequestTool:
-    test_data: ObtainTestData = None
+    test_data: Optional[ObtainTestData | None] = None
 
     @log_decorator
     def http(self, data: ApiDataModel, is_replace=True) -> ApiDataModel | Response:
@@ -24,7 +25,6 @@ class RequestTool:
         处理请求的数据，写入到request对象中
         :param data: ApiDataModel
         :param is_replace: 是否过滤请求中的${}, 如果数据本身就有${}，那需要传false
-        :param is_request: 是否发起请求
         :return:
         """
         log.debug(f'清洗请求数据之前，请求数据：{data.request.model_dump_json()}')
@@ -81,9 +81,3 @@ class RequestTool:
             files=request_model.file,
         )
 
-
-if __name__ == '__main__':
-    requests1 = RequestTool()
-    response: ResponseModel = requests1.http_request(RequestModel(
-        **{}))
-    print(response.response_text)
