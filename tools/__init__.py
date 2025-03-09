@@ -5,6 +5,7 @@
 # @Author : 毛鹏
 
 import os
+from pathlib import Path
 
 import sys
 
@@ -13,7 +14,7 @@ class ProjectDir:
 
     def __init__(self):
         self.folder_list = ['logs', 'report', 'reports', 'download']
-        self._root_path = self.init_project_path()
+        self._root_path = Path(__file__).resolve().parent.parent
         self.init_folder()
 
     @staticmethod
