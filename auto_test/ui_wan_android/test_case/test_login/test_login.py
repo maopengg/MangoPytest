@@ -6,7 +6,7 @@
 import allure
 
 from auto_test.ui_wan_android import WanAndroidDataModel
-from auto_test.ui_wan_android.page_object.login import LoginPage
+from auto_test.ui_wan_android.act.login.login import LoginPage
 from models.ui_model import UiDataModel
 from tools.decorator.ui import case_data
 from tools.obtain_test_data import ObtainTestData

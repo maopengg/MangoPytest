@@ -6,9 +6,9 @@
 
 import allure
 
-from auto_test.ui_gitee import GiteeDataModel
-from auto_test.ui_gitee.page_object.home import HomePage
-from auto_test.ui_gitee.page_object.open_source import OpenSourcePage
+from auto_test.ui_baidu import GiteeDataModel
+from auto_test.ui_baidu.act.search.home import HomePage
+from auto_test.ui_baidu.act.search.open_source import OpenSourcePage
 from models.ui_model import UiDataModel
 from tools.decorator.ui import case_data
 from tools.obtain_test_data import ObtainTestData
