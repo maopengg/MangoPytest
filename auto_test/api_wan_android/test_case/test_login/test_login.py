@@ -7,7 +7,7 @@
 import allure
 import pytest
 
-from auto_test.api_wan_android.act.login.login import LoginAPI
+from auto_test.api_wan_android.components.login.login import LoginAPI
 from models.api_model import ApiDataModel
 from tools.base_request.case_tool import CaseTool
 from tools.decorator.response import case_data
