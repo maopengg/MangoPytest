@@ -4,19 +4,15 @@
 # @Author : 毛鹏
 import time
 
-from playwright.async_api import Locator
-from playwright.async_api import Page, BrowserContext
+from tools.base_object.web.web_object.web_object import WebBaseObject
 
 
-class PlaywrightDeviceInput:
+class PlaywrightDeviceInput(WebBaseObject):
     """输入设备操作"""
-    page: Page = None
-    context: BrowserContext = None
 
-    @classmethod
-    def w_hover(cls, locating: Locator):
+    def w_hover(self, locating: str):
         """鼠标悬停"""
-        locating.hover()
+        self.element(locating).hover()
         time.sleep(1)
 
     def w_wheel(self, y):

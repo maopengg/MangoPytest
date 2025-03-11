@@ -8,7 +8,9 @@ import json
 from mangokit import MysqlConingModel, MysqlConnect, DataClean
 from pydantic import BaseModel, ConfigDict
 
+from enums.tools_enum import EnvironmentEnum
 from enums.ui_enum import ElementExpEnum, BrowserTypeEnum
+from tools.obtain_test_data import ObtainTestData
 
 
 def json_serialize(data: str | None):
@@ -53,6 +55,7 @@ class UiTestCaseModel(BaseModel):
     project_name: str
     name: str
     data: dict | list[dict] | None = None
+    ass: dict | list[dict] | str | None = None
 
     @classmethod
     def get_obj(cls, data: dict):
@@ -61,6 +64,7 @@ class UiTestCaseModel(BaseModel):
             project_name=data['project_name'],
             name=data['name'],
             data=json_serialize(data.get('data')),
+            ass=json_serialize(data.get('ass')),
         )
 
 
@@ -83,3 +87,12 @@ class UiDataModel(BaseModel):
     base_data: UiBaseDataModel  # 基础信息
     test_case: UiTestCaseModel  # 测试用例信息
     data_clean: DataClean = DataClean()  # 缓存数据
+
+
+class UiProjectDataModel(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    test_environment: EnvironmentEnum
+    base_data: UiBaseDataModel
+    test_data: ObtainTestData = ObtainTestData()
+    cache_data: dict = {}

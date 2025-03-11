@@ -5,43 +5,38 @@
 # @Author : 毛鹏
 
 import time
-
-from playwright.async_api import Page, BrowserContext, Locator, Error
+from playwright.async_api import Error
 
 from exceptions import *
+from tools.base_object.web.web_object.web_object import WebBaseObject
 
 
-class PlaywrightElement:
+class PlaywrightElement(WebBaseObject):
     """元素操作"""
-    page: Page = None
-    context: BrowserContext = None
 
-    @classmethod
-    def w_click(cls, locating: Locator):
+    def w_click(self, locating: str):
         """元素点击"""
-        locating.click()
+        self.element(locating).click()
 
-    @classmethod
-    def w_input(cls, locating: Locator, input_value: str):
+    def w_input(self, locating: str, input_value: str):
         """元素输入"""
-        locating.fill(str(input_value))
+        self.element(locating).fill(str(input_value))
 
-    def w_get_text(self, locating: Locator, set_cache_key=None):
+    def w_get_text(self, locating: str, set_cache_key=None):
         """获取元素文本"""
-        value = locating.inner_text()
+        value = self.element(locating).inner_text()
         if set_cache_key:
             self.test_data.set_cache(key=set_cache_key, value=value)
         return value
 
-    @classmethod
-    def w_upload_files(cls, locating: Locator, file_path: str | list):
+    def w_upload_files(self, locating: str, file_path: str | list):
         """点击元素上传文件"""
         try:
             if isinstance(file_path, str):
-                locating.set_input_files(file_path)
+                self.element(locating).set_input_files(file_path)
             else:
                 for file in file_path:
-                    locating.set_input_files(file)
+                    self.element(locating).set_input_files(file)
         except Error:
             raise UiError(*ERROR_MSG_0035)
         # with self.page.expect_file_chooser() as fc_info:
@@ -49,16 +44,14 @@ class PlaywrightElement:
         # file_chooser = fc_info.value
         # file_chooser.set_files(file_path)
 
-    @classmethod
-    def w_drag_to(cls, locating1: Locator, locating2: Locator):
+    def w_drag_to(self, locating1: str, locating2: str):
         """拖动A元素到达B"""
-        locating1.drag_to(locating2)
+        self.element(locating1).drag_to(self.element(locating2))
 
-    @classmethod
-    def w_time_click(cls, locating: Locator, _time: int):
+    def w_time_click(self, locating: str, _time: int):
         """循环点击指定的时间"""
         s = time.time()
         while True:
-            locating.click()
+            self.element(locating).click()
             if time.time() - s > int(_time):
                 return

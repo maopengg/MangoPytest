@@ -5,44 +5,32 @@
 # @Author : 毛鹏
 import time
 
-from playwright.async_api import Locator
-from playwright.async_api import Page, BrowserContext
-
 from exceptions import *
+from tools.base_object.web.web_object.web_object import WebBaseObject
 
 
-class PlaywrightBrowser:
+class PlaywrightBrowser(WebBaseObject):
     """浏览器操作"""
-    page: Page = None
-    context: BrowserContext = None
-    url: str = None
 
     @classmethod
     def w_wait_for_timeout(cls, _time: int):
         """强制等待"""
         time.sleep(int(_time))
 
-    def w_goto(self, url=None):
+    def w_goto(self, url: str):
         """打开URL"""
         try:
-            if url:
-                self.page.goto(url, timeout=60000)
-            else:
-                if self.page is None:
-                    self.page = self.context.new_page()
-                self.page.goto(self.url, timeout=60000)
-            time.sleep(2)
+            self.page.goto(url, timeout=60000)
         except TimeoutError:
-            raise UiError(*ERROR_MSG_0038, value=(url if url else self.url,))
+            raise UiError(*ERROR_MSG_0038, value=(url if url else url,))
 
     def w_screenshot(self, path: str, full_page=True):
         """整个页面截图"""
         self.page.screenshot(path=path, full_page=full_page)
 
-    @classmethod
-    def w_ele_screenshot(cls, locating: Locator, path: str):
+    def w_ele_screenshot(self, locating: str, path: str):
         """元素截图"""
-        locating.screenshot(path=path)
+        self.element(locating).screenshot(path=path)
 
     def w_alert(self):
         """设置弹窗不予处理"""

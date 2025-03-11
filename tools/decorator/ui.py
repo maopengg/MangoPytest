@@ -10,7 +10,7 @@ from enums.ui_enum import BrowserTypeEnum
 from exceptions import PytestAutoTestError
 from exceptions.error_msg import ERROR_MSG_0350
 from models.ui_model import WEBConfigModel, UiDataModel, UiTestCaseModel
-from tools.base_page.web.new_browser import NewBrowser
+from tools.base_object.web.web_object.new_browser import NewBrowser
 from tools.log import log
 
 
@@ -31,7 +31,13 @@ def case_data(case_id: int | list[int] | None = None, case_name: str | list[str]
             browser = NewBrowser(WEBConfigModel(browser_type=BrowserTypeEnum.CHROMIUM))
             context, page = browser.new_context_page()
             data = UiDataModel(base_data=self.data_model.base_data, test_case=UiTestCaseModel.get_obj(test_case))
-            func(self, execution_context=(context, page), data=data)
+            try:
+                func(self, execution_context=(context, page), data=data)
+            except Exception as error:
+                log.error(f'错误类型:{type(error)}，{error}')
+                context.close()
+                page.close()
+                raise error
             context.close()
             page.close()
 

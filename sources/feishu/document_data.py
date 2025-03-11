@@ -4,6 +4,7 @@
 # @Time   : 2024-04-01 22:11
 # @Author : 毛鹏
 import json
+import os.path
 
 import pandas
 import pandas as pd
@@ -20,7 +21,7 @@ from tools import project_dir
 class DocumentData:
 
     def __init__(self):
-        with open(fr'{project_dir.root_path()}\settings\feishu.json', 'r', encoding='utf-8') as f:
+        with open(os.path.join(project_dir.root_path(), 'settings', 'feishu.json'), 'r', encoding='utf-8') as f:
             self.config = FeiShuModel(**json.load(f))
         self.url = "https://open.feishu.cn/open-apis/sheets/v2/spreadsheets/"
         self.parameter = "&valueRenderOption=ToString&dateTimeRenderOption=FormattedString"

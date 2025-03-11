@@ -4,15 +4,13 @@
 # @Time   : 2023-04-25 22:33
 # @Author : 毛鹏
 import time
-
 from playwright.async_api import Locator
-from playwright.async_api import Page, BrowserContext
+
+from tools.base_object.web.web_object.web_object import WebBaseObject
 
 
-class PlaywrightPage:
+class PlaywrightPage(WebBaseObject):
     """页面操作"""
-    page: Page = None
-    context: BrowserContext = None
 
     def w_switch_tabs(self, individual: int):
         """切换页签"""

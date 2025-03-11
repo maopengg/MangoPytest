@@ -6,9 +6,10 @@
 from playwright.async_api import Locator, expect
 
 from exceptions import *
+from tools.base_object.web.web_object.web_object import WebBaseObject
 
 
-class PlaywrightAssertion:
+class PlaywrightAssertion(WebBaseObject):
     """元素断言"""
 
     @staticmethod

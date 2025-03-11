@@ -24,7 +24,7 @@ class RequestTool:
         """
         处理请求的数据，写入到request对象中
         :param data: ApiDataModel
-        :param is_replace: 是否过滤请求中的${}, 如果数据本身就有${}，那需要传false
+        :param is_replace: 是否过滤请求中的${{}}, 如果数据本身就有${{}}，那需要传false
         :return:
         """
         log.debug(f'清洗请求数据之前，请求数据：{data.request.model_dump_json()}')

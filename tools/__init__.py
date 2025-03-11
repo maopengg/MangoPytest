@@ -5,25 +5,23 @@
 # @Author : 毛鹏
 
 import os
-from pathlib import Path
 
 import sys
+from pathlib import Path
+
 
 
 class ProjectDir:
 
     def __init__(self):
         self.folder_list = ['logs', 'report', 'reports', 'download']
-        self._root_path = Path(__file__).resolve().parent.parent
+        self._root_path = self.init_project_path()
         self.init_folder()
 
     @staticmethod
     def init_project_path():
-        current_directory = os.path.abspath(__file__)
-        project_root_directory = os.path.dirname(os.path.dirname(current_directory))
-        if 'python.exe' not in sys.executable:
-            project_root_directory = os.path.dirname(sys.executable)
-        return project_root_directory
+
+        return Path(__file__).resolve().parent.parent
 
     def init_folder(self):
         for i in self.folder_list:
