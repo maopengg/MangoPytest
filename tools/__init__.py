@@ -5,10 +5,9 @@
 # @Author : 毛鹏
 
 import os
-
-import sys
 from pathlib import Path
 
+import sys
 
 
 class ProjectDir:

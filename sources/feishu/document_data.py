@@ -178,6 +178,7 @@ class DocumentData:
         if not duplicate_ids.empty:
             raise ToolsError(*ERROR_MSG_0351, value=('UI测试用例',))
         return combined_df
+
     def other_test_case(self):
         df_list = []
         for i in self.config.surface.other_test_case.sheet:

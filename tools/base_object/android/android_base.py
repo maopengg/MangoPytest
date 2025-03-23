@@ -2,9 +2,9 @@
 # @Project: 芒果测试平台
 # @Description: # @Time   : 2023-03-11 17:25
 # @Author : 毛鹏
-from time import sleep
 from typing import Optional
 
+from time import sleep
 from uiautomator2 import Device
 
 from models.ui_model import AndroidConfigModel

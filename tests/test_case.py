@@ -3,9 +3,8 @@
 # @Description: 
 # @Time   : 2024-05-06 10:35
 # @Author : 毛鹏
-import time
-
 import allure
+import time
 
 from tools.log import log
 

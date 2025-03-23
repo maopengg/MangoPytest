@@ -28,7 +28,8 @@ class CaseTool(Assertion):
 
     def ass_main(self, data: ApiDataModel) -> ApiDataModel:
         if data.test_case.ass_response_whole:
-            log.debug(f'准备开始全匹配断言，预期值：{data.test_case.ass_response_whole}，实际值：{data.response.response_dict}')
+            log.debug(
+                f'准备开始全匹配断言，预期值：{data.test_case.ass_response_whole}，实际值：{data.response.response_dict}')
             self.ass_response_whole(data.response.response_dict, data.test_case.ass_response_whole)
         return data
 

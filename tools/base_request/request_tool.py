@@ -80,4 +80,3 @@ class RequestTool:
             json=request_model.json_data,
             files=request_model.file,
         )
-

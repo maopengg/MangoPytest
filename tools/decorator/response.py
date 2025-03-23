@@ -4,10 +4,10 @@
 # @Author : 毛鹏
 import functools
 import json
-import time
 
 import allure
 import pytest
+import time
 from requests.models import Response
 
 from enums.api_enum import MethodEnum

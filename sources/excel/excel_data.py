@@ -136,6 +136,7 @@ class ExcelData:
         if not duplicate_ids.empty:
             raise ToolsError(*ERROR_MSG_0351, value=('UI测试用例',))
         return combined_df
+
     def other_test_case(self):
         all_sheets = self.cls(fr'{project_dir.root_path()}/sources/excel/其他类型测试用例.xlsx', sheet_name=None)
         df_list = []

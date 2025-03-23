@@ -56,7 +56,8 @@ class ProjectPublicMethods:
             mysql_connect = MysqlConnect(mysql_config_model)
 
         except ValidationError:
-            if test_object.get('db_c_status') == StatusEnum.SUCCESS.value or test_object.get('db_rud_status') == StatusEnum.SUCCESS.value:
+            if test_object.get('db_c_status') == StatusEnum.SUCCESS.value or test_object.get(
+                    'db_rud_status') == StatusEnum.SUCCESS.value:
                 raise ToolsError(*ERROR_MSG_0333)
 
         return mysql_config_model, mysql_connect
