@@ -8,7 +8,7 @@ import os.path
 
 import pandas
 import pandas as pd
-from mangokit import requests
+from mangokit.apidrive import requests
 
 from enums.api_enum import MethodEnum
 from enums.tools_enum import NoticeEnum, EnvironmentEnum, ClientEnum, StatusEnum

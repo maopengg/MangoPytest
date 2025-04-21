@@ -5,7 +5,7 @@
 # @Author : 毛鹏
 import os
 
-from mangokit import requests
+from mangokit.apidrive import requests
 from requests import RequestException
 
 from models.api_model import ApiDataModel

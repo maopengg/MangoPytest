@@ -7,7 +7,7 @@ import os
 from typing import Optional
 from urllib.parse import urljoin
 
-from mangokit import requests
+from mangokit.apidrive import requests
 from requests.models import Response
 
 from models.api_model import ApiDataModel, RequestModel, ResponseModel
