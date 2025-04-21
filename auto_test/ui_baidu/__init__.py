@@ -3,7 +3,7 @@
 # @Description: 
 # @Time   : 2024-03-28 15:19
 # @Author : 毛鹏
-from mangokit import singleton
+from mangokit.decorator import singleton
 from pydantic import BaseModel, ConfigDict
 
 from auto_test.project_config import ProjectEnum
@@ -34,7 +34,9 @@ def data_init():
         ProjectEnum.Gitee.value,
         AutoTestTypeEnum.UI
     )
+
     log.info(f'{ProjectEnum.Gitee.value}的UI在自动化基础信息设置完成！')
+    return data_model
 
 
-data_init()
+ui_project_data_model = data_init()

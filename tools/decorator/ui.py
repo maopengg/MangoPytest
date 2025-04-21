@@ -5,13 +5,16 @@
 # @Author : 毛鹏
 import allure
 import pytest
+from mangokit.uidrive import DriverObject
 
 from enums.ui_enum import BrowserTypeEnum
 from exceptions import PytestAutoTestError
 from exceptions.error_msg import ERROR_MSG_0350
-from models.ui_model import WEBConfigModel, UiDataModel, UiTestCaseModel
-from tools.base_object.web.web_object.new_browser import NewBrowser
+from models.ui_model import UiDataModel, UiTestCaseModel
 from tools.log import log
+
+driver_object = DriverObject()
+driver_object.set_web(BrowserTypeEnum.CHROMIUM.value, None, web_max=True)
 
 
 def case_data(case_id: int | list[int] | None = None, case_name: str | list[str] | None = None):
@@ -28,8 +31,7 @@ def case_data(case_id: int | list[int] | None = None, case_name: str | list[str]
         @pytest.mark.parametrize("test_case", test_case_list)
         def wrapper(self, test_case):
             allure.dynamic.title(test_case.get('name'))
-            browser = NewBrowser(WEBConfigModel(browser_type=BrowserTypeEnum.CHROMIUM))
-            context, page = browser.new_context_page()
+            context, page = driver_object.web.new_web_page()
             data = UiDataModel(base_data=self.data_model.base_data, test_case=UiTestCaseModel.get_obj(test_case))
             try:
                 func(self, execution_context=(context, page), data=data)

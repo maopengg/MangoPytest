@@ -6,8 +6,8 @@
 import json
 from datetime import datetime
 
-from mangokit import EmailSend, WeChatSend, EmailNoticeModel, WeChatNoticeModel, TestReportModel
-from mangokit.tools.method import get_host_ip
+from mangokit.models import EmailNoticeModel, WeChatNoticeModel, TestReportModel
+from mangokit.notice import EmailSend, WeChatSend
 
 from auto_test.project_config import ProjectEnum
 from enums.tools_enum import ClientNameEnum, NoticeEnum, EnvironmentEnum, AutoTestTypeEnum
@@ -100,7 +100,6 @@ class NoticeMain:
                     return TestReportModel(project_id=self.result_dict.get('id'),
                                            project_name=self.result_dict.get('name'),
                                            test_environment=self.test_environment,
-                                           ip=get_host_ip(),
                                            case_sum=statistic['total'],
                                            success=statistic['passed'],
                                            success_rate=pass_rate,

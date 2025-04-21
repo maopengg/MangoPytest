@@ -6,7 +6,8 @@
 import json
 import os
 
-from mangokit import MysqlConnect, MysqlConingModel
+from mangokit.database import MysqlConnect
+from mangokit.models import  MysqlConingModel
 from pydantic_core._pydantic_core import ValidationError
 
 from enums.tools_enum import StatusEnum, AutoTestTypeEnum

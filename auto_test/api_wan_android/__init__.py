@@ -1,6 +1,7 @@
 from urllib.parse import urljoin
 
-from mangokit import singleton, requests
+from mangokit.decorator import singleton
+from mangokit.apidrive import requests
 from pydantic import BaseModel, ConfigDict
 
 from auto_test.project_config import ProjectEnum

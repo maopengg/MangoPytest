@@ -3,7 +3,7 @@
 # @Description: 
 # @Time   : 2024-10-25 21:46
 # @Author : 毛鹏
-from mangokit import set_log
+from mangokit.log_collector import set_log
 
 from settings.settings import IS_DEBUG
 from tools import project_dir

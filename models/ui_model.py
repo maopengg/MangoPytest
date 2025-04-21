@@ -5,7 +5,9 @@
 # @Author : 毛鹏
 import json
 
-from mangokit import MysqlConingModel, MysqlConnect, DataClean
+from mangokit.data_processor import DataClean
+from mangokit.database import MysqlConnect
+from mangokit.models import MysqlConingModel
 from pydantic import BaseModel, ConfigDict
 
 from enums.tools_enum import EnvironmentEnum

@@ -5,9 +5,11 @@
 # @Author : 毛鹏
 
 import os
+import socket
+import webbrowser
 
 import pytest
-from mangokit.tools.method import get_host_ip
+import time
 
 from auto_test.project_config import auto_test_project_config
 from models.tools_model import CaseRunListModel
@@ -39,4 +41,16 @@ class MainRun:
             os.system(r"allure generate ./report/tmp -o ./report/html --clean")
         NoticeMain(self.case_run_list.case_run).notice_main()
         if IS_TEST_REPORT:
-            os.system(f"allure serve {project_dir.report()}/tmp -h {get_host_ip()} -p 9997")
+            os.system(f"allure serve ./report/tmp -h 127.0.0.1 -p 9999")
+
+    @staticmethod
+    def get_local_ip():
+        """获取本机内网 IP"""
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect(("8.8.8.8", 80))
+            local_ip = s.getsockname()[0]
+            s.close()
+            return local_ip
+        except Exception:
+            return "127.0.0.1"
