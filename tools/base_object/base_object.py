@@ -13,6 +13,7 @@ from playwright.async_api import Page, BrowserContext
 from playwright.sync_api import Locator
 
 from sources import SourcesData
+from tools.log import log
 from tools.obtain_test_data import ObtainTestData
 
 
@@ -31,6 +32,7 @@ class WebBaseObject(SyncWebDevice):
         self.module_name = module_name
         self.page_name = page_name
         self.base_data = BaseData(self.test_data)
+        self.base_data.set_log(log)
         self.base_data.set_page_context(self.page, self.context)
         super().__init__(self.base_data)
 
