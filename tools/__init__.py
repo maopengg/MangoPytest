@@ -13,7 +13,7 @@ import sys
 class ProjectDir:
 
     def __init__(self):
-        self.folder_list = ['logs', 'report', 'reports', 'download']
+        self.folder_list = ['logs', 'report', 'reports', 'download', 'screenshot']
         self._root_path = self.init_project_path()
         self.init_folder()
 
@@ -50,6 +50,9 @@ class ProjectDir:
         return os.path.join(self.root_path(), folder_name)
 
     def download(self, folder_name='download'):
+        return os.path.join(self.root_path(), folder_name)
+
+    def screenshot(self, folder_name='screenshot'):
         return os.path.join(self.root_path(), folder_name)
 
 

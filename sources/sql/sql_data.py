@@ -1,5 +1,5 @@
 import pandas
-from mangokit.database import SQLiteConnect
+from mangotools.database import SQLiteConnect
 
 from exceptions import *
 from tools import project_dir

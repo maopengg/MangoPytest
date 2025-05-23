@@ -6,8 +6,8 @@
 import json
 from datetime import datetime
 
-from mangokit.models import EmailNoticeModel, WeChatNoticeModel, TestReportModel
-from mangokit.notice import EmailSend, WeChatSend
+from mangotools.models import EmailNoticeModel, WeChatNoticeModel, TestReportModel
+from mangotools.notice import EmailSend, WeChatSend
 
 from auto_test.project_config import ProjectEnum
 from enums.tools_enum import ClientNameEnum, NoticeEnum, EnvironmentEnum, AutoTestTypeEnum

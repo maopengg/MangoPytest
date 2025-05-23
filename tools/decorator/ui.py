@@ -5,7 +5,7 @@
 # @Author : 毛鹏
 import allure
 import pytest
-from mangokit.uidrive import DriverObject
+from mangoautomation.uidrive import DriverObject
 
 from enums.ui_enum import BrowserTypeEnum
 from exceptions import PytestAutoTestError

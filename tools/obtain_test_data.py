@@ -4,7 +4,7 @@
 # @Time   : 2024-11-19 11:36
 # @Author : 毛鹏
 
-from mangokit.data_processor import DataProcessor
+from mangotools.data_processor import DataProcessor
 
 from auto_test.project_config import auto_test_project_config
 from exceptions import ToolsError, ERROR_MSG_0042

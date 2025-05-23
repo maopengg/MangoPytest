@@ -1,7 +1,7 @@
 from urllib.parse import urljoin
 
-from mangokit.decorator import singleton
-from mangokit.apidrive import requests
+import requests
+from mangotools.decorator import singleton
 from pydantic import BaseModel, ConfigDict
 
 from auto_test.project_config import ProjectEnum
@@ -38,7 +38,8 @@ def data_init():
     response = requests.request(url=urljoin(data_model.base_data.test_object.get('host'), login_url),
                                 method="POST",
                                 headers=data_model.headers,
-                                data=data_model.user_info)
+                                data=data_model.user_info,
+                                proxies={'http': None, 'https': None})
     cookies = ''
     for k, v in response.cookies.items():
         _cookie = k + "=" + v + ";"

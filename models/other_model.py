@@ -5,9 +5,9 @@
 # @Author : 毛鹏
 import json
 
-from mangokit.data_processor import DataClean
-from mangokit.database import MysqlConnect
-from mangokit.models import MysqlConingModel
+from mangotools.data_processor import DataClean
+from mangotools.database import MysqlConnect
+from mangotools.models import MysqlConingModel
 from pydantic import BaseModel, ConfigDict
 
 

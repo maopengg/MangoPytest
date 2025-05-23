@@ -7,7 +7,7 @@ import os
 from typing import Optional
 from urllib.parse import urljoin
 
-from mangokit.apidrive import requests
+import requests
 from requests.models import Response
 
 from models.api_model import ApiDataModel, RequestModel, ResponseModel
@@ -79,4 +79,5 @@ class RequestTool:
             data=request_model.data,
             json=request_model.json_data,
             files=request_model.file,
+            proxies={'http': None, 'https': None},
         )

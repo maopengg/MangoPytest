@@ -3,7 +3,7 @@
 # @Description: 
 # @Time   : 2024-03-28 15:19
 # @Author : 毛鹏
-from mangokit.decorator import singleton
+from mangotools.decorator import singleton
 from pydantic import BaseModel, ConfigDict
 
 from auto_test.project_config import ProjectEnum

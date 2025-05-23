@@ -5,14 +5,16 @@
 # @Author : 毛鹏
 import re
 
-from mangokit.decorator import sync_retry
-from mangokit.enums import ElementOperationEnum, StatusEnum
-from mangokit.uidrive import BaseData
-from mangokit.uidrive.web.sync_web import SyncWebDevice
+from mangotools.decorator import sync_retry
+from mangotools.enums import StatusEnum
+from mangoautomation.enums import ElementOperationEnum
+from mangoautomation.uidrive import BaseData
+from mangoautomation.uidrive.web.sync_web import SyncWebDevice
 from playwright.async_api import Page, BrowserContext
 from playwright.sync_api import Locator
 
 from sources import SourcesData
+from tools import project_dir
 from tools.log import log
 from tools.obtain_test_data import ObtainTestData
 
@@ -31,8 +33,8 @@ class WebBaseObject(SyncWebDevice):
         self.project_name = project_name
         self.module_name = module_name
         self.page_name = page_name
-        self.base_data = BaseData(self.test_data)
-        self.base_data.set_log(log)
+        self.base_data = BaseData(self.test_data, log)
+        self.base_data.set_file_path(project_dir.download(), project_dir.screenshot())
         self.base_data.set_page_context(self.page, self.context)
         super().__init__(self.base_data)
 
