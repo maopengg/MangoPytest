@@ -5,11 +5,11 @@
 # @Author : 毛鹏
 import re
 
-from mangotools.decorator import sync_retry
-from mangotools.enums import StatusEnum
 from mangoautomation.enums import ElementOperationEnum
 from mangoautomation.uidrive import BaseData
 from mangoautomation.uidrive.web.sync_web import SyncWebDevice
+from mangotools.decorator import sync_retry
+from mangotools.enums import StatusEnum
 from playwright.async_api import Page, BrowserContext
 from playwright.sync_api import Locator
 
@@ -60,7 +60,7 @@ class WebBaseObject(SyncWebDevice):
             ele_name=ele_name,
         )
         element_dict['locator'] = self.test_data.replace_str(element_dict.get('locator'))
-        count, element = self.web_find_ele(
+        loc, count, text = self.web_find_ele(
             element_dict.get('ele_name'),
             ElementOperationEnum.OPE.value,
             element_dict.get('method'),
@@ -68,4 +68,4 @@ class WebBaseObject(SyncWebDevice):
             element_dict.get('nth'),
             StatusEnum.FAIL.value,
         )
-        return element
+        return loc
