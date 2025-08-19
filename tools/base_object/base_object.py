@@ -37,7 +37,6 @@ class WebBaseObject(SyncWebDevice):
         self.base_data.set_file_path(project_dir.download(), project_dir.screenshot())
         self.base_data.set_page_context(self.page, self.context)
         super().__init__(self.base_data)
-
         d = re.DEBUG
 
     def setup(self) -> None:
