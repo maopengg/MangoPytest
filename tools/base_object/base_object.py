@@ -59,7 +59,7 @@ class WebBaseObject(SyncWebDevice):
             page_name=self.page_name,
             ele_name=ele_name,
         )
-        element_dict['locator'] = self.test_data.replace_str(element_dict.get('locator'))
+        element_dict['locator'] = self.test_data.replace(element_dict.get('locator'))
         loc, count, text = self.web_find_ele(
             element_dict.get('ele_name'),
             ElementOperationEnum.OPE.value,

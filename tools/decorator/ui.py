@@ -13,7 +13,7 @@ from exceptions.error_msg import ERROR_MSG_0350
 from models.ui_model import UiDataModel, UiTestCaseModel
 from tools.log import log
 
-driver_object = DriverObject()
+driver_object = DriverObject(log)
 driver_object.set_web(BrowserTypeEnum.CHROMIUM.value, None, web_max=True)
 
 
