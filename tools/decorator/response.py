@@ -4,6 +4,7 @@
 # @Author : 毛鹏
 import functools
 import json
+from urllib.parse import urljoin
 
 import allure
 import pytest
@@ -37,7 +38,6 @@ def case_data(case_id: int | list[int] | None = None, case_name: str | list[str]
             allure.dynamic.title(test_case.get('name'))
             allure.attach(test_case_model.model_dump_json(), '用例数据')
             data = ApiDataModel(
-                base_data=self.data_model.base_data,
                 test_case=test_case_model
             )
             try:
@@ -62,7 +62,7 @@ def request_data(api_info_id):
             api_info_model = ApiInfoModel.get_obj(SourcesData.get_api_info(id=api_info_id))
             log.debug(f'查询到接口的数据，接口ID：{api_info_model.model_dump_json()}')
             data.request = RequestModel(
-                url=api_info_model.url,
+                url= urljoin(self.base_data.test_object.host, api_info_model.url),
                 method=MethodEnum.get_value(api_info_model.method),
                 headers=api_info_model.headers if api_info_model.headers else data.base_data.headers,
                 params=data.test_case.params,

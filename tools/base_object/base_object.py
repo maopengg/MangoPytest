@@ -5,6 +5,7 @@
 # @Author : 毛鹏
 import re
 
+import allure
 from mangoautomation.enums import ElementOperationEnum
 from mangoautomation.uidrive import BaseData
 from mangoautomation.uidrive.web.sync_web import SyncWebDevice
@@ -67,4 +68,11 @@ class WebBaseObject(SyncWebDevice):
             element_dict.get('nth'),
             StatusEnum.FAIL.value,
         )
+        allure.attach(
+            f'元素表达式：{element_dict.get("locator")}\n'
+            f'元素定位方法：{element_dict.get("method")}\n'
+            f'元素下标：{element_dict.get("nth")}\n'
+            f'元素文本内容：{text}\n'
+            f'元素个数：{count}'
+            , element_dict.get("ele_name"))
         return loc

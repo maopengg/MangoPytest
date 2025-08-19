@@ -3,14 +3,14 @@
 # @Description: 
 # @Time   : 2024-03-17 19:50
 # @Author : 毛鹏
-from auto_test.api_wan_android import WanAndroidDataModel
+from auto_test.api_wan_android import base_data
 from models.api_model import ApiDataModel
 from tools.base_request.request_tool import RequestTool
 from tools.decorator.response import request_data
 
 
 class CollectionAPI(RequestTool):
-    data_model = WanAndroidDataModel()
+    data_model = base_data
 
     # 获取用户收藏的文章列表
     @request_data(2)

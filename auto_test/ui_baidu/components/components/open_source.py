@@ -8,7 +8,7 @@ from urllib.parse import urljoin
 from playwright.sync_api import Page, BrowserContext
 
 from auto_test.project_config import ProjectEnum
-from models.ui_model import UiProjectDataModel
+from models.tools_model import BaseDataModel
 from tools.base_object.base_object import WebBaseObject
 from tools.log import log
 from tools.obtain_test_data import ObtainTestData
@@ -21,13 +21,13 @@ class OpenSourcePage(WebBaseObject):
 
     def __init__(self,
                  context_page: tuple[BrowserContext, Page],
-                 data_model: UiProjectDataModel,
+                 base_data: BaseDataModel,
                  test_data: ObtainTestData):
         project_name = ProjectEnum.Gitee.value
         module_name = '开源'
         page_name = '开源'
         super().__init__(project_name, module_name, page_name, context_page, test_data)
-        self.url = urljoin(data_model.base_data.host, '/explore')
+        self.url = urljoin(base_data.test_object.host, '/explore')
 
     def search_for_open_source_projects(self, name: str):
         log.debug(f'收到的名称是：{name}')

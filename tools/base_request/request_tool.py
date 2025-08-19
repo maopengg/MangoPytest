@@ -29,7 +29,6 @@ class RequestTool:
         """
         log.debug(f'清洗请求数据之前，请求数据：{data.request.model_dump_json()}')
         log.debug(f'清洗请求数据之前，缓存数据：{self.test_data.get_all()}')
-        data.request.url = urljoin(data.base_data.host, data.request.url)
         if is_replace:
             for key, value in data.request:
                 if value is not None and key != 'file':

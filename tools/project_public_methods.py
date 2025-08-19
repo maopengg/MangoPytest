@@ -7,15 +7,12 @@ import json
 import os
 
 from mangotools.database import MysqlConnect
-from mangotools.models import  MysqlConingModel
+from mangotools.models import MysqlConingModel
 from pydantic_core._pydantic_core import ValidationError
 
-from enums.tools_enum import StatusEnum, AutoTestTypeEnum
+from enums.tools_enum import StatusEnum, AutoTestTypeEnum, EnvironmentEnum
 from exceptions import *
-from models.api_model import ApiBaseDataModel
-from models.other_model import OtherBaseDataModel
-from models.tools_model import CaseRunListModel
-from models.ui_model import UiBaseDataModel
+from models.tools_model import CaseRunListModel, BaseDataModel, ProjectModel, TestObjectModel
 from sources import SourcesData
 from tools.log import log
 
@@ -23,7 +20,7 @@ from tools.log import log
 class ProjectPublicMethods:
 
     @staticmethod
-    def get_project_test_object(project_name: str, _type: AutoTestTypeEnum) -> tuple[int, dict, dict]:
+    def get_project_test_object(project_name: str, _type: AutoTestTypeEnum) -> tuple[EnvironmentEnum, dict, dict]:
         project: dict = SourcesData.get_project(name=project_name)
         try:
             case_list = CaseRunListModel(**json.loads(os.environ['TEST_ENV']))
@@ -42,7 +39,7 @@ class ProjectPublicMethods:
         if test_object is None or test_environment is None:
             log.error(f'项目:{project_name}没有可用的测试对象')
             raise ToolsError(*ERROR_MSG_0333)
-        return test_environment, project, test_object
+        return EnvironmentEnum(test_environment), project, test_object
 
     @staticmethod
     def get_mysql_info(test_object: dict) -> tuple[MysqlConingModel, MysqlConnect] | tuple[None, None]:
@@ -64,42 +61,14 @@ class ProjectPublicMethods:
         return mysql_config_model, mysql_connect
 
     @classmethod
-    def get_data_model(cls, model, project_name: str, _type: AutoTestTypeEnum):
+    def get_data_model(cls, project_name: str, _type: AutoTestTypeEnum) -> BaseDataModel:
         test_environment, project, test_object = cls.get_project_test_object(project_name, _type)
         mysql_config_model, mysql_connect = cls.get_mysql_info(test_object)
-        if _type == AutoTestTypeEnum.API:
-            return model(
-                test_environment=test_environment,
-                base_data=ApiBaseDataModel(
-                    test_object=test_object,
-                    project=project,
-                    host=test_object.get('host'),
-                    is_database_assertion=bool(test_object.get('is_db')),
-                    mysql_config_model=mysql_config_model,
-                    mysql_connect=mysql_connect,
-                )
-            )
-        elif _type == AutoTestTypeEnum.UI:
-            return model(
-                test_environment=test_environment,
-                base_data=UiBaseDataModel(
-                    test_object=test_object,
-                    project=project,
-                    host=test_object.get('host'),
-                    is_database_assertion=bool(test_object.get('is_db')),
-                    mysql_config_model=mysql_config_model,
-                    mysql_connect=mysql_connect,
-                )
-            )
-        else:
-            return model(
-                test_environment=test_environment,
-                base_data=OtherBaseDataModel(
-                    test_object=test_object,
-                    project=project,
-                    host=test_object.get('host'),
-                    is_database_assertion=bool(test_object.get('is_db')),
-                    mysql_config_model=mysql_config_model,
-                    mysql_connect=mysql_connect,
-                )
-            )
+        return BaseDataModel(
+            test_environment=test_environment,
+            test_object=TestObjectModel(**test_object),
+            project=ProjectModel(**project),
+            host=test_object.get('host'),
+            mysql_config_model=mysql_config_model,
+            mysql_connect=mysql_connect,
+        )

@@ -6,18 +6,17 @@
 
 from auto_test.project_config import ProjectEnum
 from enums.tools_enum import AutoTestTypeEnum
-from models.ui_model import UiProjectDataModel
+from models.tools_model import BaseDataModel
 from tools.log import log
 from tools.project_public_methods import ProjectPublicMethods
 
 
-def data_init():
+def data_init() -> BaseDataModel:
     """
     项目数据初始化
     :return:
     """
-    data_model: UiProjectDataModel = ProjectPublicMethods.get_data_model(
-        UiProjectDataModel,
+    data_model: BaseDataModel = ProjectPublicMethods.get_data_model(
         ProjectEnum.WanAndroid.value,
         AutoTestTypeEnum.UI
     )
@@ -26,4 +25,4 @@ def data_init():
     return data_model
 
 
-ui_project_data_model = data_init()
+base_data: BaseDataModel = data_init()

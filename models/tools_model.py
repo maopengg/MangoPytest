@@ -3,11 +3,13 @@
 # @Description:
 # @Time   : 2023-07-04 17:14
 # @Author : 毛鹏
-
-from pydantic import BaseModel
+from mangotools.database import MysqlConnect
+from mangotools.models import MysqlConingModel
+from pydantic import BaseModel, ConfigDict
 
 from auto_test.project_config import ProjectEnum
 from enums.tools_enum import AutoTestTypeEnum, EnvironmentEnum
+from tools.obtain_test_data import ObtainTestData
 
 
 class CaseRunModel(BaseModel):
@@ -54,3 +56,35 @@ class FeiShuModel(BaseModel):
     app_id: str
     app_secret: str
     surface: SurfaceModel
+
+
+class ProjectModel(BaseModel):
+    id: int
+    name: str
+
+
+class TestObjectModel(BaseModel):
+    id: int
+    project_name: str
+    type: int
+    client_type: int
+    host: str
+    is_use: int
+    is_notice: int
+    db_c_status: int
+    db_rud_status: int
+
+
+class BaseDataModel(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    test_environment: EnvironmentEnum
+    test_data: ObtainTestData = ObtainTestData()
+
+    test_object: TestObjectModel
+    project: ProjectModel
+    mysql_config_model: MysqlConingModel | None = None
+    mysql_connect: MysqlConnect | None = None
+    headers: dict = {}
+
+    cache_data: dict = {}

@@ -32,7 +32,7 @@ def case_data(case_id: int | list[int] | None = None, case_name: str | list[str]
         def wrapper(self, test_case):
             allure.dynamic.title(test_case.get('name'))
             context, page = driver_object.web.new_web_page()
-            data = UiDataModel(base_data=self.data_model.base_data, test_case=UiTestCaseModel.get_obj(test_case))
+            data = UiDataModel(test_case=UiTestCaseModel.get_obj(test_case))
             try:
                 func(self, execution_context=(context, page), data=data)
             except Exception as error:
