@@ -31,7 +31,6 @@ def case_data(case_id: int | list[int] | None = None, case_name: str | list[str]
             allure.dynamic.title(test_case.get('name'))
             allure.attach(test_case_model.model_dump_json(), '用例数据')
             data = OtherDataModel(
-                base_data=self.data_model.base_data,
                 test_case=test_case_model
             )
             try:
