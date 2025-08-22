@@ -48,10 +48,10 @@ class InitBaseData:
                 )
                 if test_environment is None:
                     raise ToolsError(*ERROR_MSG_0024)
-                test_object = TestObjectModel(**SourcesData.get_test_object(
+                test_object = SourcesData.get_test_object(
                     project_name=project.name,
                     type=test_environment
-                ))
+                )
             else:
                 raise ToolsError(*ERROR_MSG_0023)
         except KeyError:
