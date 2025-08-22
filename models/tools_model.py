@@ -71,8 +71,13 @@ class TestObjectModel(BaseModel):
     host: str
     is_use: int
     is_notice: int
-    db_c_status: int
-    db_rud_status: int
+    db_c_status: int = 0
+    db_rud_status: int = 0
+    db_host: str | None = None
+    db_port: int | None = None
+    db_user: str | None = None
+    db_password: str | None = None
+    db_database: str | None = None
 
 
 class BaseDataModel(BaseModel):

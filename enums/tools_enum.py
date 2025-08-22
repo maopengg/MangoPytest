@@ -18,17 +18,6 @@ class SourcesTypeEnum(BaseEnum):
         return {0: "SQL", 1: "飞书文档", 2: "excel"}
 
 
-class NoticeEnum(BaseEnum):
-    """通知枚举"""
-    MAIL = 0
-    WECOM = 1
-    NAILING = 2
-
-    @classmethod
-    def obj(cls):
-        return {0: "邮箱", 1: "企微", 2: "钉钉-未测试"}
-
-
 class ClientNameEnum(BaseEnum):
     """
     端名称

@@ -3,7 +3,7 @@
 # @Description: 
 # @Time   : 2024-04-02 9:48
 # @Author : 毛鹏
-
+import numpy as np
 from pandas.core.frame import DataFrame
 
 from enums.tools_enum import SourcesTypeEnum
@@ -29,14 +29,14 @@ class SourcesData:
             r = ExcelData()
         else:
             r = DocumentData()
-        project = r.project()
-        test_object = r.test_object()
-        notice_config = r.notice_config()
-        api_info = r.api_info()
-        api_test_case = r.api_test_case()
-        ui_test_case = r.ui_test_case()
-        ui_element = r.ui_element()
-        other_test_case = r.other_test_case()
+        project = r.project().replace({np.nan: None})
+        test_object = r.test_object().replace({np.nan: None})
+        notice_config = r.notice_config().replace({np.nan: None})
+        api_info = r.api_info().replace({np.nan: None})
+        api_test_case = r.api_test_case().replace({np.nan: None})
+        ui_test_case = r.ui_test_case().replace({np.nan: None})
+        ui_element = r.ui_element().replace({np.nan: None})
+        other_test_case = r.other_test_case().replace({np.nan: None})
     except AssertionError:
         raise ToolsError(*ERROR_MSG_0347)
 

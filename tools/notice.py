@@ -6,11 +6,12 @@
 import json
 from datetime import datetime
 
+from mangotools.enums import NoticeEnum
 from mangotools.models import EmailNoticeModel, WeChatNoticeModel, TestReportModel
 from mangotools.notice import EmailSend, WeChatSend
 
 from auto_test.project_config import ProjectEnum
-from enums.tools_enum import ClientNameEnum, NoticeEnum, EnvironmentEnum, AutoTestTypeEnum
+from enums.tools_enum import ClientNameEnum, EnvironmentEnum, AutoTestTypeEnum
 from enums.tools_enum import StatusEnum
 from models.tools_model import CaseRunModel
 from settings.settings import SEND_USER, EMAIL_HOST, STAMP_KEY

@@ -9,9 +9,10 @@ import os.path
 import pandas
 import pandas as pd
 import requests
+from mangotools.enums import NoticeEnum
 
 from enums.api_enum import MethodEnum
-from enums.tools_enum import NoticeEnum, EnvironmentEnum, ClientEnum, StatusEnum
+from enums.tools_enum import EnvironmentEnum, ClientEnum, StatusEnum
 from enums.ui_enum import ElementExpEnum
 from exceptions import ToolsError, ERROR_MSG_0351
 from models.tools_model import FeiShuModel
@@ -60,7 +61,7 @@ class DocumentData:
             if i.title == '通知配置':
                 url = f"{self.url}{self.config.surface.project.id}/values_batch_get?ranges={i.id}{self.parameter}"
                 df = self.cls(url)
-                df['类型'] = df['类型'].map(NoticeEnum.reversal_obj())
+                df['类型'] = df['类型'].map({v: k for k, v in NoticeEnum.obj().items()})
                 df = df.rename(columns={
                     'ID': 'id',
                     '项目名称': 'project_name',

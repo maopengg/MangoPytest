@@ -5,9 +5,10 @@
 # @Author : 毛鹏
 
 import pandas as pd
+from mangotools.enums import NoticeEnum
 
 from enums.api_enum import MethodEnum
-from enums.tools_enum import NoticeEnum, EnvironmentEnum, ClientEnum, StatusEnum
+from enums.tools_enum import EnvironmentEnum, ClientEnum, StatusEnum
 from enums.ui_enum import ElementExpEnum
 from exceptions import ToolsError, ERROR_MSG_0351
 from tools import project_dir
@@ -28,7 +29,7 @@ class ExcelData:
 
     def notice_config(self):
         df = self.cls(fr'{project_dir.root_path()}/sources/excel/项目基础信息.xlsx', '通知配置')
-        df['类型'] = df['类型'].map(NoticeEnum.reversal_obj())
+        df['类型'] = df['类型'].map({v: k for k, v in NoticeEnum.obj().items()})
         df = df.rename(columns={
             'ID': 'id',
             '项目名称': 'project_name',
@@ -158,4 +159,4 @@ class ExcelData:
 
 
 if __name__ == '__main__':
-    print(ExcelData().api_test_case())
+    print(ExcelData().notice_config())

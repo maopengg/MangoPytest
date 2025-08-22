@@ -6,7 +6,7 @@ from auto_test.project_config import ProjectEnum
 from enums.tools_enum import AutoTestTypeEnum
 from models.tools_model import BaseDataModel
 from tools.log import log
-from tools.project_public_methods import ProjectPublicMethods
+from tools.project_public_methods import InitBaseData
 
 user_info: dict = {"username": "maopeng", "password": "729164035"}
 
@@ -15,7 +15,7 @@ def data_init():
     """
     登录接口，获取通用token
     """
-    test_data: BaseDataModel = ProjectPublicMethods.get_data_model(
+    test_data: BaseDataModel = InitBaseData.main(
         ProjectEnum.WanAndroid.value,
         AutoTestTypeEnum.API
     )

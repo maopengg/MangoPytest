@@ -14,61 +14,67 @@ from enums.tools_enum import StatusEnum, AutoTestTypeEnum, EnvironmentEnum
 from exceptions import *
 from models.tools_model import CaseRunListModel, BaseDataModel, ProjectModel, TestObjectModel
 from sources import SourcesData
-from tools.log import log
 
 
-class ProjectPublicMethods:
-
-    @staticmethod
-    def get_project_test_object(project_name: str, _type: AutoTestTypeEnum) -> tuple[EnvironmentEnum, dict, dict]:
-        project: dict = SourcesData.get_project(name=project_name)
-        try:
-            case_list = CaseRunListModel(**json.loads(os.environ['TEST_ENV']))
-            test_object = None
-            test_environment = None
-            for i in case_list.case_run:
-                if i.project.value == project_name and _type == i.type:
-                    test_environment = i.test_environment.value
-                    test_object = SourcesData.get_test_object(
-                        project_name=project.get('name'),
-                        type=i.test_environment.value
-                    )
-        except KeyError:
-            test_object = SourcesData.get_test_object(project_name=project.get('name'), is_use=StatusEnum.SUCCESS.value)
-            test_environment: int = test_object.get('type')
-        if test_object is None or test_environment is None:
-            log.error(f'项目:{project_name}没有可用的测试对象')
-            raise ToolsError(*ERROR_MSG_0333)
-        return EnvironmentEnum(test_environment), project, test_object
-
-    @staticmethod
-    def get_mysql_info(test_object: dict) -> tuple[MysqlConingModel, MysqlConnect] | tuple[None, None]:
-        mysql_config_model = None
-        mysql_connect = None
-        try:
-            mysql_config_model = MysqlConingModel(host=test_object.get('db_host'),
-                                                  port=test_object.get('db_port'),
-                                                  user=test_object.get('db_user'),
-                                                  password=test_object.get('db_password'),
-                                                  database=test_object.get('db_database'))
-            mysql_connect = MysqlConnect(mysql_config_model)
-
-        except ValidationError:
-            if test_object.get('db_c_status') == StatusEnum.SUCCESS.value or test_object.get(
-                    'db_rud_status') == StatusEnum.SUCCESS.value:
-                raise ToolsError(*ERROR_MSG_0333)
-
-        return mysql_config_model, mysql_connect
+class InitBaseData:
 
     @classmethod
-    def get_data_model(cls, project_name: str, _type: AutoTestTypeEnum) -> BaseDataModel:
-        test_environment, project, test_object = cls.get_project_test_object(project_name, _type)
-        mysql_config_model, mysql_connect = cls.get_mysql_info(test_object)
+    def main(cls, project_name: str, _type: AutoTestTypeEnum) -> BaseDataModel:
+        project = cls.__project(project_name)
+        test_object, test_environment = cls.__test_object(project, _type)
+        mysql_config_model, mysql_connect = cls.__mysql_conn(test_object)
         return BaseDataModel(
             test_environment=test_environment,
-            test_object=TestObjectModel(**test_object),
-            project=ProjectModel(**project),
-            host=test_object.get('host'),
+            test_object=test_object,
+            project=project,
             mysql_config_model=mysql_config_model,
             mysql_connect=mysql_connect,
         )
+
+    @classmethod
+    def __project(cls, project_name: str) -> ProjectModel:
+        return ProjectModel(**SourcesData.get_project(name=project_name))
+
+    @classmethod
+    def __test_object(cls, project: ProjectModel, _type: AutoTestTypeEnum) -> tuple[TestObjectModel, EnvironmentEnum]:
+        try:
+            case_list = CaseRunListModel(**json.loads(os.environ['TEST_ENV']))
+            if case_list.case_run:
+                test_environment = next(
+                    (i.test_environment.value for i in case_list.case_run if
+                     i.project.value == project.name and _type == i.type),
+                    None
+                )
+                if test_environment is None:
+                    raise ToolsError(*ERROR_MSG_0024)
+                test_object = TestObjectModel(**SourcesData.get_test_object(
+                    project_name=project.name,
+                    type=test_environment
+                ))
+            else:
+                raise ToolsError(*ERROR_MSG_0023)
+        except KeyError:
+            try:
+                test_environment = int(os.environ.get('MANGO_TEST_ENV'))
+                test_object = SourcesData.get_test_object(project_name=project.name, type=test_environment)
+            except (KeyError, TypeError):
+                test_object = SourcesData.get_test_object(project_name=project.name, is_use=StatusEnum.SUCCESS.value)
+                test_environment = int(test_object.get('type'))
+
+        return TestObjectModel(**test_object), EnvironmentEnum(test_environment)
+
+    @classmethod
+    def __mysql_conn(cls, test_object: TestObjectModel) -> tuple[MysqlConingModel, MysqlConnect] | tuple[None, None]:
+        try:
+            mysql_config_model = MysqlConingModel(host=test_object.db_host,
+                                                  port=test_object.db_port,
+                                                  user=test_object.db_user,
+                                                  password=test_object.db_password,
+                                                  database=test_object.db_database)
+            mysql_connect = MysqlConnect(mysql_config_model)
+            return mysql_config_model, mysql_connect
+        except ValidationError:
+            if test_object.db_c_status == StatusEnum.SUCCESS.value or test_object.db_rud_status == StatusEnum.SUCCESS.value:
+                raise ToolsError(*ERROR_MSG_0333)
+
+        return None, None

@@ -8,7 +8,7 @@ from auto_test.project_config import ProjectEnum
 from enums.tools_enum import AutoTestTypeEnum
 from models.tools_model import BaseDataModel
 from tools.log import log
-from tools.project_public_methods import ProjectPublicMethods
+from tools.project_public_methods import InitBaseData
 
 
 def data_init()->BaseDataModel:
@@ -16,7 +16,7 @@ def data_init()->BaseDataModel:
     项目数据初始化
     :return:
     """
-    data_model: BaseDataModel = ProjectPublicMethods.get_data_model(
+    data_model: BaseDataModel = InitBaseData.main(
         ProjectEnum.Gitee.value,
         AutoTestTypeEnum.UI
     )
