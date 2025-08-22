@@ -10,6 +10,7 @@ from mangotools.database import MysqlConnect
 from mangotools.models import MysqlConingModel
 from pydantic_core._pydantic_core import ValidationError
 
+from enums.tools_enum import PytestSystemEnum
 from enums.tools_enum import StatusEnum, AutoTestTypeEnum, EnvironmentEnum
 from exceptions import *
 from models.tools_model import CaseRunListModel, BaseDataModel, ProjectModel, TestObjectModel
@@ -55,7 +56,7 @@ class InitBaseData:
                 raise ToolsError(*ERROR_MSG_0023)
         except KeyError:
             try:
-                test_environment = int(os.environ.get('MANGO_TEST_ENV'))
+                test_environment = int(os.environ.get(PytestSystemEnum.TEST_ENV.value))
                 test_object = SourcesData.get_test_object(project_name=project.name, type=test_environment)
             except (KeyError, TypeError):
                 test_object = SourcesData.get_test_object(project_name=project.name, is_use=StatusEnum.SUCCESS.value)

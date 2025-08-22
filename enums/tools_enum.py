@@ -80,3 +80,7 @@ class ClientEnum(BaseEnum):
     @classmethod
     def obj(cls):
         return {0: "WEB", 1: "安卓", 2: "微信小程序"}
+
+
+class PytestSystemEnum(BaseEnum):
+    TEST_ENV = 'MANGO_TEST_ENV'
