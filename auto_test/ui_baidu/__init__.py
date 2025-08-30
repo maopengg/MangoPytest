@@ -13,7 +13,7 @@ from tools.project_public_methods import InitBaseData
 
 def data_init()->BaseDataModel:
     """
-    项目数据初始化
+    项目数据初始化0
     :return:
     """
     data_model: BaseDataModel = InitBaseData.main(
