@@ -7,7 +7,7 @@ excel和飞书共享文档。可以通过飞书共享文档管理测试用例和
 ---
 #### 安装教程
 
-参照文档进行安装，http://118.196.24.189:8002/pages/mango-pytest/deploy.html
+参照文档进行安装：http://118.196.24.189:8002/pages/mango-pytest/deploy.html
 ---
 ## 许可证
 ### 支持
