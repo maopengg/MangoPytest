@@ -40,16 +40,16 @@ class AutoTestTypeEnum(BaseEnum):
 
 class EnvironmentEnum(BaseEnum):
     """测试环境枚举"""
-    DEV = 0
-    TEST = 1
-    PRE = 2
-    UAT = 3
-    SIM = 4
-    PRO = 5
+    TEST = 0
+    PRE = 1
+    PRO = 2
+    DEV = 3
+    UAT = 4
+    SIM = 5
 
     @classmethod
     def obj(cls):
-        return {0: "开发环境", 1: "测试环境", 2: "预发环境", 3: "验收环境", 4: "仿真环境", 5: "生产环境", }
+        return {0: "测试环境", 1: "预发环境", 2: "生产环境", 3: "开发环境", 4: "验收环境", 5: "仿真环境"}
 
 
 class AssEnum(BaseEnum):
