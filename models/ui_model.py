@@ -8,7 +8,7 @@ import json
 from mangotools.data_processor import DataClean
 from pydantic import BaseModel, ConfigDict
 
-from enums.ui_enum import ElementExpEnum, BrowserTypeEnum
+from enums.ui_enum import BrowserTypeEnum
 
 
 def json_serialize(data: str | None):
@@ -31,21 +31,6 @@ class WEBConfigModel(BaseModel):
 
 class AndroidConfigModel(BaseModel):
     equipment: str
-
-
-class ElementModel(BaseModel):
-    id: int
-    ele_name: str
-    nth: int | None = None
-    sleep: int | None = None
-    iframe: list[str] | None = None
-    method: ElementExpEnum
-    locator: str
-    name: str | None = None
-    exact: bool | None = None
-    has_text: str | None = None
-    has: str | None = None
-    locator2: str | None = None
 
 
 class UiTestCaseModel(BaseModel):
