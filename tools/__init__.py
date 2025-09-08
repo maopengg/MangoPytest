@@ -29,10 +29,7 @@ class ProjectDir:
                 os.makedirs(subdirectory)
 
     def root_path(self):
-        if getattr(sys, 'frozen', False):
-            return sys._MEIPASS
-        else:
-            return self._root_path
+        return self._root_path
 
     def cache_file(self):
         return os.path.join(self.cache(), 'cache.db')
