@@ -31,8 +31,18 @@ class LoginPage(WebBaseObject):
     def goto_url(self):
         self.w_goto(self.url)
 
-    def login(self, username: str, password: str):
+    def login(self, username: str, password: str) -> str:
         self.w_click(self.element('登录按钮'))
         self.w_input(self.element('用户名'), username)
         self.w_input(self.element('密码'), password)
         self.w_click(self.element('登录'))
+        return self.w_get_text(self.element('首页用户名'))
+
+    # 编辑用户信息
+    def edit_user_info(self, new_username: str) -> tuple[str, str]:
+        self.w_click(self.element('编辑用户信息'))
+        old_username = self.w_get_text(self.element('用户昵称'))
+        self.w_input(self.element('用户昵称输入框'), new_username)
+        self.w_click(self.element('保存'))
+        username = self.w_get_text(self.element('首页用户名'))
+        return old_username, username
