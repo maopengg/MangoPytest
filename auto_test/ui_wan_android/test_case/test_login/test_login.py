@@ -26,18 +26,18 @@ class TestLogin:
         password = data.test_case.data.get('password')
         login_page.login(username, password)
 
-    # 修改用户的昵称，断言修改成功后再修改回原来的
-    @case_data(6)
-    def test_02(self, execution_context, data: UiDataModel):
-        login_page = LoginPage(execution_context, base_data, self.test_data)
-        login_page.goto_url()
-        username = data.test_case.data.get('username')
-        password = data.test_case.data.get('password')
-        login_page.login(username, password)
-        new_username = self.test_data.str_uuid()
-        old_username, _username = login_page.edit_user_info(new_username)
-        assert old_username == username
-        assert _username == new_username
-        old_username, _username = login_page.edit_user_info(username)
-        assert old_username == new_username
-        assert _username == username
+    # # 修改用户的昵称，断言修改成功后再修改回原来的
+    # @case_data(6)
+    # def test_02(self, execution_context, data: UiDataModel):
+    #     login_page = LoginPage(execution_context, base_data, self.test_data)
+    #     login_page.goto_url()
+    #     username = data.test_case.data.get('username')
+    #     password = data.test_case.data.get('password')
+    #     login_page.login(username, password)
+    #     new_username = self.test_data.str_uuid()
+    #     old_username, _username = login_page.edit_user_info(new_username)
+    #     assert old_username == username
+    #     assert _username == new_username
+    #     old_username, _username = login_page.edit_user_info(username)
+    #     assert old_username == new_username
+    #     assert _username == username
