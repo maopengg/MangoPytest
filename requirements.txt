@@ -18,4 +18,4 @@ requests==2.32.3
 pydantic==2.9.2
 
 mangoautomation==1.1.21
-mangotools==1.1.50
+mangotools==1.1.52
