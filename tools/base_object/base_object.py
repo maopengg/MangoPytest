@@ -7,13 +7,11 @@ import re
 
 import allure
 from mangoautomation.enums import ElementOperationEnum
-from mangoautomation.uidrive import BaseData
-from mangoautomation.uidrive.web.sync_web import SyncWebDevice
+from mangoautomation.uidrive import BaseData, SyncWebDevice
 from mangotools.decorator import sync_retry
 from mangotools.enums import StatusEnum
 from playwright.async_api import Page, BrowserContext
 from playwright.sync_api import Locator
-
 from sources import SourcesData
 from tools import project_dir
 from tools.log import log
