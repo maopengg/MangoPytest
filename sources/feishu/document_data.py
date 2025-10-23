@@ -42,7 +42,7 @@ class DocumentData:
         headers = {
             'Content-Type': 'application/json'
         }
-        response = requests.post(url, headers=headers, data=payload)
+        response = requests.post(url, headers=headers, data=payload, proxies={'http': None, 'https': None})
         self.headers['Authorization'] = f'Bearer {response.json()["tenant_access_token"]}'
 
     def project(self):
@@ -198,11 +198,11 @@ class DocumentData:
         return combined_df
 
     def cls(self, url):
-        response = requests.get(url, headers=self.headers)
+        response = requests.get(url, headers=self.headers, proxies={'http': None, 'https': None})
         response_dict = response.json()
         if response_dict.get('code') != 0:
             self.get_token()
-            response = requests.get(url, headers=self.headers)
+            response = requests.get(url, headers=self.headers, proxies={'http': None, 'https': None})
             response_dict = response.json()
         data = response_dict['data']['valueRanges'][0]['values']
         return pandas.DataFrame(data[1:], columns=data[0])
