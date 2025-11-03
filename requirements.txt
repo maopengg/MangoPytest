@@ -17,5 +17,5 @@ flask==3.1.0
 requests==2.32.3
 pydantic==2.9.2
 
-mangoautomation==1.1.26
+mangoautomation==1.1.27
 mangotools==1.1.56
