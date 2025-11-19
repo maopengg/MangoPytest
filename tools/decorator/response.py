@@ -64,7 +64,7 @@ def request_data(api_info_id):
             data.request = RequestModel(
                 url= urljoin(self.base_data.test_object.host, api_info_model.url),
                 method=MethodEnum.get_value(api_info_model.method),
-                headers=api_info_model.headers if api_info_model.headers else data.base_data.headers,
+                headers=api_info_model.headers if api_info_model.headers else self.base_data.headers,
                 params=data.test_case.params,
                 data=data.test_case.data,
                 json_data=data.test_case.json_data if data.test_case.json_data is not None else api_info_model.json_data,
