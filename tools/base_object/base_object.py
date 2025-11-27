@@ -3,7 +3,9 @@
 # @Description: 
 # @Time   : 2025-04-21 15:09
 # @Author : 毛鹏
+import random
 import re
+import time
 
 import allure
 from mangoautomation.enums import ElementOperationEnum
@@ -12,8 +14,9 @@ from mangotools.decorator import sync_retry
 from mangotools.enums import StatusEnum
 from playwright.async_api import Page, BrowserContext
 from playwright.sync_api import Locator
+
+from exceptions import PytestAutoTestError, ERROR_MSG_0001
 from sources import SourcesData
-from tools import project_dir
 from tools.log import log
 from tools.obtain_test_data import ObtainTestData
 
@@ -24,53 +27,59 @@ class WebBaseObject(SyncWebDevice):
                  project_name: str,
                  module_name: str,
                  page_name: str,
-                 context_page: tuple[BrowserContext, Page],
+                 base_data: BaseData,
                  test_data: ObtainTestData,
                  ):
-        self.context, self.page = context_page
         self.test_data = test_data
         self.project_name = project_name
         self.module_name = module_name
         self.page_name = page_name
-        self.base_data = BaseData(self.test_data, log)
-        self.base_data.set_file_path(project_dir.download(), project_dir.screenshot())
-        self.base_data.set_page_context(self.page, self.context)
-        super().__init__(self.base_data)
+        super().__init__(base_data)
         d = re.DEBUG
-
-    def setup(self) -> None:
-        self.page = None
-        self.context = None
-
-    def base_close(self):
-        if self.context and isinstance(self.context, BrowserContext):
-            self.context.close()
-        if self.page and isinstance(self.page, Page):
-            self.page.close()
-        self.setup()
+        self.max_retry = 20
 
     @sync_retry()
-    def element(self, ele_name: str) -> Locator:
+    def element(self, ele_name: str, is_count=True) -> Locator:
         element_dict: dict = SourcesData.get_ui_element(
             project_name=self.project_name,
             module_name=self.module_name,
             page_name=self.page_name,
             ele_name=ele_name,
         )
-        element_dict['locator'] = self.test_data.replace(element_dict.get('locator'))
-        loc, count, text = self.web_find_ele(
-            element_dict.get('ele_name'),
+        element_list = [{
+            'method': element_dict.get('method1'),
+            'locator': self.test_data.replace(element_dict.get('locator1')),
+            'nth': element_dict.get('nth1')
+        }]
+        if element_dict.get('method2') and element_dict.get('locator2'):
+            element_list.append({
+                'method': element_dict.get('method2'),
+                'locator': self.test_data.replace(element_dict.get('locator2')),
+                'nth': element_dict.get('nth2')
+            })
+        if element_dict.get('method3') and element_dict.get('locator3'):
+            element_list.append({
+                'method': element_dict.get('method3'),
+                'locator': self.test_data.replace(element_dict.get('locator3')),
+                'nth': element_dict.get('nth3')
+            })
+        ran = random.randint(0, len(element_list) - 1)
+        loc, count, text = self.web_find_element(
+            ele_name,
             ElementOperationEnum.OPE.value,
-            element_dict.get('method'),
-            element_dict.get('locator'),
-            element_dict.get('nth'),
+            element_list[ran].get('method'),
+            element_list[ran].get('locator'),
+            element_list[ran].get('nth'),
             StatusEnum.FAIL.value,
         )
+        if count < 1 and is_count:
+            raise PytestAutoTestError(*ERROR_MSG_0001)
         allure.attach(
-            f'元素表达式：{element_dict.get("locator")}\n'
-            f'元素定位方法：{element_dict.get("method")}\n'
-            f'元素下标：{element_dict.get("nth")}\n'
+            f'元素表达式：{element_list[ran].get("locator")}\n'
+            f'元素定位方法：{element_list[ran].get("method")}\n'
+            f'元素下标：{element_list[ran].get("nth")}\n'
             f'元素文本内容：{text}\n'
             f'元素个数：{count}'
-            , element_dict.get("ele_name"))
+            , ele_name)
+        log.debug(f'元素【{ele_name}】获取到的信息：{loc.count()}, {count}, {text}')
         return loc

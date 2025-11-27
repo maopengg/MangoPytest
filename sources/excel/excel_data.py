@@ -103,16 +103,24 @@ class ExcelData:
         all_sheets = self.cls(fr'{project_dir.root_path()}/sources/excel/元素表.xlsx', sheet_name=None)
         df_list = []
         for sheet_name, df in all_sheets.items():
-            df['定位方式'] = df['定位方式'].map(ElementExpEnum.reversal_obj())
+            df['定位方式1'] = df['定位方式1'].map(ElementExpEnum.reversal_obj())
+            df['定位方式2'] = df['定位方式2'].map(ElementExpEnum.reversal_obj())
+            df['定位方式3'] = df['定位方式3'].map(ElementExpEnum.reversal_obj())
             df = df.rename(columns={
                 'ID': 'id',
                 '项目名称': 'project_name',
                 '模块名称': 'module_name',
                 '页面名称': 'page_name',
                 '元素名称': 'ele_name',
-                '定位方式': 'method',
-                '表达式': 'locator',
-                '下标': 'nth',
+                '定位方式1': 'method1',
+                '表达式1': 'locator1',
+                '下标1': 'nth1',
+                '定位方式2': 'method2',
+                '表达式2': 'locator2',
+                '下标2': 'nth2',
+                '定位方式3': 'method3',
+                '表达式3': 'locator3',
+                '下标3': 'nth3',
                 '等待': 'sleep',
             })
             df_list.append(df.map(lambda x: None if pd.isna(x) else x))

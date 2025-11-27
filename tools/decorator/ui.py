@@ -6,15 +6,17 @@
 import allure
 import pytest
 from mangoautomation.uidrive import DriverObject
+from mangoautomation.uidrives import BaseData
 
 from enums.ui_enum import BrowserTypeEnum
 from exceptions import PytestAutoTestError
 from exceptions.error_msg import ERROR_MSG_0350
 from models.ui_model import UiDataModel, UiTestCaseModel
+from tools import project_dir
 from tools.log import log
 
 driver_object = DriverObject(log)
-driver_object.set_web(BrowserTypeEnum.CHROMIUM.value, None, web_max=True)
+driver_object.set_web(web_type=BrowserTypeEnum.CHROMIUM.value, web_max=True)
 
 
 def case_data(case_id: int | list[int] | None = None, case_name: str | list[str] | None = None):
@@ -32,9 +34,14 @@ def case_data(case_id: int | list[int] | None = None, case_name: str | list[str]
         def wrapper(self, test_case):
             allure.dynamic.title(test_case.get('name'))
             context, page = driver_object.web.new_web_page()
+            base_data = BaseData(self.test_data, log)
+            if base_data.page is None or base_data.context is None:
+                base_data.set_page_context(page, context)
+            base_data.set_file_path(project_dir.download(), project_dir.screenshot())
+
             data = UiDataModel(test_case=UiTestCaseModel.get_obj(test_case))
             try:
-                func(self, execution_context=(context, page), data=data)
+                func(self, base_data, data=data)
             except Exception as error:
                 log.error(f'错误类型:{type(error)}，{error}')
                 context.close()

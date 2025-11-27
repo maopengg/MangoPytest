@@ -11,18 +11,18 @@ from tools.log import log
 from tools.project_public_methods import InitBaseData
 
 
-def data_init()->BaseDataModel:
+def data_init() -> BaseDataModel:
     """
     项目数据初始化0
     :return:
     """
     data_model: BaseDataModel = InitBaseData.main(
-        ProjectEnum.Gitee.value,
+        ProjectEnum.BAIDU.value,
         AutoTestTypeEnum.UI
     )
 
-    log.info(f'{ProjectEnum.Gitee.value}的UI在自动化基础信息设置完成！')
+    log.info(f'{ProjectEnum.BAIDU.value}的UI在自动化基础信息设置完成！')
     return data_model
 
 
-base_data: BaseDataModel = data_init()
+base_data_model: BaseDataModel = data_init()
