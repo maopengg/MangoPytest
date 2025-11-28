@@ -36,7 +36,6 @@ class WebBaseObject(SyncWebDevice):
         self.page_name = page_name
         super().__init__(base_data)
         d = re.DEBUG
-        self.max_retry = 20
 
     @sync_retry()
     def element(self, ele_name: str, is_count=True) -> Locator:

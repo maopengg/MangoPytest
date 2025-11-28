@@ -20,6 +20,7 @@ class SourcesData:
     test_object: DataFrame = None
     api_info: DataFrame = None
     api_test_case: DataFrame = None
+    ui_test_case: DataFrame = None
     ui_element: DataFrame = None
     other_test_case: DataFrame = None
     try:
@@ -29,47 +30,55 @@ class SourcesData:
             r = ExcelData()
         else:
             r = DocumentData()
-        project = r.project().replace({np.nan: None})
-        test_object = r.test_object().replace({np.nan: None})
-        notice_config = r.notice_config().replace({np.nan: None})
-        api_info = r.api_info().replace({np.nan: None})
-        api_test_case = r.api_test_case().replace({np.nan: None})
-        ui_test_case = r.ui_test_case().replace({np.nan: None})
-        ui_element = r.ui_element().replace({np.nan: None})
-        other_test_case = r.other_test_case().replace({np.nan: None})
     except AssertionError:
         raise ToolsError(*ERROR_MSG_0347)
 
     @classmethod
     def get_test_object(cls, is_dict=True, **kwargs):
+        if cls.test_object is None:
+            cls.test_object = cls.r.test_object().replace({np.nan: None})
         return cls.get(cls.test_object, is_dict, **kwargs)
 
     @classmethod
     def get_project(cls, is_dict=True, **kwargs):
+        if cls.project is None:
+            cls.project = cls.r.project().replace({np.nan: None})
         return cls.get(cls.project, is_dict, **kwargs)
 
     @classmethod
     def get_notice_config(cls, is_dict=True, **kwargs):
+        if cls.notice_config is None:
+            cls.notice_config = cls.r.notice_config().replace({np.nan: None})
         return cls.get(cls.notice_config, is_dict, **kwargs)
 
     @classmethod
     def get_api_info(cls, is_dict=True, **kwargs):
+        if cls.api_info is None:
+            cls.api_info = cls.r.api_info().replace({np.nan: None})
         return cls.get(cls.api_info, is_dict, **kwargs)
 
     @classmethod
     def get_api_test_case(cls, is_dict=True, **kwargs):
+        if cls.api_test_case is None:
+            cls.api_test_case = cls.r.api_test_case().replace({np.nan: None})
         return cls.get(cls.api_test_case, is_dict, **kwargs)
 
     @classmethod
     def get_ui_test_case(cls, is_dict=True, **kwargs):
+        if cls.ui_test_case is None:
+            cls.ui_test_case = cls.r.ui_test_case().replace({np.nan: None})
         return cls.get(cls.ui_test_case, is_dict, **kwargs)
 
     @classmethod
     def get_other_test_case(cls, is_dict=True, **kwargs):
+        if cls.other_test_case is None:
+            cls.other_test_case = cls.r.other_test_case().replace({np.nan: None})
         return cls.get(cls.other_test_case, is_dict, **kwargs)
 
     @classmethod
     def get_ui_element(cls, is_dict=True, **kwargs):
+        if cls.ui_element is None:
+            cls.ui_element = cls.r.ui_element().replace({np.nan: None})
         return cls.get(cls.ui_element, is_dict, **kwargs)
 
     @classmethod
