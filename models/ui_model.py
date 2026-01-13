@@ -29,6 +29,7 @@ class WEBConfigModel(BaseModel):
     is_headless: bool = False
 
 
+
 class AndroidConfigModel(BaseModel):
     equipment: str
 

@@ -44,12 +44,12 @@ class SurfaceConfigModel(BaseModel):
 
 
 class SurfaceModel(BaseModel):
-    api_info: SurfaceConfigModel
-    api_test_case: SurfaceConfigModel
+    api_info_id: str
+    api_test_case_id: str
     project: SurfaceConfigModel
-    ui_element: SurfaceConfigModel
-    ui_test_case: SurfaceConfigModel
-    other_test_case: SurfaceConfigModel
+    ui_element_id: str
+    ui_test_case_id: str
+    other_test_case_id: str
 
 
 class FeiShuModel(BaseModel):

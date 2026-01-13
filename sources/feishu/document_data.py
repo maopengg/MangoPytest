@@ -31,6 +31,7 @@ class DocumentData:
             'Content-Type': 'application/json; charset=utf-8'
         }
         self.status_enum = {v: k for k, v in StatusEnum.obj().items()}
+        self.get_token()
 
     def get_token(self):
         url = "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal"
@@ -44,6 +45,14 @@ class DocumentData:
         }
         response = requests.post(url, headers=headers, data=payload, proxies={'http': None, 'https': None})
         self.headers['Authorization'] = f'Bearer {response.json()["tenant_access_token"]}'
+
+    def get_sheet(self, spreadsheet_token) -> list:
+        response = requests.get(
+            f'https://open.feishu.cn/open-apis/sheets/v3/spreadsheets/{spreadsheet_token}/sheets/query',
+            headers=self.headers,
+            proxies={'http': None, 'https': None}
+        )
+        return response.json()['data']['sheets']
 
     def project(self):
         for i in self.config.surface.project.sheet:
@@ -97,8 +106,8 @@ class DocumentData:
 
     def api_info(self):
         df_list = []
-        for i in self.config.surface.api_info.sheet:
-            url = f"{self.url}{self.config.surface.api_info.id}/values_batch_get?ranges={i.id}{self.parameter}"
+        for i in self.get_sheet(self.config.surface.api_info_id):
+            url = f"{self.url}{self.config.surface.api_info_id}/values_batch_get?ranges={i.get('sheet_id')}{self.parameter}"
             df = self.cls(url)
             df['客户端类型'] = df['客户端类型'].map(ClientEnum.reversal_obj())
             df['请求方法'] = df['请求方法'].map(MethodEnum.reversal_obj())
@@ -119,8 +128,8 @@ class DocumentData:
 
     def api_test_case(self):
         df_list = []
-        for i in self.config.surface.api_test_case.sheet:
-            url = f"{self.url}{self.config.surface.api_test_case.id}/values_batch_get?ranges={i.id}{self.parameter}"
+        for i in self.get_sheet(self.config.surface.api_test_case_id):
+            url = f"{self.url}{self.config.surface.api_test_case_id}/values_batch_get?ranges={i.get('sheet_id')}{self.parameter}"
             df = self.cls(url)
             df = df.rename(columns={
                 'ID': 'id',
@@ -132,16 +141,13 @@ class DocumentData:
         duplicate_ids = combined_df[combined_df.duplicated(subset=['id'], keep=False)]
         if not duplicate_ids.empty:
             raise ToolsError(*ERROR_MSG_0351, value=('API测试用例',))
-        # duplicate_ids = combined_df[combined_df.duplicated(subset=['name'], keep=False)]
-        # if not duplicate_ids.empty:
-        #     print(duplicate_ids)
-        #     raise ToolsError(*ERROR_MSG_0352, value=('API测试用例',))
+
         return combined_df
 
     def ui_element(self):
         df_list = []
-        for i in self.config.surface.ui_element.sheet:
-            url = f"{self.url}{self.config.surface.ui_element.id}/values_batch_get?ranges={i.id}{self.parameter}"
+        for i in self.get_sheet(self.config.surface.ui_element_id):
+            url = f"{self.url}{self.config.surface.ui_element_id}/values_batch_get?ranges={i.get('sheet_id')}{self.parameter}"
             df = self.cls(url)
             df['定位方式1'] = df['定位方式1'].map(ElementExpEnum.reversal_obj())
             df['定位方式2'] = df['定位方式2'].map(ElementExpEnum.reversal_obj())
@@ -172,8 +178,8 @@ class DocumentData:
 
     def ui_test_case(self):
         df_list = []
-        for i in self.config.surface.ui_test_case.sheet:
-            url = f"{self.url}{self.config.surface.ui_test_case.id}/values_batch_get?ranges={i.id}{self.parameter}"
+        for i in self.get_sheet(self.config.surface.ui_test_case_id):
+            url = f"{self.url}{self.config.surface.ui_test_case_id}/values_batch_get?ranges={i.get('sheet_id')}{self.parameter}"
             df = self.cls(url)
             df = df.rename(columns={
                 'ID': 'id',
@@ -190,8 +196,8 @@ class DocumentData:
 
     def other_test_case(self):
         df_list = []
-        for i in self.config.surface.other_test_case.sheet:
-            url = f"{self.url}{self.config.surface.other_test_case.id}/values_batch_get?ranges={i.id}{self.parameter}"
+        for i in self.get_sheet(self.config.surface.other_test_case_id):
+            url = f"{self.url}{self.config.surface.other_test_case_id}/values_batch_get?ranges={i.get('sheet_id')}{self.parameter}"
             df = self.cls(url)
             df = df.rename(columns={
                 'ID': 'id',
@@ -209,7 +215,6 @@ class DocumentData:
         response = requests.get(url, headers=self.headers, proxies={'http': None, 'https': None})
         response_dict = response.json()
         if response_dict.get('code') != 0:
-            self.get_token()
             response = requests.get(url, headers=self.headers, proxies={'http': None, 'https': None})
             response_dict = response.json()
         data = response_dict['data']['valueRanges'][0]['values']
@@ -217,4 +222,9 @@ class DocumentData:
 
 
 if __name__ == '__main__':
+    print(DocumentData().api_test_case())
+    print(DocumentData().api_info())
+    print(DocumentData().ui_element())
+    print(DocumentData().ui_test_case())
     print(DocumentData().other_test_case())
+    print(DocumentData().project())

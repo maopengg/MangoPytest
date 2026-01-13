@@ -1,57 +1,26 @@
 {
   "app_id": "app_id",
-  "app_secret": "app_secret",
+  "app_secret": "QR0Papp_secret9aN5KjWE3B4CFq7gVdDWG4w7x6a0",
   "surface": {
-    "api_info": {
-      "id": "api_info表ID",
-      "sheet": [
-        {
-          "id": "sheet id (注意，这个对象有多少个就传多少个，多个sheet都会合并)",
-          "title": "Sheet 名称"
-        }
-      ]
-    },
-    "api_test_case": {
-      "id": "api_test_case表ID",
-      "sheet": [
-        {
-          "id": "（可以输入多个sheet对象）",
-          "title": ""
-        }
-      ]
-    },
+    "api_info_id": "api_info飞书表id",
+    "api_test_case_id": "api_test_case飞书表id",
+    "ui_element_id": "ui_element飞书表id",
+    "ui_test_case_id": "ui_test_case飞书表id",
+    "other_test_case_id": "other_test_case飞书表id",
     "project": {
-      "id": "project表ID",
+      "id": "project飞书表id",
       "sheet": [
         {
-          "id": "(项目名称不要动，固定写法)",
-          "title": "项目信息"
+          "id": "sheetid",
+          "title": "sheet名称"
         },
         {
-          "id": "(通知配置不要动，固定写法)",
-          "title": "通知配置"
+          "id": "sheetid",
+          "title": "sheet名称"
         },
         {
-          "id": "测试环境不要动，固定写法)",
-          "title": "测试环境"
-        }
-      ]
-    },
-    "ui_element": {
-      "id": "ui_element表ID",
-      "sheet": [
-        {
-          "id": "（可以输入多个sheet对象）",
-          "title": ""
-        }
-      ]
-    },
-    "ui_test_case": {
-      "id": "ui_test_case表ID",
-      "sheet": [
-        {
-          "id": "（可以输入多个sheet对象）",
-          "title": ""
+          "id": "sheetid",
+          "title": "sheet名称"
         }
       ]
     }
