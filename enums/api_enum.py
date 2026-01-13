@@ -30,3 +30,4 @@ class ClientEnum(BaseEnum):
     @classmethod
     def obj(cls):
         return {0: "WEB", 1: "APP", 2: "MINI"}
+
