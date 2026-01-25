@@ -1,26 +1,26 @@
 {
-  "app_id": "app_id",
-  "app_secret": "QR0Papp_secret9aN5KjWE3B4CFq7gVdDWG4w7x6a0",
+  "app_id": "cli_a680e4c8c5be100c",
+  "app_secret": "uKEDeCAamlviajfBrxXjBhiSKnxONf6x",
   "surface": {
-    "api_info_id": "api_info飞书表id",
-    "api_test_case_id": "api_test_case飞书表id",
-    "ui_element_id": "ui_element飞书表id",
-    "ui_test_case_id": "ui_test_case飞书表id",
-    "other_test_case_id": "other_test_case飞书表id",
+    "api_info_id": "LntEsBf88h8KDXtjmKNcHgwSnoc",
+    "api_test_case_id": "XLcrsEVLkhdDQvtWaJQc4uennvb",
+    "ui_element_id": "ZQfZsC7IShpkGytZLoKc1gbXnPS",
+    "ui_test_case_id": "XKB6sKVOoh3hYxtRjikct7chnsd",
+    "other_test_case_id": "GekMsmIKKhxJgitRnvIcSi3pnKf",
     "project": {
-      "id": "project飞书表id",
+      "id": "StFhs7b34h410ktn4FBc9qJsn8e",
       "sheet": [
         {
-          "id": "sheetid",
-          "title": "sheet名称"
+          "id": "8d41b9",
+          "title": "项目信息"
         },
         {
-          "id": "sheetid",
-          "title": "sheet名称"
+          "id": "RwlKtG",
+          "title": "测试环境"
         },
         {
-          "id": "sheetid",
-          "title": "sheet名称"
+          "id": "58AgAa",
+          "title": "通知配置"
         }
       ]
     }

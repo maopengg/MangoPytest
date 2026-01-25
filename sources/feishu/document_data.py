@@ -149,9 +149,27 @@ class DocumentData:
         for i in self.get_sheet(self.config.surface.ui_element_id):
             url = f"{self.url}{self.config.surface.ui_element_id}/values_batch_get?ranges={i.get('sheet_id')}{self.parameter}"
             df = self.cls(url)
-            df['定位方式1'] = df['定位方式1'].map(ElementExpEnum.reversal_obj())
-            df['定位方式2'] = df['定位方式2'].map(ElementExpEnum.reversal_obj())
-            df['定位方式3'] = df['定位方式3'].map(ElementExpEnum.reversal_obj())
+            element_exp_reversal = ElementExpEnum.reversal_obj()
+            df['定位方式1'] = df['定位方式1'].map(element_exp_reversal).fillna(df['定位方式1'])
+            
+            # 仅对非空值进行映射，使用 try-except 安全处理
+            import numpy as np
+            
+            # 处理定位方式2
+            try:
+                mask2 = df['定位方式2'].notna() & (df['定位方式2'] != '')
+                if mask2.values.any():  # 使用 .values 属性来获取底层 numpy 数组
+                    df.loc[mask2, '定位方式2'] = df.loc[mask2, '定位方式2'].map(element_exp_reversal).fillna(df.loc[mask2, '定位方式2'])
+            except:
+                pass  # 如果处理失败，保持原值不变
+            
+            # 处理定位方式3
+            try:
+                mask3 = df['定位方式3'].notna() & (df['定位方式3'] != '')
+                if mask3.values.any():  # 使用 .values 属性来获取底层 numpy 数组
+                    df.loc[mask3, '定位方式3'] = df.loc[mask3, '定位方式3'].map(element_exp_reversal).fillna(df.loc[mask3, '定位方式3'])
+            except:
+                pass  # 如果处理失败，保持原值不变
             df = df.rename(columns={
                 'ID': 'id',
                 '项目名称': 'project_name',

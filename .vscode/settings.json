@@ -1,0 +1,11 @@
+{
+    "python.defaultInterpreterPath": "./.venv/Scripts/python.exe",
+    "python.analysis.extraPaths": [
+        "./",
+        "d:/code/MangoPytest"
+    ],
+    "python.terminal.activateEnvironment": true,
+    "terminal.integrated.env.windows": {
+        "PYTHONPATH": "d:/code/MangoPytest"
+    }
+}

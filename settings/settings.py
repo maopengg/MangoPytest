@@ -22,7 +22,7 @@ BROWSER_IS_MAXIMIZE = True  # 是否开启UI自动化浏览器全屏
 
 # --------------------------------------数据源选择--------------------------------------
 
-SOURCES_TYPE = SourcesTypeEnum.EXCEL
+SOURCES_TYPE = SourcesTypeEnum.DOCUMENT
 
 # ----------------------------------------邮件配置---------------------------------------
 

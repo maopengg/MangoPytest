@@ -41,7 +41,7 @@ class ElementExpEnum(BaseEnum):
         return {
             0: "XPATH",
             # 1: "W_TestID",
-            2: "通用定位器",
+            2: "定位器",
             3: "WEB_文本",
             4: "WEB_占位符",
             # 5: "W_标签",
