@@ -26,7 +26,7 @@ def inside_request():
             },
             'params': {'requestId': 'spider:b61f8e62-f8d2-4962-ad99-bcb8d5d81922'},
             'data': None,
-            'json_data': None,
+            'json': None,
             'file': None
         }))
     print(response.response_text)

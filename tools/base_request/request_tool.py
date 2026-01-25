@@ -5,7 +5,6 @@
 # @Author : 毛鹏
 import os
 from typing import Optional
-from urllib.parse import urljoin
 
 import requests
 from requests.models import Response
@@ -76,7 +75,7 @@ class RequestTool:
             headers=request_model.headers,
             params=request_model.params,
             data=request_model.data,
-            json=request_model.json_data,
+            json=request_model.json,
             files=request_model.file,
             proxies={'http': None, 'https': None},
         )

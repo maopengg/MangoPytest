@@ -7,5 +7,10 @@
     "python.terminal.activateEnvironment": true,
     "terminal.integrated.env.windows": {
         "PYTHONPATH": "d:/code/MangoPytest"
-    }
+    },
+    "python.testing.pytestArgs": [
+        "auto_test"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
 }

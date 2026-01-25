@@ -8,6 +8,7 @@ import allure
 import pytest
 
 from auto_test.api_mango_mock.abstract.system.system import SystemAPI
+from auto_test.api_mango_mock.abstract.login.login import LoginAPI
 from models.api_model import ApiDataModel
 from tools.base_request.case_tool import CaseTool
 from tools.decorator.response import case_data
@@ -16,7 +17,7 @@ from tools.obtain_test_data import ObtainTestData
 
 @allure.epic('演示-API自动化-常规API-MockAPI服务')
 @allure.feature('系统管理模块')
-class TestSystem(SystemAPI, CaseTool):
+class TestSystem(SystemAPI, LoginAPI, CaseTool):
     test_data: ObtainTestData = ObtainTestData()
 
     @case_data([59, 60])

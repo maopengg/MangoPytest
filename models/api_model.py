@@ -11,14 +11,15 @@ from pydantic import BaseModel, ConfigDict
 from exceptions import *
 
 
-def json_serialize(data: str | None):
+def json_serialize(data: str | None, is_error: bool = True):
     try:
         if isinstance(data, str):
             return json.loads(data)
         else:
             return data
     except (json.decoder.JSONDecodeError, TypeError):
-        raise ToolsError(*ERROR_MSG_0345, value=(data,))
+        if is_error:
+            raise ToolsError(*ERROR_MSG_0345, value=(data,))
 
 
 class ApiTestCaseModel(BaseModel):
@@ -27,7 +28,7 @@ class ApiTestCaseModel(BaseModel):
     name: str
     params: dict | list[dict] | list | None = None
     data: dict | list[dict] | list | None = None
-    json_data: dict | list[dict] | list | None = None
+    json: dict | list[dict] | list | None = None
     file: list[dict] | None = None
     other_data: dict | None = None
     ass_response_whole: dict | None = None
@@ -44,9 +45,9 @@ class ApiTestCaseModel(BaseModel):
             id=data['id'],
             project_name=data['project_name'],
             name=data['name'],
-            params=json_serialize(data.get('params')),
+            params=json_serialize(data.get('params'), False),
             data=json_serialize(data.get('data')),
-            json_data=json_serialize(data.get('json')),
+            json=json_serialize(data.get('json')),
             file=json_serialize(data.get('file')),
             other_data=json_serialize(data.get('other_data')),
             ass_response_whole=json_serialize(data.get('ass_response_whole')),
@@ -66,7 +67,7 @@ class ApiInfoModel(BaseModel):
     client_type: int
     method: int
     url: str
-    json_data: dict | list | None = None
+    json: dict | list | None = None
     headers: dict | None = None
 
     @classmethod
@@ -79,7 +80,7 @@ class ApiInfoModel(BaseModel):
             method=data['method'],
             url=data['url'],
             headers=json_serialize(data.get('headers')),
-            json_data=json_serialize(data.get('JSON')),
+            json=json_serialize(data.get('JSON')),
         )
 
 
@@ -89,7 +90,7 @@ class RequestModel(BaseModel):
     headers: dict | None = None
     params: dict | None = None
     data: str | dict | None = None
-    json_data: dict | list | None = None
+    json: dict | list | None = None
     file: list | None = None
 
 

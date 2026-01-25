@@ -4,11 +4,11 @@
 # @Author : 毛鹏
 import functools
 import json
+import time
 from urllib.parse import urljoin
 
 import allure
 import pytest
-import time
 from requests.models import Response
 
 from enums.api_enum import MethodEnum
@@ -62,12 +62,12 @@ def request_data(api_info_id):
             api_info_model = ApiInfoModel.get_obj(SourcesData.get_api_info(id=api_info_id))
             log.debug(f'查询到接口的数据，接口ID：{api_info_model.model_dump_json()}')
             data.request = RequestModel(
-                url= urljoin(self.base_data.test_object.host, api_info_model.url),
+                url=urljoin(self.base_data.test_object.host, api_info_model.url),
                 method=MethodEnum.get_value(api_info_model.method),
                 headers=api_info_model.headers if api_info_model.headers else self.base_data.headers,
                 params=data.test_case.params,
                 data=data.test_case.data,
-                json_data=data.test_case.json_data if data.test_case.json_data is not None else api_info_model.json_data,
+                json=data.test_case.json if data.test_case.json is not None else api_info_model.json,
                 file=data.test_case.file,
             )
             log.debug(f'默认准备好的请求，数据：{data.request.model_dump_json()}')
@@ -79,8 +79,8 @@ def request_data(api_info_id):
                 allure.attach(json.dumps(data.request.params, ensure_ascii=False), '参数')
             if data.request.data:
                 allure.attach(json.dumps(data.request.data, ensure_ascii=False), '表单')
-            if data.request.json_data:
-                allure.attach(json.dumps(data.request.json_data, ensure_ascii=False), 'JSON')
+            if data.request.json:
+                allure.attach(json.dumps(data.request.json, ensure_ascii=False), 'JSON')
             if data.request.file:
                 allure.attach(str(data.request.file), '文件')
             allure.attach(str(data.response.status_code), '响应状态码')
@@ -144,8 +144,8 @@ def log_decorator(func):
                 _log_msg += f"请求params：{data.request.params}\n"
             if data.request.data is not None:
                 _log_msg += f"请求data：{data.request.data}\n"
-            if data.request.json_data is not None:
-                _log_msg += f"请求json：{data.request.json_data}\n"
+            if data.request.json is not None:
+                _log_msg += f"请求json：{data.request.json}\n"
             if data.request.file is not None:
                 _log_msg += f"请求文件：{data.request.file}\n"
             _log_msg += f"Http状态码: {data.response.status_code}\n" \

@@ -26,4 +26,4 @@ class TestLogin(LoginAPI, CaseTool):
 
 
 if __name__ == '__main__':
-    pytest.main([r'D:\GitCode\PytestAutoTest\auto_test\api\cdp\test_case\test_login.py::TestLogin'])
+    pytest.main([r'D:\code\MangoPytest\auto_test\api_mango_mock\test_case\test_login\test_login.py::TestLogin'])
