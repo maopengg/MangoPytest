@@ -8,4 +8,4 @@ from mangotools.log_collector import set_log
 from settings.settings import IS_DEBUG
 from tools import project_dir
 
-log = set_log(project_dir.logs(), IS_DEBUG)
+log = set_log(project_dir.logs(), IS_DEBUG, 'process')
