@@ -36,7 +36,7 @@ class HomePage(WebBaseObject):
         self.url = urljoin(base_data_model.test_object.host, '')
 
     def goto(self):
-        self.base_data.page.goto(self.url)
+        self.base_data.page.goto(self.url, timeout=30000)
 
     def search_keyword(self, keyword: str):
         self.w_input(self.element('搜索框'), keyword)
