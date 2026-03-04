@@ -91,7 +91,7 @@ python main.py
 ### API测试示例
 
 ```python
-@allure.epic('演示-API自动化-常规API-玩安卓')
+@allure.epic('演示-API自动化-常规API-MockAPI服务')
 @allure.feature('登录模块')
 class TestLogin(LoginAPI, CaseTool):
     test_data: ObtainTestData = ObtainTestData()

@@ -14,7 +14,7 @@ from tools.decorator.response import case_data
 from tools.obtain_test_data import ObtainTestData
 
 
-@allure.epic('演示-API自动化-常规API-玩安卓')
+@allure.epic('演示-API自动化-常规API-MockAPI服务')
 @allure.feature('登录模块')
 class TestLogin(LoginAPI, CaseTool):
     test_data: ObtainTestData = ObtainTestData()
