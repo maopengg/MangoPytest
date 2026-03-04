@@ -7,7 +7,7 @@
 import pandas as pd
 from mangotools.enums import NoticeEnum
 
-from enums.api_enum import MethodEnum
+from enums.api_enum import MethodEnum, IsSchemaEnum
 from enums.tools_enum import EnvironmentEnum, ClientEnum, StatusEnum
 from enums.ui_enum import ElementExpEnum
 from exceptions import ToolsError, ERROR_MSG_0351
@@ -63,6 +63,7 @@ class ExcelData:
         df = self.cls(fr'{project_dir.root_path()}/sources/excel/接口信息.xlsx', sheet_name=None)
         df['客户端类型'] = df['客户端类型'].map(ClientEnum.reversal_obj())
         df['请求方法'] = df['请求方法'].map(MethodEnum.reversal_obj())
+        df['is_schema'] = df['is_schema'].map(IsSchemaEnum.reversal_obj())
         df = df.rename(columns={
             'ID': 'id',
             '项目名称': 'project_name',
@@ -82,6 +83,8 @@ class ExcelData:
         df = df.rename(columns={
             'ID': 'id',
             '项目名称': 'project_name',
+            '模块': 'module',
+            '二级模块&场景名称': 'scene',
             '用例名称': 'name',
         })
         combined_df = df.map(lambda x: None if pd.isna(x) else x)
@@ -126,6 +129,8 @@ class ExcelData:
         df = df.rename(columns={
             'ID': 'id',
             '项目名称': 'project_name',
+            '模块': 'module',
+            '二级模块&场景名称': 'scene',
             '用例名称': 'name',
         })
         combined_df = df.map(lambda x: None if pd.isna(x) else x)

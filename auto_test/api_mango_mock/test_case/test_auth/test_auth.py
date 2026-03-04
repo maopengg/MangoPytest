@@ -15,7 +15,6 @@ from tools.obtain_test_data import ObtainTestData
 
 
 @allure.epic('演示-API自动化-常规API-MockAPI服务')
-@allure.feature('认证模块')
 class TestAuth(AuthAPI, CaseTool):
     test_data: ObtainTestData = ObtainTestData()
 
@@ -25,7 +24,6 @@ class TestAuth(AuthAPI, CaseTool):
         data = self.api_login(data)
         assert data.response.response_dict.get('message') is not None
 
-    @allure.story('用户注册')
     @case_data([9, 10, 11, 12])
     def test_02(self, data: ApiDataModel):
         data = self.api_register(data)

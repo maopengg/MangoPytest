@@ -15,7 +15,6 @@ from tools.obtain_test_data import ObtainTestData
 
 
 @allure.epic('演示-API自动化-常规API-MockAPI服务')
-@allure.feature('文件管理模块')
 class TestFile(FileAPI, CaseTool):
     test_data: ObtainTestData = ObtainTestData()
 

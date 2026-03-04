@@ -15,7 +15,6 @@ from tools.obtain_test_data import ObtainTestData
 
 
 @allure.epic('演示-API自动化-常规API-MockAPI服务')
-@allure.feature('用户管理模块')
 class TestUser(UserAPI, CaseTool):
     test_data: ObtainTestData = ObtainTestData()
 

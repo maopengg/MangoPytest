@@ -5,9 +5,12 @@
 # @Author : 毛鹏
 import os
 
+import jsonschema
 import requests
+from jsonschema import validate
 from requests import RequestException
 
+from enums.tools_enum import StatusEnum
 from models.api_model import ApiDataModel
 from tools import project_dir
 from tools.assertion import Assertion
@@ -31,6 +34,10 @@ class CaseTool(Assertion):
             log.debug(
                 f'准备开始全匹配断言，预期值：{data.test_case.ass_response_whole}，实际值：{data.response.response_dict}')
             self.ass_response_whole(data.response.response_dict, data.test_case.ass_response_whole)
+        actual = data.response.response_dict
+        expect = data.test_case.ass_schema
+        if actual and expect:
+            self.ass_schema(actual, expect)
         return data
 
     def set_admin_headers(self, data: ApiDataModel, headers_type: str = 'admin'):

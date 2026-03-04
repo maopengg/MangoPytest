@@ -8,14 +8,12 @@ import allure
 
 from auto_test.ui_baidu import base_data_model
 from auto_test.ui_baidu.abstract.home_page import HomePage
-from auto_test.ui_baidu.abstract.search_results_page import SearchResultsPage
 from models.ui_model import UiDataModel
 from tools.decorator.ui import case_data
 from tools.obtain_test_data import ObtainTestData
 
 
 @allure.epic('演示-UI自动化-WEB项目-百度')
-@allure.feature('搜索自己的开源项目和个人主页')
 class TestOpenSource:
     base_data_model = base_data_model
     test_data: ObtainTestData = ObtainTestData()

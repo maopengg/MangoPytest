@@ -79,6 +79,6 @@ class WebBaseObject(SyncWebDevice):
             f'元素下标：{element_list[ran].get("nth")}\n'
             f'元素文本内容：{text}\n'
             f'元素个数：{count}'
-            , ele_name)
+            , ele_name, allure.attachment_type.TEXT)
         log.debug(f'元素【{ele_name}】获取到的信息：{loc.count()}, {count}, {text}')
         return loc

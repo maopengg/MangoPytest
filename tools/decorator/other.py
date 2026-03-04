@@ -29,7 +29,7 @@ def case_data(case_id: int | list[int] | None = None, case_name: str | list[str]
             test_case_model = OtherTestCaseModel.get_obj(test_case)
             log.debug(f'准备开始执行用例，数据：{test_case_model.model_dump_json()}')
             allure.dynamic.title(test_case.get('name'))
-            allure.attach(test_case_model.model_dump_json(), '用例数据')
+            allure.attach(test_case_model.model_dump_json(), '用例数据',allure.attachment_type.JSON)
             data = OtherDataModel(
                 test_case=test_case_model
             )
@@ -38,7 +38,7 @@ def case_data(case_id: int | list[int] | None = None, case_name: str | list[str]
                 # allure.attach(self.test_data.get_all(), '缓存数据')
             except PytestAutoTestError as error:
                 log.error(error.msg)
-                allure.attach(error.msg, '发生已知异常')
+                allure.attach(error.msg, '发生已知异常', allure.attachment_type.TEXT)
                 raise error
 
         return wrapper

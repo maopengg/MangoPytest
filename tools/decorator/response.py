@@ -6,12 +6,13 @@ import functools
 import json
 import time
 from urllib.parse import urljoin
+from genson import SchemaBuilder
 
 import allure
 import pytest
 from requests.models import Response
 
-from enums.api_enum import MethodEnum
+from enums.api_enum import MethodEnum, IsSchemaEnum
 from exceptions import PytestAutoTestError
 from exceptions.error_msg import ERROR_MSG_0350
 from models.api_model import ApiDataModel, ResponseModel, ApiTestCaseModel, RequestModel, ApiInfoModel
@@ -34,9 +35,12 @@ def case_data(case_id: int | list[int] | None = None, case_name: str | list[str]
         @pytest.mark.parametrize("test_case", test_case_list)
         def wrapper(self, test_case):
             test_case_model = ApiTestCaseModel.get_obj(test_case)
-            log.debug(f'准备开始执行用例，数据：{test_case_model.model_dump_json()}')
+            allure.dynamic.feature(test_case.get('module'))
+            allure.dynamic.story(test_case.get('scene'))
             allure.dynamic.title(test_case.get('name'))
-            allure.attach(test_case_model.model_dump_json(), '用例数据')
+            allure.attach(test_case_model.model_dump_json(), '用例数据', allure.attachment_type.JSON)
+            log.debug(f'准备开始执行API用例，数据：{test_case_model.model_dump_json()}')
+
             data = ApiDataModel(
                 test_case=test_case_model
             )
@@ -46,7 +50,7 @@ def case_data(case_id: int | list[int] | None = None, case_name: str | list[str]
                 # allure.attach(self.test_data.get_all(), '缓存数据')
             except PytestAutoTestError as error:
                 log.error(error.msg)
-                allure.attach(error.msg, '发生已知异常')
+                allure.attach(error.msg, '发生已知异常', allure.attachment_type.TEXT)
                 raise error
 
         return wrapper
@@ -70,22 +74,24 @@ def request_data(api_info_id):
                 json=data.test_case.json if data.test_case.json is not None else api_info_model.json,
                 file=data.test_case.file,
             )
+            if api_info_model.is_schema == IsSchemaEnum.open and api_info_model.ass_schema and data.test_case.ass_schema is None:
+                data.test_case.ass_schema = api_info_model.ass_schema
             log.debug(f'默认准备好的请求，数据：{data.request.model_dump_json()}')
             res_args = func(self, data)
-            allure.attach(str(data.request.url), 'URL')
-            allure.attach(str(data.request.method), '请求方法')
-            allure.attach(str(data.request.headers), '请求头')
+            allure.attach(str(data.request.url), 'URL', allure.attachment_type.TEXT)
+            allure.attach(str(data.request.method), '请求方法', allure.attachment_type.TEXT)
+            allure.attach(json.dumps(data.request.headers, ensure_ascii=False), '请求头', allure.attachment_type.JSON)
             if data.request.params:
-                allure.attach(json.dumps(data.request.params, ensure_ascii=False), '参数')
+                allure.attach(json.dumps(data.request.params, ensure_ascii=False), '参数', allure.attachment_type.TEXT)
             if data.request.data:
-                allure.attach(json.dumps(data.request.data, ensure_ascii=False), '表单')
+                allure.attach(json.dumps(data.request.data, ensure_ascii=False), '表单', allure.attachment_type.JSON)
             if data.request.json:
-                allure.attach(json.dumps(data.request.json, ensure_ascii=False), 'JSON')
+                allure.attach(json.dumps(data.request.json, ensure_ascii=False), 'JSON', allure.attachment_type.JSON)
             if data.request.file:
-                allure.attach(str(data.request.file), '文件')
-            allure.attach(str(data.response.status_code), '响应状态码')
-            allure.attach(str(data.response.response_time * 1000), '响应时间（毫秒）')
-            allure.attach(data.response.response_text, '响应结果')
+                allure.attach(str(data.request.file), '文件', allure.attachment_type.JSON)
+            allure.attach(str(data.response.status_code), '响应状态码', allure.attachment_type.TEXT)
+            allure.attach(str(data.response.response_time * 1000), '响应时间（毫秒）', allure.attachment_type.TEXT)
+            allure.attach(data.response.response_text, '响应结果', allure.attachment_type.TEXT)
             return res_args
 
         return wrapper
@@ -98,6 +104,15 @@ def timer(func):
     def swapper(self, request_model: RequestModel) -> ResponseModel:
         start = time.time()
         response: Response = func(self, request_model)
+        try:
+            builder = SchemaBuilder()
+            builder.add_object(response.json())
+            schema = builder.to_schema()
+            schema_str = json.dumps(schema, ensure_ascii=False)
+            allure.attach(schema_str, '结构化断言数据', allure.attachment_type.JSON)
+        except Exception as e:
+            allure.attach(f'获取结构化数据失败：{e}', '结构化断言数据', allure.attachment_type.TEXT)
+
         response_time = time.time() - start
         if response_time > REQUEST_TIMEOUT_FAILURE_TIME:
             log.error(

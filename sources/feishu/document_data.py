@@ -11,7 +11,7 @@ import pandas as pd
 import requests
 from mangotools.enums import NoticeEnum
 
-from enums.api_enum import MethodEnum
+from enums.api_enum import MethodEnum, IsSchemaEnum
 from enums.tools_enum import EnvironmentEnum, ClientEnum, StatusEnum
 from enums.ui_enum import ElementExpEnum
 from exceptions import ToolsError, ERROR_MSG_0351
@@ -111,6 +111,7 @@ class DocumentData:
             df = self.cls(url)
             df['客户端类型'] = df['客户端类型'].map(ClientEnum.reversal_obj())
             df['请求方法'] = df['请求方法'].map(MethodEnum.reversal_obj())
+            df['is_schema'] = df['is_schema'].map(IsSchemaEnum.reversal_obj())
             df = df.rename(columns={
                 'ID': 'id',
                 '项目名称': 'project_name',
@@ -134,6 +135,8 @@ class DocumentData:
             df = df.rename(columns={
                 'ID': 'id',
                 '项目名称': 'project_name',
+                '模块': 'module',
+                '二级模块&场景名称': 'scene',
                 '用例名称': 'name',
             })
             df_list.append(df)
@@ -152,10 +155,6 @@ class DocumentData:
             element_exp_reversal = ElementExpEnum.reversal_obj()
             df['定位方式1'] = df['定位方式1'].map(element_exp_reversal).fillna(df['定位方式1'])
             
-            # 仅对非空值进行映射，使用 try-except 安全处理
-            import numpy as np
-            
-            # 处理定位方式2
             try:
                 mask2 = df['定位方式2'].notna() & (df['定位方式2'] != '')
                 if mask2.values.any():  # 使用 .values 属性来获取底层 numpy 数组
@@ -202,6 +201,8 @@ class DocumentData:
             df = df.rename(columns={
                 'ID': 'id',
                 '项目名称': 'project_name',
+                '模块': 'module',
+                '二级模块&场景名称': 'scene',
                 '用例名称': 'name',
             })
             df_list.append(df)

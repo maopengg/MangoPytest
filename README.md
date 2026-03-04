@@ -92,7 +92,6 @@ python main.py
 
 ```python
 @allure.epic('演示-API自动化-常规API-MockAPI服务')
-@allure.feature('登录模块')
 class TestLogin(LoginAPI, CaseTool):
     test_data: ObtainTestData = ObtainTestData()
 
@@ -106,7 +105,6 @@ class TestLogin(LoginAPI, CaseTool):
 
 ```python
 @allure.epic('演示-UI自动化-WEB项目-Gitee')
-@allure.feature('搜索自己的开源项目')
 class TestOpenSource:
     base_data = base_data
     test_data: ObtainTestData = ObtainTestData()

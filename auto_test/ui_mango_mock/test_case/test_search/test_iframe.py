@@ -15,12 +15,10 @@ from tools.obtain_test_data import ObtainTestData
 
 
 @allure.epic('演示-UI自动化-WEB项目-MockUI服务')
-@allure.feature('iframe元素定位')
 class TestIframe:
     base_data_model = base_data_model
     test_data: ObtainTestData = ObtainTestData()
 
-    @allure.story('iframe测试')
     @case_data([13])
     def test_01(self, base_data, data: UiDataModel):
         """测试iframe中的元素定位"""

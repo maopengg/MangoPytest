@@ -42,6 +42,8 @@ class AndroidConfigModel(BaseModel):
 class UiTestCaseModel(BaseModel):
     id: int
     project_name: str
+    module: str
+    scene: str
     name: str
     data: dict | list[dict] | None = None
     ass: dict | list[dict] | str | None = None
@@ -51,6 +53,8 @@ class UiTestCaseModel(BaseModel):
         return cls(
             id=data['id'],
             project_name=data['project_name'],
+            module=data['module'],
+            scene=data['scene'],
             name=data['name'],
             data=json_serialize(data.get('data')),
             ass=json_serialize(data.get('ass')),

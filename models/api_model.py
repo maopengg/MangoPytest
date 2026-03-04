@@ -8,9 +8,11 @@ import json
 from mangotools.data_processor import DataClean
 from pydantic import BaseModel, ConfigDict
 
+from enums.api_enum import IsSchemaEnum
 from exceptions import *
 
 import warnings
+from urllib.parse import parse_qsl
 
 warnings.filterwarnings(
     "ignore",
@@ -18,20 +20,28 @@ warnings.filterwarnings(
 )
 
 
-def json_serialize(data: str | None, is_error: bool = True):
+def json_serialize(data: str | None, field: str | None = None):
     try:
         if isinstance(data, str):
             return json.loads(data)
         else:
             return data
     except (json.decoder.JSONDecodeError, TypeError):
-        if is_error:
+        if field is None:
             raise ToolsError(*ERROR_MSG_0345, value=(data,))
+        if field == 'params':
+            if field == 'params':
+                try:
+                    return dict(parse_qsl(data))
+                except Exception as e2:
+                    raise ToolsError(*ERROR_MSG_0345, value=(data, f"parse_qs failed: {str(e2)}")) from e2
 
 
 class ApiTestCaseModel(BaseModel):
     id: int
     project_name: str
+    module: str
+    scene: str
     name: str
     params: dict | list[dict] | list | None = None
     data: dict | list[dict] | list | None = None
@@ -40,6 +50,7 @@ class ApiTestCaseModel(BaseModel):
     other_data: dict | None = None
     ass_response_whole: dict | None = None
     ass_response_value: str | None = None
+    ass_schema: dict | list[dict] | list | None = None
     ass_sql: str | None = None
     front_sql: str | None = None
     posterior_sql: str | None = None
@@ -51,8 +62,10 @@ class ApiTestCaseModel(BaseModel):
         return cls(
             id=data['id'],
             project_name=data['project_name'],
+            module=data['module'],
+            scene=data['scene'],
             name=data['name'],
-            params=json_serialize(data.get('params'), False),
+            params=json_serialize(data.get('params'), 'params'),
             data=json_serialize(data.get('data')),
             json=json_serialize(data.get('json')),
             file=json_serialize(data.get('file')),
@@ -63,7 +76,8 @@ class ApiTestCaseModel(BaseModel):
             front_sql=data.get('front_sql'),
             posterior_sql=data.get('posterior_sql'),
             posterior_response=data.get('posterior_response'),
-            dump_data=data.get('dump_data')
+            dump_data=data.get('dump_data'),
+            ass_schema=json_serialize(data.get('ass_schema'))
         )
 
 
@@ -76,6 +90,8 @@ class ApiInfoModel(BaseModel):
     url: str
     json: dict | list | None = None
     headers: dict | None = None
+    is_schema: IsSchemaEnum | None = None
+    ass_schema: dict | list[dict] | list | None = None
 
     @classmethod
     def get_obj(cls, data: dict):
@@ -88,6 +104,8 @@ class ApiInfoModel(BaseModel):
             url=data['url'],
             headers=json_serialize(data.get('headers')),
             json=json_serialize(data.get('JSON')),
+            is_schema=data.get('is_schema'),
+            ass_schema=json_serialize(data.get('ass_schema')),
         )
 
 

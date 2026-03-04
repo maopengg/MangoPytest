@@ -45,7 +45,7 @@ class RequestTool:
                                     log.debug(f'文件路径为绝对路径，直接使用')
                                     file_path = v
                                 else:
-                                    file_path = self.test_data.get_file(data.base_data.project.get('name'), v)
+                                    file_path = self.test_data.get_file(data.test_case.project_name, v)
                                 file_name = os.path.basename(file_path)
                                 file.append((k, (file_name, open(file_path, 'rb'))))
                         data.request.file = file

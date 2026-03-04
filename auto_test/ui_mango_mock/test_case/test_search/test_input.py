@@ -15,12 +15,10 @@ from tools.obtain_test_data import ObtainTestData
 
 
 @allure.epic('演示-UI自动化-WEB项目-MockUI服务')
-@allure.feature('输入框测试')
 class TestInput:
     base_data_model = base_data_model
     test_data: ObtainTestData = ObtainTestData()
 
-    @allure.story('输入框测试')
     @case_data([7])
     def test_01(self, base_data, data: UiDataModel):
         """测试不同类型的输入框"""

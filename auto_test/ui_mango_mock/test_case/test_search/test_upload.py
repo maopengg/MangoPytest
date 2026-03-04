@@ -16,12 +16,10 @@ from tools.obtain_test_data import ObtainTestData
 
 
 @allure.epic('演示-UI自动化-WEB项目-MockUI服务')
-@allure.feature('文件上传')
 class TestUpload:
     base_data_model = base_data_model
     test_data: ObtainTestData = ObtainTestData()
 
-    @allure.story('文件上传测试')
     @case_data([8])
     def test_01(self, base_data, data: UiDataModel):
         """测试文件上传"""

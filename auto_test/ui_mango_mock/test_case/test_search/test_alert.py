@@ -15,12 +15,10 @@ from tools.obtain_test_data import ObtainTestData
 
 
 @allure.epic('演示-UI自动化-WEB项目-MockUI服务')
-@allure.feature('浏览器弹窗处理')
 class TestAlert:
     base_data_model = base_data_model
     test_data: ObtainTestData = ObtainTestData()
 
-    @allure.story('弹窗测试')
     @case_data([6])
     def test_01(self, base_data, data: UiDataModel):
         """测试浏览器弹窗"""

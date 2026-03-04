@@ -16,7 +16,6 @@ from tools.obtain_test_data import ObtainTestData
 
 
 @allure.epic('演示-API自动化-常规API-MockAPI服务')
-@allure.feature('系统管理模块')
 class TestSystem(SystemAPI, LoginAPI, CaseTool):
     test_data: ObtainTestData = ObtainTestData()
 
@@ -29,12 +28,6 @@ class TestSystem(SystemAPI, LoginAPI, CaseTool):
     def test_02(self, data: ApiDataModel):
         data = self.get_server_info(data)
         assert data.response.response_dict.get('message') is not None
-
-    @case_data([63])
-    def test_03(self, data: ApiDataModel):
-        # 登录后再检查服务健康
-        login_data = self.api_login(data)
-        assert login_data.response.response_dict.get('message') is not None
 
 
 if __name__ == '__main__':

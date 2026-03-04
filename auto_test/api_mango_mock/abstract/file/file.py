@@ -20,4 +20,5 @@ class FileAPI(RequestTool):
         @param data: ApiDataModel
         @return: ApiDataModel
         """
+        del data.request.headers["Content-Type"]
         return self.http(data)

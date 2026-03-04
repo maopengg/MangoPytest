@@ -32,14 +32,19 @@ def case_data(case_id: int | list[int] | None = None, case_name: str | list[str]
 
         @pytest.mark.parametrize("test_case", test_case_list)
         def wrapper(self, test_case):
+            test_case_model = UiTestCaseModel.get_obj(test_case)
+            allure.dynamic.feature(test_case.get('module'))
+            allure.dynamic.story(test_case.get('scene'))
             allure.dynamic.title(test_case.get('name'))
+            log.debug(f'准备开始执行UI用例，数据：{test_case_model.model_dump_json()}')
+
             context, page = driver_object.web.new_web_page()
             base_data = BaseData(self.test_data, log)
             if base_data.page is None or base_data.context is None:
                 base_data.set_page_context(page, context)
             base_data.set_file_path(project_dir.download(), project_dir.screenshot())
 
-            data = UiDataModel(test_case=UiTestCaseModel.get_obj(test_case))
+            data = UiDataModel(test_case=test_case_model)
             try:
                 func(self, base_data, data=data)
             except Exception as error:

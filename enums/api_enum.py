@@ -31,3 +31,13 @@ class ClientEnum(BaseEnum):
     def obj(cls):
         return {0: "WEB", 1: "APP", 2: "MINI"}
 
+
+class IsSchemaEnum(BaseEnum):
+    """设备类型"""
+    open = 0
+    close = 1
+
+    @classmethod
+    def obj(cls):
+        return {0: "开启", 1: "关闭", }
+
