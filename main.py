@@ -46,7 +46,7 @@ pytest_command = [
 ]
 
 test_project = [
-    {'project': ProjectEnum.MOCK, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.API},
+    {'project': ProjectEnum.MOCK_API, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.API},
     {'project': ProjectEnum.SQL, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.OTHER},
     {'project': ProjectEnum.BAIDU, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.UI},
 ]

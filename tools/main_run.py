@@ -6,10 +6,8 @@
 
 import os
 import socket
-import webbrowser
 
 import pytest
-import time
 
 from auto_test.project_config import auto_test_project_config
 from models.tools_model import CaseRunListModel
