@@ -10,6 +10,13 @@ from pydantic import BaseModel, ConfigDict
 
 from exceptions import *
 
+import warnings
+
+warnings.filterwarnings(
+    "ignore",
+    message='Field name "json"'
+)
+
 
 def json_serialize(data: str | None, is_error: bool = True):
     try:

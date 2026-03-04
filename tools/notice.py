@@ -5,6 +5,7 @@
 # @Author : 毛鹏
 import json
 from datetime import datetime
+from pathlib import Path
 
 from mangotools.enums import NoticeEnum
 from mangotools.models import EmailNoticeModel, WeChatNoticeModel, TestReportModel
@@ -79,42 +80,58 @@ class NoticeMain:
         return dt_object.strftime('%Y-%m-%d %H:%M:%S')
 
     def get_case_count(self) -> TestReportModel:
-        """ 统计用例数量 """
-        try:
-            file_name = fr"{project_dir.root_path()}\report\html\widgets\summary.json"
-            with open(file_name, 'r', encoding='utf-8') as file:
-                data = json.load(file)
-                statistic = data['statistic']
-                _time = data['time']
-                # 判断运行用例总数大于0
-                if statistic["total"] > 0:
-                    # 计算用例成功率
-                    pass_rate = round(
-                        (statistic["passed"] + statistic["skipped"]) / statistic["total"] * 100, 2
-                    )
-                else:
-                    # 如果未运行用例，则成功率为 0.0
-                    pass_rate = 0.0
-                # 收集用例运行时长
-                time = _time if statistic['total'] == 0 else round(_time['duration'] / 1000, 2)
-                try:
-                    return TestReportModel(project_id=self.result_dict.get('id'),
-                                           project_name=self.result_dict.get('name'),
-                                           test_environment=self.test_environment,
-                                           case_sum=statistic['total'],
-                                           success=statistic['passed'],
-                                           success_rate=pass_rate,
-                                           warning=statistic['broken'],
-                                           fail=statistic['failed'],
-                                           execution_duration=time,
-                                           test_time=self.timestamp_to_datetime(_time['start']))
-                except KeyError:
-                    raise KeyError('结果为空不发送邮件，请检查用例执行过程错误原因！')
-        except FileNotFoundError as exc:
+        """统计 Allure 报告用例数量"""
+
+        summary_path = Path(project_dir.root_path()) / "report" / "html" / "widgets" / "summary.json"
+
+        if not summary_path.exists():
             raise FileNotFoundError(
-                "程序中检查到您未生成allure报告，"
-                "通常可能导致的原因是allure环境未配置正确，"
-            ) from exc
+                "未检测到 Allure 报告，请确认是否执行：\n"
+                "1. pytest --alluredir=allure-results\n"
+                "2. allure generate allure-results -o report/html --clean"
+            )
+
+        with summary_path.open("r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        statistic = data.get("statistic", {})
+        time_info = data.get("time", {})
+
+        total = statistic.get("total", 0)
+        passed = statistic.get("passed", 0)
+        failed = statistic.get("failed", 0)
+        broken = statistic.get("broken", 0)
+        skipped = statistic.get("skipped", 0)
+
+        # 成功率
+        if total > 0:
+            pass_rate = round((passed + skipped) / total * 100, 2)
+        else:
+            pass_rate = 0.0
+
+        # 执行时长（转换成字符串，符合模型要求）
+        duration_seconds = round(time_info.get("duration", 0) / 1000, 2)
+        execution_duration = f"{duration_seconds}s"
+
+        # 测试时间
+        start_time = time_info.get("start")
+        test_time = (
+            self.timestamp_to_datetime(start_time)
+            if start_time
+            else ""
+        )
+        project_name = self.result_dict.get("name") or "未知项目"
+        return TestReportModel(
+            project_name=project_name,
+            test_environment=self.test_environment,
+            case_sum=total,
+            success=passed,
+            success_rate=pass_rate,
+            warning=broken,
+            fail=failed,
+            execution_duration=execution_duration,  # ← 字符串
+            test_time=test_time,
+        )
 
 
 if __name__ == '__main__':

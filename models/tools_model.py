@@ -11,6 +11,13 @@ from auto_test.project_config import ProjectEnum
 from enums.tools_enum import AutoTestTypeEnum, EnvironmentEnum
 from tools.obtain_test_data import ObtainTestData
 
+import warnings
+
+warnings.filterwarnings(
+    "ignore",
+    message='Field name "json"'
+)
+
 
 class CaseRunModel(BaseModel):
     project: ProjectEnum

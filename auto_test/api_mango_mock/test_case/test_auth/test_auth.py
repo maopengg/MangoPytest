@@ -19,11 +19,13 @@ from tools.obtain_test_data import ObtainTestData
 class TestAuth(AuthAPI, CaseTool):
     test_data: ObtainTestData = ObtainTestData()
 
+    @allure.story('用户登录')
     @case_data([1, 2, 3, 4, 5, 6, 7, 8])
     def test_01(self, data: ApiDataModel):
         data = self.api_login(data)
         assert data.response.response_dict.get('message') is not None
 
+    @allure.story('用户注册')
     @case_data([9, 10, 11, 12])
     def test_02(self, data: ApiDataModel):
         data = self.api_register(data)

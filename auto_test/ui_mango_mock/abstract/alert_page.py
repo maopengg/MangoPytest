@@ -13,9 +13,9 @@ from tools.base_object.base_object import WebBaseObject
 from tools.obtain_test_data import ObtainTestData
 
 
-class HomePage(WebBaseObject):
+class AlertPage(WebBaseObject):
     """
-    MockUI服务首页
+    浏览器弹窗页面
     """
 
     def __init__(self,
@@ -23,8 +23,8 @@ class HomePage(WebBaseObject):
                  base_data_model: BaseDataModel,
                  test_data: ObtainTestData):
         project_name = ProjectEnum.MOCK_UI.value
-        module_name = '模拟首页'
-        page_name = '首页'
+        module_name = '浏览器弹窗'
+        page_name = '浏览器弹窗页面'
         self.base_data_model = base_data_model
         self.base_data = base_data
         self.test_data = test_data
@@ -34,5 +34,18 @@ class HomePage(WebBaseObject):
     def goto(self):
         self.base_data.page.goto(self.url, timeout=30000)
 
-    def switch_menu(self):
-        self.w_click(self.element('演示-元素中包含全局变量'))
+    def test_alert(self):
+        """测试alert弹窗"""
+        self.w_click(self.element('w_alert 测试浏览器弹窗'))
+        self.w_wait_for_timeout(1)
+
+    def test_confirm(self):
+        """测试confirm弹窗"""
+        self.w_click(self.element('确认弹窗测试'))
+        self.w_wait_for_timeout(1)
+
+    def test_prompt(self):
+        """测试prompt弹窗"""
+        self.w_click(self.element('输入弹窗测试'))
+        self.w_wait_for_timeout(1)
+

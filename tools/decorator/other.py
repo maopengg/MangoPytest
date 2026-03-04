@@ -14,7 +14,7 @@ from tools.log import log
 
 def case_data(case_id: int | list[int] | None = None, case_name: str | list[str] | None = None):
     def decorator(func):
-        log.debug(f'开始查询用例，用例ID:{case_id} 用例名称：{case_name}')
+        log.debug(f'开始查询用例：{case_id if case_id else case_name}')
         from sources import SourcesData
         if case_id:
             test_case_list = SourcesData.get_other_test_case(is_dict=False, id=case_id)

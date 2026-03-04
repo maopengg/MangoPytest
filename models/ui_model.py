@@ -9,6 +9,12 @@ from mangotools.data_processor import DataClean
 from pydantic import BaseModel, ConfigDict
 
 from enums.ui_enum import BrowserTypeEnum
+import warnings
+
+warnings.filterwarnings(
+    "ignore",
+    message='Field name "json"'
+)
 
 
 def json_serialize(data: str | None):
@@ -27,7 +33,6 @@ class WEBConfigModel(BaseModel):
     browser_port: str | None = None
     browser_path: str | None = None
     is_headless: bool = False
-
 
 
 class AndroidConfigModel(BaseModel):

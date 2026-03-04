@@ -7,6 +7,12 @@ import json
 
 from mangotools.data_processor import DataClean
 from pydantic import BaseModel, ConfigDict
+import warnings
+
+warnings.filterwarnings(
+    "ignore",
+    message='Field name "json"'
+)
 
 
 def json_serialize(data: str | None):
