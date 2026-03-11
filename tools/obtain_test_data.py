@@ -3,7 +3,7 @@
 # @Description: 
 # @Time   : 2024-11-19 11:36
 # @Author : 毛鹏
-
+import os
 from mangotools.data_processor import DataProcessor
 
 from auto_test.project_config import auto_test_project_config
@@ -21,7 +21,13 @@ class ObtainTestData(DataProcessor):
         """获取文件地址"""
         for i in auto_test_project_config:
             if i.get('project_name').value == project_name:
-                return fr'{project_dir.root_path()}\auto_test\{i.get("dir_name")}\upload\{file_name}'
+                return os.path.join(
+                    project_dir.root_path(),
+                    'auto_test',
+                    i.get('dir_name'),
+                    'upload',
+                    file_name
+                )
         raise ToolsError(*ERROR_MSG_0042)
 
 
