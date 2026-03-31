@@ -5,14 +5,12 @@
 # @Author : 毛鹏
 import random
 import re
-import time
 
 import allure
 from mangoautomation.enums import ElementOperationEnum
 from mangoautomation.uidrive import BaseData, SyncWebDevice
 from mangotools.decorator import sync_retry
 from mangotools.enums import StatusEnum
-from playwright.async_api import Page, BrowserContext
 from playwright.sync_api import Locator
 
 from exceptions import PytestAutoTestError, ERROR_MSG_0001

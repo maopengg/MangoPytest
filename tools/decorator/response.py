@@ -4,12 +4,13 @@
 # @Author : 毛鹏
 import functools
 import json
-import time
+from typing import Union, List
 from urllib.parse import urljoin
-from genson import SchemaBuilder
 
 import allure
 import pytest
+import time
+from genson import SchemaBuilder
 from requests.models import Response
 
 from enums.api_enum import MethodEnum, IsSchemaEnum
@@ -21,9 +22,31 @@ from sources import SourcesData
 from tools.log import log
 
 
-def case_data(case_id: int | list[int] | None = None, case_name: str | list[str] | None = None):
+# decorators/case_data.py
+
+
+def case_data(
+        case_id: Union[int, List[int], None] = None,
+        case_name: Union[str, List[str], None] = None,
+        # 新增：声明需要的fixture数据
+        require_fixtures: List[str] = None,  # e.g., ["org", "user", "budget"]
+        auto_cleanup: bool = True
+):
+    """
+    用例数据装饰器 - 融合Fixture支持
+
+    Args:
+        case_id: 用例ID
+        case_name: 用例名称
+        require_fixtures: 需要的fixture数据类型列表
+        auto_cleanup: 是否自动清理fixture数据
+    """
+    require_fixtures = require_fixtures or []
+
     def decorator(func):
         log.debug(f'开始查询用例，用例ID:{case_id} 用例名称：{case_name}')
+
+        # 查询测试数据
         if case_id:
             test_case_list = SourcesData.get_api_test_case(is_dict=False, id=case_id)
         elif case_name:
@@ -33,29 +56,97 @@ def case_data(case_id: int | list[int] | None = None, case_name: str | list[str]
 
         @pytest.mark.flaky(reruns=3)
         @pytest.mark.parametrize("test_case", test_case_list)
-        def wrapper(self, test_case):
+        def wrapper(self, test_case, **fixture_kwargs):
+            """
+            wrapper 接收 fixture 注入的参数
+            fixture_kwargs 包含：org_builder, user_builder, prepared_org 等
+            """
             test_case_model = ApiTestCaseModel.get_obj(test_case)
+
+            # 设置Allure报告
             allure.dynamic.feature(test_case.get('module'))
             allure.dynamic.story(test_case.get('scene'))
             allure.dynamic.title(test_case.get('name'))
             allure.attach(test_case_model.model_dump_json(), '用例数据', allure.attachment_type.JSON)
-            log.debug(f'准备开始执行API用例，数据：{test_case_model.model_dump_json()}')
 
-            data = ApiDataModel(
-                test_case=test_case_model
-            )
+            # ========== 核心：Fixture 数据准备 ==========
+            data = ApiDataModel(test_case=test_case_model)
+            cleanup_ctx = CleanupContext()
+
             try:
+                # 根据 require_fixtures 自动调用对应 builder
+                for fixture_name in require_fixtures:
+                    fixture_data = _prepare_fixture_data(
+                        fixture_name,
+                        fixture_kwargs,
+                        cleanup_ctx
+                    )
+                    data.add_fixture_data(fixture_name, fixture_data)
+                    allure.attach(
+                        str(fixture_data),
+                        f'Fixture数据:{fixture_name}',
+                        allure.attachment_type.JSON
+                    )
+
+                data.cleanup_context = cleanup_ctx
+                log.debug(f'准备开始执行API用例，数据：{data.model_dump_json()}')
+
+                # 执行测试函数
                 func(self, data=data)
+
+                # 基础断言
                 self.ass_main(data)
-                # allure.attach(self.test_data.get_all(), '缓存数据')
+
             except PytestAutoTestError as error:
                 log.error(error.msg)
                 allure.attach(error.msg, '发生已知异常', allure.attachment_type.TEXT)
                 raise error
 
+            finally:
+                # 自动清理
+                if auto_cleanup and cleanup_ctx.created_entities:
+                    _cleanup_fixture_data(cleanup_ctx)
+
         return wrapper
 
     return decorator
+
+
+def _prepare_fixture_data(fixture_name: str, fixture_kwargs: dict, cleanup_ctx: CleanupContext):
+    """
+    根据名称准备fixture数据
+    支持两种模式：
+    1. 直接传入已构造的数据（prepared_org）
+    2. 传入builder，现场构造（org_builder）
+    """
+    # 模式1：直接传入预构造数据
+    prepared_key = f"prepared_{fixture_name}"
+    if prepared_key in fixture_kwargs:
+        return fixture_kwargs[prepared_key]
+
+    # 模式2：通过builder现场构造
+    builder_key = f"{fixture_name}_builder"
+    if builder_key in fixture_kwargs:
+        builder = fixture_kwargs[builder_key]
+        data = builder.create()
+        # 记录到清理上下文
+        cleanup_ctx.track(fixture_name, data.get("id"), builder)
+        return data
+
+    raise PytestAutoTestError(f"未找到fixture: {fixture_name}，请确保在测试类中定义对应的fixture")
+
+
+def _cleanup_fixture_data(cleanup_ctx: CleanupContext):
+    """清理fixture数据（LIFO顺序）"""
+    log.debug(f"开始清理 {len(cleanup_ctx.created_entities)} 个fixture数据")
+    for entity in reversed(cleanup_ctx.created_entities):
+        try:
+            builder = entity.get("builder")
+            if builder and hasattr(builder, 'delete'):
+                builder.delete(entity["id"])
+                log.debug(f"已清理 {entity['type']}: {entity['id']}")
+        except Exception as e:
+            log.warning(f"清理失败 {entity['type']}: {entity['id']}, 错误: {e}")
 
 
 def request_data(api_info_id):

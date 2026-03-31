@@ -1,0 +1,150 @@
+# -*- coding: utf-8 -*-
+# @Project: 芒果测试平台
+# @Description: fixtures注册中心 - 基于 mock_api 接口
+# @Time   : 2026-03-31
+# @Author : 毛鹏
+
+"""
+fixtures注册中心
+
+此文件集中注册所有fixtures，便于管理和使用。
+在测试文件中只需导入此模块即可使用所有fixtures。
+
+使用示例：
+    # test_example.py
+    from auto_test.demo_project.fixtures.conftest import *
+
+    def test_with_user(test_user):
+        assert test_user.get('id') is not None
+
+    def test_with_product(test_product):
+        assert test_product.get('id') is not None
+
+    def test_with_order(user_with_order):
+        assert 'user' in user_with_order
+        assert 'product' in user_with_order
+        assert 'order' in user_with_order
+"""
+
+# ========== 基础设施fixtures ==========
+from .infra.client import (
+    api_client,
+    authenticated_client,
+    api_client_with_cleanup,
+)
+
+from .infra.context import (
+    test_context,
+    class_context,
+    module_context,
+    TestContext,
+)
+
+from .infra.db import (
+    db_session,
+    db_transaction,
+    clean_db_state,
+)
+
+# ========== 认证模块fixtures ==========
+from .builders.auth_fixtures import (
+    auth_builder,
+    test_token,
+    registered_user,
+)
+
+# ========== 用户模块fixtures ==========
+from .builders.user_fixtures import (
+    user_builder,
+    test_user,
+    new_user,
+)
+
+# ========== 产品模块fixtures ==========
+from .builders.product_fixtures import (
+    product_builder,
+    test_product,
+    product_list,
+)
+
+# ========== 订单模块fixtures ==========
+from .builders.order_fixtures import (
+    order_builder,
+    test_order,
+    order_with_product,
+)
+
+# ========== 数据模块fixtures ==========
+from .builders.data_fixtures import (
+    data_builder,
+    submitted_data,
+)
+
+# ========== 文件模块fixtures ==========
+from .builders.file_fixtures import (
+    file_builder,
+    temp_file,
+    uploaded_file,
+)
+
+# ========== 系统模块fixtures ==========
+from .builders.system_fixtures import (
+    system_builder,
+    server_health,
+    server_info,
+)
+
+# ========== 场景fixtures ==========
+from .scenarios.scenario_fixtures import (
+    # 场景数据
+    user_with_order,
+    multiple_orders,
+    complete_workflow,
+)
+
+# ========== 审批流模块fixtures (4级审批依赖) ==========
+# D级：报销申请模块 (基础层)
+from .builders.reimbursement_fixtures import (
+    reimbursement_builder,
+    created_reimbursement,
+    pending_reimbursement,
+    multiple_reimbursements,
+)
+
+# C级：部门审批模块 (依赖D级)
+from .builders.dept_approval_fixtures import (
+    dept_approval_builder,
+    dept_approved_reimbursement,
+    dept_rejected_reimbursement,
+    dept_manager_id,
+)
+
+# B级：财务审批模块 (依赖C级)
+from .builders.finance_approval_fixtures import (
+    finance_approval_builder,
+    finance_approved_reimbursement,
+    finance_rejected_reimbursement,
+    finance_manager_id,
+)
+
+# A级：总经理审批模块 (依赖B级)
+from .builders.ceo_approval_fixtures import (
+    ceo_approval_builder,
+    fully_approved_reimbursement,
+    ceo_rejected_reimbursement,
+    ceo_id,
+    workflow_data,
+)
+
+# 审批流场景fixtures
+from .scenarios.approval_scenario_fixtures import (
+    approval_scenarios,
+    full_approval_workflow,
+    dept_rejected_workflow,
+    finance_rejected_workflow,
+    ceo_rejected_workflow,
+    pending_at_dept,
+    pending_at_finance,
+    pending_at_ceo,
+    multi_level_workflows,
+)

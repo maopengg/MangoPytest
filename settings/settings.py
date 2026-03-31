@@ -27,8 +27,8 @@ SOURCES_TYPE = SourcesTypeEnum.DOCUMENT
 # ----------------------------------------邮件配置---------------------------------------
 
 EMAIL_HOST = 'smtp.qq.com'  # 发送邮件host，这个是QQ邮箱
-SEND_USER = '729164035@qq.com'  # 发送用户
-STAMP_KEY = 'trwymxhsefpobdba'  # 用户的key
+SEND_USER = '2716185083@qq.com'  # 发送用户
+STAMP_KEY = 'jmuamgciqntydeji'  # 用户的key
 
 # ------------------------------------全局请求代理设置------------------------------------
 
