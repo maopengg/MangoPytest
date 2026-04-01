@@ -21,11 +21,19 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
     1. 集成Strategy层（支持API/Mock/DB/Hybrid）
     2. 支持BuilderContext（追踪、清理、策略）
     3. 支持级联清理
+    4. 【新增】智能依赖解决
+    5. 【新增】快捷方法（create_submitted, create_approved）
     
     使用示例：
         # 基础用法
         builder = ReimbursementBuilder(token="xxx")
         reimb = builder.create(user_id=1, amount=1000)
+        
+        # 【新增】快捷方法 - 创建并提交
+        reimb = builder.create_submitted(user_id=1, amount=1000)
+        
+        # 【新增】快捷方法 - 创建并审批通过
+        reimb = builder.create_approved(user_id=1, amount=1000)
         
         # 使用Mock策略（单元测试）
         from auto_test.demo_project.data_factory.strategies import MockStrategy
@@ -70,6 +78,27 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
             factory=factory
         )
 
+    def _prepare_dependencies(self, **kwargs) -> Dict[str, Any]:
+        """
+        【智能依赖解决】准备依赖数据
+        
+        D级模块无依赖，此方法仅做参数校验和补充默认值
+        
+        @param kwargs: 原始参数
+        @return: 补充后的参数
+        """
+        # 补充默认值
+        if "user_id" not in kwargs:
+            kwargs["user_id"] = 1  # 默认用户ID
+        
+        if "amount" not in kwargs:
+            kwargs["amount"] = 100.00  # 默认金额
+            
+        if "reason" not in kwargs:
+            kwargs["reason"] = f"差旅报销 - {uuid.uuid4().hex[:6]}"
+        
+        return kwargs
+
     def build(
         self, user_id: int = 1, amount: float = 100.00, reason: str = None
     ) -> ReimbursementEntity:
@@ -101,12 +130,173 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
         @param kwargs: 构造参数
         @return: 创建的报销申请实体
         """
+        # 【智能依赖解决】自动准备依赖
+        if auto_prepare_deps:
+            kwargs = self._prepare_dependencies(**kwargs)
+        
         # 构造实体（如果未传入）
         if entity is None:
             entity = self.build(**kwargs)
         
         # 使用Strategy创建
         return self._do_create(entity)
+
+    def create_submitted(
+        self,
+        user_id: int = 1,
+        amount: float = 100.00,
+        reason: str = None,
+        auto_prepare_deps: bool = True
+    ) -> Optional[ReimbursementEntity]:
+        """
+        【快捷方法】创建并提交报销申请
+        
+        流程：创建 → 提交
+        
+        @param user_id: 用户ID
+        @param amount: 报销金额
+        @param reason: 报销原因
+        @param auto_prepare_deps: 是否自动准备依赖
+        @return: 已提交的报销申请实体
+        """
+        # 创建报销申请
+        reimb = self.create(
+            user_id=user_id,
+            amount=amount,
+            reason=reason,
+            auto_prepare_deps=auto_prepare_deps
+        )
+        
+        if not reimb:
+            return None
+        
+        # 提交报销申请
+        success = self.submit(reimb.id)
+        if success:
+            # 刷新状态
+            reimb = self.get_by_id(reimb.id)
+        
+        return reimb
+
+    def create_approved(
+        self,
+        user_id: int = 1,
+        amount: float = 100.00,
+        reason: str = None,
+        approver_id: int = None,
+        auto_prepare_deps: bool = True
+    ) -> Optional[ReimbursementEntity]:
+        """
+        【快捷方法】创建并审批通过的报销申请
+        
+        流程：创建 → 提交 → 审批通过
+        
+        @param user_id: 用户ID
+        @param amount: 报销金额
+        @param reason: 报销原因
+        @param approver_id: 审批人ID（默认使用系统管理员）
+        @param auto_prepare_deps: 是否自动准备依赖
+        @return: 已审批通过的报销申请实体
+        """
+        # 创建并提交
+        reimb = self.create_submitted(
+            user_id=user_id,
+            amount=amount,
+            reason=reason,
+            auto_prepare_deps=auto_prepare_deps
+        )
+        
+        if not reimb:
+            return None
+        
+        # 审批通过
+        success = self.approve(reimb.id, approver_id=approver_id)
+        if success:
+            # 刷新状态
+            reimb = self.get_by_id(reimb.id)
+        
+        return reimb
+
+    def create_rejected(
+        self,
+        user_id: int = 1,
+        amount: float = 100.00,
+        reason: str = None,
+        reject_reason: str = "不符合报销标准",
+        approver_id: int = None,
+        auto_prepare_deps: bool = True
+    ) -> Optional[ReimbursementEntity]:
+        """
+        【快捷方法】创建并被拒绝的报销申请
+        
+        流程：创建 → 提交 → 审批拒绝
+        
+        @param user_id: 用户ID
+        @param amount: 报销金额
+        @param reason: 报销原因
+        @param reject_reason: 拒绝原因
+        @param approver_id: 审批人ID
+        @param auto_prepare_deps: 是否自动准备依赖
+        @return: 已被拒绝的报销申请实体
+        """
+        # 创建并提交
+        reimb = self.create_submitted(
+            user_id=user_id,
+            amount=amount,
+            reason=reason,
+            auto_prepare_deps=auto_prepare_deps
+        )
+        
+        if not reimb:
+            return None
+        
+        # 审批拒绝
+        success = self.reject(reimb.id, reject_reason=reject_reason, approver_id=approver_id)
+        if success:
+            # 刷新状态
+            reimb = self.get_by_id(reimb.id)
+        
+        return reimb
+
+    def submit(self, reimbursement_id: int) -> bool:
+        """
+        提交报销申请
+        
+        @param reimbursement_id: 报销申请ID
+        @return: 是否提交成功
+        """
+        result = demo_project.reimbursement.submit_reimbursement(reimbursement_id)
+        return result.get("code") == 200
+
+    def approve(self, reimbursement_id: int, approver_id: int = None) -> bool:
+        """
+        审批通过报销申请
+        
+        @param reimbursement_id: 报销申请ID
+        @param approver_id: 审批人ID
+        @return: 是否审批成功
+        """
+        result = demo_project.reimbursement.approve_reimbursement(
+            reimbursement_id, 
+            approver_id=approver_id
+        )
+        return result.get("code") == 200
+
+    def reject(self, reimbursement_id: int, reject_reason: str = "", approver_id: int = None) -> bool:
+        """
+        拒绝报销申请
+        
+        @param reimbursement_id: 报销申请ID
+        @param reject_reason: 拒绝原因
+        @param approver_id: 审批人ID
+        @return: 是否拒绝成功
+        """
+        result = demo_project.reimbursement.reject_reimbursement(
+            reimbursement_id,
+            reject_reason=reject_reason,
+            approver_id=approver_id
+        )
+        return result.get("code") == 200
 
     def update(
         self, entity: ReimbursementEntity, **kwargs
@@ -200,3 +390,23 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
         """
         status = self.get_status(reimbursement_id)
         return status == "pending"
+
+    def is_approved(self, reimbursement_id: int) -> bool:
+        """
+        【新增】检查报销申请是否已审批通过
+
+        @param reimbursement_id: 报销申请ID
+        @return: 是否已审批通过
+        """
+        status = self.get_status(reimbursement_id)
+        return status == "approved"
+
+    def is_rejected(self, reimbursement_id: int) -> bool:
+        """
+        【新增】检查报销申请是否已被拒绝
+
+        @param reimbursement_id: 报销申请ID
+        @return: 是否已被拒绝
+        """
+        status = self.get_status(reimbursement_id)
+        return status == "rejected"

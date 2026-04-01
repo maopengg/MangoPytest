@@ -1,83 +1,50 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description: Builder fixtures 模块
-# @Time   : 2026-03-31
+# @Description: Builder Fixtures - 构造器 fixtures
+# @Time   : 2026-04-01
 # @Author : 毛鹏
 
-# 认证模块 fixtures
-from .auth_fixtures import (
-    auth_builder,
-    test_token,
-    registered_user,
-)
+"""
+Builder Fixtures 模块
 
-# 用户模块 fixtures
-from .user_fixtures import (
+提供预配置的构造器 fixtures
+
+分层结构：
+- D模块（基础层）: org_builder, user_builder
+- C模块（预算层）: budget_builder
+- B模块（报销层）: reimb_builder
+- A模块（付款层）: payment_builder
+"""
+
+from .d_fixtures import (
+    org_builder,
     user_builder,
-    test_user,
-    new_user,
 )
 
-# 产品模块 fixtures
-from .product_fixtures import (
-    product_builder,
-    test_product,
-    product_list,
+from .c_fixtures import (
+    budget_builder,
 )
 
-# 订单模块 fixtures
-from .order_fixtures import (
-    order_builder,
-    test_order,
-    order_with_product,
+from .b_fixtures import (
+    reimb_builder,
+    approved_reimbursement,
 )
 
-# 数据模块 fixtures
-from .data_fixtures import (
-    data_builder,
-    submitted_data,
-)
-
-# 文件模块 fixtures
-from .file_fixtures import (
-    file_builder,
-    temp_file,
-    uploaded_file,
-)
-
-# 系统模块 fixtures
-from .system_fixtures import (
-    system_builder,
-    server_health,
-    server_info,
+from .a_fixtures import (
+    payment_builder,
+    paid_payment,
 )
 
 __all__ = [
-    # 认证
-    'auth_builder',
-    'test_token',
-    'registered_user',
-    # 用户
-    'user_builder',
-    'test_user',
-    'new_user',
-    # 产品
-    'product_builder',
-    'test_product',
-    'product_list',
-    # 订单
-    'order_builder',
-    'test_order',
-    'order_with_product',
-    # 数据
-    'data_builder',
-    'submitted_data',
-    # 文件
-    'file_builder',
-    'temp_file',
-    'uploaded_file',
-    # 系统
-    'system_builder',
-    'server_health',
-    'server_info',
+    # D模块
+    "org_builder",
+    "user_builder",
+    # C模块
+    "budget_builder",
+    # B模块
+    "reimb_builder",
+    "approved_reimbursement",
+    # A模块
+    "payment_builder",
+    "paid_payment",
 ]

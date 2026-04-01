@@ -12,15 +12,22 @@
 2. 调用API创建/更新/删除数据
 3. 管理实体生命周期
 4. 自动清理创建的数据
+5. 【新增】智能依赖解决
+6. 【新增】快捷方法支持
 
 使用示例：
-    from auto_test.demo_project.data_factory.builders import UserBuilder
+    from auto_test.demo_project.data_factory.builders import UserBuilder, PaymentBuilder
 
+    # 基础用法
     builder = UserBuilder()
     entity = builder.create(username="test", email="test@example.com")
 
-    # 使用实体
-    print(entity.id, entity.username)
+    # 【新增】智能依赖解决 - 自动创建所有依赖
+    payment_builder = PaymentBuilder()
+    payment = payment_builder.create(amount=5000)  # 自动创建报销单→预算→组织→用户
+
+    # 【新增】快捷方法
+    payment = payment_builder.create_paid(amount=5000)  # 创建并付款
 
     # 清理
     builder.cleanup()
@@ -51,6 +58,10 @@ def __getattr__(name):
         from .ceo_approval.ceo_approval_builder import CEOApprovalBuilder
 
         return CEOApprovalBuilder
+    elif name == "PaymentBuilder":
+        from .payment.payment_builder import PaymentBuilder
+
+        return PaymentBuilder
     raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
 
 
@@ -65,4 +76,6 @@ __all__ = [
     "DeptApprovalBuilder",
     "FinanceApprovalBuilder",
     "CEOApprovalBuilder",
+    # 【新增】PaymentBuilder
+    "PaymentBuilder",
 ]

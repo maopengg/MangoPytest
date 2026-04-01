@@ -26,6 +26,9 @@ from .reimbursement import ReimbursementEntity
 from .dept_approval import DeptApprovalEntity
 from .finance_approval import FinanceApprovalEntity
 from .ceo_approval import CEOApprovalEntity
+from .org_entity import OrgEntity
+from .budget_entity import BudgetEntity
+from .payment_entity import PaymentEntity
 
 __all__ = [
     # 基类
@@ -37,4 +40,7 @@ __all__ = [
     "DeptApprovalEntity",
     "FinanceApprovalEntity",
     "CEOApprovalEntity",
+    "OrgEntity",
+    "BudgetEntity",
+    "PaymentEntity",
 ]

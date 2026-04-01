@@ -1,103 +1,222 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description: 配置基类 - 基础配置定义
-# @Time   : 2026-03-31
+# @Description: 配置管理 - 策略配置化
+# @Time   : 2026-04-01
 # @Author : 毛鹏
-from typing import Optional
+
+"""
+配置管理模块
+
+支持：
+- 策略配置化（DEFAULT_STRATEGY）
+- 清理配置（AUTO_CLEANUP, CASCADE_CLEANUP）
+- 环境自动检测
+- CI/CD 环境配置
+"""
+
+import os
+from enum import Enum, auto
 from dataclasses import dataclass, field
+from typing import Optional, Dict, Any
+
+
+class CreateStrategy(Enum):
+    """数据创建策略"""
+    API_ONLY = "api"           # 仅API调用
+    DB_ONLY = "db"             # 仅数据库操作
+    HYBRID = "hybrid"          # API+DB混合
+    MOCK = "mock"              # Mock数据
+
+
+class Environment(Enum):
+    """运行环境"""
+    DEV = "dev"
+    TEST = "test"
+    PRE = "pre"
+    PROD = "prod"
+    CI = "ci"
 
 
 @dataclass
-class DatabaseConfig:
-    """数据库配置"""
-    host: str = "localhost"
-    port: int = 3306
-    username: str = "root"
-    password: str = ""
-    database: str = "test_db"
-    charset: str = "utf8mb4"
-
-
-@dataclass
-class RedisConfig:
-    """Redis配置"""
-    host: str = "localhost"
-    port: int = 6379
-    password: Optional[str] = None
-    db: int = 0
-
-
-@dataclass
-class APIConfig:
-    """API配置"""
-    host: str = "http://localhost:8000"
-    timeout: int = 30
-    retry_times: int = 3
-    verify_ssl: bool = False
-
-
-@dataclass
-class LogConfig:
-    """日志配置"""
-    level: str = "INFO"
-    format: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    file_path: Optional[str] = None
-    max_bytes: int = 10485760  # 10MB
-    backup_count: int = 5
-
-
-class BaseSettings:
-    """
-    配置基类
-    所有环境配置的父类，定义通用配置项
-    """
-
-    # 环境名称
-    ENV: str = "base"
-
-    # 调试模式
-    DEBUG: bool = False
-
-    # 数据库配置
-    DATABASE: DatabaseConfig = field(default_factory=DatabaseConfig)
-
-    # Redis配置
-    REDIS: RedisConfig = field(default_factory=RedisConfig)
-
+class BaseConfig:
+    """基础配置"""
+    
+    # 环境
+    ENV: Environment = Environment.TEST
+    
+    # 策略配置
+    DEFAULT_STRATEGY: CreateStrategy = CreateStrategy.API_ONLY
+    
+    # 清理配置
+    AUTO_CLEANUP: bool = True
+    CASCADE_CLEANUP: bool = False
+    
+    # 血缘追踪
+    ENABLE_LINEAGE: bool = True
+    
     # API配置
-    API: APIConfig = field(default_factory=APIConfig)
+    HOST: str = "http://localhost:8003"
+    TIMEOUT: int = 30
+    
+    # 调试配置
+    DEBUG: bool = False
+    VERBOSE: bool = False
+    
+    # 扩展配置
+    EXTRA: Dict[str, Any] = field(default_factory=dict)
 
-    # 日志配置
-    LOG: LogConfig = field(default_factory=LogConfig)
 
-    # 测试数据配置
-    TEST_DATA_CLEANUP: bool = True  # 测试后是否清理数据
-    TEST_DATA_PREFIX: str = "test_"  # 测试数据前缀
+@dataclass
+class DevConfig(BaseConfig):
+    """开发环境配置"""
+    ENV: Environment = Environment.DEV
+    DEBUG: bool = True
+    VERBOSE: bool = True
+    DEFAULT_STRATEGY: CreateStrategy = CreateStrategy.MOCK
 
-    # 并发配置
-    WORKERS: int = 4
-    MAX_CONCURRENT: int = 10
 
-    # 报告配置
-    REPORT_DIR: str = "./reports"
-    SCREENSHOT_DIR: str = "./reports/screenshots"
+@dataclass
+class TestConfig(BaseConfig):
+    """测试环境配置"""
+    ENV: Environment = Environment.TEST
+    DEBUG: bool = True
+    DEFAULT_STRATEGY: CreateStrategy = CreateStrategy.API_ONLY
 
-    @classmethod
-    def get_settings(cls):
-        """获取配置实例"""
-        return cls()
 
-    def to_dict(self) -> dict:
-        """将配置转换为字典"""
-        result = {}
-        for key in dir(self):
-            if not key.startswith("_") and not callable(getattr(self, key)):
-                value = getattr(self, key)
-                if hasattr(value, "__dataclass_fields__"):
-                    result[key] = {
-                        k: v for k, v in value.__dict__.items()
-                        if not k.startswith("_")
-                    }
-                else:
-                    result[key] = value
-        return result
+@dataclass
+class PreConfig(BaseConfig):
+    """预发环境配置"""
+    ENV: Environment = Environment.PRE
+    DEBUG: bool = False
+    DEFAULT_STRATEGY: CreateStrategy = CreateStrategy.API_ONLY
+
+
+@dataclass
+class ProdConfig(BaseConfig):
+    """生产环境配置"""
+    ENV: Environment = Environment.PROD
+    DEBUG: bool = False
+    AUTO_CLEANUP: bool = False  # 生产环境不自动清理
+    DEFAULT_STRATEGY: CreateStrategy = CreateStrategy.API_ONLY
+
+
+@dataclass
+class CIConfig(BaseConfig):
+    """CI/CD环境配置"""
+    ENV: Environment = Environment.CI
+    DEBUG: bool = False
+    VERBOSE: bool = True
+    
+    # CI环境优化：使用DB策略加速
+    DEFAULT_STRATEGY: CreateStrategy = CreateStrategy.DB_ONLY
+    
+    # 强制清理
+    AUTO_CLEANUP: bool = True
+    CASCADE_CLEANUP: bool = True
+    
+    # 并行执行
+    PARALLEL: bool = True
+    MAX_WORKERS: int = 4
+
+
+class Settings:
+    """配置管理器"""
+    
+    _instance: Optional['Settings'] = None
+    _config: Optional[BaseConfig] = None
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance._load_config()
+        return cls._instance
+    
+    def _load_config(self):
+        """加载配置"""
+        env = self._detect_environment()
+        
+        config_map = {
+            Environment.DEV: DevConfig(),
+            Environment.TEST: TestConfig(),
+            Environment.PRE: PreConfig(),
+            Environment.PROD: ProdConfig(),
+            Environment.CI: CIConfig(),
+        }
+        
+        self._config = config_map.get(env, TestConfig())
+    
+    def _detect_environment(self) -> Environment:
+        """检测运行环境"""
+        # 从环境变量读取
+        env_str = os.environ.get("ENV", "test").lower()
+        
+        # CI环境检测
+        if os.environ.get("CI") or os.environ.get("GITHUB_ACTIONS"):
+            return Environment.CI
+        
+        env_map = {
+            "dev": Environment.DEV,
+            "development": Environment.DEV,
+            "test": Environment.TEST,
+            "testing": Environment.TEST,
+            "pre": Environment.PRE,
+            "staging": Environment.PRE,
+            "prod": Environment.PROD,
+            "production": Environment.PROD,
+            "ci": Environment.CI,
+        }
+        
+        return env_map.get(env_str, Environment.TEST)
+    
+    @property
+    def config(self) -> BaseConfig:
+        """获取当前配置"""
+        return self._config
+    
+    def reload(self):
+        """重新加载配置"""
+        self._load_config()
+    
+    def update(self, **kwargs):
+        """更新配置"""
+        for key, value in kwargs.items():
+            if hasattr(self._config, key):
+                setattr(self._config, key, value)
+    
+    # 便捷访问
+    @property
+    def ENV(self) -> Environment:
+        return self._config.ENV
+    
+    @property
+    def DEFAULT_STRATEGY(self) -> CreateStrategy:
+        return self._config.DEFAULT_STRATEGY
+    
+    @property
+    def AUTO_CLEANUP(self) -> bool:
+        return self._config.AUTO_CLEANUP
+    
+    @property
+    def CASCADE_CLEANUP(self) -> bool:
+        return self._config.CASCADE_CLEANUP
+    
+    @property
+    def ENABLE_LINEAGE(self) -> bool:
+        return self._config.ENABLE_LINEAGE
+    
+    @property
+    def HOST(self) -> str:
+        return self._config.HOST
+    
+    @property
+    def DEBUG(self) -> bool:
+        return self._config.DEBUG
+
+
+# 全局配置实例
+settings = Settings()
+
+
+def get_settings() -> Settings:
+    """获取配置实例"""
+    return settings
