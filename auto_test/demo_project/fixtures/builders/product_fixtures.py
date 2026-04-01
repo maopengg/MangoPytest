@@ -9,7 +9,7 @@ from typing import Generator, Dict, Any
 from auto_test.demo_project.data_factory.builders.product import ProductBuilder
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def product_builder(test_token) -> ProductBuilder:
     """产品构造器 fixture"""
     return ProductBuilder(token=test_token)

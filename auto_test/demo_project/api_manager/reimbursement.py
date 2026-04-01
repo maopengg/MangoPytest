@@ -75,24 +75,22 @@ class ReimbursementAPI:
     def update_reimbursement(self, reimbursement_id: int, **kwargs) -> dict:
         """
         更新报销申请
-        PUT /reimbursements?reimbursement_id={reimbursement_id}
+        PUT /reimbursements/{reimbursement_id}
         @param reimbursement_id: 报销申请ID
         @param kwargs: 更新字段
         @return: 响应字典
         """
-        url = self._get_url("reimbursements")
-        response = requests.put(
-            url, params={"reimbursement_id": reimbursement_id}, json=kwargs, headers=self._get_headers()
-        )
+        url = self._get_url(f"reimbursements/{reimbursement_id}")
+        response = requests.put(url, json=kwargs, headers=self._get_headers())
         return response.json()
 
     def delete_reimbursement(self, reimbursement_id: int) -> dict:
         """
         删除报销申请
-        DELETE /reimbursements?reimbursement_id={reimbursement_id}
+        DELETE /reimbursements/{reimbursement_id}
         @param reimbursement_id: 报销申请ID
         @return: 响应字典
         """
-        url = self._get_url("reimbursements")
-        response = requests.delete(url, params={"reimbursement_id": reimbursement_id}, headers=self._get_headers())
+        url = self._get_url(f"reimbursements/{reimbursement_id}")
+        response = requests.delete(url, headers=self._get_headers())
         return response.json()

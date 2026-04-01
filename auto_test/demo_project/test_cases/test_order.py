@@ -29,7 +29,7 @@ class TestCreateOrder:
         user_builder = UserBuilder(token=test_token)
         users = user_builder.get_all()
         assert len(users) > 0
-        user_id = users[0].get('id')
+        user_id = users[0].id
         
         # 创建订单
         order_builder = OrderBuilder(token=test_token)
@@ -55,13 +55,13 @@ class TestCreateOrder:
         order_builder = OrderBuilder(token=test_token)
         order = order_builder.create(
             product_id=test_product.get('id'),
-            user_id=test_user.get('id'),
+            user_id=test_user.id,
             quantity=5
         )
         
         assert order is not None
         assert order.get('product_id') == test_product.get('id')
-        assert order.get('user_id') == test_user.get('id')
+        assert order.get('user_id') == test_user.id
         assert order.get('quantity') == 5
         
         # 清理
@@ -76,7 +76,7 @@ class TestCreateOrder:
         
         user_builder = UserBuilder(token=test_token)
         users = user_builder.get_all()
-        user_id = users[0].get('id')
+        user_id = users[0].id
         
         order_builder = OrderBuilder(token=test_token)
         order = order_builder.create(
@@ -110,7 +110,7 @@ class TestGetOrders:
         
         user_builder = UserBuilder(token=test_token)
         users = user_builder.get_all()
-        user_id = users[0].get('id')
+        user_id = users[0].id
         
         order1 = order_builder.create(product_id=product1.get('id'), user_id=user_id, quantity=1)
         order2 = order_builder.create(product_id=product2.get('id'), user_id=user_id, quantity=2)
@@ -136,7 +136,7 @@ class TestGetOrders:
         
         user_builder = UserBuilder(token=test_token)
         users = user_builder.get_all()
-        user_id = users[0].get('id')
+        user_id = users[0].id
         
         order_builder = OrderBuilder(token=test_token)
         order = order_builder.create(
@@ -180,7 +180,7 @@ class TestUpdateOrder:
         
         user_builder = UserBuilder(token=test_token)
         users = user_builder.get_all()
-        user_id = users[0].get('id')
+        user_id = users[0].id
         
         order_builder = OrderBuilder(token=test_token)
         order = order_builder.create(
@@ -236,7 +236,7 @@ class TestDeleteOrder:
         
         user_builder = UserBuilder(token=test_token)
         users = user_builder.get_all()
-        user_id = users[0].get('id')
+        user_id = users[0].id
         
         order_builder = OrderBuilder(token=test_token)
         order = order_builder.create(

@@ -4,9 +4,8 @@
 # @Time   : 2026-03-31
 # @Author : 毛鹏
 from abc import ABC, abstractmethod
-from typing import Dict, Any, List, Optional, TypeVar, Generic
+from typing import List, Optional, TypeVar, Generic
 
-from models.api_model import ApiDataModel, RequestModel
 from ..entities.base_entity import BaseEntity
 
 T = TypeVar("T", bound=BaseEntity)
@@ -27,7 +26,7 @@ class BaseBuilder(ABC, Generic[T]):
             def build(self, **kwargs) -> UserEntity:
                 return UserEntity(**kwargs)
 
-            def create(self, entity: UserEntity) -> UserEntity:
+            def create(self, **kwargs) -> UserEntity:
                 # 调用API创建
                 pass
     """
@@ -54,46 +53,14 @@ class BaseBuilder(ABC, Generic[T]):
         pass
 
     @abstractmethod
-    def create(self, entity: T) -> Optional[T]:
+    def create(self, **kwargs) -> Optional[T]:
         """
         创建实体（调用API）
 
-        @param entity: 实体实例
+        @param kwargs: 创建参数
         @return: 创建后的实体（含ID）
         """
         pass
-
-    def _create_api_data(
-        self,
-        url: str,
-        method: str = "POST",
-        params: Dict = None,
-        json_data: Dict = None,
-        headers: Dict = None,
-    ) -> ApiDataModel:
-        """
-        创建API请求数据
-
-        @param url: 请求URL
-        @param method: 请求方法
-        @param params: URL参数
-        @param json_data: JSON数据
-        @param headers: 请求头
-        @return: ApiDataModel实例
-        """
-        request_headers = headers or {}
-        if self.token:
-            request_headers["Authorization"] = f"Bearer {self.token}"
-
-        return ApiDataModel(
-            request=RequestModel(
-                url=url,
-                method=method,
-                headers=request_headers,
-                params=params or {},
-                json_data=json_data,
-            )
-        )
 
     def _register_created(self, entity: BaseEntity):
         """

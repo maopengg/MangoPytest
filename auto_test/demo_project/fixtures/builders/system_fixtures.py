@@ -9,13 +9,13 @@ from typing import Generator, Dict, Any
 from auto_test.demo_project.data_factory.builders.system import SystemBuilder
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def system_builder(test_token) -> SystemBuilder:
     """系统构造器 fixture"""
     return SystemBuilder(token=test_token)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def server_health(system_builder) -> Generator[Dict[str, Any], None, None]:
     """
     服务器健康状态 fixture
@@ -28,7 +28,7 @@ def server_health(system_builder) -> Generator[Dict[str, Any], None, None]:
     yield health
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def server_info(system_builder) -> Generator[Dict[str, Any], None, None]:
     """
     服务器信息 fixture

@@ -13,14 +13,26 @@ class ProductAPI:
 
     def __init__(self):
         self._host = "http://localhost:8003"
+        self._token = None
 
     def set_host(self, host: str):
         """设置API服务器地址"""
         self._host = host.rstrip("/")
 
+    def set_token(self, token: str):
+        """设置认证token"""
+        self._token = token
+
     def _get_url(self, path: str) -> str:
         """获取完整URL"""
         return urljoin(self._host + "/", path)
+
+    def _get_headers(self) -> dict:
+        """获取请求头"""
+        headers = {}
+        if self._token:
+            headers["X-Token"] = self._token
+        return headers
 
     def create_product(self, name: str, price: float, description: str = None) -> dict:
         """
@@ -35,7 +47,7 @@ class ProductAPI:
         data = {"name": name, "price": price}
         if description:
             data["description"] = description
-        response = requests.post(url, json=data)
+        response = requests.post(url, json=data, headers=self._get_headers())
         return response.json()
 
     def get_all_products(self) -> dict:
@@ -45,7 +57,7 @@ class ProductAPI:
         @return: 响应字典
         """
         url = self._get_url("products")
-        response = requests.get(url)
+        response = requests.get(url, headers=self._get_headers())
         return response.json()
 
     def get_product_by_id(self, product_id: int) -> dict:
@@ -56,7 +68,7 @@ class ProductAPI:
         @return: 响应字典
         """
         url = self._get_url("products")
-        response = requests.get(url, params={"id": product_id})
+        response = requests.get(url, params={"id": product_id}, headers=self._get_headers())
         return response.json()
 
     def update_product_info(self, product_id: int, **kwargs) -> dict:
@@ -68,7 +80,7 @@ class ProductAPI:
         @return: 响应字典
         """
         url = self._get_url("products")
-        response = requests.put(url, params={"id": product_id}, json=kwargs)
+        response = requests.put(url, params={"id": product_id}, json=kwargs, headers=self._get_headers())
         return response.json()
 
     def delete_product(self, product_id: int) -> dict:
@@ -79,5 +91,5 @@ class ProductAPI:
         @return: 响应字典
         """
         url = self._get_url("products")
-        response = requests.delete(url, params={"id": product_id})
+        response = requests.delete(url, params={"id": product_id}, headers=self._get_headers())
         return response.json()

@@ -128,3 +128,35 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
             return [ReimbursementEntity.from_api_response(d) for d in data_list]
 
         return []
+
+    def get_by_user(self, user_id: int) -> List[ReimbursementEntity]:
+        """
+        根据用户ID获取报销申请
+
+        @param user_id: 用户ID
+        @return: 报销申请实体列表
+        """
+        all_reimbursements = self.get_all()
+        return [r for r in all_reimbursements if r.user_id == user_id]
+
+    def get_status(self, reimbursement_id: int) -> Optional[str]:
+        """
+        获取报销申请状态
+
+        @param reimbursement_id: 报销申请ID
+        @return: 状态字符串
+        """
+        entity = self.get_by_id(reimbursement_id)
+        if entity:
+            return entity.status
+        return None
+
+    def is_pending(self, reimbursement_id: int) -> bool:
+        """
+        检查报销申请是否处于待审批状态
+
+        @param reimbursement_id: 报销申请ID
+        @return: 是否待审批
+        """
+        status = self.get_status(reimbursement_id)
+        return status == "pending"

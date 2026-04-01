@@ -6,20 +6,20 @@
 from typing import Dict, Any, Optional
 import uuid
 
-from ..base_builder import BaseBuilder
 from auto_test.demo_project.api_manager import demo_project
 from ...registry import register_builder
 
 
 @register_builder("data")
-class DataBuilder(BaseBuilder):
+class DataBuilder:
     """
     数据构造器
     对应 /api/data 接口 (POST)
     """
 
     def __init__(self, token: str = None, factory=None):
-        super().__init__(token, factory)
+        self.token = token
+        self.factory = factory
 
     def build(self, name: str = None, value: int = None) -> Dict[str, Any]:
         """
@@ -38,13 +38,8 @@ class DataBuilder(BaseBuilder):
         """
         data = self.build(name, value)
 
-        api_data = self._create_api_data(
-            url="/api/data",
-            method="POST",
-            json_data=data
-        )
-
-        result = demo_project.data.submit_data(api_data)
-        if result.response and result.response.json().get("code") == 200:
-            return result.response.json()["data"]
+        demo_project.data.set_token(self.token)
+        result = demo_project.data.submit_data(**data)
+        if result.get("code") == 200:
+            return result.get("data")
         return None

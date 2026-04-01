@@ -163,9 +163,6 @@ class TestWithFixtures:
     @allure.title("使用full_approval_workflow fixture")
     def test_with_full_approval(self, full_approval_workflow):
         """测试使用full_approval_workflow fixture"""
-        # full_approval_workflow 是 ScenarioResult 实例
-        assert full_approval_workflow.success is True
-
-        reimbursement = full_approval_workflow.get_entity("reimbursement")
-        if reimbursement:
-            assert reimbursement.id is not None
+        # full_approval_workflow 是字典，包含审批流程结果
+        assert full_approval_workflow["status"] == "fully_approved"
+        assert full_approval_workflow["reimbursement"] is not None

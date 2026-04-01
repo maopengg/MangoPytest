@@ -115,6 +115,13 @@ from .builders.data_fixtures import (
     submitted_data,
 )
 
+# ========== 认证模块fixtures ==========
+from .builders.auth_fixtures import (
+    auth_builder,
+    test_token,
+    registered_user,
+)
+
 # ========== 系统模块fixtures ==========
 from .builders.system_fixtures import (
     system_builder,
@@ -138,6 +145,10 @@ from .scenarios.approval_scenario_fixtures import (
     finance_rejected_workflow,
     ceo_rejected_workflow,
     approval_scenarios,
+    pending_at_dept,
+    pending_at_finance,
+    pending_at_ceo,
+    multi_level_workflows,
 )
 
 __all__ = [
@@ -196,6 +207,10 @@ __all__ = [
     # 数据模块
     "data_builder",
     "submitted_data",
+    # 认证模块
+    "auth_builder",
+    "test_token",
+    "registered_user",
     # 系统模块
     "system_builder",
     "server_health",
@@ -212,4 +227,8 @@ __all__ = [
     "finance_rejected_workflow",
     "ceo_rejected_workflow",
     "approval_scenarios",
+    "pending_at_dept",
+    "pending_at_finance",
+    "pending_at_ceo",
+    "multi_level_workflows",
 ]

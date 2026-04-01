@@ -11,7 +11,7 @@ from typing import Generator, Dict, Any
 from auto_test.demo_project.data_factory.builders.file import FileBuilder
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def file_builder(test_token) -> FileBuilder:
     """文件构造器 fixture"""
     return FileBuilder(token=test_token)

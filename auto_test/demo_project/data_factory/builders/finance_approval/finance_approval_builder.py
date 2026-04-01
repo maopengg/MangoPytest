@@ -143,7 +143,13 @@ class FinanceApprovalBuilder(BaseBuilder[FinanceApprovalEntity]):
 
         return []
 
-    def approve(self, reimbursement_id: int, dept_approval_id: int, approver_id: int = 4, comment: str = "审批通过") -> Optional[FinanceApprovalEntity]:
+    def approve(
+        self,
+        reimbursement_id: int,
+        dept_approval_id: int,
+        approver_id: int = 4,
+        comment: str = "审批通过",
+    ) -> Optional[FinanceApprovalEntity]:
         """
         快速审批通过
 
@@ -158,10 +164,16 @@ class FinanceApprovalBuilder(BaseBuilder[FinanceApprovalEntity]):
             dept_approval_id=dept_approval_id,
             approver_id=approver_id,
             status="approved",
-            comment=comment
+            comment=comment,
         )
 
-    def reject(self, reimbursement_id: int, dept_approval_id: int, approver_id: int = 4, comment: str = "审批拒绝") -> Optional[FinanceApprovalEntity]:
+    def reject(
+        self,
+        reimbursement_id: int,
+        dept_approval_id: int,
+        approver_id: int = 4,
+        comment: str = "审批拒绝",
+    ) -> Optional[FinanceApprovalEntity]:
         """
         快速审批拒绝
 
@@ -176,5 +188,31 @@ class FinanceApprovalBuilder(BaseBuilder[FinanceApprovalEntity]):
             dept_approval_id=dept_approval_id,
             approver_id=approver_id,
             status="rejected",
-            comment=comment
+            comment=comment,
         )
+
+    def get_by_reimbursement(
+        self, reimbursement_id: int
+    ) -> Optional[FinanceApprovalEntity]:
+        """
+        根据报销申请ID获取财务审批
+
+        @param reimbursement_id: 报销申请ID
+        @return: 财务审批实体
+        """
+        approvals = self.get_all()
+        for approval in approvals:
+            if approval.reimbursement_id == reimbursement_id:
+                return approval
+        return None
+
+    def can_create(self, reimbursement_id: int) -> bool:
+        """
+        检查是否可以为指定报销申请创建财务审批
+
+        @param reimbursement_id: 报销申请ID
+        @return: 是否可以创建
+        """
+        # 检查是否已存在财务审批
+        existing = self.get_by_reimbursement(reimbursement_id)
+        return existing is None

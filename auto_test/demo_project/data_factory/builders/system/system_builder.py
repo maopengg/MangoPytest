@@ -19,20 +19,34 @@ class SystemBuilder(BaseBuilder):
 
     def __init__(self, token: str = None, factory=None):
         super().__init__(token, factory)
+        # 设置token到API模块
+        if token:
+            demo_project.system.set_token(token)
+
+    def build(self, **kwargs) -> Dict[str, Any]:
+        """
+        构造系统信息（不调用API）
+        @param kwargs: 构造参数
+        @return: 系统信息字典
+        """
+        return {"type": "system_info"}
+
+    def create(self, **kwargs) -> Optional[Dict[str, Any]]:
+        """
+        创建系统信息（调用API获取服务器信息）
+        @param kwargs: 构造参数
+        @return: 服务器信息
+        """
+        return self.get_server_info()
 
     def health_check(self) -> Dict[str, Any]:
         """
         健康检查
         @return: 健康状态
         """
-        api_data = self._create_api_data(
-            url="/health",
-            method="GET"
-        )
-
-        result = demo_project.system.health_check(api_data)
-        if result.response and result.response.json().get("code") == 200:
-            return result.response.json()["data"]
+        result = demo_project.system.health_check()
+        if result.get("code") == 200:
+            return result.get("data")
         return None
 
     def get_server_info(self) -> Dict[str, Any]:
@@ -40,12 +54,7 @@ class SystemBuilder(BaseBuilder):
         获取服务器信息
         @return: 服务器信息
         """
-        api_data = self._create_api_data(
-            url="/info",
-            method="GET"
-        )
-
-        result = demo_project.system.get_server_info(api_data)
-        if result.response and result.response.json().get("code") == 200:
-            return result.response.json()["data"]
+        result = demo_project.system.get_server_info()
+        if result.get("code") == 200:
+            return result.get("data")
         return None

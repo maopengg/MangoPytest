@@ -20,9 +20,12 @@ class ProductBuilder(BaseBuilder):
 
     def __init__(self, token: str = None, factory=None):
         super().__init__(token, factory)
+        # 设置token到API模块
+        if token:
+            demo_project.product.set_token(token)
 
     def build(self, name: str = None, price: float = None,
-              description: str = None) -> Dict[str, Any]:
+              description: str = None, **kwargs) -> Dict[str, Any]:
         """
         构造产品数据（不调用API）
         @return: 产品数据字典
@@ -34,23 +37,21 @@ class ProductBuilder(BaseBuilder):
         }
 
     def create(self, name: str = None, price: float = None,
-               description: str = None) -> Dict[str, Any]:
+               description: str = None, **kwargs) -> Dict[str, Any]:
         """
         创建产品
         @return: 创建的产品数据
         """
         product_data = self.build(name, price, description)
 
-        api_data = self._create_api_data(
-            url="/products",
-            method="POST",
-            json_data=product_data
+        result = demo_project.product.create_product(
+            name=product_data["name"],
+            price=product_data["price"],
+            description=product_data["description"]
         )
-
-        result = demo_project.product.create_product(api_data)
-        if result.response and result.response.json().get("code") == 200:
-            created_product = result.response.json()["data"]
-            self._register_created(created_product)
+        
+        if result.get("code") == 200:
+            created_product = result["data"]
             return created_product
         return None
 
@@ -59,14 +60,9 @@ class ProductBuilder(BaseBuilder):
         获取所有产品
         @return: 产品列表
         """
-        api_data = self._create_api_data(
-            url="/products",
-            method="GET"
-        )
-
-        result = demo_project.product.get_all_products(api_data)
-        if result.response and result.response.json().get("code") == 200:
-            return result.response.json()["data"]
+        result = demo_project.product.get_all_products()
+        if result.get("code") == 200:
+            return result["data"]
         return []
 
     def get_by_id(self, product_id: int) -> Dict[str, Any]:
@@ -75,15 +71,9 @@ class ProductBuilder(BaseBuilder):
         @param product_id: 产品ID
         @return: 产品数据
         """
-        api_data = self._create_api_data(
-            url="/products",
-            method="GET",
-            params={"id": product_id}
-        )
-
-        result = demo_project.product.get_product_by_id(api_data)
-        if result.response and result.response.json().get("code") == 200:
-            return result.response.json()["data"]
+        result = demo_project.product.get_product_by_id(product_id)
+        if result.get("code") == 200:
+            return result["data"]
         return None
 
     def update(self, product_id: int, product_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -93,16 +83,12 @@ class ProductBuilder(BaseBuilder):
         @param product_data: 产品数据
         @return: 更新后的产品数据
         """
-        api_data = self._create_api_data(
-            url="/products",
-            method="PUT",
-            params={"id": product_id},
-            json_data=product_data
+        result = demo_project.product.update_product_info(
+            product_id=product_id,
+            **product_data
         )
-
-        result = demo_project.product.update_product_info(api_data)
-        if result.response and result.response.json().get("code") == 200:
-            return result.response.json()["data"]
+        if result.get("code") == 200:
+            return result["data"]
         return None
 
     def delete(self, product_id: int) -> bool:
@@ -111,13 +97,7 @@ class ProductBuilder(BaseBuilder):
         @param product_id: 产品ID
         @return: 是否删除成功
         """
-        api_data = self._create_api_data(
-            url="/products",
-            method="DELETE",
-            params={"id": product_id}
-        )
-
-        result = demo_project.product.delete_product(api_data)
-        if result.response and result.response.json().get("code") == 200:
+        result = demo_project.product.delete_product(product_id)
+        if result.get("code") == 200:
             return True
         return False

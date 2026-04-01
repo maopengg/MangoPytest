@@ -20,6 +20,8 @@ class CEOApprovalBuilder(BaseBuilder[CEOApprovalEntity]):
     使用Entity进行数据构造和API调用
     """
 
+    _entity_class = CEOApprovalEntity
+
     def __init__(self, token: str = None, factory=None):
         super().__init__(token, factory)
 
@@ -190,6 +192,32 @@ class CEOApprovalBuilder(BaseBuilder[CEOApprovalEntity]):
             status="rejected",
             comment=comment,
         )
+
+    def get_by_reimbursement(
+        self, reimbursement_id: int
+    ) -> Optional[CEOApprovalEntity]:
+        """
+        根据报销申请ID获取CEO审批
+
+        @param reimbursement_id: 报销申请ID
+        @return: CEO审批实体
+        """
+        approvals = self.get_all()
+        for approval in approvals:
+            if approval.reimbursement_id == reimbursement_id:
+                return approval
+        return None
+
+    def can_create(self, reimbursement_id: int) -> bool:
+        """
+        检查是否可以为指定报销申请创建CEO审批
+
+        @param reimbursement_id: 报销申请ID
+        @return: 是否可以创建
+        """
+        # 检查是否已存在CEO审批
+        existing = self.get_by_reimbursement(reimbursement_id)
+        return existing is None
 
     def get_workflow(self, reimbursement_id: int) -> Optional[dict]:
         """

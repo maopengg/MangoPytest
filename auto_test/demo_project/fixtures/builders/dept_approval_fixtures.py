@@ -30,6 +30,18 @@ def dept_approval_builder(authenticated_client) -> DeptApprovalBuilder:
     builder.cleanup()
 
 
+def _entity_to_dict(entity):
+    """将实体转换为字典"""
+    if entity is None:
+        return None
+    if hasattr(entity, '__dict__'):
+        result = entity.__dict__.copy()
+        result.pop('_is_new', None)
+        result.pop('_is_deleted', None)
+        return result
+    return str(entity)
+
+
 @pytest.fixture
 def dept_approved_reimbursement(reimbursement_builder, dept_approval_builder) -> dict:
     """
@@ -48,9 +60,9 @@ def dept_approved_reimbursement(reimbursement_builder, dept_approval_builder) ->
     )
 
     # C级：部门审批通过
-    dept_approval = dept_approval_builder.approve(reimbursement["id"])
+    dept_approval = dept_approval_builder.approve(reimbursement.id)
 
-    return {"reimbursement": reimbursement, "dept_approval": dept_approval}
+    return {"reimbursement": _entity_to_dict(reimbursement), "dept_approval": _entity_to_dict(dept_approval)}
 
 
 @pytest.fixture
@@ -66,12 +78,12 @@ def dept_rejected_reimbursement(reimbursement_builder, dept_approval_builder) ->
 
     # C级：部门审批拒绝
     dept_approval = dept_approval_builder.reject(
-        reimbursement["id"], comment="不符合报销标准"
+        reimbursement.id, comment="不符合报销标准"
     )
 
     return {
-        "reimbursement": reimbursement,
-        "dept_approval": dept_approval,
+        "reimbursement": _entity_to_dict(reimbursement),
+        "dept_approval": _entity_to_dict(dept_approval),
         "status": "dept_rejected",
     }
 

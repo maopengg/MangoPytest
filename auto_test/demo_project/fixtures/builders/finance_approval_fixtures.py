@@ -30,6 +30,18 @@ def finance_approval_builder(authenticated_client) -> FinanceApprovalBuilder:
     builder.cleanup()
 
 
+def _entity_to_dict(entity):
+    """将实体转换为字典"""
+    if entity is None:
+        return None
+    if hasattr(entity, '__dict__'):
+        result = entity.__dict__.copy()
+        result.pop('_is_new', None)
+        result.pop('_is_deleted', None)
+        return result
+    return str(entity)
+
+
 @pytest.fixture
 def finance_approved_reimbursement(
     reimbursement_builder, dept_approval_builder, finance_approval_builder
@@ -44,17 +56,17 @@ def finance_approved_reimbursement(
     )
 
     # C级：部门审批通过
-    dept_approval = dept_approval_builder.approve(reimbursement["id"])
+    dept_approval = dept_approval_builder.approve(reimbursement.id)
 
     # B级：财务审批通过
     finance_approval = finance_approval_builder.approve(
-        reimbursement["id"], dept_approval["id"]
+        reimbursement.id, dept_approval.id
     )
 
     return {
-        "reimbursement": reimbursement,
-        "dept_approval": dept_approval,
-        "finance_approval": finance_approval,
+        "reimbursement": _entity_to_dict(reimbursement),
+        "dept_approval": _entity_to_dict(dept_approval),
+        "finance_approval": _entity_to_dict(finance_approval),
     }
 
 
@@ -72,17 +84,17 @@ def finance_rejected_reimbursement(
     )
 
     # C级：部门审批通过
-    dept_approval = dept_approval_builder.approve(reimbursement["id"])
+    dept_approval = dept_approval_builder.approve(reimbursement.id)
 
     # B级：财务审批拒绝
     finance_approval = finance_approval_builder.reject(
-        reimbursement["id"], dept_approval["id"], comment="金额超出预算"
+        reimbursement.id, dept_approval.id, comment="金额超出预算"
     )
 
     return {
-        "reimbursement": reimbursement,
-        "dept_approval": dept_approval,
-        "finance_approval": finance_approval,
+        "reimbursement": _entity_to_dict(reimbursement),
+        "dept_approval": _entity_to_dict(dept_approval),
+        "finance_approval": _entity_to_dict(finance_approval),
         "status": "finance_rejected",
     }
 

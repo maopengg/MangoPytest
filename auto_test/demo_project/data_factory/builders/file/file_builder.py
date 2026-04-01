@@ -21,6 +21,31 @@ class FileBuilder(BaseBuilder):
 
     def __init__(self, token: str = None, factory=None):
         super().__init__(token, factory)
+        # 设置token到API模块
+        if token:
+            demo_project.file.set_token(token)
+
+    def build(self, **kwargs) -> str:
+        """
+        构造文件路径（不调用API）
+        @param kwargs: 构造参数
+        @return: 临时文件路径
+        """
+        content = kwargs.get("content", "This is a test file content")
+        filename = kwargs.get("filename", "test_file.txt")
+        return self.build_temp_file(content, filename)
+
+    def create(self, **kwargs) -> Optional[Dict[str, Any]]:
+        """
+        上传文件（调用API）
+        @param kwargs: 构造参数
+        @return: 上传结果
+        """
+        file_path = kwargs.get("file_path")
+        content = kwargs.get("content")
+        filename = kwargs.get("filename")
+        
+        return self.upload(file_path, content, filename)
 
     def build_temp_file(self, content: str = None, filename: str = None) -> str:
         """
@@ -53,17 +78,9 @@ class FileBuilder(BaseBuilder):
         if file_path is None:
             file_path = self.build_temp_file(content, filename)
         
-        # 准备文件数据
-        file_name = os.path.basename(file_path)
-        file_data = [("file", (file_name, open(file_path, 'rb')))]
-
-        api_data = self._create_api_data(
-            url="/upload",
-            method="POST",
-            file_data=file_data
-        )
-
-        result = demo_project.file.upload_file(api_data)
-        if result.response and result.response.json().get("code") == 200:
-            return result.response.json()["data"]
+        # 调用API上传文件
+        result = demo_project.file.upload_file(file_path)
+        
+        if result.get("code") == 200:
+            return result.get("data")
         return None

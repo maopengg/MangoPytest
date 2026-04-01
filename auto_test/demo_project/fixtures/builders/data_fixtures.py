@@ -9,7 +9,7 @@ from typing import Generator, Dict, Any
 from auto_test.demo_project.data_factory.builders.data import DataBuilder
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def data_builder(test_token) -> DataBuilder:
     """数据构造器 fixture"""
     return DataBuilder(token=test_token)

@@ -10,7 +10,7 @@ from auto_test.demo_project.data_factory.builders.order import OrderBuilder
 from auto_test.demo_project.data_factory.builders.product import ProductBuilder
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def order_builder(test_token) -> OrderBuilder:
     """订单构造器 fixture"""
     return OrderBuilder(token=test_token)

@@ -44,13 +44,26 @@ def created_reimbursement(reimbursement_builder) -> dict:
     return reimbursement
 
 
+def _entity_to_dict(entity):
+    """将实体转换为字典"""
+    if entity is None:
+        return None
+    if hasattr(entity, '__dict__'):
+        result = entity.__dict__.copy()
+        result.pop('_is_new', None)
+        result.pop('_is_deleted', None)
+        return result
+    return str(entity)
+
+
 @pytest.fixture
 def pending_reimbursement(reimbursement_builder) -> dict:
     """
     pending状态的报销申请Fixture
     提供一个待审批的报销申请
     """
-    return reimbursement_builder.create(user_id=1, amount=500.00, reason="待审批报销")
+    entity = reimbursement_builder.create(user_id=1, amount=500.00, reason="待审批报销")
+    return _entity_to_dict(entity)
 
 
 @pytest.fixture
@@ -64,5 +77,5 @@ def multiple_reimbursements(reimbursement_builder) -> list:
         reimbursement = reimbursement_builder.create(
             user_id=1, amount=100.00 * (i + 1), reason=f"批量报销 {i + 1}"
         )
-        reimbursements.append(reimbursement)
+        reimbursements.append(_entity_to_dict(reimbursement))
     return reimbursements

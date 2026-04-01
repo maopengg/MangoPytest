@@ -13,14 +13,26 @@ class FileAPI:
 
     def __init__(self):
         self._host = "http://localhost:8003"
+        self._token = None
 
     def set_host(self, host: str):
         """设置API服务器地址"""
         self._host = host.rstrip("/")
 
+    def set_token(self, token: str):
+        """设置认证token"""
+        self._token = token
+
     def _get_url(self, path: str) -> str:
         """获取完整URL"""
         return urljoin(self._host + "/", path)
+
+    def _get_headers(self) -> dict:
+        """获取请求头"""
+        headers = {}
+        if self._token:
+            headers["X-Token"] = self._token
+        return headers
 
     def upload_file(self, file_path: str) -> dict:
         """
@@ -32,5 +44,5 @@ class FileAPI:
         url = self._get_url("upload")
         with open(file_path, "rb") as f:
             files = {"file": f}
-            response = requests.post(url, files=files)
+            response = requests.post(url, files=files, headers=self._get_headers())
         return response.json()

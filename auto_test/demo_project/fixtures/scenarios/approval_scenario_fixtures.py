@@ -59,6 +59,18 @@ def rejection_scenario(authenticated_client) -> RejectionWorkflowScenario:
     scenario.cleanup()
 
 
+def _entity_to_dict_for_fixture(entity):
+    """将实体转换为字典（用于fixture）"""
+    if entity is None:
+        return None
+    if hasattr(entity, "__dict__"):
+        result = entity.__dict__.copy()
+        result.pop("_is_new", None)
+        result.pop("_is_deleted", None)
+        return result
+    return str(entity)
+
+
 @pytest.fixture
 def full_approval_workflow(full_approval_scenario):
     """
@@ -67,13 +79,30 @@ def full_approval_workflow(full_approval_scenario):
 
     使用示例:
         def test_with_workflow(full_approval_workflow):
-            assert full_approval_workflow.success
-            reimbursement = full_approval_workflow.get_entity("reimbursement")
-            assert reimbursement is not None
+            assert full_approval_workflow["status"] == "fully_approved"
+            assert full_approval_workflow["reimbursement"] is not None
     """
-    return full_approval_scenario.execute(
+    result = full_approval_scenario.execute(
         user_id=1, amount=5000.00, reason="完整审批流程测试"
     )
+
+    if result.success:
+        return {
+            "status": "fully_approved",
+            "reimbursement": _entity_to_dict_for_fixture(
+                result.get_entity("reimbursement")
+            ),
+            "dept_approval": _entity_to_dict_for_fixture(
+                result.get_entity("dept_approval")
+            ),
+            "finance_approval": _entity_to_dict_for_fixture(
+                result.get_entity("finance_approval")
+            ),
+            "ceo_approval": _entity_to_dict_for_fixture(
+                result.get_entity("ceo_approval")
+            ),
+        }
+    return {"status": "failed", "error": result.errors}
 
 
 @pytest.fixture
@@ -81,7 +110,18 @@ def dept_rejected_workflow(rejection_scenario):
     """
     部门审批拒绝场景Fixture
     """
-    return rejection_scenario.execute(reject_at="dept", user_id=1, amount=1000.00)
+    result = rejection_scenario.execute(reject_at="dept", user_id=1, amount=1000.00)
+    if result.success:
+        return {
+            "status": "dept_rejected",
+            "reimbursement": _entity_to_dict_for_fixture(
+                result.get_entity("reimbursement")
+            ),
+            "dept_approval": _entity_to_dict_for_fixture(
+                result.get_entity("dept_approval")
+            ),
+        }
+    return {"status": "failed", "error": result.errors}
 
 
 @pytest.fixture
@@ -89,7 +129,21 @@ def finance_rejected_workflow(rejection_scenario):
     """
     财务审批拒绝场景Fixture
     """
-    return rejection_scenario.execute(reject_at="finance", user_id=1, amount=2000.00)
+    result = rejection_scenario.execute(reject_at="finance", user_id=1, amount=2000.00)
+    if result.success:
+        return {
+            "status": "finance_rejected",
+            "reimbursement": _entity_to_dict_for_fixture(
+                result.get_entity("reimbursement")
+            ),
+            "dept_approval": _entity_to_dict_for_fixture(
+                result.get_entity("dept_approval")
+            ),
+            "finance_approval": _entity_to_dict_for_fixture(
+                result.get_entity("finance_approval")
+            ),
+        }
+    return {"status": "failed", "error": result.errors}
 
 
 @pytest.fixture
@@ -97,7 +151,24 @@ def ceo_rejected_workflow(rejection_scenario):
     """
     总经理审批拒绝场景Fixture
     """
-    return rejection_scenario.execute(reject_at="ceo", user_id=1, amount=3000.00)
+    result = rejection_scenario.execute(reject_at="ceo", user_id=1, amount=3000.00)
+    if result.success:
+        return {
+            "status": "ceo_rejected",
+            "reimbursement": _entity_to_dict_for_fixture(
+                result.get_entity("reimbursement")
+            ),
+            "dept_approval": _entity_to_dict_for_fixture(
+                result.get_entity("dept_approval")
+            ),
+            "finance_approval": _entity_to_dict_for_fixture(
+                result.get_entity("finance_approval")
+            ),
+            "ceo_approval": _entity_to_dict_for_fixture(
+                result.get_entity("ceo_approval")
+            ),
+        }
+    return {"status": "failed", "error": result.errors}
 
 
 class ApprovalScenarios:
@@ -401,6 +472,58 @@ class ApprovalScenarios:
                 "ceo_approval": self._entity_to_dict(result.get_entity("ceo_approval")),
             }
         return {"status": "failed", "error": result.errors}
+
+
+@pytest.fixture
+def pending_at_dept(approval_scenarios):
+    """
+    待部门审批场景Fixture
+    """
+    return approval_scenarios.create_pending_at_dept(
+        user_id=1, amount=1000.00, reason="待部门审批测试"
+    )
+
+
+@pytest.fixture
+def pending_at_finance(approval_scenarios):
+    """
+    待财务审批场景Fixture
+    """
+    return approval_scenarios.create_pending_at_finance(
+        user_id=1, amount=1000.00, reason="待财务审批测试"
+    )
+
+
+@pytest.fixture
+def pending_at_ceo(approval_scenarios):
+    """
+    待CEO审批场景Fixture
+    """
+    return approval_scenarios.create_pending_at_ceo(
+        user_id=1, amount=1000.00, reason="待CEO审批测试"
+    )
+
+
+@pytest.fixture
+def multi_level_workflows(approval_scenarios):
+    """
+    多级工作流场景Fixture
+    返回包含多种状态的工作流字典
+    """
+    return {
+        "pending_at_dept": approval_scenarios.create_pending_at_dept(
+            user_id=1, amount=1000.00, reason="多级测试1"
+        ),
+        "pending_at_finance": approval_scenarios.create_pending_at_finance(
+            user_id=1, amount=1000.00, reason="多级测试2"
+        ),
+        "pending_at_ceo": approval_scenarios.create_pending_at_ceo(
+            user_id=1, amount=1000.00, reason="多级测试3"
+        ),
+        "fully_approved": approval_scenarios.create_full_approval_workflow(
+            user_id=1, amount=1000.00, reason="多级测试4"
+        ),
+    }
 
 
 @pytest.fixture
