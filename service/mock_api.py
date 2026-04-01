@@ -124,7 +124,7 @@ users_db.extend(
 
 
 def get_user_by_username(username: str):
-    for user in users_db_1:
+    for user in users_db:
         if user.username == username:
             return user
     return None

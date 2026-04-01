@@ -47,20 +47,24 @@ class TestAuthLogin:
     @allure.title("登录失败-空用户名")
     def test_login_empty_username(self):
         """测试使用空用户名登录"""
-        auth_builder = AuthBuilder()
-        token = auth_builder.login(
+        from auto_test.demo_project.api_manager import demo_project
+
+        result = demo_project.auth.api_login(
             username="", password="482c811da5d5b4bc6d497ffa98491e38"
         )
 
-        assert token is None
+        assert result.get("code") == 400
+        assert "不能为空" in result.get("message", "")
 
     @allure.title("登录失败-空密码")
     def test_login_empty_password(self):
         """测试使用空密码登录"""
-        auth_builder = AuthBuilder()
-        token = auth_builder.login(username="testuser", password="")
+        from auto_test.demo_project.api_manager import demo_project
 
-        assert token is None
+        result = demo_project.auth.api_login(username="testuser", password="")
+
+        assert result.get("code") == 400
+        assert "不能为空" in result.get("message", "")
 
 
 @allure.feature("认证模块")
@@ -83,7 +87,7 @@ class TestAuthRegister:
         from auto_test.demo_project.data_factory.builders.user import UserBuilder
 
         user_builder = UserBuilder()
-        user_builder.delete(user.get("id"))
+        user_builder.delete(user_id=user.get("id"))
 
     @allure.title("注册-指定用户名")
     def test_register_with_username(self):
@@ -101,38 +105,69 @@ class TestAuthRegister:
         from auto_test.demo_project.data_factory.builders.user import UserBuilder
 
         user_builder = UserBuilder()
-        user_builder.delete(user.get("id"))
+        user_builder.delete(user_id=user.get("id"))
 
     @allure.title("注册失败-用户名已存在")
     def test_register_duplicate_username(self):
         """测试使用已存在用户名注册"""
-        auth_builder = AuthBuilder()
+        from auto_test.demo_project.api_manager import demo_project
+        import uuid
+
+        # 使用指定用户名注册
+        username = f"dup_test_{uuid.uuid4().hex[:8]}"
+
         # 先注册一个用户
-        user1 = auth_builder.register()
-        assert user1 is not None
+        result1 = demo_project.auth.api_register(
+            username=username,
+            email="test1@example.com",
+            full_name="Test User 1",
+            password="123456",
+        )
+        assert result1.get("code") == 200, f"第一次注册失败: {result1.get('message')}"
+        user1 = result1.get("data")
 
         # 再用相同用户名注册
-        user2 = auth_builder.register(username=user1.get("username"))
-        assert user2 is None
+        result2 = demo_project.auth.api_register(
+            username=username,
+            email="test2@example.com",
+            full_name="Test User 2",
+            password="123456",
+        )
+        assert result2.get("code") == 400
+        assert "已存在" in result2.get("message", "")
 
         # 清理
         from auto_test.demo_project.data_factory.builders.user import UserBuilder
 
         user_builder = UserBuilder()
-        user_builder.delete(user1.get("id"))
+        user_builder.delete(user_id=user1.get("id"))
 
     @allure.title("注册失败-空用户名")
     def test_register_empty_username(self):
         """测试使用空用户名注册"""
-        auth_builder = AuthBuilder()
-        user = auth_builder.register(username="")
+        from auto_test.demo_project.api_manager import demo_project
 
-        assert user is None
+        result = demo_project.auth.api_register(
+            username="",
+            email="test@example.com",
+            full_name="Test User",
+            password="123456",
+        )
+
+        assert result.get("code") == 400
+        assert "不能为空" in result.get("message", "")
 
     @allure.title("注册失败-空密码")
     def test_register_empty_password(self):
         """测试使用空密码注册"""
-        auth_builder = AuthBuilder()
-        user = auth_builder.register(password="")
+        from auto_test.demo_project.api_manager import demo_project
 
-        assert user is None
+        result = demo_project.auth.api_register(
+            username="testuser123",
+            email="test@example.com",
+            full_name="Test User",
+            password="",
+        )
+
+        assert result.get("code") == 400
+        assert "不能为空" in result.get("message", "")

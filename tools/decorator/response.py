@@ -22,6 +22,30 @@ from sources import SourcesData
 from tools.log import log
 
 
+class CleanupContext:
+    """
+    清理上下文管理器
+    用于跟踪和管理测试中创建的fixture数据
+    """
+
+    def __init__(self):
+        self.created_entities: list = []
+
+    def track(self, entity_type: str, entity_id: int, builder=None):
+        """
+        跟踪创建的实体
+
+        @param entity_type: 实体类型
+        @param entity_id: 实体ID
+        @param builder: 用于清理的builder实例
+        """
+        self.created_entities.append({
+            "type": entity_type,
+            "id": entity_id,
+            "builder": builder
+        })
+
+
 # decorators/case_data.py
 
 

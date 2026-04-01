@@ -1,76 +1,83 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description: 
+# @Description:
 # @Time   : 2026-01-18 13:56
 # @Author : 毛鹏
 from urllib.parse import urljoin
 
-from models.api_model import ApiDataModel
-from tools.base_request.request_tool import RequestTool
-from tools.decorator.response import request_data
+import requests
 
 
-class ProductAPI(RequestTool):
+class ProductAPI:
     """产品API - 对应 /products 接口"""
 
     def __init__(self):
-        super().__init__()
         self._host = "http://localhost:8003"
 
     def set_host(self, host: str):
         """设置API服务器地址"""
-        self._host = host.rstrip('/')
+        self._host = host.rstrip("/")
 
     def _get_url(self, path: str) -> str:
         """获取完整URL"""
         return urljoin(self._host + "/", path)
 
-    def create_product(self, data: ApiDataModel) -> ApiDataModel:
+    def create_product(self, name: str, price: float, description: str = None) -> dict:
         """
         创建产品接口
         POST /products
-        @param data: ApiDataModel (包含 name, price, description)
-        @return: ApiDataModel
+        @param name: 产品名称
+        @param price: 产品价格
+        @param description: 产品描述
+        @return: 响应字典
         """
-        data.request.url = self._get_url("products")
-        return self.http(data)
+        url = self._get_url("products")
+        data = {"name": name, "price": price}
+        if description:
+            data["description"] = description
+        response = requests.post(url, json=data)
+        return response.json()
 
-    def get_all_products(self, data: ApiDataModel) -> ApiDataModel:
+    def get_all_products(self) -> dict:
         """
         获取所有产品接口
         GET /products
-        @param data: ApiDataModel
-        @return: ApiDataModel
+        @return: 响应字典
         """
-        data.request.url = self._get_url("products")
-        return self.http(data)
+        url = self._get_url("products")
+        response = requests.get(url)
+        return response.json()
 
-    def get_product_by_id(self, data: ApiDataModel) -> ApiDataModel:
+    def get_product_by_id(self, product_id: int) -> dict:
         """
         根据ID获取产品接口
-        GET /products?id={id}
-        @param data: ApiDataModel
-        @return: ApiDataModel
+        GET /products?id={product_id}
+        @param product_id: 产品ID
+        @return: 响应字典
         """
-        data.request.url = self._get_url("products")
-        return self.http(data)
+        url = self._get_url("products")
+        response = requests.get(url, params={"id": product_id})
+        return response.json()
 
-    def update_product_info(self, data: ApiDataModel) -> ApiDataModel:
+    def update_product_info(self, product_id: int, **kwargs) -> dict:
         """
         更新产品信息接口
-        PUT /products?id={id}
-        @param data: ApiDataModel
-        @return: ApiDataModel
+        PUT /products?id={product_id}
+        @param product_id: 产品ID
+        @param kwargs: 更新字段
+        @return: 响应字典
         """
-        data.request.url = self._get_url("products")
-        return self.http(data)
+        url = self._get_url("products")
+        response = requests.put(url, params={"id": product_id}, json=kwargs)
+        return response.json()
 
-    def delete_product(self, data: ApiDataModel) -> ApiDataModel:
+    def delete_product(self, product_id: int) -> dict:
         """
         删除产品接口
-        DELETE /products?id={id}
-        @param data: ApiDataModel
-        @return: ApiDataModel
+        DELETE /products?id={product_id}
+        @param product_id: 产品ID
+        @return: 响应字典
         """
-        data.request.url = self._get_url("products")
-        return self.http(data)
+        url = self._get_url("products")
+        response = requests.delete(url, params={"id": product_id})
+        return response.json()

@@ -1,145 +1,130 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description: 报销申请构造器 - D级模块 (基础层)
+# @Description: 报销申请构造器 - 使用Entity的新版本 (D级)
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-from typing import Dict, Any, List, Optional
+from typing import Optional, List
 import uuid
-from datetime import datetime
 
 from ..base_builder import BaseBuilder
-from auto_test.demo_project.api_manager import demo_project
+from ...entities.reimbursement import ReimbursementEntity
 from ...registry import register_builder
+from ....api_manager import demo_project
 
 
 @register_builder("reimbursement")
-class ReimbursementBuilder(BaseBuilder):
+class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
     """
-    报销申请构造器 - D级模块 (最基础层)
-    对应 /reimbursements 接口
-    不依赖其他模块，是审批流的起点
+    报销申请构造器 - D级模块（基础层）
+
+    使用Entity进行数据构造和API调用
     """
 
     def __init__(self, token: str = None, factory=None):
         super().__init__(token, factory)
 
     def build(
-        self, user_id: int = None, amount: float = None, reason: str = None
-    ) -> Dict[str, Any]:
+        self, user_id: int = 1, amount: float = 100.00, reason: str = None
+    ) -> ReimbursementEntity:
         """
-        构造报销申请数据（不调用API）
+        构造报销申请实体（不调用API）
+
         @param user_id: 用户ID
         @param amount: 报销金额
         @param reason: 报销原因
-        @return: 报销申请数据字典
+        @return: 报销申请实体
         """
-        return {
-            "user_id": user_id or 1,
-            "amount": amount or 100.00,
-            "reason": reason or f"差旅报销 - {uuid.uuid4().hex[:6]}",
-        }
+        return ReimbursementEntity(
+            user_id=user_id,
+            amount=amount,
+            reason=reason or f"差旅报销 - {uuid.uuid4().hex[:6]}",
+        )
 
     def create(
-        self, user_id: int = None, amount: float = None, reason: str = None
-    ) -> Dict[str, Any]:
+        self, entity: ReimbursementEntity = None, **kwargs
+    ) -> Optional[ReimbursementEntity]:
         """
         创建报销申请（调用API）
-        @return: 创建的报销申请数据
-        """
-        reimbursement_data = self.build(user_id, amount, reason)
 
-        api_data = self._create_api_data(
-            url="/reimbursements", method="POST", json_data=reimbursement_data
+        @param entity: 实体实例（不传则使用kwargs构造）
+        @param kwargs: 构造参数
+        @return: 创建后的实体
+        """
+        if entity is None:
+            entity = self.build(**kwargs)
+
+        if not entity.validate():
+            return None
+
+        result = demo_project.reimbursement.create_reimbursement(
+            user_id=entity.user_id, amount=entity.amount, reason=entity.reason
         )
 
-        result = demo_project.reimbursement.create_reimbursement(api_data)
-        if result.response and result.response.json().get("code") == 200:
-            created_reimbursement = result.response.json()["data"]
-            self._register_created(created_reimbursement)
-            return created_reimbursement
+        if result.get("code") == 200:
+            data = result["data"]
+            created_entity = ReimbursementEntity.from_api_response(data)
+            self._register_created(created_entity)
+            return created_entity
+
         return None
 
-    def get_all(self) -> List[Dict[str, Any]]:
-        """
-        获取所有报销申请
-        @return: 报销申请列表
-        """
-        api_data = self._create_api_data(url="/reimbursements", method="GET")
-
-        result = demo_project.reimbursement.get_reimbursements(api_data)
-        if result.response and result.response.json().get("code") == 200:
-            return result.response.json()["data"]
-        return []
-
-    def get_by_id(self, reimbursement_id: int) -> Dict[str, Any]:
+    def get_by_id(self, reimbursement_id: int) -> Optional[ReimbursementEntity]:
         """
         根据ID获取报销申请
-        @param reimbursement_id: 报销申请ID
-        @return: 报销申请数据
-        """
-        api_data = self._create_api_data(
-            url="/reimbursements", method="GET", params={"id": reimbursement_id}
-        )
 
-        result = demo_project.reimbursement.get_reimbursement_by_id(api_data)
-        if result.response and result.response.json().get("code") == 200:
-            return result.response.json()["data"]
+        @param reimbursement_id: 报销申请ID
+        @return: 报销申请实体
+        """
+        result = demo_project.reimbursement.get_reimbursement_by_id(reimbursement_id)
+
+        if result.get("code") == 200:
+            data = result["data"]
+            return ReimbursementEntity.from_api_response(data)
+
         return None
 
-    def update(self, reimbursement_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    def update(self, entity: ReimbursementEntity) -> Optional[ReimbursementEntity]:
         """
-        更新报销申请（仅在pending状态可更新）
-        @param reimbursement_id: 报销申请ID
-        @param data: 更新数据
-        @return: 更新后的报销申请数据
+        更新报销申请
+
+        @param entity: 实体实例
+        @return: 更新后的实体
         """
-        api_data = self._create_api_data(
-            url="/reimbursements",
-            method="PUT",
-            params={"reimbursement_id": reimbursement_id},
-            json_data=data,
+        result = demo_project.reimbursement.update_reimbursement(
+            reimbursement_id=entity.id, **entity.to_api_payload()
         )
 
-        result = demo_project.reimbursement.update_reimbursement(api_data)
-        if result.response and result.response.json().get("code") == 200:
-            return result.response.json()["data"]
+        if result.get("code") == 200:
+            data = result["data"]
+            return ReimbursementEntity.from_api_response(data)
+
         return None
 
-    def delete(self, reimbursement_id: int) -> bool:
+    def delete(self, entity: ReimbursementEntity) -> bool:
         """
         删除报销申请
-        @param reimbursement_id: 报销申请ID
+
+        @param entity: 实体实例
         @return: 是否删除成功
         """
-        api_data = self._create_api_data(
-            url="/reimbursements",
-            method="DELETE",
-            params={"reimbursement_id": reimbursement_id},
-        )
+        result = demo_project.reimbursement.delete_reimbursement(entity.id)
 
-        result = demo_project.reimbursement.delete_reimbursement(api_data)
-        if result.response and result.response.json().get("code") == 200:
+        if result.get("code") == 200:
+            entity.mark_as_deleted()
             return True
+
         return False
 
-    def is_pending(self, reimbursement_id: int) -> bool:
+    def get_all(self) -> List[ReimbursementEntity]:
         """
-        检查报销申请是否为pending状态
-        @param reimbursement_id: 报销申请ID
-        @return: 是否为pending状态
-        """
-        reimbursement = self.get_by_id(reimbursement_id)
-        if reimbursement:
-            return reimbursement.get("status") == "pending"
-        return False
+        获取所有报销申请
 
-    def get_status(self, reimbursement_id: int) -> Optional[str]:
+        @return: 报销申请实体列表
         """
-        获取报销申请状态
-        @param reimbursement_id: 报销申请ID
-        @return: 状态字符串
-        """
-        reimbursement = self.get_by_id(reimbursement_id)
-        if reimbursement:
-            return reimbursement.get("status")
-        return None
+        result = demo_project.reimbursement.get_reimbursements()
+
+        if result.get("code") == 200:
+            data_list = result["data"]
+            return [ReimbursementEntity.from_api_response(d) for d in data_list]
+
+        return []

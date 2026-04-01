@@ -9,7 +9,7 @@ from auto_test.demo_project.data_factory.builders.ceo_approval import CEOApprova
 
 
 @pytest.fixture
-def ceo_approval_builder(api_client) -> CEOApprovalBuilder:
+def ceo_approval_builder(authenticated_client) -> CEOApprovalBuilder:
     """
     总经理审批Builder Fixture
     提供CEOApprovalBuilder实例用于创建和管理总经理审批数据
@@ -22,15 +22,31 @@ def ceo_approval_builder(api_client) -> CEOApprovalBuilder:
             )
             assert approval is not None
     """
-    builder = CEOApprovalBuilder(token=api_client.token)
+    builder = CEOApprovalBuilder(token=authenticated_client.token)
     yield builder
     # 清理创建的数据
     builder.cleanup()
 
 
+def _entity_to_dict(entity):
+    """将实体转换为字典"""
+    if entity is None:
+        return None
+    if hasattr(entity, "__dict__"):
+        result = entity.__dict__.copy()
+        result.pop("_is_new", None)
+        result.pop("_is_deleted", None)
+        return result
+    return str(entity)
+
+
 @pytest.fixture
-def fully_approved_reimbursement(reimbursement_builder, dept_approval_builder,
-                                 finance_approval_builder, ceo_approval_builder) -> dict:
+def fully_approved_reimbursement(
+    reimbursement_builder,
+    dept_approval_builder,
+    finance_approval_builder,
+    ceo_approval_builder,
+) -> dict:
     """
     完全审批通过的报销申请Fixture
     提供D级+C级+B级+A级完整数据（完整4级审批流程）
@@ -42,71 +58,64 @@ def fully_approved_reimbursement(reimbursement_builder, dept_approval_builder,
     """
     # D级：创建报销申请
     reimbursement = reimbursement_builder.create(
-        user_id=1,
-        amount=3000.00,
-        reason="总经理审批测试"
+        user_id=1, amount=3000.00, reason="总经理审批测试"
     )
 
     # C级：部门审批通过
-    dept_approval = dept_approval_builder.approve(reimbursement["id"])
+    dept_approval = dept_approval_builder.approve(reimbursement.id)
 
     # B级：财务审批通过
     finance_approval = finance_approval_builder.approve(
-        reimbursement["id"],
-        dept_approval["id"]
+        reimbursement.id, dept_approval.id
     )
 
     # A级：总经理审批通过
-    ceo_approval = ceo_approval_builder.approve(
-        reimbursement["id"],
-        finance_approval["id"]
-    )
+    ceo_approval = ceo_approval_builder.approve(reimbursement.id, finance_approval.id)
 
     return {
-        "reimbursement": reimbursement,
-        "dept_approval": dept_approval,
-        "finance_approval": finance_approval,
-        "ceo_approval": ceo_approval,
-        "status": "ceo_approved"
+        "reimbursement": _entity_to_dict(reimbursement),
+        "dept_approval": _entity_to_dict(dept_approval),
+        "finance_approval": _entity_to_dict(finance_approval),
+        "ceo_approval": _entity_to_dict(ceo_approval),
+        "status": "ceo_approved",
     }
 
 
 @pytest.fixture
-def ceo_rejected_reimbursement(reimbursement_builder, dept_approval_builder,
-                               finance_approval_builder, ceo_approval_builder) -> dict:
+def ceo_rejected_reimbursement(
+    reimbursement_builder,
+    dept_approval_builder,
+    finance_approval_builder,
+    ceo_approval_builder,
+) -> dict:
     """
     被总经理拒绝的报销申请Fixture
     提供D级+C级+B级+A级(拒绝)完整数据
     """
     # D级：创建报销申请
     reimbursement = reimbursement_builder.create(
-        user_id=1,
-        amount=10000.00,
-        reason="总经理拒绝测试"
+        user_id=1, amount=10000.00, reason="总经理拒绝测试"
     )
 
     # C级：部门审批通过
-    dept_approval = dept_approval_builder.approve(reimbursement["id"])
+    dept_approval = dept_approval_builder.approve(reimbursement.id)
 
     # B级：财务审批通过
     finance_approval = finance_approval_builder.approve(
-        reimbursement["id"],
-        dept_approval["id"]
+        reimbursement.id, dept_approval.id
     )
 
     # A级：总经理审批拒绝
     ceo_approval = ceo_approval_builder.reject(
-        reimbursement["id"],
-        finance_approval["id"],
-        comment="金额过大，不予批准"
+        reimbursement.id, finance_approval.id, comment="金额过大，不予批准"
     )
 
     return {
-        "reimbursement": reimbursement,
-        "dept_approval": dept_approval,
-        "finance_approval": finance_approval,
-        "ceo_approval": ceo_approval,
-        "status": "ceo_rejected"
+        "reimbursement": _entity_to_dict(reimbursement),
+        "dept_approval": _entity_to_dict(dept_approval),
+        "finance_approval": _entity_to_dict(finance_approval),
+        "ceo_approval": _entity_to_dict(ceo_approval),
+        "status": "ceo_rejected",
     }
 
 

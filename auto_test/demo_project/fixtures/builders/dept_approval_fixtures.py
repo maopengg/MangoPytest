@@ -5,12 +5,16 @@
 # @Author : 毛鹏
 import pytest
 
-from auto_test.demo_project.data_factory.builders.dept_approval import DeptApprovalBuilder
-from auto_test.demo_project.data_factory.builders.reimbursement import ReimbursementBuilder
+from auto_test.demo_project.data_factory.builders.dept_approval import (
+    DeptApprovalBuilder,
+)
+from auto_test.demo_project.data_factory.builders.reimbursement import (
+    ReimbursementBuilder,
+)
 
 
 @pytest.fixture
-def dept_approval_builder(api_client) -> DeptApprovalBuilder:
+def dept_approval_builder(authenticated_client) -> DeptApprovalBuilder:
     """
     部门审批Builder Fixture
     提供DeptApprovalBuilder实例用于创建和管理部门审批数据
@@ -20,7 +24,7 @@ def dept_approval_builder(api_client) -> DeptApprovalBuilder:
             approval = dept_approval_builder.approve(created_reimbursement["id"])
             assert approval is not None
     """
-    builder = DeptApprovalBuilder(token=api_client.token)
+    builder = DeptApprovalBuilder(token=authenticated_client.token)
     yield builder
     # 清理创建的数据
     builder.cleanup()
@@ -40,18 +44,13 @@ def dept_approved_reimbursement(reimbursement_builder, dept_approval_builder) ->
     """
     # D级：创建报销申请
     reimbursement = reimbursement_builder.create(
-        user_id=1,
-        amount=1000.00,
-        reason="部门审批测试"
+        user_id=1, amount=1000.00, reason="部门审批测试"
     )
 
     # C级：部门审批通过
     dept_approval = dept_approval_builder.approve(reimbursement["id"])
 
-    return {
-        "reimbursement": reimbursement,
-        "dept_approval": dept_approval
-    }
+    return {"reimbursement": reimbursement, "dept_approval": dept_approval}
 
 
 @pytest.fixture
@@ -62,21 +61,18 @@ def dept_rejected_reimbursement(reimbursement_builder, dept_approval_builder) ->
     """
     # D级：创建报销申请
     reimbursement = reimbursement_builder.create(
-        user_id=1,
-        amount=1000.00,
-        reason="部门拒绝测试"
+        user_id=1, amount=1000.00, reason="部门拒绝测试"
     )
 
     # C级：部门审批拒绝
     dept_approval = dept_approval_builder.reject(
-        reimbursement["id"],
-        comment="不符合报销标准"
+        reimbursement["id"], comment="不符合报销标准"
     )
 
     return {
         "reimbursement": reimbursement,
         "dept_approval": dept_approval,
-        "status": "dept_rejected"
+        "status": "dept_rejected",
     }
 
 

@@ -1,56 +1,111 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description: 部门审批API - C级模块
-# @Time   : 2026-03-31
+# @Description:
+# @Time   : 2024-03-17 19:50
 # @Author : 毛鹏
 from urllib.parse import urljoin
 
-from models.api_model import ApiDataModel
-from tools.base_request.request_tool import RequestTool
+import requests
 
 
-class DeptApprovalAPI(RequestTool):
-    """部门审批API - 对应 /dept-approvals 接口 (C级模块，依赖D级)"""
+class DeptApprovalAPI:
+    """部门审批API - 对应 /dept-approvals 接口"""
 
     def __init__(self):
-        super().__init__()
         self._host = "http://localhost:8003"
+        self._token = None
 
     def set_host(self, host: str):
         """设置API服务器地址"""
-        self._host = host.rstrip('/')
+        self._host = host.rstrip("/")
+
+    def set_token(self, token: str):
+        """设置认证token"""
+        self._token = token
 
     def _get_url(self, path: str) -> str:
         """获取完整URL"""
         return urljoin(self._host + "/", path)
 
-    def create_dept_approval(self, data: ApiDataModel) -> ApiDataModel:
-        """
-        创建部门审批
-        POST /dept-approvals
-        @param data: ApiDataModel (包含 reimbursement_id, approver_id, status, comment)
-        @return: ApiDataModel
-        """
-        data.request.url = self._get_url("dept-approvals")
-        return self.http(data)
+    def _get_headers(self) -> dict:
+        """获取请求头"""
+        headers = {}
+        if self._token:
+            headers["X-Token"] = self._token
+        return headers
 
-    def get_dept_approvals(self, data: ApiDataModel) -> ApiDataModel:
+    def get_dept_approvals(self) -> dict:
         """
         获取部门审批列表
         GET /dept-approvals
-        @param data: ApiDataModel
-        @return: ApiDataModel
+        @return: 响应字典
         """
-        data.request.url = self._get_url("dept-approvals")
-        return self.http(data)
+        url = self._get_url("dept-approvals")
+        response = requests.get(url, headers=self._get_headers())
+        return response.json()
 
-    def update_dept_approval(self, data: ApiDataModel) -> ApiDataModel:
+    def get_dept_approval_by_id(self, approval_id: int) -> dict:
+        """
+        根据ID获取部门审批
+        GET /dept-approvals?id={approval_id}
+        @param approval_id: 审批ID
+        @return: 响应字典
+        """
+        url = self._get_url("dept-approvals")
+        response = requests.get(
+            url, params={"id": approval_id}, headers=self._get_headers()
+        )
+        return response.json()
+
+    def create_dept_approval(
+        self, reimbursement_id: int, approver_id: int, status: str, comment: str = None
+    ) -> dict:
+        """
+        创建部门审批
+        POST /dept-approvals
+        @param reimbursement_id: 报销申请ID
+        @param approver_id: 审批人ID
+        @param status: 审批状态（approved/rejected）
+        @param comment: 审批意见
+        @return: 响应字典
+        """
+        url = self._get_url("dept-approvals")
+        data = {
+            "reimbursement_id": reimbursement_id,
+            "approver_id": approver_id,
+            "status": status,
+        }
+        if comment:
+            data["comment"] = comment
+        response = requests.post(url, json=data, headers=self._get_headers())
+        return response.json()
+
+    def update_dept_approval(self, approval_id: int, **kwargs) -> dict:
         """
         更新部门审批
-        PUT /dept-approvals/{approval_id}
-        @param data: ApiDataModel
-        @return: ApiDataModel
+        PUT /dept-approvals?approval_id={approval_id}
+        @param approval_id: 审批ID
+        @param kwargs: 更新字段
+        @return: 响应字典
         """
-        approval_id = data.request.params.get('approval_id')
-        data.request.url = self._get_url(f"dept-approvals/{approval_id}")
-        return self.http(data)
+        url = self._get_url("dept-approvals")
+        response = requests.put(
+            url,
+            params={"approval_id": approval_id},
+            json=kwargs,
+            headers=self._get_headers(),
+        )
+        return response.json()
+
+    def delete_dept_approval(self, approval_id: int) -> dict:
+        """
+        删除部门审批
+        DELETE /dept-approvals?approval_id={approval_id}
+        @param approval_id: 审批ID
+        @return: 响应字典
+        """
+        url = self._get_url("dept-approvals")
+        response = requests.delete(
+            url, params={"approval_id": approval_id}, headers=self._get_headers()
+        )
+        return response.json()

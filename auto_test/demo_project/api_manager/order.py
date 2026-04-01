@@ -1,76 +1,83 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description: 
+# @Description:
 # @Time   : 2026-01-18 13:57
 # @Author : 毛鹏
 from urllib.parse import urljoin
 
-from models.api_model import ApiDataModel
-from tools.base_request.request_tool import RequestTool
-from tools.decorator.response import request_data
+import requests
 
 
-class OrderAPI(RequestTool):
+class OrderAPI:
     """订单API - 对应 /orders 接口"""
 
     def __init__(self):
-        super().__init__()
         self._host = "http://localhost:8003"
 
     def set_host(self, host: str):
         """设置API服务器地址"""
-        self._host = host.rstrip('/')
+        self._host = host.rstrip("/")
 
     def _get_url(self, path: str) -> str:
         """获取完整URL"""
         return urljoin(self._host + "/", path)
 
-    def create_order(self, data: ApiDataModel) -> ApiDataModel:
+    def create_order(self, product_id: int, quantity: int, user_id: int) -> dict:
         """
         创建订单接口
         POST /orders
-        @param data: ApiDataModel (包含 product_id, quantity, user_id)
-        @return: ApiDataModel
+        @param product_id: 产品ID
+        @param quantity: 数量
+        @param user_id: 用户ID
+        @return: 响应字典
         """
-        data.request.url = self._get_url("orders")
-        return self.http(data)
+        url = self._get_url("orders")
+        response = requests.post(
+            url,
+            json={"product_id": product_id, "quantity": quantity, "user_id": user_id},
+        )
+        return response.json()
 
-    def get_all_orders(self, data: ApiDataModel) -> ApiDataModel:
+    def get_all_orders(self) -> dict:
         """
         获取所有订单接口
         GET /orders
-        @param data: ApiDataModel
-        @return: ApiDataModel
+        @return: 响应字典
         """
-        data.request.url = self._get_url("orders")
-        return self.http(data)
+        url = self._get_url("orders")
+        response = requests.get(url)
+        return response.json()
 
-    def get_order_by_id(self, data: ApiDataModel) -> ApiDataModel:
+    def get_order_by_id(self, order_id: int) -> dict:
         """
         根据ID获取订单接口
         GET /orders/{order_id}
-        @param data: ApiDataModel
-        @return: ApiDataModel
+        @param order_id: 订单ID
+        @return: 响应字典
         """
-        data.request.url = self._get_url("orders")
-        return self.http(data)
+        url = self._get_url(f"orders/{order_id}")
+        response = requests.get(url)
+        return response.json()
 
-    def update_order_info(self, data: ApiDataModel) -> ApiDataModel:
+    def update_order_info(self, order_id: int, **kwargs) -> dict:
         """
         更新订单信息接口
-        PUT /orders?id={id}
-        @param data: ApiDataModel
-        @return: ApiDataModel
+        PUT /orders?id={order_id}
+        @param order_id: 订单ID
+        @param kwargs: 更新字段
+        @return: 响应字典
         """
-        data.request.url = self._get_url("orders")
-        return self.http(data)
+        url = self._get_url("orders")
+        response = requests.put(url, params={"id": order_id}, json=kwargs)
+        return response.json()
 
-    def delete_order(self, data: ApiDataModel) -> ApiDataModel:
+    def delete_order(self, order_id: int) -> dict:
         """
         删除订单接口
-        DELETE /orders?id={id}
-        @param data: ApiDataModel
-        @return: ApiDataModel
+        DELETE /orders?id={order_id}
+        @param order_id: 订单ID
+        @return: 响应字典
         """
-        data.request.url = self._get_url("orders")
-        return self.http(data)
+        url = self._get_url("orders")
+        response = requests.delete(url, params={"id": order_id})
+        return response.json()

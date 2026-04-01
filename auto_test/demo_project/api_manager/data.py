@@ -1,36 +1,35 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description: 
+# @Description:
 # @Time   : 2026-01-18 13:57
 # @Author : 毛鹏
 from urllib.parse import urljoin
 
-from models.api_model import ApiDataModel
-from tools.base_request.request_tool import RequestTool
-from tools.decorator.response import request_data
+import requests
 
 
-class DataAPI(RequestTool):
+class DataAPI:
     """数据API - 对应 /api/data 接口"""
 
     def __init__(self):
-        super().__init__()
         self._host = "http://localhost:8003"
 
     def set_host(self, host: str):
         """设置API服务器地址"""
-        self._host = host.rstrip('/')
+        self._host = host.rstrip("/")
 
     def _get_url(self, path: str) -> str:
         """获取完整URL"""
         return urljoin(self._host + "/", path)
 
-    def submit_data(self, data: ApiDataModel) -> ApiDataModel:
+    def submit_data(self, name: str, value: str) -> dict:
         """
         提交数据接口
         POST /api/data
-        @param data: ApiDataModel (包含 name, value)
-        @return: ApiDataModel
+        @param name: 数据名称
+        @param value: 数据值
+        @return: 响应字典
         """
-        data.request.url = self._get_url("api/data")
-        return self.http(data)
+        url = self._get_url("api/data")
+        response = requests.post(url, json={"name": name, "value": value})
+        return response.json()

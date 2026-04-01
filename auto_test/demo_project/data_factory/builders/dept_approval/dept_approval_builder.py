@@ -1,146 +1,171 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description: 部门审批构造器 - C级模块 (依赖D级)
+# @Description: 部门审批构造器 - 使用Entity的新版本 (C级)
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-from typing import Dict, Any, List, Optional
+from typing import Optional, List
 
 from ..base_builder import BaseBuilder
-from auto_test.demo_project.api_manager import demo_project
+from ...entities.dept_approval import DeptApprovalEntity
 from ...registry import register_builder
+from ....api_manager import demo_project
 
 
 @register_builder("dept_approval")
-class DeptApprovalBuilder(BaseBuilder):
+class DeptApprovalBuilder(BaseBuilder[DeptApprovalEntity]):
     """
     部门审批构造器 - C级模块
-    对应 /dept-approvals 接口
+
     依赖D级：Reimbursement（报销申请）
+    使用Entity进行数据构造和API调用
     """
 
     def __init__(self, token: str = None, factory=None):
         super().__init__(token, factory)
-        self._dept_manager_id = 3  # 部门经理用户ID
 
-    def build(self, reimbursement_id: int, approver_id: int = None,
-              status: str = "approved", comment: str = None) -> Dict[str, Any]:
+    def build(
+        self,
+        reimbursement_id: int = 0,
+        approver_id: int = 0,
+        status: str = "approved",
+        comment: str = None,
+    ) -> DeptApprovalEntity:
         """
-        构造部门审批数据（不调用API）
+        构造部门审批实体（不调用API）
+
         @param reimbursement_id: 报销申请ID（D级依赖）
         @param approver_id: 审批人ID
         @param status: 审批状态（approved/rejected）
         @param comment: 审批意见
-        @return: 部门审批数据字典
+        @return: 部门审批实体
         """
-        return {
-            "reimbursement_id": reimbursement_id,
-            "approver_id": approver_id or self._dept_manager_id,
-            "status": status,
-            "comment": comment or ("同意" if status == "approved" else "拒绝")
-        }
+        return DeptApprovalEntity(
+            reimbursement_id=reimbursement_id,
+            approver_id=approver_id,
+            status=status,
+            comment=comment or ("审批通过" if status == "approved" else "审批拒绝"),
+        )
 
-    def create(self, reimbursement_id: int, approver_id: int = None,
-               status: str = "approved", comment: str = None) -> Dict[str, Any]:
+    def create(
+        self, entity: DeptApprovalEntity = None, **kwargs
+    ) -> Optional[DeptApprovalEntity]:
         """
         创建部门审批（调用API）
-        依赖：D级报销申请必须存在且状态为pending
-        @return: 创建的部门审批数据
-        """
-        approval_data = self.build(reimbursement_id, approver_id, status, comment)
 
-        api_data = self._create_api_data(
-            url="/dept-approvals",
-            method="POST",
-            json_data=approval_data
+        @param entity: 实体实例（不传则使用kwargs构造）
+        @param kwargs: 构造参数
+        @return: 创建后的实体
+        """
+        if entity is None:
+            entity = self.build(**kwargs)
+
+        if not entity.validate():
+            return None
+
+        result = demo_project.dept_approval.create_dept_approval(
+            reimbursement_id=entity.reimbursement_id,
+            approver_id=entity.approver_id,
+            status=entity.status,
+            comment=entity.comment,
         )
 
-        result = demo_project.dept_approval.create_dept_approval(api_data)
-        if result.response and result.response.json().get("code") == 200:
-            created_approval = result.response.json()["data"]
-            self._register_created(created_approval)
-            return created_approval
+        if result.get("code") == 200:
+            data = result["data"]
+            created_entity = DeptApprovalEntity.from_api_response(data)
+            self._register_created(created_entity)
+            return created_entity
+
         return None
 
-    def get_all(self, reimbursement_id: int = None) -> List[Dict[str, Any]]:
+    def get_by_id(self, approval_id: int) -> Optional[DeptApprovalEntity]:
         """
-        获取部门审批列表
-        @param reimbursement_id: 可选，按报销申请ID筛选
-        @return: 部门审批列表
-        """
-        params = {}
-        if reimbursement_id:
-            params["reimbursement_id"] = reimbursement_id
+        根据ID获取部门审批
 
-        api_data = self._create_api_data(
-            url="/dept-approvals",
-            method="GET",
-            params=params
-        )
-
-        result = demo_project.dept_approval.get_dept_approvals(api_data)
-        if result.response and result.response.json().get("code") == 200:
-            return result.response.json()["data"]
-        return []
-
-    def get_by_reimbursement(self, reimbursement_id: int) -> Optional[Dict[str, Any]]:
+        @param approval_id: 审批ID
+        @return: 部门审批实体
         """
-        根据报销申请ID获取部门审批
-        @param reimbursement_id: 报销申请ID
-        @return: 部门审批数据
-        """
-        approvals = self.get_all(reimbursement_id)
-        if approvals:
-            return approvals[0]
+        result = demo_project.dept_approval.get_dept_approval_by_id(approval_id)
+
+        if result.get("code") == 200:
+            data = result["data"]
+            return DeptApprovalEntity.from_api_response(data)
+
         return None
 
-    def update(self, approval_id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    def update(self, entity: DeptApprovalEntity) -> Optional[DeptApprovalEntity]:
         """
         更新部门审批
-        @param approval_id: 审批ID
-        @param data: 更新数据
-        @return: 更新后的部门审批数据
+
+        @param entity: 实体实例
+        @return: 更新后的实体
         """
-        api_data = self._create_api_data(
-            url="/dept-approvals",
-            method="PUT",
-            params={"approval_id": approval_id},
-            json_data=data
+        result = demo_project.dept_approval.update_dept_approval(
+            approval_id=entity.id, **entity.to_api_payload()
         )
 
-        result = demo_project.dept_approval.update_dept_approval(api_data)
-        if result.response and result.response.json().get("code") == 200:
-            return result.response.json()["data"]
+        if result.get("code") == 200:
+            data = result["data"]
+            return DeptApprovalEntity.from_api_response(data)
+
         return None
 
-    def approve(self, reimbursement_id: int, approver_id: int = None,
-                comment: str = "同意") -> Dict[str, Any]:
+    def delete(self, entity: DeptApprovalEntity) -> bool:
         """
-        快捷方法：通过部门审批
+        删除部门审批
+
+        @param entity: 实体实例
+        @return: 是否删除成功
+        """
+        result = demo_project.dept_approval.delete_dept_approval(entity.id)
+
+        if result.get("code") == 200:
+            entity.mark_as_deleted()
+            return True
+
+        return False
+
+    def get_all(self) -> List[DeptApprovalEntity]:
+        """
+        获取所有部门审批
+
+        @return: 部门审批实体列表
+        """
+        result = demo_project.dept_approval.get_dept_approvals()
+
+        if result.get("code") == 200:
+            data_list = result["data"]
+            return [DeptApprovalEntity.from_api_response(d) for d in data_list]
+
+        return []
+
+    def approve(self, reimbursement_id: int, approver_id: int = 3, comment: str = "审批通过") -> Optional[DeptApprovalEntity]:
+        """
+        快速审批通过
+
         @param reimbursement_id: 报销申请ID
         @param approver_id: 审批人ID
         @param comment: 审批意见
-        @return: 创建的部门审批数据
+        @return: 创建的审批实体
         """
-        return self.create(reimbursement_id, approver_id, "approved", comment)
+        return self.create(
+            reimbursement_id=reimbursement_id,
+            approver_id=approver_id,
+            status="approved",
+            comment=comment
+        )
 
-    def reject(self, reimbursement_id: int, approver_id: int = None,
-               comment: str = "拒绝") -> Dict[str, Any]:
+    def reject(self, reimbursement_id: int, approver_id: int = 3, comment: str = "审批拒绝") -> Optional[DeptApprovalEntity]:
         """
-        快捷方法：拒绝部门审批
+        快速审批拒绝
+
         @param reimbursement_id: 报销申请ID
         @param approver_id: 审批人ID
         @param comment: 审批意见
-        @return: 创建的部门审批数据
+        @return: 创建的审批实体
         """
-        return self.create(reimbursement_id, approver_id, "rejected", comment)
-
-    def can_create(self, reimbursement_id: int) -> bool:
-        """
-        检查是否可以创建部门审批
-        条件：报销申请存在且状态为pending
-        @param reimbursement_id: 报销申请ID
-        @return: 是否可以创建
-        """
-        from ..reimbursement import ReimbursementBuilder
-        reimbursement_builder = ReimbursementBuilder(self.token, self.factory)
-        return reimbursement_builder.is_pending(reimbursement_id)
+        return self.create(
+            reimbursement_id=reimbursement_id,
+            approver_id=approver_id,
+            status="rejected",
+            comment=comment
+        )
