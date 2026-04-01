@@ -5,6 +5,7 @@
 # @Author : 毛鹏
 from typing import Dict, Any, Optional
 import uuid
+import hashlib
 
 from auto_test.demo_project.api_manager import demo_project
 from ...registry import register_builder
@@ -21,7 +22,7 @@ class AuthBuilder:
         self.token = token
         self.factory = factory
         self.default_username = "testuser"
-        self.default_password = "482c811da5d5b4bc6d497ffa98491e38"
+        self.default_password = "password123"  # 明文密码，发送前会进行 MD5 加密
 
     def build_login_data(
         self, username: str = None, password: str = None
@@ -60,13 +61,29 @@ class AuthBuilder:
         """
         login_data = self.build_login_data(username, password)
 
-        result = demo_project.auth.api_login(
-            username=login_data["username"], password=login_data["password"]
+        # 对密码进行 MD5 加密
+        password_md5 = hashlib.md5(login_data["password"].encode()).hexdigest()
+
+        print(
+            f"\n[AuthBuilder] 正在登录: username={login_data['username']}, password={login_data['password'][:10]}..."
         )
+        print(f"[AuthBuilder] MD5加密后: {password_md5}")
+
+        result = demo_project.auth.api_login(
+            username=login_data["username"], password=password_md5
+        )
+
+        print(f"[AuthBuilder] 登录结果: {result}")
+
         if result.get("code") == 200:
             token = result["data"]["token"]
             self.token = token
+            print(f"[AuthBuilder] 登录成功, token={token[:20]}...")
             return token
+        else:
+            print(
+                f"[AuthBuilder] 登录失败: code={result.get('code')}, message={result.get('message')}"
+            )
         return None
 
     def register(
@@ -82,11 +99,14 @@ class AuthBuilder:
         """
         register_data = self.build_register_data(username, email, full_name, password)
 
+        # 对密码进行 MD5 加密
+        password_md5 = hashlib.md5(register_data["password"].encode()).hexdigest()
+
         result = demo_project.auth.api_register(
             username=register_data["username"],
             email=register_data["email"],
             full_name=register_data["full_name"],
-            password=register_data["password"],
+            password=password_md5,
         )
         if result.get("code") == 200:
             return result["data"]
