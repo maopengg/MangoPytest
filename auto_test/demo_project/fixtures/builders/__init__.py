@@ -10,20 +10,17 @@ Builder Fixtures 模块
 提供预配置的构造器 fixtures
 
 分层结构：
-- D模块（基础层）: org_builder, user_builder
-- C模块（预算层）: budget_builder
+- D模块（基础层）: user_builder
+- C模块（预算层）: (预留)
 - B模块（报销层）: reimb_builder
 - A模块（付款层）: payment_builder
 """
 
 from .d_fixtures import (
-    org_builder,
     user_builder,
 )
 
-from .c_fixtures import (
-    budget_builder,
-)
+from .c_fixtures import *
 
 from .b_fixtures import (
     reimb_builder,
@@ -37,10 +34,8 @@ from .a_fixtures import (
 
 __all__ = [
     # D模块
-    "org_builder",
     "user_builder",
     # C模块
-    "budget_builder",
     # B模块
     "reimb_builder",
     "approved_reimbursement",

@@ -33,8 +33,6 @@ from .infra.client import (
 
 from .infra.context import (
     test_context,
-    class_context,
-    module_context,
     TestContext,
 )
 
@@ -157,8 +155,6 @@ __all__ = [
     "authenticated_client",
     "api_client_with_cleanup",
     "test_context",
-    "class_context",
-    "module_context",
     "TestContext",
     "db_session",
     "db_transaction",

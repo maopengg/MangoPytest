@@ -38,7 +38,7 @@
     // 编辑器设置
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-        "source.organizeImports": true
+        "source.organizeImports": "explicit"
     },
     // 文件关联
     "files.associations": {

@@ -42,6 +42,10 @@ def __getattr__(name):
         from .user.user_builder import UserBuilder
 
         return UserBuilder
+    elif name == "OrgBuilder":
+        from .org.org_builder import OrgBuilder
+
+        return OrgBuilder
     elif name == "ReimbursementBuilder":
         from .reimbursement.reimbursement_builder import ReimbursementBuilder
 
@@ -62,6 +66,10 @@ def __getattr__(name):
         from .payment.payment_builder import PaymentBuilder
 
         return PaymentBuilder
+    elif name == "BudgetBuilder":
+        from .budget.budget_builder import BudgetBuilder
+
+        return BudgetBuilder
     raise AttributeError(f"module '{__name__}' has no attribute '{name}'")
 
 
@@ -72,6 +80,8 @@ __all__ = [
     "DependencyLevel",
     # 具体构造器
     "UserBuilder",
+    "OrgBuilder",
+    "BudgetBuilder",
     "ReimbursementBuilder",
     "DeptApprovalBuilder",
     "FinanceApprovalBuilder",

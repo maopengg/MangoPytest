@@ -38,7 +38,9 @@ class TestDeptApprovalAPI:
         self, api_client, dept_manager_id
     ):
         """测试创建部门审批 - 报销申请不存在"""
-        demo_project.dept_approval.set_token(api_client.token)
+        # 使用全局token设置
+        if hasattr(api_client, "token") and api_client.token:
+            demo_project.auth.set_token(api_client.token)
         result = demo_project.dept_approval.create_dept_approval(
             reimbursement_id=99999,
             approver_id=dept_manager_id,

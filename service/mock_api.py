@@ -17,6 +17,8 @@ from pydantic import BaseModel
 from fastapi import Request, UploadFile, File
 import pymysql
 from contextlib import contextmanager
+import json
+import time
 
 # MySQL 配置
 MYSQL_CONFIG = {
@@ -32,7 +34,92 @@ MYSQL_CONFIG = {
 app = FastAPI(title="Mock API Service", description="使用MySQL存储的模拟后端服务")
 
 # ========================
-# 中间件
+# 请求/响应日志中间件
+# ========================
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    """
+    请求/响应日志中间件
+    记录所有请求和响应的详细信息
+    """
+    start_time = time.time()
+    
+    # 生成请求ID
+    request_id = str(uuid.uuid4())[:8]
+    
+    # 获取请求信息
+    method = request.method
+    url = str(request.url)
+    client_host = request.client.host if request.client else "unknown"
+    
+    # 尝试获取请求体
+    body = None
+    if method in ["POST", "PUT", "PATCH"]:
+        try:
+            body_bytes = await request.body()
+            if body_bytes:
+                body = body_bytes.decode('utf-8')
+                # 重新设置请求体，以便后续处理
+                async def receive():
+                    return {"type": "http.request", "body": body_bytes}
+                request._receive = receive
+        except Exception as e:
+            body = f"无法读取请求体: {e}"
+    
+    # 打印请求日志
+    print(f"\n{'='*80}")
+    print(f"[{request_id}] 🚀 请求: {method} {url}")
+    print(f"[{request_id}] 📍 客户端: {client_host}")
+    print(f"[{request_id}] 📋 Headers: {dict(request.headers)}")
+    if body:
+        try:
+            # 尝试格式化 JSON
+            body_json = json.loads(body)
+            # 隐藏敏感信息（密码）
+            if isinstance(body_json, dict) and 'password' in body_json:
+                body_json['password'] = '***'
+            print(f"[{request_id}] 📦 Body: {json.dumps(body_json, ensure_ascii=False, indent=2)}")
+        except:
+            print(f"[{request_id}] 📦 Body: {body[:500]}")  # 限制长度
+    
+    # 处理请求
+    try:
+        response = await call_next(request)
+        
+        # 计算处理时间
+        process_time = (time.time() - start_time) * 1000
+        
+        # 打印响应日志
+        status_code = response.status_code
+        status_icon = "✅" if status_code < 400 else "❌"
+        print(f"[{request_id}] {status_icon} 响应: {status_code} ({process_time:.2f}ms)")
+        
+        # 尝试读取响应体
+        try:
+            response_body = [section async for section in response.__dict__.get('body_iterator', [])]
+            if response_body:
+                body_content = b''.join(response_body).decode('utf-8')
+                try:
+                    body_json = json.loads(body_content)
+                    print(f"[{request_id}] 📤 Response: {json.dumps(body_json, ensure_ascii=False, indent=2)[:1000]}")
+                except:
+                    print(f"[{request_id}] 📤 Response: {body_content[:500]}")
+        except Exception as e:
+            print(f"[{request_id}] ⚠️ 无法读取响应体: {e}")
+        
+        print(f"{'='*80}\n")
+        
+        return response
+        
+    except Exception as e:
+        process_time = (time.time() - start_time) * 1000
+        print(f"[{request_id}] 💥 异常: {str(e)} ({process_time:.2f}ms)")
+        print(f"{'='*80}\n")
+        raise
+
+# ========================
+# CORS中间件
 # ========================
 
 app.add_middleware(
