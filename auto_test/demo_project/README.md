@@ -2,9 +2,47 @@
 
 ## 项目概述
 
-本项目是一个基于 pytest 的自动化测试框架演示项目，展示了如何使用数据工厂（Data Factory）模式来构建可维护、可扩展的 API 自动化测试。项目采用分层架构设计，包含 Entity、Builder、Scenario 等多个层次，实现了测试数据与测试逻辑的分离。
+本项目是一个基于 pytest 的自动化测试框架演示项目，展示了如何使用数据工厂（Data Factory）模式来构建可维护、可扩展的 API 自动化测试。项目采用分层架构设计，包含 Entity、Builder、Scenario、Strategy 等多个层次，实现了测试数据与测试逻辑的分离。
+
+**核心特性**：
+
+- **领域驱动设计**：业务实体封装数据与行为，非静态配置
+- **依赖自动解决**：A→B→C→D 链式依赖自动构造，无需手动准备
+- **环境自适应**：同一套代码，自动适配 dev/test/prod/ci 环境
+- **参数化场景**：业务变体自动生成，笛卡尔积覆盖组合场景
+- **全链路追踪**：数据血缘自动记录，故障一键定位
+- **状态机驱动**：实体状态流转自动化，支持复杂业务场景
 
 ## 项目架构
+
+### 四层架构
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  L4: 用例层 (Test Case)                                  │
+│  ├── 单接口测试（60%）- 本模块逻辑、边界、异常            │
+│  ├── 模块集成测试（30%）- 真实依赖验证                    │
+│  └── 端到端测试（10%）- 完整业务闭环                      │
+├─────────────────────────────────────────────────────────┤
+│  L3: 场景层 (Scenario) - 业务语义封装                    │
+│  ├── 变体矩阵（VariantMatrix）- 参数化组合生成用例         │
+│  ├── 依赖声明（Dependencies）- 自动解决前置数据           │
+│  └── 业务编排（Orchestrate）- 状态机驱动流程               │
+├─────────────────────────────────────────────────────────┤
+│  L2: 实体层 (Entity) - 领域对象定义                       │
+│  ├── 领域属性 - 业务字段强类型定义                         │
+│  ├── 业务行为 - login()/approve()/submit() 等方法         │
+│  └── 工厂方法 - admin()/locked()/with_budget() 智能构造   │
+├─────────────────────────────────────────────────────────┤
+│  L1: 策略层 (Strategy) - 构造与持久化                    │
+│  ├── APIStrategy - 调用REST/GraphQL接口（默认）           │
+│  ├── DBStrategy - 直接SQL插入（批量/性能）                │
+│  ├── HybridStrategy - API头+DB明细（复杂对象）            │
+│  └── MockStrategy - 本地内存对象（单元测试）              │
+└─────────────────────────────────────────────────────────┘
+```
+
+### 目录结构
 
 ```
 auto_test/demo_project/
@@ -49,8 +87,25 @@ auto_test/demo_project/
 │   │   ├── auth_scenarios.py
 │   │   └── reimbursement_scenarios.py
 │   │
-│   └── strategies/       # 策略层 - 数据构造策略
-│       └── base_strategy.py
+│   ├── strategies/       # 策略层 - 数据构造策略
+│   │   ├── base_strategy.py
+│   │   ├── api_strategy.py
+│   │   ├── mock_strategy.py
+│   │   ├── db_strategy.py
+│   │   └── hybrid_strategy.py
+│   │
+│   ├── state_machine/    # 状态机层 - 实体状态管理
+│   │   ├── state_machine.py
+│   │   └── user_state_machine.py
+│   │
+│   ├── lineage/          # 血缘追踪层 - 数据血缘管理
+│   │   ├── node.py       # 血缘节点定义
+│   │   ├── graph.py      # 血缘图管理
+│   │   ├── tracker.py    # 血缘追踪器
+│   │   └── analyzer.py   # 血缘分析器
+│   │
+│   └── variant_matrix/   # 变体矩阵层 - 参数化测试
+│       └── variant_matrix.py
 │
 ├── fixtures/             # pytest Fixtures
 │   ├── conftest.py       # 全局 Fixture 配置
@@ -59,6 +114,7 @@ auto_test/demo_project/
 │   └── scenarios/        # Scenario Fixtures
 │
 ├── test_cases/           # 测试用例层
+│   ├── base.py           # 测试分层基类
 │   ├── test_auth.py      # 认证测试
 │   ├── test_user.py      # 用户管理测试
 │   ├── test_product.py   # 产品管理测试
@@ -72,6 +128,13 @@ auto_test/demo_project/
 │   ├── test_data.py      # 数据提交测试
 │   ├── test_system.py    # 系统信息测试
 │   └── test_new_architecture.py # 新架构演示测试
+│
+├── examples/             # 示例代码
+│   ├── strategy_demo.py          # 策略层演示
+│   ├── state_machine_demo.py     # 状态机演示
+│   ├── variant_matrix_demo.py    # 变体矩阵演示
+│   ├── test_layer_demo.py        # 测试分层演示
+│   └── lineage_demo.py           # 血缘追踪演示
 │
 └── config/               # 配置管理
     ├── settings.py       # 基础配置
@@ -185,7 +248,7 @@ builder.delete(reimbursement)
 
 **Builder 类型：**
 - `UserBuilder` - 用户构造器
-- `ReimbursementBuilder` - 报销申请构造器
+- `ReimbursementBuilder` - 报销申请构造器（含 approve/reject 快捷方法）
 - `DeptApprovalBuilder` - 部门审批构造器（含 approve/reject 快捷方法）
 - `FinanceApprovalBuilder` - 财务审批构造器（含 approve/reject 快捷方法）
 - `CEOApprovalBuilder` - CEO审批构造器（含 approve/reject 快捷方法）
@@ -226,6 +289,137 @@ if result.success:
 - `CreateReimbursementScenario` - 创建报销申请场景
 - `FullApprovalWorkflowScenario` - 完整4级审批流程场景
 
+#### 2.4 Strategy（策略层）
+
+提供多种数据构造策略，支持不同测试场景：
+
+```python
+from auto_test.demo_project.data_factory.strategies import (
+    APIContextStrategy,
+    MockStrategy,
+    DBStrategy,
+    HybridStrategy,
+)
+
+# API策略（默认）- 真实接口调用
+api_strategy = APIContextStrategy(api_client)
+
+# Mock策略 - 本地快速测试
+mock_strategy = MockStrategy()
+
+# DB策略 - 直接数据库操作
+db_strategy = DBStrategy(db_connection)
+
+# Hybrid策略 - API+DB混合
+hybrid_strategy = HybridStrategy(api_client, db_connection)
+```
+
+**策略类型：**
+- `APIContextStrategy` - API调用策略
+- `MockStrategy` - Mock数据策略
+- `DBStrategy` - 数据库策略
+- `HybridStrategy` - 混合策略
+
+#### 2.5 State Machine（状态机层）
+
+实体状态管理，支持状态流转和验证：
+
+```python
+from auto_test.demo_project.data_factory.state_machine import UserStateMachine
+
+# 创建状态机
+sm = UserStateMachine()
+
+# 定义状态流转
+sm.add_transition("active", "locked", "lock")
+sm.add_transition("locked", "inactive", "deactivate")
+sm.add_transition("active", "inactive", "deactivate")
+
+# 执行状态转换
+sm.transition_to("locked")  # active -> locked
+sm.transition_to("inactive")  # locked -> inactive
+
+# 获取当前状态
+current_state = sm.current_state
+
+# 获取状态历史
+history = sm.get_transition_history()
+```
+
+**状态机类型：**
+- `StateMachine` - 基础状态机
+- `UserStateMachine` - 用户状态机
+
+#### 2.6 Lineage（血缘追踪层）
+
+数据血缘自动记录和追踪：
+
+```python
+from auto_test.demo_project.data_factory.lineage import DataLineageTracker
+
+# 创建追踪器
+tracker = DataLineageTracker()
+
+# 记录数据创建
+user_id = tracker.record_creation(
+    entity_type="user",
+    entity_id="user_001",
+    source="api_call",
+    metadata={"username": "张三"}
+)
+
+# 记录依赖关系
+tracker.record_dependency(
+    from_entity="order:order_001",
+    to_entity="user:user_001",
+    relation_type=LineageRelation.DEPENDS_ON
+)
+
+# 上游追溯
+upstream = tracker.get_upstream("payment:payment_001")
+
+# 下游追溯
+downstream = tracker.get_downstream("user:user_001")
+
+# 影响分析
+impact = tracker.get_impact_analysis("order:order_001")
+```
+
+**血缘功能：**
+- `DataLineageNode` - 血缘节点
+- `DataLineageGraph` - 血缘图
+- `DataLineageTracker` - 血缘追踪器
+- `LineageAnalyzer` - 血缘分析器
+
+#### 2.7 Variant Matrix（变体矩阵层）
+
+参数化测试，笛卡尔积自动生成用例：
+
+```python
+from auto_test.demo_project.data_factory.scenarios.variant_matrix import (
+    VariantMatrix, Dimension, Variant
+)
+
+# 定义维度
+dimensions = [
+    Dimension("user_type", [
+        Variant("admin", {"role": "admin"}),
+        Variant("normal", {"role": "user"}),
+    ]),
+    Dimension("amount", [
+        Variant("small", {"amount": 100}),
+        Variant("large", {"amount": 10000}),
+    ]),
+]
+
+# 创建变体矩阵
+matrix = VariantMatrix(dimensions)
+
+# 生成所有组合（笛卡尔积）
+combinations = matrix.generate_combinations()
+# 生成: (admin, small), (admin, large), (normal, small), (normal, large)
+```
+
 ### 3. Fixtures（测试夹具）
 
 提供预配置的测试数据，简化测试用例编写：
@@ -253,6 +447,56 @@ def test_with_full_workflow(full_approval_workflow):
 - `finance_approved_reimbursement` - 财务已审批的报销申请
 - `ceo_approved_reimbursement` - CEO已审批的报销申请
 - `fully_approved_reimbursement` - 完整审批通过的报销申请
+
+### 4. Test Cases（测试用例层）
+
+#### 4.1 测试分层
+
+```python
+from auto_test.demo_project.test_cases import UnitTest, IntegrationTest, E2ETest
+
+# 单元测试 - 单接口测试
+class TestUserAPI(UnitTest):
+    def test_create_user(self):
+        result = self.call_api("POST", "/users", {"name": "test"})
+        self.assert_success(result)
+
+# 集成测试 - 模块间集成
+class TestOrderPayment(IntegrationTest):
+    def test_order_creates_payment(self):
+        order = self.run_scenario(CreateOrderScenario)
+        payment = self.get_related(order, "payment")
+        self.assert_consistency(order.amount, payment.amount)
+
+# 端到端测试 - 完整业务流程
+class TestApprovalFlow(E2ETest):
+    def test_full_approval(self):
+        duration = self.measure_performance(
+            self.run_business_flow,
+            flow=FullApprovalFlow
+        )
+        self.assert_sla(duration, max_seconds=5)
+```
+
+**测试分层类型：**
+- `UnitTest` - 单元测试（60%）
+- `IntegrationTest` - 集成测试（30%）
+- `E2ETest` - 端到端测试（10%）
+
+#### 4.2 数据驱动测试
+
+```python
+from auto_test.demo_project.test_cases import case_data
+
+class TestLogin(UnitTest):
+    @case_data([
+        {"username": "admin", "password": "123456", "expected": "success"},
+        {"username": "user", "password": "wrong", "expected": "fail"},
+    ])
+    def test_login(self, username, password, expected):
+        result = self.login(username, password)
+        self.assertEqual(result.status, expected)
+```
 
 ## 执行用例全流程
 
@@ -315,9 +559,28 @@ python -m pytest auto_test/demo_project/test_cases/test_auth.py::TestAuthLogin -
 python -m pytest auto_test/demo_project/test_cases/test_auth.py::TestAuthLogin::test_login_success -v
 ```
 
-### 3. 测试执行流程详解
+### 3. 运行示例演示
 
-#### 3.1 基础模块测试流程（以 test_auth.py 为例）
+```bash
+# 策略层演示
+python auto_test/demo_project/examples/strategy_demo.py
+
+# 状态机演示
+python auto_test/demo_project/examples/state_machine_demo.py
+
+# 变体矩阵演示
+python auto_test/demo_project/examples/variant_matrix_demo.py
+
+# 测试分层演示
+python auto_test/demo_project/examples/test_layer_demo.py
+
+# 血缘追踪演示
+python auto_test/demo_project/examples/lineage_demo.py
+```
+
+### 4. 测试执行流程详解
+
+#### 4.1 基础模块测试流程（以 test_auth.py 为例）
 
 ```
 1. 初始化阶段
@@ -335,7 +598,7 @@ python -m pytest auto_test/demo_project/test_cases/test_auth.py::TestAuthLogin::
    └── fixture 自动清理
 ```
 
-#### 3.2 数据工厂测试流程（以 test_reimbursement.py 为例）
+#### 4.2 数据工厂测试流程（以 test_reimbursement.py 为例）
 
 ```
 1. 初始化阶段
@@ -353,7 +616,7 @@ python -m pytest auto_test/demo_project/test_cases/test_auth.py::TestAuthLogin::
    └── Builder 自动清理创建的数据
 ```
 
-#### 3.3 复杂审批流程测试（以 test_approval_workflow.py 为例）
+#### 4.3 复杂审批流程测试（以 test_approval_workflow.py 为例）
 
 ```
 1. 初始化阶段
@@ -374,7 +637,7 @@ python -m pytest auto_test/demo_project/test_cases/test_auth.py::TestAuthLogin::
    └── 各 Builder 自动清理创建的数据
 ```
 
-### 4. 测试数据流向
+### 5. 测试数据流向
 
 ```
 测试用例 (Test Case)
@@ -394,7 +657,7 @@ Entity（数据模型）
 测试用例（断言验证）
 ```
 
-### 5. 多级审批依赖关系
+### 6. 多级审批依赖关系
 
 本项目演示了4级审批流程的依赖关系：
 
@@ -414,9 +677,9 @@ D级模块（报销申请）
 - 必须通过财务审批（B级），才能进行CEO审批（A级）
 - 任一环节拒绝，流程终止
 
-### 6. 查看测试结果
+### 7. 查看测试结果
 
-#### 6.1 控制台输出
+#### 7.1 控制台输出
 
 ```bash
 ============================= test session starts =============================
@@ -430,7 +693,7 @@ auto_test/demo_project/test_cases/test_auth.py::TestAuthLogin::test_login_wrong_
 ============================== 120 passed, 3 skipped, 3 failed in 13.03s ==============================
 ```
 
-#### 6.2 Allure 报告
+#### 7.2 Allure 报告
 
 ```bash
 # 生成报告
@@ -538,6 +801,115 @@ def test_with_approval_workflow(full_approval_workflow):
     assert full_approval_workflow["ceo_approval"]["status"] == "approved"
 ```
 
+### 示例5：使用策略层
+
+```python
+# test_with_strategy.py
+from auto_test.demo_project.data_factory.strategies import (
+    APIContextStrategy, MockStrategy, HybridStrategy
+)
+from auto_test.demo_project.data_factory.builders import UserBuilder
+
+def test_with_mock_strategy():
+    """使用Mock策略快速测试"""
+    strategy = MockStrategy()
+    builder = UserBuilder(strategy=strategy)
+    
+    # 快速创建，不调用真实API
+    user = builder.create(username="test")
+    assert user.id is not None
+
+def test_with_api_strategy(api_client):
+    """使用API策略真实测试"""
+    strategy = APIContextStrategy(api_client)
+    builder = UserBuilder(strategy=strategy)
+    
+    # 真实调用API
+    user = builder.create(username="test")
+    assert user.id is not None
+```
+
+### 示例6：使用状态机
+
+```python
+# test_with_state_machine.py
+from auto_test.demo_project.data_factory.state_machine import UserStateMachine
+
+def test_user_state_transition():
+    """测试用户状态流转"""
+    sm = UserStateMachine()
+    
+    # 初始状态
+    assert sm.current_state == "active"
+    
+    # 锁定用户
+    sm.transition_to("locked")
+    assert sm.current_state == "locked"
+    
+    # 验证历史
+    history = sm.get_transition_history()
+    assert len(history) == 1
+    assert history[0]["from"] == "active"
+    assert history[0]["to"] == "locked"
+```
+
+### 示例7：使用变体矩阵
+
+```python
+# test_with_variant_matrix.py
+from auto_test.demo_project.data_factory.scenarios.variant_matrix import (
+    VariantMatrix, Dimension, Variant
+)
+
+def test_login_variants():
+    """测试登录多变体组合"""
+    dimensions = [
+        Dimension("user_type", [
+            Variant("admin", {"role": "admin"}),
+            Variant("normal", {"role": "user"}),
+            Variant("locked", {"role": "user", "status": "locked"}),
+        ]),
+        Dimension("credential", [
+            Variant("correct", {"password": "correct"}),
+            Variant("wrong", {"password": "wrong"}),
+        ]),
+    ]
+    
+    matrix = VariantMatrix(dimensions)
+    combinations = matrix.generate_combinations()
+    
+    # 自动生成6种组合
+    assert len(combinations) == 6
+```
+
+### 示例8：使用血缘追踪
+
+```python
+# test_with_lineage.py
+from auto_test.demo_project.data_factory.lineage import DataLineageTracker
+
+def test_data_lineage():
+    """测试数据血缘追踪"""
+    tracker = DataLineageTracker()
+    
+    # 记录数据创建
+    tracker.record_creation("user", "user_001")
+    tracker.record_creation("order", "order_001")
+    tracker.record_creation("payment", "payment_001")
+    
+    # 记录依赖
+    tracker.record_dependency("order:order_001", "user:user_001")
+    tracker.record_dependency("payment:payment_001", "order:order_001")
+    
+    # 上游追溯
+    upstream = tracker.get_upstream("payment:payment_001")
+    assert len(upstream) == 2  # user, order
+    
+    # 下游追溯
+    downstream = tracker.get_downstream("user:user_001")
+    assert len(downstream) == 2  # order, payment
+```
+
 ## 配置说明
 
 ### 环境配置
@@ -568,8 +940,12 @@ print(settings.HOST)
 1. **使用 Builder 创建测试数据** - 保证数据一致性，自动处理清理
 2. **使用 Fixture 复用测试数据** - 减少重复代码，提高执行效率
 3. **使用 Scenario 封装复杂流程** - 提高测试可读性和维护性
-4. **分层测试** - 单元测试（API）→ 集成测试（Builder）→ 端到端测试（Scenario）
-5. **数据清理** - 使用 Builder 的上下文管理器或 fixture 的 cleanup
+4. **使用 Strategy 灵活切换** - API/Mock/DB 按需选择
+5. **使用 State Machine 管理状态** - 清晰的状态流转控制
+6. **使用 Variant Matrix 参数化** - 全面覆盖组合场景
+7. **使用 Lineage 追踪数据** - 快速定位问题根源
+8. **分层测试** - 单元测试（快）→ 集成测试（真）→ 端到端测试（全）
+9. **数据清理** - 使用 Builder 的上下文管理器或 fixture 的 cleanup
 
 ## 注意事项
 
@@ -577,6 +953,7 @@ print(settings.HOST)
 2. 使用正确的 Python 虚拟环境
 3. 注意 fixture 的依赖关系和执行顺序
 4. 审批流程测试需要按顺序执行（D→C→B→A）
+5. 使用血缘追踪时注意性能影响（大数据量场景）
 
 ## 技术栈
 
