@@ -21,12 +21,12 @@ class DeptApprovalBuilder(BaseBuilder[DeptApprovalEntity]):
     """
 
     def __init__(self, token: str = None, factory=None):
-        super().__init__(token, factory)
+        super().__init__(token=token, factory=factory)
 
     def build(
         self,
         reimbursement_id: int = 0,
-        approver_id: int = 0,
+        approver_id: int = 3,  # 默认部门经理用户ID
         status: str = "approved",
         comment: str = None,
     ) -> DeptApprovalEntity:
@@ -59,8 +59,14 @@ class DeptApprovalBuilder(BaseBuilder[DeptApprovalEntity]):
         if entity is None:
             entity = self.build(**kwargs)
 
+        # 验证实体数据
         if not entity.validate():
+            print(f"[DeptApprovalBuilder] 实体验证失败: reimbursement_id={entity.reimbursement_id}, approver_id={entity.approver_id}, status={entity.status}")
             return None
+
+        # 设置token到API模块
+        if self.token:
+            demo_project.dept_approval.set_token(self.token)
 
         result = demo_project.dept_approval.create_dept_approval(
             reimbursement_id=entity.reimbursement_id,
@@ -69,11 +75,18 @@ class DeptApprovalBuilder(BaseBuilder[DeptApprovalEntity]):
             comment=entity.comment,
         )
 
+        print(f"[DeptApprovalBuilder] API返回结果: {result}")
+
         if result.get("code") == 200:
-            data = result["data"]
-            created_entity = DeptApprovalEntity.from_api_response(data)
-            self._register_created(created_entity)
-            return created_entity
+            data = result.get("data")
+            if data:
+                created_entity = DeptApprovalEntity.from_api_response(data)
+                self._register_created(created_entity)
+                return created_entity
+            else:
+                print(f"[DeptApprovalBuilder] API返回数据为空")
+        else:
+            print(f"[DeptApprovalBuilder] API调用失败: code={result.get('code')}, message={result.get('message')}")
 
         return None
 
@@ -84,6 +97,10 @@ class DeptApprovalBuilder(BaseBuilder[DeptApprovalEntity]):
         @param approval_id: 审批ID
         @return: 部门审批实体
         """
+        # 设置token到API模块
+        if self.token:
+            demo_project.dept_approval.set_token(self.token)
+
         result = demo_project.dept_approval.get_dept_approval_by_id(approval_id)
 
         if result.get("code") == 200:
@@ -99,6 +116,10 @@ class DeptApprovalBuilder(BaseBuilder[DeptApprovalEntity]):
         @param entity: 实体实例
         @return: 更新后的实体
         """
+        # 设置token到API模块
+        if self.token:
+            demo_project.dept_approval.set_token(self.token)
+
         result = demo_project.dept_approval.update_dept_approval(
             approval_id=entity.id, **entity.to_api_payload()
         )
@@ -116,6 +137,10 @@ class DeptApprovalBuilder(BaseBuilder[DeptApprovalEntity]):
         @param entity: 实体实例
         @return: 是否删除成功
         """
+        # 设置token到API模块
+        if self.token:
+            demo_project.dept_approval.set_token(self.token)
+
         result = demo_project.dept_approval.delete_dept_approval(entity.id)
 
         if result.get("code") == 200:
@@ -130,6 +155,10 @@ class DeptApprovalBuilder(BaseBuilder[DeptApprovalEntity]):
 
         @return: 部门审批实体列表
         """
+        # 设置token到API模块
+        if self.token:
+            demo_project.dept_approval.set_token(self.token)
+
         result = demo_project.dept_approval.get_dept_approvals()
 
         if result.get("code") == 200:

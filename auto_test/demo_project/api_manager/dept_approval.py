@@ -1,38 +1,25 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description:
+# @Description: 部门审批API - 使用 Core APIClient
 # @Time   : 2024-03-17 19:50
 # @Author : 毛鹏
-from urllib.parse import urljoin
 
-import requests
+from auto_test.demo_project.core.api.client import APIClient
 
 
 class DeptApprovalAPI:
     """部门审批API - 对应 /dept-approvals 接口"""
 
     def __init__(self):
-        self._host = "http://localhost:8003"
-        self._token = None
+        self._client = APIClient(base_url="http://localhost:8003")
 
     def set_host(self, host: str):
         """设置API服务器地址"""
-        self._host = host.rstrip("/")
+        self._client.set_base_url(host)
 
     def set_token(self, token: str):
         """设置认证token"""
-        self._token = token
-
-    def _get_url(self, path: str) -> str:
-        """获取完整URL"""
-        return urljoin(self._host + "/", path)
-
-    def _get_headers(self) -> dict:
-        """获取请求头"""
-        headers = {}
-        if self._token:
-            headers["X-Token"] = self._token
-        return headers
+        self._client.set_auth_token(token)
 
     def get_dept_approvals(self) -> dict:
         """
@@ -40,9 +27,8 @@ class DeptApprovalAPI:
         GET /dept-approvals
         @return: 响应字典
         """
-        url = self._get_url("dept-approvals")
-        response = requests.get(url, headers=self._get_headers())
-        return response.json()
+        response = self._client.get("/dept-approvals")
+        return response.data
 
     def get_dept_approval_by_id(self, approval_id: int) -> dict:
         """
@@ -51,11 +37,8 @@ class DeptApprovalAPI:
         @param approval_id: 审批ID
         @return: 响应字典
         """
-        url = self._get_url("dept-approvals")
-        response = requests.get(
-            url, params={"id": approval_id}, headers=self._get_headers()
-        )
-        return response.json()
+        response = self._client.get("/dept-approvals", params={"id": approval_id})
+        return response.data
 
     def create_dept_approval(
         self, reimbursement_id: int, approver_id: int, status: str, comment: str = None
@@ -69,7 +52,6 @@ class DeptApprovalAPI:
         @param comment: 审批意见
         @return: 响应字典
         """
-        url = self._get_url("dept-approvals")
         data = {
             "reimbursement_id": reimbursement_id,
             "approver_id": approver_id,
@@ -77,8 +59,8 @@ class DeptApprovalAPI:
         }
         if comment:
             data["comment"] = comment
-        response = requests.post(url, json=data, headers=self._get_headers())
-        return response.json()
+        response = self._client.post("/dept-approvals", data=data)
+        return response.data
 
     def update_dept_approval(self, approval_id: int, **kwargs) -> dict:
         """
@@ -88,14 +70,12 @@ class DeptApprovalAPI:
         @param kwargs: 更新字段
         @return: 响应字典
         """
-        url = self._get_url("dept-approvals")
-        response = requests.put(
-            url,
-            params={"approval_id": approval_id},
-            json=kwargs,
-            headers=self._get_headers(),
+        response = self._client.put(
+            "/dept-approvals",
+            data=kwargs,
+            params={"approval_id": approval_id}
         )
-        return response.json()
+        return response.data
 
     def delete_dept_approval(self, approval_id: int) -> dict:
         """
@@ -104,8 +84,5 @@ class DeptApprovalAPI:
         @param approval_id: 审批ID
         @return: 响应字典
         """
-        url = self._get_url("dept-approvals")
-        response = requests.delete(
-            url, params={"approval_id": approval_id}, headers=self._get_headers()
-        )
-        return response.json()
+        response = self._client.delete("/dept-approvals", params={"approval_id": approval_id})
+        return response.data

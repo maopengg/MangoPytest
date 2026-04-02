@@ -143,10 +143,10 @@ class TestCEOApprovalBuilder:
         assert approval.status == "rejected"
 
     def test_builder_get_by_reimbursement(
-        self, ceo_approval_builder, ceo_approved_reimbursement
+        self, ceo_approval_builder, fully_approved_reimbursement
     ):
         """测试Builder根据报销申请获取审批"""
-        reimbursement_id = ceo_approved_reimbursement["reimbursement"]["id"]
+        reimbursement_id = fully_approved_reimbursement["reimbursement"]["id"]
         approval = ceo_approval_builder.get_by_reimbursement(reimbursement_id)
 
         assert approval is not None

@@ -5,7 +5,6 @@
 # @Author : 毛鹏
 from typing import Dict, Any, Optional
 import uuid
-import hashlib
 
 from auto_test.demo_project.api_manager import demo_project
 from ...registry import register_builder
@@ -61,16 +60,11 @@ class AuthBuilder:
         """
         login_data = self.build_login_data(username, password)
 
-        # 对密码进行 MD5 加密
-        password_md5 = hashlib.md5(login_data["password"].encode()).hexdigest()
+        print(f"\n[AuthBuilder] 正在登录: username={login_data['username']}")
 
-        print(
-            f"\n[AuthBuilder] 正在登录: username={login_data['username']}, password={login_data['password'][:10]}..."
-        )
-        print(f"[AuthBuilder] MD5加密后: {password_md5}")
-
+        # 直接传递明文密码，由 API 层进行加密
         result = demo_project.auth.api_login(
-            username=login_data["username"], password=password_md5
+            username=login_data["username"], password=login_data["password"]
         )
 
         print(f"[AuthBuilder] 登录结果: {result}")
@@ -99,14 +93,12 @@ class AuthBuilder:
         """
         register_data = self.build_register_data(username, email, full_name, password)
 
-        # 对密码进行 MD5 加密
-        password_md5 = hashlib.md5(register_data["password"].encode()).hexdigest()
-
+        # 直接传递明文密码，由 API 层进行加密
         result = demo_project.auth.api_register(
             username=register_data["username"],
             email=register_data["email"],
             full_name=register_data["full_name"],
-            password=password_md5,
+            password=register_data["password"],
         )
         if result.get("code") == 200:
             return result["data"]

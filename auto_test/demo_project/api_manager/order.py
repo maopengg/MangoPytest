@@ -1,38 +1,25 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description:
+# @Description: 订单API - 使用 Core APIClient
 # @Time   : 2026-01-18 13:57
 # @Author : 毛鹏
-from urllib.parse import urljoin
 
-import requests
+from auto_test.demo_project.core.api.client import APIClient
 
 
 class OrderAPI:
     """订单API - 对应 /orders 接口"""
 
     def __init__(self):
-        self._host = "http://localhost:8003"
-        self._token = None
+        self._client = APIClient(base_url="http://localhost:8003")
 
     def set_host(self, host: str):
         """设置API服务器地址"""
-        self._host = host.rstrip("/")
+        self._client.set_base_url(host)
 
     def set_token(self, token: str):
         """设置认证token"""
-        self._token = token
-
-    def _get_url(self, path: str) -> str:
-        """获取完整URL"""
-        return urljoin(self._host + "/", path)
-
-    def _get_headers(self) -> dict:
-        """获取请求头"""
-        headers = {}
-        if self._token:
-            headers["X-Token"] = self._token
-        return headers
+        self._client.set_auth_token(token)
 
     def create_order(self, product_id: int, quantity: int, user_id: int) -> dict:
         """
@@ -43,13 +30,11 @@ class OrderAPI:
         @param user_id: 用户ID
         @return: 响应字典
         """
-        url = self._get_url("orders")
-        response = requests.post(
-            url,
-            json={"product_id": product_id, "quantity": quantity, "user_id": user_id},
-            headers=self._get_headers(),
+        response = self._client.post(
+            "/orders",
+            data={"product_id": product_id, "quantity": quantity, "user_id": user_id}
         )
-        return response.json()
+        return response.data
 
     def get_all_orders(self) -> dict:
         """
@@ -57,9 +42,8 @@ class OrderAPI:
         GET /orders
         @return: 响应字典
         """
-        url = self._get_url("orders")
-        response = requests.get(url, headers=self._get_headers())
-        return response.json()
+        response = self._client.get("/orders")
+        return response.data
 
     def get_order_by_id(self, order_id: int) -> dict:
         """
@@ -68,9 +52,8 @@ class OrderAPI:
         @param order_id: 订单ID
         @return: 响应字典
         """
-        url = self._get_url(f"orders/{order_id}")
-        response = requests.get(url, headers=self._get_headers())
-        return response.json()
+        response = self._client.get(f"/orders/{order_id}")
+        return response.data
 
     def update_order_info(self, order_id: int, **kwargs) -> dict:
         """
@@ -80,9 +63,8 @@ class OrderAPI:
         @param kwargs: 更新字段
         @return: 响应字典
         """
-        url = self._get_url("orders")
-        response = requests.put(url, params={"id": order_id}, json=kwargs, headers=self._get_headers())
-        return response.json()
+        response = self._client.put("/orders", data=kwargs, params={"id": order_id})
+        return response.data
 
     def delete_order(self, order_id: int) -> dict:
         """
@@ -91,6 +73,10 @@ class OrderAPI:
         @param order_id: 订单ID
         @return: 响应字典
         """
-        url = self._get_url("orders")
-        response = requests.delete(url, params={"id": order_id}, headers=self._get_headers())
-        return response.json()
+        response = self._client.delete("/orders", params={"id": order_id})
+        return response.data
+        
+            
+        
+            
+        

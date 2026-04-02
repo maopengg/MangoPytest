@@ -72,6 +72,9 @@ class TestContext:
         _data: 上下文数据存储
     """
     
+    # 告诉 pytest 这不是测试类
+    __test__ = False
+    
     def __init__(
         self,
         auto_cleanup: bool = True,

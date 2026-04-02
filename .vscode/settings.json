@@ -1,6 +1,6 @@
 {
     // Python 解释器配置
-    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
+    "python.defaultInterpreterPath": "D:\\code\\MangoPytest\\.venv\\Scripts\\python.exe",
     "python.terminal.activateEnvironment": true,
     // 代码分析路径
     "python.analysis.extraPaths": [

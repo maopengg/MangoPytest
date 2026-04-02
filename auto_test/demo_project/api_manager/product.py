@@ -1,38 +1,25 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description:
+# @Description: 产品API - 使用 Core APIClient
 # @Time   : 2026-01-18 13:56
 # @Author : 毛鹏
-from urllib.parse import urljoin
 
-import requests
+from auto_test.demo_project.core.api.client import APIClient
 
 
 class ProductAPI:
     """产品API - 对应 /products 接口"""
 
     def __init__(self):
-        self._host = "http://localhost:8003"
-        self._token = None
+        self._client = APIClient(base_url="http://localhost:8003")
 
     def set_host(self, host: str):
         """设置API服务器地址"""
-        self._host = host.rstrip("/")
+        self._client.set_base_url(host)
 
     def set_token(self, token: str):
         """设置认证token"""
-        self._token = token
-
-    def _get_url(self, path: str) -> str:
-        """获取完整URL"""
-        return urljoin(self._host + "/", path)
-
-    def _get_headers(self) -> dict:
-        """获取请求头"""
-        headers = {}
-        if self._token:
-            headers["X-Token"] = self._token
-        return headers
+        self._client.set_auth_token(token)
 
     def create_product(self, name: str, price: float, description: str = None) -> dict:
         """
@@ -43,12 +30,11 @@ class ProductAPI:
         @param description: 产品描述
         @return: 响应字典
         """
-        url = self._get_url("products")
         data = {"name": name, "price": price}
         if description:
             data["description"] = description
-        response = requests.post(url, json=data, headers=self._get_headers())
-        return response.json()
+        response = self._client.post("/products", data=data)
+        return response.data
 
     def get_all_products(self) -> dict:
         """
@@ -56,9 +42,8 @@ class ProductAPI:
         GET /products
         @return: 响应字典
         """
-        url = self._get_url("products")
-        response = requests.get(url, headers=self._get_headers())
-        return response.json()
+        response = self._client.get("/products")
+        return response.data
 
     def get_product_by_id(self, product_id: int) -> dict:
         """
@@ -67,9 +52,8 @@ class ProductAPI:
         @param product_id: 产品ID
         @return: 响应字典
         """
-        url = self._get_url("products")
-        response = requests.get(url, params={"id": product_id}, headers=self._get_headers())
-        return response.json()
+        response = self._client.get("/products", params={"id": product_id})
+        return response.data
 
     def update_product_info(self, product_id: int, **kwargs) -> dict:
         """
@@ -79,9 +63,8 @@ class ProductAPI:
         @param kwargs: 更新字段
         @return: 响应字典
         """
-        url = self._get_url("products")
-        response = requests.put(url, params={"id": product_id}, json=kwargs, headers=self._get_headers())
-        return response.json()
+        response = self._client.put("/products", data=kwargs, params={"id": product_id})
+        return response.data
 
     def delete_product(self, product_id: int) -> dict:
         """
@@ -90,6 +73,10 @@ class ProductAPI:
         @param product_id: 产品ID
         @return: 响应字典
         """
-        url = self._get_url("products")
-        response = requests.delete(url, params={"id": product_id}, headers=self._get_headers())
-        return response.json()
+        response = self._client.delete("/products", params={"id": product_id})
+        return response.data
+
+            
+        
+            
+        

@@ -186,10 +186,9 @@ class BaseScenario(ABC, Generic[T]):
         """【新增】设置场景参数"""
         self._params.update(params)
 
-    @abstractmethod
     def orchestrate(self, ctx: Any) -> ScenarioResult:
         """
-        业务编排 - 子类必须实现
+        业务编排 - 子类可以实现此方法
 
         使用 ctx 进行：
         - ctx.create() - 创建实体
@@ -201,7 +200,12 @@ class BaseScenario(ABC, Generic[T]):
         @param ctx: 场景上下文
         @return: 场景执行结果
         """
-        pass
+        # 默认实现：返回成功结果
+        # 子类可以重写此方法或使用 execute 方法直接实现业务逻辑
+        return ScenarioResult(
+            success=True,
+            message="默认编排实现，子类应重写 orchestrate 或 execute 方法"
+        )
 
     def execute(self, *args, **kwargs) -> ScenarioResult:
         """

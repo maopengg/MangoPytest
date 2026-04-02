@@ -18,7 +18,7 @@ class SystemBuilder(BaseBuilder):
     """
 
     def __init__(self, token: str = None, factory=None):
-        super().__init__(token, factory)
+        super().__init__(token=token, factory=factory)
         # 设置token到API模块
         if token:
             demo_project.system.set_token(token)

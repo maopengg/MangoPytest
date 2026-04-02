@@ -21,13 +21,13 @@ class FinanceApprovalBuilder(BaseBuilder[FinanceApprovalEntity]):
     """
 
     def __init__(self, token: str = None, factory=None):
-        super().__init__(token, factory)
+        super().__init__(token=token, factory=factory)
 
     def build(
         self,
         reimbursement_id: int = 0,
         dept_approval_id: int = 0,
-        approver_id: int = 0,
+        approver_id: int = 4,  # 默认财务经理用户ID
         status: str = "approved",
         comment: str = None,
     ) -> FinanceApprovalEntity:
@@ -66,6 +66,10 @@ class FinanceApprovalBuilder(BaseBuilder[FinanceApprovalEntity]):
         if not entity.validate():
             return None
 
+        # 设置token到API模块
+        if self.token:
+            demo_project.finance_approval.set_token(self.token)
+
         result = demo_project.finance_approval.create_finance_approval(
             reimbursement_id=entity.reimbursement_id,
             dept_approval_id=entity.dept_approval_id,
@@ -89,6 +93,10 @@ class FinanceApprovalBuilder(BaseBuilder[FinanceApprovalEntity]):
         @param approval_id: 审批ID
         @return: 财务审批实体
         """
+        # 设置token到API模块
+        if self.token:
+            demo_project.finance_approval.set_token(self.token)
+
         result = demo_project.finance_approval.get_finance_approval_by_id(approval_id)
 
         if result.get("code") == 200:
@@ -104,6 +112,10 @@ class FinanceApprovalBuilder(BaseBuilder[FinanceApprovalEntity]):
         @param entity: 实体实例
         @return: 更新后的实体
         """
+        # 设置token到API模块
+        if self.token:
+            demo_project.finance_approval.set_token(self.token)
+
         result = demo_project.finance_approval.update_finance_approval(
             approval_id=entity.id, **entity.to_api_payload()
         )
@@ -121,6 +133,10 @@ class FinanceApprovalBuilder(BaseBuilder[FinanceApprovalEntity]):
         @param entity: 实体实例
         @return: 是否删除成功
         """
+        # 设置token到API模块
+        if self.token:
+            demo_project.finance_approval.set_token(self.token)
+
         result = demo_project.finance_approval.delete_finance_approval(entity.id)
 
         if result.get("code") == 200:
@@ -135,6 +151,10 @@ class FinanceApprovalBuilder(BaseBuilder[FinanceApprovalEntity]):
 
         @return: 财务审批实体列表
         """
+        # 设置token到API模块
+        if self.token:
+            demo_project.finance_approval.set_token(self.token)
+
         result = demo_project.finance_approval.get_finance_approvals()
 
         if result.get("code") == 200:

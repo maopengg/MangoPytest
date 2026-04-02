@@ -23,13 +23,13 @@ class CEOApprovalBuilder(BaseBuilder[CEOApprovalEntity]):
     _entity_class = CEOApprovalEntity
 
     def __init__(self, token: str = None, factory=None):
-        super().__init__(token, factory)
+        super().__init__(token=token, factory=factory)
 
     def build(
         self,
         reimbursement_id: int = 0,
         finance_approval_id: int = 0,
-        approver_id: int = 0,
+        approver_id: int = 5,  # 默认CEO用户ID
         status: str = "approved",
         comment: str = None,
     ) -> CEOApprovalEntity:
@@ -68,6 +68,10 @@ class CEOApprovalBuilder(BaseBuilder[CEOApprovalEntity]):
         if not entity.validate():
             return None
 
+        # 设置token到API模块
+        if self.token:
+            demo_project.ceo_approval.set_token(self.token)
+
         result = demo_project.ceo_approval.create_ceo_approval(
             reimbursement_id=entity.reimbursement_id,
             finance_approval_id=entity.finance_approval_id,
@@ -91,6 +95,10 @@ class CEOApprovalBuilder(BaseBuilder[CEOApprovalEntity]):
         @param approval_id: 审批ID
         @return: 总经理审批实体
         """
+        # 设置token到API模块
+        if self.token:
+            demo_project.ceo_approval.set_token(self.token)
+
         result = demo_project.ceo_approval.get_ceo_approval_by_id(approval_id)
 
         if result.get("code") == 200:
@@ -106,6 +114,10 @@ class CEOApprovalBuilder(BaseBuilder[CEOApprovalEntity]):
         @param entity: 实体实例
         @return: 更新后的实体
         """
+        # 设置token到API模块
+        if self.token:
+            demo_project.ceo_approval.set_token(self.token)
+
         result = demo_project.ceo_approval.update_ceo_approval(
             approval_id=entity.id, **entity.to_api_payload()
         )
@@ -123,6 +135,10 @@ class CEOApprovalBuilder(BaseBuilder[CEOApprovalEntity]):
         @param entity: 实体实例
         @return: 是否删除成功
         """
+        # 设置token到API模块
+        if self.token:
+            demo_project.ceo_approval.set_token(self.token)
+
         result = demo_project.ceo_approval.delete_ceo_approval(entity.id)
 
         if result.get("code") == 200:
@@ -137,6 +153,10 @@ class CEOApprovalBuilder(BaseBuilder[CEOApprovalEntity]):
 
         @return: 总经理审批实体列表
         """
+        # 设置token到API模块
+        if self.token:
+            demo_project.ceo_approval.set_token(self.token)
+
         result = demo_project.ceo_approval.get_ceo_approvals()
 
         if result.get("code") == 200:

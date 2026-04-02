@@ -1,38 +1,25 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description:
+# @Description: 报销申请API - 使用 Core APIClient
 # @Time   : 2024-03-17 19:50
 # @Author : 毛鹏
-from urllib.parse import urljoin
 
-import requests
+from auto_test.demo_project.core.api.client import APIClient
 
 
 class ReimbursementAPI:
     """报销申请API - 对应 /reimbursements 接口"""
 
     def __init__(self):
-        self._host = "http://localhost:8003"
-        self._token = None
+        self._client = APIClient(base_url="http://localhost:8003")
 
     def set_host(self, host: str):
         """设置API服务器地址"""
-        self._host = host.rstrip("/")
+        self._client.set_base_url(host)
 
     def set_token(self, token: str):
         """设置认证token"""
-        self._token = token
-
-    def _get_url(self, path: str) -> str:
-        """获取完整URL"""
-        return urljoin(self._host + "/", path)
-
-    def _get_headers(self) -> dict:
-        """获取请求头"""
-        headers = {}
-        if self._token:
-            headers["X-Token"] = self._token
-        return headers
+        self._client.set_auth_token(token)
 
     def get_reimbursements(self) -> dict:
         """
@@ -40,9 +27,8 @@ class ReimbursementAPI:
         GET /reimbursements
         @return: 响应字典
         """
-        url = self._get_url("reimbursements")
-        response = requests.get(url, headers=self._get_headers())
-        return response.json()
+        response = self._client.get("/reimbursements")
+        return response.data
 
     def get_reimbursement_by_id(self, reimbursement_id: int) -> dict:
         """
@@ -51,9 +37,8 @@ class ReimbursementAPI:
         @param reimbursement_id: 报销申请ID
         @return: 响应字典
         """
-        url = self._get_url("reimbursements")
-        response = requests.get(url, params={"id": reimbursement_id}, headers=self._get_headers())
-        return response.json()
+        response = self._client.get("/reimbursements", params={"id": reimbursement_id})
+        return response.data
 
     def create_reimbursement(self, user_id: int, amount: float, reason: str) -> dict:
         """
@@ -64,13 +49,11 @@ class ReimbursementAPI:
         @param reason: 报销原因
         @return: 响应字典
         """
-        url = self._get_url("reimbursements")
-        response = requests.post(
-            url,
-            json={"user_id": user_id, "amount": amount, "reason": reason},
-            headers=self._get_headers()
+        response = self._client.post(
+            "/reimbursements",
+            data={"user_id": user_id, "amount": amount, "reason": reason}
         )
-        return response.json()
+        return response.data
 
     def update_reimbursement(self, reimbursement_id: int, **kwargs) -> dict:
         """
@@ -80,9 +63,8 @@ class ReimbursementAPI:
         @param kwargs: 更新字段
         @return: 响应字典
         """
-        url = self._get_url(f"reimbursements/{reimbursement_id}")
-        response = requests.put(url, json=kwargs, headers=self._get_headers())
-        return response.json()
+        response = self._client.put(f"/reimbursements/{reimbursement_id}", data=kwargs)
+        return response.data
 
     def delete_reimbursement(self, reimbursement_id: int) -> dict:
         """
@@ -91,6 +73,5 @@ class ReimbursementAPI:
         @param reimbursement_id: 报销申请ID
         @return: 响应字典
         """
-        url = self._get_url(f"reimbursements/{reimbursement_id}")
-        response = requests.delete(url, headers=self._get_headers())
-        return response.json()
+        response = self._client.delete(f"/reimbursements/{reimbursement_id}")
+        return response.data

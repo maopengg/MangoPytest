@@ -25,21 +25,24 @@ def authenticated_client(api_client):
     自动登录并返回带token的客户端
     """
     from auto_test.demo_project.api_manager import demo_project
-    import hashlib
 
     # 使用 testuser 用户登录
-    # mock API 中 testuser 的密码是 "482c811da5d5b4bc6d497ffa98491e38"
-    password_md5 = "482c811da5d5b4bc6d497ffa98491e38"
-    result = demo_project.auth.api_login(
-        username="testuser", 
-        password=password_md5
-    )
+    # mock API 中 testuser 的密码明文是 "password123"
+    # api_login 会自动进行 MD5 加密
+    result = demo_project.auth.api_login(username="testuser", password="password123")
 
     if result.get("code") != 200:
         pytest.skip(f"无法获取认证token，跳过测试: {result.get('message')}")
 
-    # 设置token
-    api_client.token = result["data"]["token"]
+    # 设置token到全局和所有API模块
+    token = result["data"]["token"]
+    api_client.token = token
+    demo_project.token = token
+    demo_project.user.set_token(token)
+    demo_project.reimbursement.set_token(token)
+    demo_project.dept_approval.set_token(token)
+    demo_project.finance_approval.set_token(token)
+    demo_project.ceo_approval.set_token(token)
     return api_client
 
 

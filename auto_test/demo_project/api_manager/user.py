@@ -1,38 +1,30 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description:
+# @Description: 用户API - 使用 Core APIClient
 # @Time   : 2024-03-17 19:50
 # @Author : 毛鹏
-from urllib.parse import urljoin
 
-import requests
+import hashlib
+from auto_test.demo_project.core.api.client import APIClient
 
 
 class UserAPI:
     """用户API - 对应 /users 接口"""
 
     def __init__(self):
-        self._host = "http://localhost:8003"
-        self._token = None
+        self._client = APIClient(base_url="http://localhost:8003")
 
     def set_host(self, host: str):
         """设置API服务器地址"""
-        self._host = host.rstrip("/")
+        self._client.set_base_url(host)
 
     def set_token(self, token: str):
         """设置认证token"""
-        self._token = token
+        self._client.set_auth_token(token)
 
-    def _get_url(self, path: str) -> str:
-        """获取完整URL"""
-        return urljoin(self._host + "/", path)
-
-    def _get_headers(self) -> dict:
-        """获取请求头"""
-        headers = {}
-        if self._token:
-            headers["X-Token"] = self._token
-        return headers
+    def _encrypt_password(self, password: str) -> str:
+        """对密码进行 MD5 加密"""
+        return hashlib.md5(password.encode()).hexdigest()
 
     def get_users(self) -> dict:
         """
@@ -40,9 +32,8 @@ class UserAPI:
         GET /users
         @return: 响应字典
         """
-        url = self._get_url("users")
-        response = requests.get(url, headers=self._get_headers())
-        return response.json()
+        response = self._client.get("/users")
+        return response.data
 
     def get_user_by_id(self, user_id: int) -> dict:
         """
@@ -51,11 +42,8 @@ class UserAPI:
         @param user_id: 用户ID
         @return: 响应字典
         """
-        url = self._get_url("users")
-        response = requests.get(
-            url, params={"id": user_id}, headers=self._get_headers()
-        )
-        return response.json()
+        response = self._client.get("/users", params={"id": user_id})
+        return response.data
 
     def create_user(
         self, username: str, email: str, full_name: str, password: str
@@ -66,45 +54,42 @@ class UserAPI:
         @param username: 用户名
         @param email: 邮箱
         @param full_name: 全名
-        @param password: 密码
+        @param password: 密码（明文，会自动加密）
         @return: 响应字典
         """
-        url = self._get_url("users")
-        response = requests.post(
-            url,
-            json={
+        # 对密码进行 MD5 加密
+        password_md5 = self._encrypt_password(password)
+        response = self._client.post(
+            "/users",
+            data={
                 "username": username,
                 "email": email,
                 "full_name": full_name,
-                "password": password,
-            },
-            headers=self._get_headers(),
+                "password": password_md5,
+            }
         )
-        return response.json()
+        return response.data
 
     def update_user(self, user_id: int, **kwargs) -> dict:
         """
         更新用户
-        PUT /users?user_id={user_id}
+        PUT /users/{user_id}
         @param user_id: 用户ID
         @param kwargs: 更新字段
         @return: 响应字典
         """
-        url = self._get_url("users")
-        response = requests.put(
-            url, params={"user_id": user_id}, json=kwargs, headers=self._get_headers()
+        response = self._client.put(
+            f"/users/{user_id}",
+            data=kwargs
         )
-        return response.json()
+        return response.data
 
     def delete_user(self, user_id: int) -> dict:
         """
         删除用户
-        DELETE /users?id={user_id}
+        DELETE /users/{user_id}
         @param user_id: 用户ID
         @return: 响应字典
         """
-        url = self._get_url("users")
-        response = requests.delete(
-            url, params={"id": user_id}, headers=self._get_headers()
-        )
-        return response.json()
+        response = self._client.delete(f"/users/{user_id}")
+        return response.data

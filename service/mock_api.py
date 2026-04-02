@@ -281,12 +281,34 @@ def error(code, message):
     return {"code": code, "message": message, "data": None}
 
 
-async def verify_token(x_token: str = Header(None)):
-    if x_token is None:
+async def verify_token(
+    x_token: str = Header(None),
+    authorization: str = Header(None, alias="Authorization"),
+):
+    """
+    验证token
+    支持两种方式：
+    1. x_token header
+    2. Authorization: Bearer <token> header
+    """
+    token = None
+
+    # 优先使用 x_token
+    if x_token:
+        token = x_token
+    # 其次使用 Authorization header
+    elif authorization:
+        # 支持 "Bearer <token>" 格式
+        if authorization.lower().startswith("bearer "):
+            token = authorization[7:].strip()
+        else:
+            token = authorization.strip()
+
+    if token is None:
         raise HTTPException(status_code=401, detail="未提供token")
-    if not x_token.startswith("mock_token_"):
+    if not token.startswith("mock_token_"):
         raise HTTPException(status_code=401, detail="无效的token")
-    return x_token
+    return token
 
 
 # ========================
@@ -320,17 +342,25 @@ async def login(user_login: UserLogin):
                 return error(401, "用户名或密码错误")
 
             # 验证密码（MD5）
+            print(f"[DEBUG] 接收到的密码: {user_login.password}")
+            print(f"[DEBUG] 数据库中的密码: {user['password']}")
+
             # 检查密码是否已经是 MD5 格式（32位十六进制字符串）
             if len(user_login.password) == 32 and all(
                 c in "0123456789abcdef" for c in user_login.password.lower()
             ):
                 # 密码已经是 MD5 格式，直接使用
                 password_md5 = user_login.password.lower()
+                print(f"[DEBUG] 密码已是MD5格式，直接使用: {password_md5}")
             else:
                 # 密码是明文，进行 MD5 加密
                 password_md5 = hashlib.md5(user_login.password.encode()).hexdigest()
+                print(f"[DEBUG] 密码是明文，MD5加密后: {password_md5}")
 
             if password_md5 != user["password"]:
+                print(
+                    f"[DEBUG] 密码不匹配! 计算值: {password_md5}, 数据库值: {user['password']}"
+                )
                 return error(402, "用户名或密码错误")
 
             # 更新最后登录时间
@@ -860,12 +890,23 @@ async def create_reimbursement(
 
     try:
         with get_db_cursor() as cursor:
+            # 生成报销单号
+            reimb_no = (
+                f"RMB{datetime.now().strftime('%Y%m%d%H%M%S')}{str(uuid.uuid4())[:4]}"
+            )
+
             sql = """
-                INSERT INTO reimbursements (user_id, amount, reason, status, created_at, updated_at)
-                VALUES (%s, %s, %s, 'pending', NOW(), NOW())
+                INSERT INTO reimbursements (reimb_no, user_id, amount, reason, status, created_at, updated_at)
+                VALUES (%s, %s, %s, %s, 'pending', NOW(), NOW())
             """
             cursor.execute(
-                sql, (reimbursement.user_id, reimbursement.amount, reimbursement.reason)
+                sql,
+                (
+                    reimb_no,
+                    reimbursement.user_id,
+                    reimbursement.amount,
+                    reimbursement.reason,
+                ),
             )
             reimb_id = cursor.lastrowid
 
@@ -983,20 +1024,29 @@ async def create_dept_approval(
             if reimb["status"] != "pending":
                 return error(400, "该申请已被处理")
 
+            # 生成审批单号
+            approval_no = (
+                f"DA{datetime.now().strftime('%Y%m%d%H%M%S')}{str(uuid.uuid4())[:4]}"
+            )
+
             # 创建部门审批
             sql = """
-                INSERT INTO dept_approvals (reimbursement_id, approver_id, status, comment, created_at)
-                VALUES (%s, %s, %s, %s, NOW())
+                INSERT INTO dept_approvals (approval_no, reimbursement_id, approver_id, status, comment, created_at)
+                VALUES (%s, %s, %s, %s, %s, NOW())
             """
             cursor.execute(
                 sql,
                 (
+                    approval_no,
                     approval.reimbursement_id,
                     approval.approver_id,
                     approval.status,
                     approval.comment,
                 ),
             )
+
+            # 获取新创建的审批ID
+            approval_id = cursor.lastrowid
 
             # 更新报销申请状态
             new_status = (
@@ -1005,7 +1055,12 @@ async def create_dept_approval(
             sql = "UPDATE reimbursements SET status = %s, updated_at = NOW() WHERE id = %s"
             cursor.execute(sql, (new_status, approval.reimbursement_id))
 
-            return success({"status": approval.status}, "部门审批创建成功")
+            # 查询新创建的审批记录
+            sql = "SELECT * FROM dept_approvals WHERE id = %s"
+            cursor.execute(sql, (approval_id,))
+            new_approval = cursor.fetchone()
+
+            return success(new_approval, "部门审批创建成功")
     except Exception as e:
         return error(500, f"创建部门审批失败: {str(e)}")
 
@@ -1056,14 +1111,20 @@ async def create_finance_approval(
             if dept_approval["status"] != "approved":
                 return error(400, "部门审批未通过，无法进行财务审批")
 
+            # 生成审批单号
+            approval_no = (
+                f"FA{datetime.now().strftime('%Y%m%d%H%M%S')}{str(uuid.uuid4())[:4]}"
+            )
+
             # 创建财务审批
             sql = """
-                INSERT INTO finance_approvals (reimbursement_id, dept_approval_id, approver_id, status, comment, created_at)
-                VALUES (%s, %s, %s, %s, %s, NOW())
+                INSERT INTO finance_approvals (approval_no, reimbursement_id, dept_approval_id, approver_id, status, comment, created_at)
+                VALUES (%s, %s, %s, %s, %s, %s, NOW())
             """
             cursor.execute(
                 sql,
                 (
+                    approval_no,
                     approval.reimbursement_id,
                     approval.dept_approval_id,
                     approval.approver_id,
@@ -1071,6 +1132,9 @@ async def create_finance_approval(
                     approval.comment,
                 ),
             )
+
+            # 获取新创建的审批ID
+            approval_id = cursor.lastrowid
 
             # 更新报销申请状态
             new_status = (
@@ -1081,7 +1145,12 @@ async def create_finance_approval(
             sql = "UPDATE reimbursements SET status = %s, updated_at = NOW() WHERE id = %s"
             cursor.execute(sql, (new_status, approval.reimbursement_id))
 
-            return success({"status": approval.status}, "财务审批创建成功")
+            # 查询新创建的审批记录
+            sql = "SELECT * FROM finance_approvals WHERE id = %s"
+            cursor.execute(sql, (approval_id,))
+            new_approval = cursor.fetchone()
+
+            return success(new_approval, "财务审批创建成功")
     except Exception as e:
         return error(500, f"创建财务审批失败: {str(e)}")
 
@@ -1134,14 +1203,20 @@ async def create_ceo_approval(
             if finance_approval["status"] != "approved":
                 return error(400, "财务审批未通过，无法进行总经理审批")
 
+            # 生成审批单号
+            approval_no = (
+                f"CA{datetime.now().strftime('%Y%m%d%H%M%S')}{str(uuid.uuid4())[:4]}"
+            )
+
             # 创建总经理审批
             sql = """
-                INSERT INTO ceo_approvals (reimbursement_id, finance_approval_id, approver_id, status, comment, created_at)
-                VALUES (%s, %s, %s, %s, %s, NOW())
+                INSERT INTO ceo_approvals (approval_no, reimbursement_id, finance_approval_id, approver_id, status, comment, created_at)
+                VALUES (%s, %s, %s, %s, %s, %s, NOW())
             """
             cursor.execute(
                 sql,
                 (
+                    approval_no,
                     approval.reimbursement_id,
                     approval.finance_approval_id,
                     approval.approver_id,
@@ -1150,6 +1225,9 @@ async def create_ceo_approval(
                 ),
             )
 
+            # 获取新创建的审批ID
+            approval_id = cursor.lastrowid
+
             # 更新报销申请状态
             new_status = (
                 "ceo_approved" if approval.status == "approved" else "ceo_rejected"
@@ -1157,7 +1235,12 @@ async def create_ceo_approval(
             sql = "UPDATE reimbursements SET status = %s, updated_at = NOW() WHERE id = %s"
             cursor.execute(sql, (new_status, approval.reimbursement_id))
 
-            return success({"status": approval.status}, "总经理审批创建成功")
+            # 查询新创建的审批记录
+            sql = "SELECT * FROM ceo_approvals WHERE id = %s"
+            cursor.execute(sql, (approval_id,))
+            new_approval = cursor.fetchone()
+
+            return success(new_approval, "总经理审批创建成功")
     except Exception as e:
         return error(500, f"创建总经理审批失败: {str(e)}")
 
