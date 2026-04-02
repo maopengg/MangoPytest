@@ -12,7 +12,7 @@ from auto_test.demo_project.data_factory.scenarios import (
     RegisterAndLoginScenario,
     FullApprovalWorkflowScenario,
 )
-from auto_test.demo_project.test_cases.base import UnitTest, IntegrationTest, E2ETest
+from core.base.layering_base import UnitTest, IntegrationTest, E2ETest
 
 
 @allure.feature("新架构演示")

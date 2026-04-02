@@ -6,7 +6,7 @@
 
 import hashlib
 
-from auto_test.demo_project.core.api.client import APIClient
+from core.api.client import APIClient
 
 
 class AuthAPI:

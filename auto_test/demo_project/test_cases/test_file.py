@@ -8,7 +8,7 @@ import os
 import allure
 
 from auto_test.demo_project.data_factory.builders.file import FileBuilder
-from auto_test.demo_project.test_cases.base import UnitTest
+from core.base.layering_base import UnitTest
 
 
 @allure.feature("文件管理")

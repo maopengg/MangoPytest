@@ -19,13 +19,8 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Dict, List, Optional, Type, Any, Callable
-
-try:
-    from .entities.base_entity import BaseEntity
-    from .lineage.tracker import DataLineageTracker, get_global_tracker
-except ImportError:
-    from entities.base_entity import BaseEntity
-    from lineage.tracker import DataLineageTracker, get_global_tracker
+from .entities.base_entity import BaseEntity
+from .lineage.tracker import DataLineageTracker, get_global_tracker
 
 
 @dataclass

@@ -5,7 +5,7 @@
 # @Author : 毛鹏
 
 from auto_test.demo_project.api_manager import demo_project
-from auto_test.demo_project.test_cases.base import UnitTest, IntegrationTest
+from core.base.layering_base import UnitTest, IntegrationTest
 
 
 class TestCEOApprovalAPI(IntegrationTest):

@@ -52,6 +52,9 @@ from .scenarios import (
     FullApprovalWorkflowScenario,
     RejectionWorkflowScenario,
 )
+# 导出 Context 对象
+from .context import Context
+from .context_allure import AllureContext, create_allure_context
 
 __all__ = [
     # 实体层
@@ -72,4 +75,8 @@ __all__ = [
     "RejectionWorkflowScenario",
     # 构造器层
     "BaseBuilder",
+    # Context 对象
+    "Context",
+    "AllureContext",
+    "create_allure_context",
 ]

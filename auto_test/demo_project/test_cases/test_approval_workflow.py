@@ -17,6 +17,8 @@
 - 变体矩阵 - VariantMatrix 参数化测试
 """
 
+import json
+
 import allure
 import pytest
 
@@ -28,6 +30,7 @@ from auto_test.demo_project.data_factory.entities import (
     OrgEntity,
     BudgetEntity,
 )
+
 # 【新增】导入最新架构组件
 from auto_test.demo_project.data_factory.scenarios import (
     FullApprovalScenario,
@@ -37,7 +40,7 @@ from auto_test.demo_project.data_factory.scenarios.variant_matrix import (
     VariantMatrix,
     Dimension,
 )
-from auto_test.demo_project.test_cases.base import IntegrationTest, E2ETest
+from core.base.layering_base import IntegrationTest, E2ETest
 
 
 # =============================================================================
@@ -52,7 +55,7 @@ class TestFullApprovalWorkflow(E2ETest):
 
     @allure.title("完整4级审批流程 - 全部通过")
     def test_full_approval_workflow_success(
-            self, api_client, approval_scenarios, test_context
+        self, api_client, approval_scenarios, test_context
     ):
         """测试完整的4级审批流程 - 全部通过"""
         workflow = approval_scenarios.create_full_approval_workflow(
@@ -81,7 +84,7 @@ class TestFullApprovalWorkflow(E2ETest):
 
     @allure.title("部门审批拒绝流程")
     def test_dept_rejection_workflow(
-            self, api_client, approval_scenarios, test_context
+        self, api_client, approval_scenarios, test_context
     ):
         """测试部门审批拒绝流程"""
         workflow = approval_scenarios.create_dept_rejected_workflow(
@@ -97,7 +100,7 @@ class TestFullApprovalWorkflow(E2ETest):
 
     @allure.title("财务审批拒绝流程")
     def test_finance_rejection_workflow(
-            self, api_client, approval_scenarios, test_context
+        self, api_client, approval_scenarios, test_context
     ):
         """测试财务审批拒绝流程"""
         workflow = approval_scenarios.create_finance_rejected_workflow(
@@ -207,7 +210,7 @@ class TestApprovalDependencies(IntegrationTest):
 
     @allure.title("获取完整审批流程信息")
     def test_get_full_workflow(
-            self, authenticated_client, fully_approved_reimbursement, ceo_approval_builder
+        self, authenticated_client, fully_approved_reimbursement, ceo_approval_builder
     ):
         """测试获取完整审批流程信息"""
         reimbursement_id = fully_approved_reimbursement["reimbursement"]["id"]
@@ -269,7 +272,7 @@ class TestApprovalDependencyValidation(IntegrationTest):
 
     @allure.title("不能跳过部门审批直接进行财务审批")
     def test_cannot_skip_dept_approval(
-            self, authenticated_client, pending_reimbursement, finance_manager_id, ceo_id
+        self, authenticated_client, pending_reimbursement, finance_manager_id, ceo_id
     ):
         """测试不能跳过部门审批直接进行财务审批"""
         # 尝试直接进行财务审批（没有部门审批）
@@ -285,7 +288,7 @@ class TestApprovalDependencyValidation(IntegrationTest):
 
     @allure.title("不能跳过财务审批直接进行总经理审批")
     def test_cannot_skip_finance_approval(
-            self, authenticated_client, dept_approved_reimbursement, ceo_id
+        self, authenticated_client, dept_approved_reimbursement, ceo_id
     ):
         """测试不能跳过财务审批直接进行总经理审批"""
         # 尝试直接进行总经理审批（没有财务审批）
@@ -301,7 +304,7 @@ class TestApprovalDependencyValidation(IntegrationTest):
 
     @allure.title("部门拒绝后不能进行财务审批")
     def test_dept_rejected_cannot_proceed(
-            self, authenticated_client, dept_rejected_reimbursement, finance_manager_id
+        self, authenticated_client, dept_rejected_reimbursement, finance_manager_id
     ):
         """测试部门拒绝后不能进行财务审批"""
         dept_approval_id = dept_rejected_reimbursement["dept_approval"]["id"]
@@ -318,7 +321,7 @@ class TestApprovalDependencyValidation(IntegrationTest):
 
     @allure.title("财务拒绝后不能进行总经理审批")
     def test_finance_rejected_cannot_proceed(
-            self, authenticated_client, finance_rejected_reimbursement, ceo_id
+        self, authenticated_client, finance_rejected_reimbursement, ceo_id
     ):
         """测试财务拒绝后不能进行总经理审批"""
         finance_approval_id = finance_rejected_reimbursement["finance_approval"]["id"]
@@ -349,7 +352,7 @@ class TestApprovalParameterized(E2ETest):
         ],
     )
     def test_approval_with_different_amounts(
-            self, approval_scenarios, test_context, amount, expected_success
+        self, approval_scenarios, test_context, amount, expected_success
     ):
         """参数化测试不同金额的审批流程"""
         workflow = approval_scenarios.create_full_approval_workflow(
@@ -366,11 +369,11 @@ class TestApprovalParameterized(E2ETest):
 
     @allure.title("审批流程场景矩阵")
     def test_approval_scenario_matrix(
-            self,
-            full_approval_workflow,
-            dept_rejected_workflow,
-            finance_rejected_workflow,
-            ceo_rejected_workflow,
+        self,
+        full_approval_workflow,
+        dept_rejected_workflow,
+        finance_rejected_workflow,
+        ceo_rejected_workflow,
     ):
         """测试审批流程场景矩阵"""
         # 验证所有场景fixture都正常工作
@@ -633,10 +636,10 @@ class TestApprovalWithVariantMatrix(E2ETest):
 
             # 检查是否是 small + urgent 组合
             if (
-                    amount_variant
-                    and amount_variant.get("amount") == 1000
-                    and urgency_variant
-                    and urgency_variant.get("priority") == "high"
+                amount_variant
+                and amount_variant.get("amount") == 1000
+                and urgency_variant
+                and urgency_variant.get("priority") == "high"
             ):
                 # 合并两个变体的 values
                 target_values = {**amount_variant.values, **urgency_variant.values}
@@ -668,7 +671,7 @@ class TestApprovalWithVariantMatrix(E2ETest):
         result = scenario.execute()
         assert result.success, f"场景执行失败: {result.message}"
         assert (
-                result.data.get("final_status") == "finance_approved"
+            result.data.get("final_status") == "finance_approved"
         )  # small 金额不需要 CEO 审批
 
         test_context.set("specific_variant", result)
@@ -786,3 +789,266 @@ class TestDependencyResolution(E2ETest):
         assert submitter.username == "custom_user"
 
         test_context.set("manual_dep_result", result)
+
+
+@allure.feature("审批流-Allure增强")
+@allure.story("AllureContext详细步骤记录")
+class TestApprovalWithAllureContext(E2ETest):
+    """
+    使用 AllureContext 展示增强的 Allure 报告
+
+    特性：
+    - 📦 实体创建的详细步骤记录
+    - 🔍 实体复用的可视化
+    - ⚡ 业务动作的参数和结果记录
+    - 🔍 预期验证的详细展示
+    - 📢 事件触发的追踪
+    - 📊 执行摘要和性能统计
+    """
+
+    @allure.title("完整审批流程 - AllureContext增强版")
+    @allure.description(
+        """
+    使用 AllureContext 执行完整审批流程，展示详细的 Allure 报告：
+    1. 创建多个实体（用户、组织、预算、报销）
+    2. 执行业务动作
+    3. 验证预期结果
+    4. 触发业务事件
+    5. 生成执行摘要
+    """
+    )
+    def test_full_approval_with_allure_context(
+        self, authenticated_client, test_context
+    ):
+        """使用 AllureContext 执行完整审批流程 - 展示详细报告"""
+        from auto_test.demo_project.data_factory import AllureContext
+
+        # 使用 AllureContext 替代普通 Context
+        ctx = AllureContext(auto_cleanup=True, enable_lineage=True, enable_allure=True)
+
+        with ctx:
+            # ==========================================
+            # 步骤 1: 创建依赖实体
+            # ==========================================
+            allure.attach(
+                "开始创建审批流程所需的依赖实体",
+                "流程说明",
+                allure.attachment_type.TEXT,
+            )
+
+            submitter = ctx.create(
+                UserEntity,
+                username="employee_allure",
+                role="employee",
+                email="employee@allure.com",
+                full_name="Allure Test Employee",
+                password="123456",
+            )
+
+            approver_dept = ctx.create(
+                UserEntity,
+                username="manager_allure",
+                role="manager",
+                email="manager@allure.com",
+                full_name="Allure Test Manager",
+                password="123456",
+            )
+
+            approver_finance = ctx.create(
+                UserEntity,
+                username="finance_allure",
+                role="finance_manager",
+                email="finance@allure.com",
+                full_name="Allure Finance Manager",
+                password="123456",
+            )
+
+            org = ctx.create(
+                OrgEntity,
+                name="Allure Test Org",
+                code="ALLURE001",
+                budget_total=1000000,
+                level=1,
+            )
+
+            budget = ctx.create(
+                BudgetEntity,
+                org_id=org.id,
+                total_amount=500000,
+                category="project",
+                year=2026,
+                status="active",
+            )
+
+            # ==========================================
+            # 步骤 2: 测试实体复用
+            # ==========================================
+            allure.attach("测试实体复用功能", "流程说明", allure.attachment_type.TEXT)
+
+            # 尝试复用已创建的员工用户
+            reused_user = ctx.use(UserEntity, role="employee")
+            assert reused_user is not None, "应该找到已创建的员工用户"
+            assert reused_user.username == "employee_allure"
+
+            # ==========================================
+            # 步骤 3: 创建报销申请
+            # ==========================================
+            reimb = ctx.create(
+                ReimbursementEntity,
+                user_id=submitter.id,
+                amount=5000.00,
+                reason="AllureContext增强测试",
+                status="pending",
+            )
+
+            # ==========================================
+            # 步骤 4: 验证预算充足
+            # ==========================================
+            allure.attach("验证预算是否充足", "流程说明", allure.attachment_type.TEXT)
+
+            available_budget = budget.get_available_amount()
+            has_budget = ctx.expect(available_budget).gt(5000.00)
+            assert has_budget, f"预算不足，可用金额: {available_budget}"
+
+            # ==========================================
+            # 步骤 5: 模拟审批流程
+            # ==========================================
+            allure.attach("模拟完整的审批流程", "流程说明", allure.attachment_type.TEXT)
+
+            # 提交申请
+            reimb.status = "pending"
+            ctx.fire_event("reimbursement_submitted", priority="normal", amount=5000.00)
+
+            # 部门审批通过
+            reimb.status = "dept_approved"
+            ctx.fire_event(
+                "dept_approved", priority="normal", approver=approver_dept.username
+            )
+
+            # 财务审批通过
+            reimb.status = "finance_approved"
+            ctx.fire_event(
+                "finance_approved",
+                priority="normal",
+                approver=approver_finance.username,
+            )
+
+            # CEO审批通过
+            reimb.status = "ceo_approved"
+            ctx.fire_event("ceo_approved", priority="high", final_amount=5000.00)
+
+            # ==========================================
+            # 步骤 6: 消耗预算
+            # ==========================================
+            budget.consume(5000.00)
+            remaining_budget = budget.get_available_amount()
+
+            # ==========================================
+            # 步骤 7: 验证最终结果
+            # ==========================================
+            allure.attach("验证最终结果", "流程说明", allure.attachment_type.TEXT)
+
+            # 验证状态
+            assert ctx.expect(reimb.status).equals("ceo_approved")
+            assert ctx.expect(reimb.amount).equals(5000.00)
+
+            # 验证事件触发
+            assert ctx.event("ceo_approved").was_fired()
+            assert ctx.event("ceo_approved").was_fired(priority="high")
+            assert ctx.event("reimbursement_submitted").was_fired()
+
+            # 验证预算更新
+            assert ctx.expect(remaining_budget).equals(495000.00)
+
+            # ==========================================
+            # 步骤 8: 记录执行统计
+            # ==========================================
+            created_entities = ctx.get_all_created()
+            entity_summary = {
+                "创建的实体数量": len(created_entities),
+                "实体类型分布": {},
+                "执行的动作数": len(ctx._actions),
+                "触发的事件数": len([e for e in ctx._events.values() if e.fired]),
+            }
+
+            for entity in created_entities:
+                entity_type = type(entity).__name__
+                entity_summary["实体类型分布"][entity_type] = (
+                    entity_summary["实体类型分布"].get(entity_type, 0) + 1
+                )
+
+            allure.attach(
+                json.dumps(entity_summary, ensure_ascii=False, indent=2),
+                name="📊 执行统计",
+                attachment_type=allure.attachment_type.JSON,
+            )
+
+            # 保存结果到 test_context
+            test_context.set(
+                "allure_context_workflow",
+                {
+                    "status": reimb.status,
+                    "reimbursement_id": reimb.id,
+                    "budget_remaining": remaining_budget,
+                    "entities_created": len(created_entities),
+                },
+            )
+
+    @allure.title("预期验证展示 - AllureContext")
+    @allure.description(
+        "展示 AllureContext 的各种预期验证方法在 Allure 报告中的呈现效果"
+    )
+    def test_expectations_showcase(self, authenticated_client, test_context):
+        """展示各种预期验证方法"""
+        from auto_test.demo_project.data_factory import AllureContext
+
+        ctx = AllureContext(auto_cleanup=True, enable_allure=True)
+
+        with ctx:
+            # 创建测试实体
+            user = ctx.create(
+                UserEntity,
+                username="expect_test",
+                role="employee",
+                email="expect@test.com",
+                full_name="Expect Test",
+                password="123456",
+            )
+
+            # 各种验证方法展示
+            ctx.expect(user.username).equals("expect_test")
+            ctx.expect(user.role).not_equals("admin")
+            ctx.expect(user.id).is_not_none()
+            ctx.expect(1000).gt(500)
+            ctx.expect(1000).gte(1000)
+            ctx.expect(500).lt(1000)
+            ctx.expect(500).lte(500)
+            ctx.expect(["a", "b", "c"]).contains("b")
+
+            test_context.set("expectations_passed", True)
+
+    @allure.title("事件追踪展示 - AllureContext")
+    @allure.description("展示 AllureContext 的事件追踪功能在 Allure 报告中的呈现效果")
+    def test_event_tracking_showcase(self, authenticated_client, test_context):
+        """展示事件追踪功能"""
+        from auto_test.demo_project.data_factory import AllureContext
+
+        ctx = AllureContext(auto_cleanup=True, enable_allure=True)
+
+        with ctx:
+            # 触发各种优先级的事件
+            ctx.fire_event("system_start", priority="low", version="1.0.0")
+            ctx.fire_event("user_login", priority="normal", username="test_user")
+            ctx.fire_event("data_process", priority="high", records=1000)
+            ctx.fire_event("critical_error", priority="critical", error_code="E001")
+
+            # 验证事件触发
+            assert ctx.event("user_login").was_fired()
+            assert ctx.event("data_process").was_fired(priority="high")
+            assert ctx.event("system_start").was_fired(priority="low")
+            assert ctx.event("critical_error").was_fired(priority="critical")
+
+            # 验证未触发的事件
+            assert ctx.event("unknown_event").was_not_fired()
+
+            test_context.set("events_tracked", True)

@@ -6,7 +6,7 @@
 import allure
 
 from auto_test.demo_project.data_factory.builders.system import SystemBuilder
-from auto_test.demo_project.test_cases.base import UnitTest, IntegrationTest
+from core.base.layering_base import UnitTest, IntegrationTest
 
 
 @allure.feature("系统管理")

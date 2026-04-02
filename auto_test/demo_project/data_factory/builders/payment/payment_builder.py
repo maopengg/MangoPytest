@@ -3,32 +3,14 @@
 # @Description: 付款单构造器 - 支持D→C→B→A级联依赖解决 (A级)
 # @Time   : 2026-04-01
 # @Author : 毛鹏
-import os
-import sys
 import uuid
 from typing import Optional, List, Dict, Any
 
-# 添加父目录到路径以确保导入工作
-_current_dir = os.path.dirname(os.path.abspath(__file__))
-_parent_dir = os.path.dirname(_current_dir)
-if _parent_dir not in sys.path:
-    sys.path.insert(0, _parent_dir)
+from ..base_builder import BaseBuilder, BuilderContext, DependencyLevel
+from ..reimbursement.reimbursement_builder import ReimbursementBuilder
+from ...entities.payment_entity import PaymentEntity
+from ...registry import register_builder
 
-try:
-    from ..base_builder import BaseBuilder, BuilderContext, DependencyLevel
-    from ..reimbursement.reimbursement_builder import ReimbursementBuilder
-    from ...entities.payment_entity import PaymentEntity
-    from ...entities.reimbursement import ReimbursementEntity
-    from ...registry import register_builder
-    from ....api_manager import demo_project
-except ImportError:
-    # 回退导入
-    sys.path.insert(0, os.path.dirname(_parent_dir))
-    from base_builder import BaseBuilder, BuilderContext, DependencyLevel
-    from reimbursement.reimbursement_builder import ReimbursementBuilder
-    from entities.payment_entity import PaymentEntity
-    from entities.reimbursement import ReimbursementEntity
-    from registry import register_builder
 
 
 @register_builder("payment")

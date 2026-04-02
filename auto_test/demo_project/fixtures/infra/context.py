@@ -33,17 +33,9 @@ from typing import Dict, Any, List, Optional, Type, Callable
 
 import pytest
 
-# 导入项目模块
-try:
-    from auto_test.demo_project.data_factory.context import Context
-    from auto_test.demo_project.data_factory.entities.base_entity import BaseEntity
-except ImportError:
-    import sys
-    import os
+from auto_test.demo_project.data_factory.context import Context
+from auto_test.demo_project.data_factory import BaseEntity
 
-    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-    from data_factory.context import Context
-    from data_factory.entities.base_entity import BaseEntity
 
 
 @dataclass

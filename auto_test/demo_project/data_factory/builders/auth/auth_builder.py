@@ -60,24 +60,18 @@ class AuthBuilder:
         """
         login_data = self.build_login_data(username, password)
 
-        print(f"\n[AuthBuilder] 正在登录: username={login_data['username']}")
 
         # 直接传递明文密码，由 API 层进行加密
         result = demo_project.auth.api_login(
             username=login_data["username"], password=login_data["password"]
         )
 
-        print(f"[AuthBuilder] 登录结果: {result}")
 
         if result.get("code") == 200:
             token = result["data"]["token"]
             self.token = token
-            print(f"[AuthBuilder] 登录成功, token={token[:20]}...")
             return token
-        else:
-            print(
-                f"[AuthBuilder] 登录失败: code={result.get('code')}, message={result.get('message')}"
-            )
+
         return None
 
     def register(

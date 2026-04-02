@@ -9,27 +9,9 @@ from abc import ABC
 from dataclasses import dataclass, field
 from typing import Dict, Any, List, Optional, TypeVar, Generic, Type
 
-# 添加父目录到路径以确保导入工作
-_current_dir = os.path.dirname(os.path.abspath(__file__))
-_parent_dir = os.path.dirname(_current_dir)
-if _parent_dir not in sys.path:
-    sys.path.insert(0, _parent_dir)
+from ..context import Context
+from ..entities.base_entity import BaseEntity
 
-try:
-    from entities.base_entity import BaseEntity
-    from context import Context
-    from scenarios.variant_matrix import VariantMatrix
-except ImportError:
-    # 回退到相对导入
-    try:
-        from ..entities.base_entity import BaseEntity
-        from ..context import Context
-        from .variant_matrix import VariantMatrix
-    except ImportError:
-        # 如果都失败，使用延迟导入
-        BaseEntity = None
-        Context = None
-        VariantMatrix = None
 
 T = TypeVar("T", bound=BaseEntity if BaseEntity else object)
 
@@ -160,13 +142,9 @@ class BaseScenario(ABC, Generic[T]):
 
         # 延迟导入 Context
         if context is None:
-            try:
-                from context import Context
-                self.context = Context(
-                    auto_cleanup=True, cascade_cleanup=False, enable_lineage=True
-                )
-            except ImportError:
-                self.context = None
+            self.context = Context(
+                auto_cleanup=True, cascade_cleanup=False, enable_lineage=True
+            )
         else:
             self.context = context
 

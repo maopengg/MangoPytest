@@ -16,7 +16,7 @@ import uuid
 import allure
 import pytest
 
-from auto_test.demo_project.test_cases.base import UnitTest
+from core.base.layering_base import UnitTest
 
 
 @allure.feature("认证模块")

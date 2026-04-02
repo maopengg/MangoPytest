@@ -4,7 +4,7 @@
 # @Time   : 2024-03-17 19:50
 # @Author : 毛鹏
 
-from auto_test.demo_project.core.api.client import APIClient
+from core.api.client import APIClient
 
 
 class DeptApprovalAPI:

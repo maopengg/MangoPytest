@@ -13,7 +13,7 @@
 
 import allure
 
-from auto_test.demo_project.test_cases.base import UnitTest, IntegrationTest
+from core.base.layering_base import UnitTest, IntegrationTest
 
 
 @allure.feature("报销申请")

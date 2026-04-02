@@ -16,7 +16,6 @@
     # 单变体测试
     @case_data(scenario=LoginScenario.variant(actor="admin", credential="correct"))
     def test_login_success(self, test_context):
-        result = test_context.get("result")
         assert result["success"] is True
     
     # 多变体批量测试（自动生成12条用例）

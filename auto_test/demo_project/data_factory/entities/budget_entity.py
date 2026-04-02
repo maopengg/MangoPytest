@@ -21,19 +21,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, date
 from typing import Optional, List, Dict, Any
 
-# 添加父目录到路径以确保导入工作
-_current_dir = os.path.dirname(os.path.abspath(__file__))
-_parent_dir = os.path.dirname(_current_dir)
-if _parent_dir not in sys.path:
-    sys.path.insert(0, _parent_dir)
-
-try:
-    from entities.base_entity import BaseEntity
-except ImportError:
-    try:
-        from .base_entity import BaseEntity
-    except ImportError:
-        BaseEntity = object
+from .base_entity import BaseEntity
 
 
 def uuid_short() -> str:

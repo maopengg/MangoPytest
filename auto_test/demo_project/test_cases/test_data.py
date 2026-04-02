@@ -6,7 +6,7 @@
 import allure
 
 from auto_test.demo_project.api_manager import demo_project
-from auto_test.demo_project.test_cases.base import UnitTest
+from core.base.layering_base import UnitTest
 
 
 @allure.feature("数据管理")

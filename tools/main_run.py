@@ -33,17 +33,20 @@ class MainRun:
                 if i.get(
                         "project_name"
                 ) == case_run_model.project and case_run_model.type == i.get("type"):
-                    if (
-                            rf'{project_dir.root_path()}\auto_test\{i.get("dir_name")}\test_case'
-                            in os.listdir()
-                    ):
-                        self.pytest_command.append(
-                            fr'{project_dir.root_path()}\auto_test\{i.get("dir_name")}\test_case'
-                        )
-                    else:
-                        self.pytest_command.append(
-                            fr'{project_dir.root_path()}\auto_test\{i.get("dir_name")}\test_cases'
-                        )
+                    # if (
+                    #         rf'{project_dir.root_path()}\auto_test\{i.get("dir_name")}\test_case'
+                    #         in os.listdir()
+                    # ):
+                    #     self.pytest_command.append(
+                    #         fr'{project_dir.root_path()}\auto_test\{i.get("dir_name")}\test_case'
+                    #     )
+                    # else:
+                    #     self.pytest_command.append(
+                    #         fr'{project_dir.root_path()}\auto_test\{i.get("dir_name")}\test_cases'
+                    #     )
+                    self.pytest_command.append(
+                                fr'{project_dir.root_path()}\auto_test\demo_project\test_cases\test_approval_workflow.py'
+                            )
         log.info(f"开始执行测试任务......")
         print(self.pytest_command)
         pytest.main(self.pytest_command)

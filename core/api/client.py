@@ -15,11 +15,13 @@ Core API 客户端
 - 请求/响应日志打印
 """
 
-import json
 import time
 from dataclasses import dataclass
-from typing import Dict, Any, Optional, Callable
+from typing import Dict, Any, Optional, Callable, List
 
+import requests
+
+from tools.log import log
 from .exceptions import APIException, RequestException
 
 
@@ -126,52 +128,7 @@ class APIClient:
 
         return headers
 
-    def _log_request(
-            self,
-            method: str,
-            url: str,
-            headers: Dict[str, str],
-            data: Optional[Any] = None,
-            params: Optional[Dict[str, Any]] = None,
-    ):
-        """打印请求日志"""
-        print(f"\n{'=' * 100}")
-        print(f"🚀 请求: {method} {url}")
 
-        # 打印请求头（隐藏敏感信息）
-        safe_headers = headers.copy()
-        if "Authorization" in safe_headers:
-            safe_headers["Authorization"] = "Bearer ***"
-        print(f"📋 Headers: {json.dumps(safe_headers, ensure_ascii=False)}")
-
-        # 打印查询参数
-        if params:
-            print(f"🔍 Params: {json.dumps(params, ensure_ascii=False)}")
-
-        # 打印请求体（隐藏密码）
-        if data:
-            safe_data = data.copy() if isinstance(data, dict) else data
-            if isinstance(safe_data, dict):
-                if "password" in safe_data:
-                    safe_data["password"] = "***"
-                print(f"📦 Body: {json.dumps(safe_data, ensure_ascii=False)}")
-            else:
-                print(f"📦 Body: {safe_data}")
-
-    def _log_response(self, response: APIResponse, elapsed_ms: float):
-        """打印响应日志"""
-        status_icon = "✅" if response.is_success else "❌"
-        print(f"{status_icon} 响应: {response.status_code} ({elapsed_ms:.2f}ms)")
-
-        # 打印响应内容
-        if isinstance(response.data, dict):
-            print(
-                f"📤 Response: {json.dumps(response.data, ensure_ascii=False)[:2000]}"
-            )
-        else:
-            print(f"📤 Response: {str(response.data)[:1000]}")
-
-        print(f"{'=' * 100}\n")
 
     def _do_request(
             self,
@@ -191,19 +148,6 @@ class APIClient:
         @param params: 查询参数
         @return: API 响应
         """
-        # 打印请求日志
-        self._log_request(method, url, headers, data, params)
-
-        if not HAS_REQUESTS:
-            # Mock 响应
-            response = APIResponse(
-                status_code=200,
-                data={"code": 200, "message": "mock success", "data": {}},
-                headers={},
-                elapsed_ms=0.0,
-            )
-            self._log_response(response, 0.0)
-            return response
 
         start_time = time.time()
 
@@ -230,7 +174,8 @@ class APIClient:
             # 解析响应数据
             try:
                 response_data = response.json()
-            except:
+            except Exception as e:
+                log.info(f'解析json格式数据错误：{e}')
                 response_data = response.text
 
             api_response = APIResponse(
@@ -239,9 +184,6 @@ class APIClient:
                 headers=dict(response.headers),
                 elapsed_ms=elapsed_ms,
             )
-
-            # 打印响应日志
-            self._log_response(api_response, elapsed_ms)
 
             return api_response
 
@@ -338,7 +280,3 @@ class APIClient:
             "error_count": self._error_count,
             "success_rate": 1.0 - (self._error_count / max(self._request_count, 1)),
         }
-
-
-# 类型提示
-from typing import List

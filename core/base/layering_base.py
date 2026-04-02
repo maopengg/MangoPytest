@@ -25,12 +25,11 @@ import time
 from abc import ABC
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Dict, Any, Optional, List, Callable, Type, TYPE_CHECKING
+from typing import Dict, Any, Optional, List, Callable, Type
 
 import pytest
 
-if TYPE_CHECKING:
-    from ..data_factory.scenarios import BaseScenario
+from auto_test.demo_project.data_factory.strategies import APIStrategy
 
 
 class TestLayerType(Enum):
@@ -103,7 +102,6 @@ class TestContext:
 
     def create(self, entity_type: Type, **kwargs) -> Any:
         """创建实体"""
-        from ..data_factory.strategies import APIStrategy
 
         strategy = APIStrategy(token=self.token)
         result = strategy.create(entity_type, **kwargs)

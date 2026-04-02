@@ -81,7 +81,7 @@ class TestConfig(BaseConfig):
     """测试环境配置"""
     ENV: Environment = Environment.TEST
     DEBUG: bool = True
-    HOST: str = "http://test-api.example.com"
+    HOST: str = "http://43.142.161.61:8003/"
     DEFAULT_STRATEGY: CreateStrategy = CreateStrategy.API_ONLY
 
 
@@ -90,7 +90,7 @@ class PreConfig(BaseConfig):
     """预发环境配置"""
     ENV: Environment = Environment.PRE
     DEBUG: bool = False
-    HOST: str = "https://pre-api.example.com"
+    HOST: str = "http://43.142.161.61:8003/"
     DEFAULT_STRATEGY: CreateStrategy = CreateStrategy.API_ONLY
 
 
@@ -99,7 +99,7 @@ class ProdConfig(BaseConfig):
     """生产环境配置"""
     ENV: Environment = Environment.PROD
     DEBUG: bool = False
-    HOST: str = "https://api.example.com"
+    HOST: str = "http://43.142.161.61:8003/"
     AUTO_CLEANUP: bool = False  # 生产环境不自动清理
     DEFAULT_STRATEGY: CreateStrategy = CreateStrategy.API_ONLY
 
