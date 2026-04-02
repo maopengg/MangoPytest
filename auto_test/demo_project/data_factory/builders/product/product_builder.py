@@ -25,7 +25,7 @@ class ProductBuilder(BaseBuilder):
             demo_project.product.set_token(token)
 
     def build(self, name: str = None, price: float = None,
-              description: str = None, stock: int = 0, **kwargs) -> Dict[str, Any]:
+              description: str = None, stock: int = 100, **kwargs) -> Dict[str, Any]:
         """
         构造产品数据（不调用API）
         @return: 产品数据字典
@@ -38,7 +38,7 @@ class ProductBuilder(BaseBuilder):
         }
 
     def create(self, name: str = None, price: float = None,
-               description: str = None, stock: int = 0, **kwargs) -> Dict[str, Any]:
+               description: str = None, stock: int = 100, **kwargs) -> Dict[str, Any]:
         """
         创建产品
         @return: 创建的产品数据

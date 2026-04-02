@@ -49,7 +49,7 @@ def order_with_product(order_builder, product_builder, test_user) -> Generator[D
     product = product_builder.create()
     if not product:
         pytest.skip("无法创建测试产品")
-    
+
     # 创建订单
     order = order_builder.create(
         product_id=product.get('id'),
@@ -63,12 +63,9 @@ def order_with_product(order_builder, product_builder, test_user) -> Generator[D
         except Exception:
             pass
         pytest.skip("无法创建测试订单")
-    
-    yield {
-        "order": order,
-        "product": product
-    }
-    
+
+    yield order
+
     # 清理
     try:
         order_builder.delete(order.get('id'))

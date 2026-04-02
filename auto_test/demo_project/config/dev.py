@@ -3,7 +3,7 @@
 # @Description: 开发环境配置
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-from .settings import BaseSettings, DatabaseConfig, RedisConfig, APIConfig, LogConfig
+from auto_test.demo_project.config.settings import BaseSettings, DatabaseConfig, RedisConfig, APIConfig, LogConfig
 
 
 class DevSettings(BaseSettings):

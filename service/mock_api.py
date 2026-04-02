@@ -71,37 +71,9 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         # 处理请求
         try:
             response = await call_next(request)
-
-            # 计算处理时间
-            process_time = (time.time() - start_time) * 1000
-
-            # 打印请求和响应日志
-            print(f"\n{'='*80}")
-            print(f"[{request_id}] � {method} {url}")
-            if body:
-                try:
-                    body_json = json.loads(body)
-                    if isinstance(body_json, dict) and "password" in body_json:
-                        body_json["password"] = "***"
-                    print(
-                        f"[{request_id}] � 请求: {json.dumps(body_json, ensure_ascii=False)}"
-                    )
-                except:
-                    print(f"[{request_id}] � 请求: {body[:200]}")
-
-            status_code = response.status_code
-            status_icon = "✅" if status_code < 400 else "❌"
-            print(
-                f"[{request_id}] {status_icon} 响应 [{status_code}]: (响应体需要额外处理才能读取)"
-            )
-            print(f"{'='*80}\n")
-
             return response
 
         except Exception as e:
-            process_time = (time.time() - start_time) * 1000
-            print(f"[{request_id}] 💥 异常: {str(e)} ({process_time:.2f}ms)")
-            print(f"{'='*80}\n")
             raise
 
 
@@ -142,7 +114,6 @@ def get_db_connection():
         conn = pymysql.connect(**MYSQL_CONFIG)
         yield conn
     except Exception as e:
-        print(f"数据库连接错误: {e}")
         raise
     finally:
         if conn:
@@ -341,26 +312,17 @@ async def login(user_login: UserLogin):
             if not user:
                 return error(401, "用户名或密码错误")
 
-            # 验证密码（MD5）
-            print(f"[DEBUG] 接收到的密码: {user_login.password}")
-            print(f"[DEBUG] 数据库中的密码: {user['password']}")
-
             # 检查密码是否已经是 MD5 格式（32位十六进制字符串）
             if len(user_login.password) == 32 and all(
                 c in "0123456789abcdef" for c in user_login.password.lower()
             ):
                 # 密码已经是 MD5 格式，直接使用
                 password_md5 = user_login.password.lower()
-                print(f"[DEBUG] 密码已是MD5格式，直接使用: {password_md5}")
             else:
                 # 密码是明文，进行 MD5 加密
                 password_md5 = hashlib.md5(user_login.password.encode()).hexdigest()
-                print(f"[DEBUG] 密码是明文，MD5加密后: {password_md5}")
 
             if password_md5 != user["password"]:
-                print(
-                    f"[DEBUG] 密码不匹配! 计算值: {password_md5}, 数据库值: {user['password']}"
-                )
                 return error(402, "用户名或密码错误")
 
             # 更新最后登录时间
@@ -637,14 +599,16 @@ async def create_order(order: Order, token: str = Depends(verify_token)):
 
             # 计算订单金额
             total_amount = product["price"] * order.quantity
+            order_no = f"ORD{datetime.now().strftime('%Y%m%d%H%M%S')}{str(uuid.uuid4())[:4]}"
 
             # 创建订单
             sql = """
-                INSERT INTO orders (product_id, quantity, user_id, total_amount, status, created_at, updated_at)
-                VALUES (%s, %s, %s, %s, 'pending', NOW(), NOW())
+                INSERT INTO orders (order_no, product_id, quantity, user_id, total_amount, status, created_at, updated_at)
+                VALUES (%s, %s, %s, %s, %s, 'pending', NOW(), NOW())
             """
             cursor.execute(
-                sql, (order.product_id, order.quantity, order.user_id, total_amount)
+                sql,
+                (order_no, order.product_id, order.quantity, order.user_id, total_amount),
             )
             order_id = cursor.lastrowid
 
