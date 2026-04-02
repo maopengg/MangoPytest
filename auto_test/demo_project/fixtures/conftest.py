@@ -61,6 +61,12 @@ from .builders.reimbursement_fixtures import (
     multiple_reimbursements,
 )
 
+# ========== C模块构造器fixtures ==========
+from .builders.c_fixtures import (
+    org_builder,
+    budget_builder,
+)
+
 # ========== 部门审批模块fixtures ==========
 from .builders.dept_approval_fixtures import (
     dept_approval_builder,
@@ -172,6 +178,9 @@ __all__ = [
     "created_reimbursement",
     "pending_reimbursement",
     "multiple_reimbursements",
+    # C模块构造器
+    "org_builder",
+    "budget_builder",
     # 部门审批模块
     "dept_approval_builder",
     "dept_approved_reimbursement",

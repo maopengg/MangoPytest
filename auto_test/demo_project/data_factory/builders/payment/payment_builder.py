@@ -16,6 +16,7 @@ if _parent_dir not in sys.path:
 
 try:
     from ..base_builder import BaseBuilder, BuilderContext, DependencyLevel
+    from ..reimbursement.reimbursement_builder import ReimbursementBuilder
     from ...entities.payment_entity import PaymentEntity
     from ...entities.reimbursement import ReimbursementEntity
     from ...registry import register_builder
@@ -24,6 +25,7 @@ except ImportError:
     # 回退导入
     sys.path.insert(0, os.path.dirname(_parent_dir))
     from base_builder import BaseBuilder, BuilderContext, DependencyLevel
+    from reimbursement.reimbursement_builder import ReimbursementBuilder
     from entities.payment_entity import PaymentEntity
     from entities.reimbursement import ReimbursementEntity
     from registry import register_builder
@@ -62,7 +64,7 @@ class PaymentBuilder(BaseBuilder[PaymentEntity]):
     
     # 【依赖声明】依赖的Builder类型
     # Payment(A级) → Reimbursement(B级)
-    DEPENDENCIES = []
+    DEPENDENCIES = [ReimbursementBuilder]
     
     def __init__(
         self,
@@ -95,12 +97,7 @@ class PaymentBuilder(BaseBuilder[PaymentEntity]):
     def _get_reimbursement_builder(self):
         """获取或创建报销单Builder"""
         if self._reimb_builder is None:
-            try:
-                from ..reimbursement.reimbursement_builder import ReimbursementBuilder
-                self._reimb_builder = self._get_or_create_builder(ReimbursementBuilder)
-            except ImportError:
-                # 如果无法导入，返回None
-                pass
+            self._reimb_builder = self._get_or_create_builder(ReimbursementBuilder)
         return self._reimb_builder
     
     def _prepare_dependencies(self, **kwargs) -> Dict[str, Any]:

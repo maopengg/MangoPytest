@@ -810,10 +810,19 @@ async def upload_file(file: UploadFile = File(...), token: str = Depends(verify_
         # 存储文件信息到数据库
         with get_db_cursor() as cursor:
             sql = """
-                INSERT INTO files (file_id, filename, content_type, size, created_at)
-                VALUES (%s, %s, %s, %s, NOW())
+                INSERT INTO files (file_id, filename, original_name, content_type, size, created_at)
+                VALUES (%s, %s, %s, %s, %s, NOW())
             """
-            cursor.execute(sql, (file_id, file.filename, file.content_type, file_size))
+            cursor.execute(
+                sql,
+                (
+                    file_id,
+                    file.filename,
+                    file.filename,
+                    file.content_type,
+                    file_size,
+                ),
+            )
 
         return success(
             {

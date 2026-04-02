@@ -7,9 +7,10 @@ import pytest
 
 from auto_test.demo_project.api_manager import demo_project
 from auto_test.demo_project.fixtures.conftest import *
+from auto_test.demo_project.test_cases.base import UnitTest, IntegrationTest
 
 
-class TestFinanceApprovalAPI:
+class TestFinanceApprovalAPI(IntegrationTest):
     """
     财务审批API测试类 - B级模块测试
     测试 /finance-approvals 接口
@@ -84,7 +85,7 @@ class TestFinanceApprovalAPI:
         assert result["code"] == 200
 
 
-class TestFinanceApprovalBuilder:
+class TestFinanceApprovalBuilder(UnitTest):
     """
     财务审批Builder测试类
     测试数据工厂功能

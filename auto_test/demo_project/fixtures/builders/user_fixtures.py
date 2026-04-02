@@ -11,12 +11,12 @@ from auto_test.demo_project.data_factory.entities import UserEntity
 
 
 @pytest.fixture(scope="function")
-def user_builder() -> UserBuilder:
+def user_builder(test_token) -> UserBuilder:
     """
     用户构造器 fixture
     提供UserBuilder实例用于创建用户数据
     """
-    return UserBuilder()
+    return UserBuilder(token=test_token)
 
 
 @pytest.fixture(scope="function")

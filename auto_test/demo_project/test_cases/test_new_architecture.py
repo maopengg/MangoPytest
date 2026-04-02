@@ -14,11 +14,12 @@ from auto_test.demo_project.data_factory.scenarios import (
     CreateReimbursementScenario,
     FullApprovalWorkflowScenario,
 )
+from auto_test.demo_project.test_cases.base import UnitTest, IntegrationTest, E2ETest
 
 
 @allure.feature("新架构演示")
 @allure.story("Entity使用")
-class TestEntityUsage:
+class TestEntityUsage(UnitTest):
     """演示Entity的使用"""
 
     @allure.title("创建用户Entity")
@@ -52,7 +53,7 @@ class TestEntityUsage:
 
 @allure.feature("新架构演示")
 @allure.story("Builder使用")
-class TestBuilderUsage:
+class TestBuilderUsage(UnitTest):
     """演示Builder的使用"""
 
     @allure.title("使用UserBuilder创建用户")
@@ -88,7 +89,7 @@ class TestBuilderUsage:
 
 @allure.feature("新架构演示")
 @allure.story("Scenario使用")
-class TestScenarioUsage:
+class TestScenarioUsage(IntegrationTest):
     """演示Scenario的使用"""
 
     @allure.title("使用LoginScenario登录")
@@ -121,13 +122,13 @@ class TestScenarioUsage:
 
 @allure.feature("新架构演示")
 @allure.story("完整审批流程")
-class TestApprovalWorkflow:
+class TestApprovalWorkflow(E2ETest):
     """演示完整审批流程"""
 
     @allure.title("使用Scenario创建完整审批流程")
-    def test_full_approval_workflow(self):
+    def test_full_approval_workflow(self, test_token):
         """测试使用Scenario创建完整4级审批流程"""
-        scenario = FullApprovalWorkflowScenario()
+        scenario = FullApprovalWorkflowScenario(token=test_token)
 
         result = scenario.execute(
             user_id=1,
@@ -149,7 +150,7 @@ class TestApprovalWorkflow:
 
 @allure.feature("新架构演示")
 @allure.story("使用Fixtures")
-class TestWithFixtures:
+class TestWithFixtures(IntegrationTest):
     """演示使用Fixtures"""
 
     @allure.title("使用test_user fixture")

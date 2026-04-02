@@ -4,8 +4,6 @@
 # @Time   : 2026-03-31
 # @Author : 毛鹏
 import pytest
-import os
-import tempfile
 from typing import Generator, Dict, Any
 
 from auto_test.demo_project.data_factory.builders.file import FileBuilder
@@ -21,22 +19,11 @@ def file_builder(test_token) -> FileBuilder:
 def temp_file() -> Generator[str, None, None]:
     """
     临时文件 fixture
-    创建一个临时文件并返回路径
+    使用项目内固定测试文件路径
     """
-    temp_dir = tempfile.gettempdir()
-    file_path = os.path.join(temp_dir, "test_upload.txt")
-    
-    with open(file_path, 'w', encoding='utf-8') as f:
-        f.write("This is a test file for upload")
-    
+    file_path = r"D:\code\MangoPytest\auto_test\demo_project\data\uploads\测试上传文件.txt"
+
     yield file_path
-    
-    # 清理
-    try:
-        if os.path.exists(file_path):
-            os.remove(file_path)
-    except Exception:
-        pass
 
 
 @pytest.fixture(scope="function")

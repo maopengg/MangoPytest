@@ -100,6 +100,10 @@ class BaseEntity(ABC):
         @return: API请求体字典
         """
         return self.to_dict()
+
+    def get(self, key: str, default: Any = None) -> Any:
+        """字典风格读取属性（兼容旧用例）"""
+        return self.to_dict().get(key, default)
     
     def mark_as_saved(self, entity_id: int):
         """

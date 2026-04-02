@@ -7,9 +7,10 @@ import pytest
 
 from auto_test.demo_project.api_manager import demo_project
 from auto_test.demo_project.fixtures.conftest import *
+from auto_test.demo_project.test_cases.base import UnitTest, IntegrationTest
 
 
-class TestCEOApprovalAPI:
+class TestCEOApprovalAPI(IntegrationTest):
     """
     总经理审批API测试类 - A级模块测试
     测试 /ceo-approvals 接口
@@ -98,7 +99,7 @@ class TestCEOApprovalAPI:
         assert result["code"] == 200
 
 
-class TestCEOApprovalBuilder:
+class TestCEOApprovalBuilder(UnitTest):
     """
     总经理审批Builder测试类
     测试数据工厂功能

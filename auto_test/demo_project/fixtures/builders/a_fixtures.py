@@ -32,7 +32,7 @@ def payment_builder(test_token) -> Generator[PaymentBuilder, None, None]:
             payment = payment_builder.create(amount=5000)
             assert payment.id is not None
     """
-    context = BuilderContext(auto_cleanup=True)
+    context = BuilderContext(cascade_cleanup=False, auto_prepare_deps=True)
     builder = PaymentBuilder(
         token=test_token,
         context=context

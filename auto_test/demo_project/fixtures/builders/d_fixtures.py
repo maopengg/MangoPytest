@@ -32,7 +32,7 @@ def user_builder(test_token) -> Generator[UserBuilder, None, None]:
             user = user_builder.create(username="test")
             assert user.id is not None
     """
-    context = BuilderContext(auto_cleanup=True)
+    context = BuilderContext(cascade_cleanup=False, auto_prepare_deps=True)
     builder = UserBuilder(token=test_token, context=context)
 
     yield builder

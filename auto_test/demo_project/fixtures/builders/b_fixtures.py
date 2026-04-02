@@ -32,7 +32,7 @@ def reimb_builder(test_token) -> Generator[ReimbursementBuilder, None, None]:
             reimb = reimb_builder.create(user_id=1, amount=1000)
             assert reimb.id is not None
     """
-    context = BuilderContext(auto_cleanup=True)
+    context = BuilderContext(cascade_cleanup=False, auto_prepare_deps=True)
     builder = ReimbursementBuilder(
         token=test_token,
         context=context

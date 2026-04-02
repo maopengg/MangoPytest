@@ -8,11 +8,12 @@ import allure
 
 from auto_test.demo_project.api_manager import demo_project
 from auto_test.demo_project.fixtures.conftest import *
+from auto_test.demo_project.test_cases.base import UnitTest
 
 
 @allure.feature("数据管理")
 @allure.story("数据提交")
-class TestSubmitData:
+class TestSubmitData(UnitTest):
     """数据提交接口测试"""
 
     @allure.title("正常提交数据")

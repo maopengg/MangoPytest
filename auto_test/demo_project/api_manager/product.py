@@ -21,7 +21,13 @@ class ProductAPI:
         """设置认证token"""
         self._client.set_auth_token(token)
 
-    def create_product(self, name: str, price: float, description: str = None) -> dict:
+    def create_product(
+        self,
+        name: str,
+        price: float,
+        description: str = None,
+        stock: int = 0,
+    ) -> dict:
         """
         创建产品接口
         POST /products
@@ -30,7 +36,7 @@ class ProductAPI:
         @param description: 产品描述
         @return: 响应字典
         """
-        data = {"name": name, "price": price}
+        data = {"name": name, "price": price, "stock": stock}
         if description:
             data["description"] = description
         response = self._client.post("/products", data=data)
@@ -63,7 +69,7 @@ class ProductAPI:
         @param kwargs: 更新字段
         @return: 响应字典
         """
-        response = self._client.put("/products", data=kwargs, params={"id": product_id})
+        response = self._client.put(f"/products/{product_id}", data=kwargs)
         return response.data
 
     def delete_product(self, product_id: int) -> dict:
@@ -73,7 +79,7 @@ class ProductAPI:
         @param product_id: 产品ID
         @return: 响应字典
         """
-        response = self._client.delete("/products", params={"id": product_id})
+        response = self._client.delete(f"/products/{product_id}")
         return response.data
 
             

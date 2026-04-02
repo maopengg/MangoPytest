@@ -7,9 +7,10 @@ import pytest
 
 from auto_test.demo_project.api_manager import demo_project
 from auto_test.demo_project.fixtures.conftest import *
+from auto_test.demo_project.test_cases.base import UnitTest, IntegrationTest
 
 
-class TestDeptApprovalAPI:
+class TestDeptApprovalAPI(IntegrationTest):
     """
     部门审批API测试类 - C级模块测试
     测试 /dept-approvals 接口
@@ -91,7 +92,7 @@ class TestDeptApprovalAPI:
         assert result["code"] == 200
 
 
-class TestDeptApprovalBuilder:
+class TestDeptApprovalBuilder(UnitTest):
     """
     部门审批Builder测试类
     测试数据工厂功能

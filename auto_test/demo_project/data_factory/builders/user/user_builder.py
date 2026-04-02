@@ -20,8 +20,21 @@ class UserBuilder(BaseBuilder[UserEntity]):
     使用Entity进行数据构造和API调用
     """
 
-    def __init__(self, token: str = None, factory=None):
-        super().__init__(token=token, factory=factory)
+    def __init__(
+        self,
+        token: str = None,
+        context=None,
+        strategy=None,
+        parent_builders=None,
+        factory=None,
+    ):
+        super().__init__(
+            token=token,
+            context=context,
+            strategy=strategy,
+            parent_builders=parent_builders,
+            factory=factory,
+        )
         # 设置token到API模块
         if token:
             demo_project.user.set_token(token)

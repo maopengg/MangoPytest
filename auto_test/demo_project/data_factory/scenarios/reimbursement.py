@@ -338,5 +338,8 @@ class RejectionWorkflowScenario(BaseScenario):
                 self.register_entity(ceo_entity)
                 result.add_entity("ceo_approval", ceo_entity)
 
+        result.success = True
         result.message = f"审批在{reject_at}级别被拒绝"
+        result.data["rejected_at"] = reject_at
+        result.data["final_status"] = f"{reject_at}_rejected"
         return result

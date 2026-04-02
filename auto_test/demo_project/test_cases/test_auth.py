@@ -16,7 +16,6 @@ import allure
 import uuid
 
 from auto_test.demo_project.test_cases.base import UnitTest
-from auto_test.demo_project.test_cases.decorators import case_data
 from auto_test.demo_project.fixtures.conftest import *
 
 
@@ -259,17 +258,6 @@ class TestAuthLoginScenario(UnitTest):
                 },
                 id="empty_username",
             ),
-            # 注意：mock API 可能没有 admin 用户，此测试期望可能失败
-            # 如果需要测试 admin 登录，请确保 mock API 中有 admin 用户
-            # pytest.param(
-            #     {
-            #         "username": "admin",
-            #         "password": "admin123",  # 使用明文密码，API 层会自动加密
-            #         "expected_success": True,
-            #         "description": "管理员登录",
-            #     },
-            #     id="admin_login",
-            # ),
         ],
     )
     def test_login_with_variants(self, auth_builder, login_data):

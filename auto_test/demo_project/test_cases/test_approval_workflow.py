@@ -9,6 +9,12 @@
 - 场景 Fixtures (full_approval_workflow, dept_rejected_workflow)
 - test_context 上下文管理
 - 依赖验证
+
+【新增】README 最新架构流程演示：
+- Context 对象模式 - ctx.create(), ctx.use(), ctx.expect(), ctx.event()
+- Scenario 依赖声明 - requires: Dependencies = [...]
+- Scenario 业务编排 - orchestrate(self, ctx: Context)
+- 变体矩阵 - VariantMatrix 参数化测试
 """
 
 import pytest
@@ -17,6 +23,29 @@ import allure
 from auto_test.demo_project.test_cases.base import IntegrationTest, E2ETest
 from auto_test.demo_project.fixtures.conftest import *
 from auto_test.demo_project.api_manager import demo_project
+
+# 【新增】导入最新架构组件
+from auto_test.demo_project.data_factory.scenarios import (
+    FullApprovalScenario,
+    RejectionWorkflowScenario,
+)
+from auto_test.demo_project.data_factory.context import Context
+from auto_test.demo_project.data_factory.entities import (
+    UserEntity,
+    ReimbursementEntity,
+    OrgEntity,
+    BudgetEntity,
+)
+from auto_test.demo_project.data_factory.scenarios.variant_matrix import (
+    VariantMatrix,
+    Dimension,
+    Variant,
+)
+
+
+# =============================================================================
+# 原有测试（向后兼容）
+# =============================================================================
 
 
 @allure.feature("审批流")
@@ -376,3 +405,387 @@ class TestApprovalPerformance(E2ETest):
         assert workflow["status"] == "fully_approved"
         # 验证执行时间在合理范围内（开发环境放宽到30秒）
         assert duration < 30.0, f"审批流程执行时间过长: {duration}秒"
+
+
+# =============================================================================
+# 【新增】README 最新架构流程演示
+# =============================================================================
+
+
+@allure.feature("审批流-新架构")
+@allure.story("Context对象模式")
+class TestApprovalWithContext(E2ETest):
+    """
+    使用 Context 对象模式执行审批流程
+
+    展示 README 中描述的：
+    - ctx.create() - 创建实体
+    - ctx.use() - 复用实体
+    - ctx.expect() - 验证预期
+    - ctx.event() - 事件追踪
+    """
+
+    @allure.title("完整审批流程 - Context对象")
+    def test_full_approval_with_context(self, authenticated_client, test_context):
+        """使用 Context 对象执行完整审批流程"""
+        ctx = Context(auto_cleanup=True, enable_lineage=True)
+
+        with ctx:
+            # 1. 创建依赖实体
+            submitter = ctx.create(
+                UserEntity,
+                username="employee_ctx",
+                role="employee",
+                email="employee@ctx.com",
+                full_name="Context Employee",
+                password="123456",
+            )
+
+            approver_dept = ctx.create(
+                UserEntity,
+                username="manager_ctx",
+                role="manager",
+                email="manager@ctx.com",
+                full_name="Context Manager",
+                password="123456",
+            )
+
+            org = ctx.create(
+                OrgEntity,
+                name="Context Org",
+                code="CTX001",
+                budget_total=1000000,
+                level=1,
+            )
+
+            budget = ctx.create(
+                BudgetEntity,
+                org_id=org.id,
+                total_amount=500000,
+                category="project",
+                year=2026,
+                status="active",
+            )
+
+            # 2. 创建报销申请
+            reimb = ctx.create(
+                ReimbursementEntity,
+                user_id=submitter.id,
+                amount=5000.00,
+                reason="Context模式测试",
+                status="pending",
+            )
+
+            # 3. 验证预算充足
+            has_budget = ctx.expect(budget.get_available_amount()).gt(5000.00)
+            assert has_budget, "预算不足"
+
+            # 4. 模拟审批流程
+            reimb.status = "pending"
+            ctx.fire_event("submitted", priority="normal")
+
+            reimb.status = "dept_approved"
+            ctx.fire_event("dept_approved", priority="normal")
+
+            reimb.status = "finance_approved"
+            ctx.fire_event("finance_approved", priority="normal")
+
+            reimb.status = "ceo_approved"
+            ctx.fire_event("ceo_approved", priority="high")
+
+            # 5. 消耗预算
+            budget.consume(5000.00)
+
+            # 6. 验证最终结果
+            assert ctx.expect(reimb.status).equals("ceo_approved")
+            assert ctx.event("ceo_approved").was_fired()
+
+            test_context.set(
+                "context_workflow",
+                {
+                    "status": reimb.status,
+                    "reimbursement_id": reimb.id,
+                    "budget_remaining": budget.get_available_amount(),
+                },
+            )
+
+
+@allure.feature("审批流-新架构")
+@allure.story("Scenario依赖声明与编排")
+class TestApprovalWithScenario(E2ETest):
+    """
+    使用 Scenario 的依赖声明和业务编排
+
+    展示 README 中描述的：
+    - requires: Dependencies - 依赖声明
+    - orchestrate() - 业务编排
+    - 自动依赖解决
+    """
+
+    @allure.title("完整审批流程 - FullApprovalScenario")
+    def test_full_approval_scenario(self, authenticated_client, test_context):
+        """使用 FullApprovalScenario 执行完整审批流程"""
+        scenario = FullApprovalScenario(
+            token=authenticated_client.token,
+            amount=5000.00,
+            priority="normal",
+            requires_ceo=True,
+        )
+
+        # 执行场景（自动解决依赖并调用 orchestrate）
+        result = scenario.execute()
+
+        # 验证结果
+        assert result.success, f"场景执行失败: {result.errors}"
+
+        # 验证创建的实体
+        reimb = result.get_entity("reimbursement")
+        assert reimb is not None
+        assert reimb.status == "ceo_approved"
+
+        # 验证审批人
+        assert result.get_entity("approver_dept") is not None
+        assert result.get_entity("approver_finance") is not None
+        assert result.get_entity("approver_ceo") is not None
+
+        test_context.set("scenario_result", result)
+
+    @allure.title("预算不足场景")
+    def test_budget_insufficient(self, authenticated_client, test_context):
+        """测试预算不足场景"""
+        scenario = FullApprovalScenario(
+            token=authenticated_client.token,
+            amount=1000000,  # 超过预算
+            priority="normal",
+        )
+
+        result = scenario.execute()
+
+        # 预算检查应该失败
+        assert not result.success or result.data.get("budget_check") == "failed"
+
+        test_context.set("budget_result", result)
+
+    @allure.title("拒绝流程 - RejectionWorkflowScenario")
+    def test_rejection_scenario(self, authenticated_client, test_context):
+        """使用 RejectionWorkflowScenario 测试拒绝流程"""
+        scenario = RejectionWorkflowScenario(token=authenticated_client.token)
+
+        result = scenario.execute(
+            reject_at="dept", user_id=1, amount=1000.00, reason="拒绝流程测试"
+        )
+
+        assert result.success
+        assert result.data.get("rejected_at") == "dept"
+        assert result.data.get("final_status") == "dept_rejected"
+
+        test_context.set("rejection_result", result)
+
+
+@allure.feature("审批流-新架构")
+@allure.story("变体矩阵参数化测试")
+class TestApprovalWithVariantMatrix(E2ETest):
+    """
+    使用变体矩阵进行参数化测试
+
+    展示 README 中描述的 VariantMatrix：
+    - Dimension - 维度定义
+    - Variant - 变体定义
+    - 笛卡尔积生成所有组合
+    """
+
+    @allure.title("变体矩阵 - 手动遍历")
+    def test_variant_matrix_manual(self, authenticated_client, test_context):
+        """手动遍历变体矩阵的所有组合"""
+        # 获取所有变体
+        variants = FullApprovalScenario.all_variants()
+
+        results = []
+        for variant in variants:
+            variant_name = variant.get("name", "unknown")
+            params = variant.get("params", {})
+
+            # 创建场景并执行
+            scenario = FullApprovalScenario(
+                token=authenticated_client.token,
+                amount=params.get("amount", 1000),
+                priority=params.get("priority", "normal"),
+                requires_ceo=params.get("requires_ceo", False),
+            )
+
+            result = scenario.execute()
+            results.append((variant_name, result))
+
+            assert result.success, f"变体 {variant_name} 执行失败"
+
+        test_context.set("variant_results", results)
+        assert len(results) == 6, f"预期 6 个变体，实际 {len(results)}"
+
+    @allure.title("变体矩阵 - 指定变体")
+    def test_specific_variant(self, authenticated_client, test_context):
+        """测试指定变体 - 使用 small + urgent 组合（避免预算不足）"""
+        # 获取所有变体
+        all_variants = FullApprovalScenario.all_variants()
+
+        # 找到 small + urgent 变体（避免预算不足问题）
+        target_values = None
+        for variant in all_variants:
+            # variant 是字典，包含 'amount' 和 'urgency' 两个 Variant 对象
+            amount_variant = variant.get("amount")
+            urgency_variant = variant.get("urgency")
+
+            # 检查是否是 small + urgent 组合
+            if (
+                amount_variant
+                and amount_variant.get("amount") == 1000
+                and urgency_variant
+                and urgency_variant.get("priority") == "high"
+            ):
+                # 合并两个变体的 values
+                target_values = {**amount_variant.values, **urgency_variant.values}
+                break
+
+        # 如果没找到，使用第一个 small 变体
+        if target_values is None:
+            for variant in all_variants:
+                amount_variant = variant.get("amount")
+                if amount_variant and amount_variant.get("amount") == 1000:
+                    urgency_variant = variant.get("urgency")
+                    target_values = {**amount_variant.values, **urgency_variant.values}
+                    break
+
+        assert target_values is not None, "未找到 small 变体"
+
+        # 验证变体属性
+        assert target_values.get("requires_ceo") is False, "small 金额不需要 CEO 审批"
+        assert target_values.get("amount") == 1000
+
+        # 执行场景
+        scenario = FullApprovalScenario(
+            token=authenticated_client.token,
+            amount=target_values.get("amount", 1000),
+            priority="urgent",  # high 对应 urgent
+            requires_ceo=False,
+        )
+
+        result = scenario.execute()
+        assert result.success, f"场景执行失败: {result.message}"
+        assert (
+            result.data.get("final_status") == "finance_approved"
+        )  # small 金额不需要 CEO 审批
+
+        test_context.set("specific_variant", result)
+
+    @allure.title("自定义变体矩阵")
+    def test_custom_variant_matrix(self, authenticated_client, test_context):
+        """创建自定义变体矩阵"""
+        # 创建自定义变体矩阵
+        matrix = VariantMatrix(
+            [
+                Dimension("amount_level", ["low", "high"]),
+                Dimension("approval_type", ["normal", "fast"]),
+            ]
+        )
+
+        # 生成所有组合
+        variants = matrix.generate()
+        assert len(variants) == 4  # 2 × 2
+
+        # 定义参数映射
+        param_map = {
+            ("low", "normal"): {
+                "amount": 100,
+                "requires_ceo": False,
+                "priority": "normal",
+            },
+            ("low", "fast"): {
+                "amount": 100,
+                "requires_ceo": False,
+                "priority": "urgent",
+            },
+            ("high", "normal"): {
+                "amount": 50000,
+                "requires_ceo": True,
+                "priority": "normal",
+            },
+            ("high", "fast"): {
+                "amount": 50000,
+                "requires_ceo": True,
+                "priority": "urgent",
+            },
+        }
+
+        results = []
+        for variant in variants:
+            key = (variant.get("amount_level"), variant.get("approval_type"))
+            params = param_map.get(
+                key, {"amount": 1000, "requires_ceo": False, "priority": "normal"}
+            )
+
+            scenario = FullApprovalScenario(
+                token=authenticated_client.token,
+                amount=params.get("amount", 1000),
+                priority=params.get("priority", "normal"),
+                requires_ceo=params.get("requires_ceo", False),
+            )
+
+            result = scenario.execute()
+            results.append(result)
+            assert result.success
+
+        test_context.set("custom_matrix_results", results)
+
+
+@allure.feature("审批流-新架构")
+@allure.story("依赖自动解决")
+class TestDependencyResolution(E2ETest):
+    """
+    测试依赖自动解决机制
+
+    FullApprovalScenario.requires = [UserEntity, OrgEntity, BudgetEntity]
+    """
+
+    @allure.title("自动解决依赖")
+    def test_auto_resolve_deps(self, authenticated_client, test_context):
+        """测试自动依赖解决"""
+        scenario = FullApprovalScenario(token=authenticated_client.token)
+
+        # 执行前检查依赖
+        submitter_before = scenario.get_dependency("submitter")
+
+        # 执行场景（自动解决依赖）
+        result = scenario.execute(amount=1000.00)
+
+        # 验证依赖已解决
+        assert result.success
+        assert scenario.get_dependency("submitter") is not None
+        assert scenario.get_dependency("org") is not None
+        assert scenario.get_dependency("budget") is not None
+
+        test_context.set("dep_result", result)
+
+    @allure.title("手动注入依赖")
+    def test_manual_dependency(self, authenticated_client, test_context):
+        """测试手动依赖注入"""
+        # 创建自定义依赖
+        custom_user = UserEntity(
+            username="custom_user",
+            role="employee",
+            email="custom@test.com",
+            full_name="Custom User",
+            password="123456",
+        )
+
+        scenario = FullApprovalScenario(token=authenticated_client.token)
+
+        # 手动注入依赖
+        scenario._resolved_deps["submitter"] = custom_user
+
+        # 执行
+        result = scenario.execute(amount=1000.00)
+
+        # 验证使用了手动注入的依赖
+        submitter = scenario.get_dependency("submitter")
+        assert submitter.username == "custom_user"
+
+        test_context.set("manual_dep_result", result)

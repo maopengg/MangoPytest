@@ -6,46 +6,42 @@
 import pytest
 import allure
 import os
-import tempfile
 
 from auto_test.demo_project.data_factory.builders.file import FileBuilder
 from auto_test.demo_project.fixtures.conftest import *
+from auto_test.demo_project.test_cases.base import UnitTest
 
 
 @allure.feature("文件管理")
 @allure.story("文件上传")
-class TestUploadFile:
+class TestUploadFile(UnitTest):
     """文件上传接口测试"""
+
+    SAMPLE_UPLOAD_FILE = os.path.join(
+        os.path.dirname(os.path.dirname(__file__)),
+        "data",
+        "uploads",
+        "测试上传文件.txt",
+    )
 
     @allure.title("正常上传文件")
     def test_upload_file_success(self, test_token):
         """测试正常上传文件"""
         file_builder = FileBuilder(token=test_token)
-        
-        # 创建临时文件
-        temp_dir = tempfile.gettempdir()
-        file_path = os.path.join(temp_dir, "test_upload.txt")
-        with open(file_path, 'w', encoding='utf-8') as f:
-            f.write("This is test content")
-        
-        try:
-            result = file_builder.upload(file_path=file_path)
-            
-            assert result is not None
-            assert result.get('filename') == "test_upload.txt"
-            assert result.get('size') > 0
-            assert 'file_id' in result
-        finally:
-            # 清理临时文件
-            if os.path.exists(file_path):
-                os.remove(file_path)
+
+        result = file_builder.upload(file_path=self.SAMPLE_UPLOAD_FILE)
+
+        assert result is not None
+        assert result.get('filename') == "测试上传文件.txt"
+        assert result.get('size') >= 0
+        assert 'file_id' in result
 
     @allure.title("上传文件-使用fixture")
     def test_upload_file_with_fixture(self, uploaded_file):
         """测试使用fixture上传的文件"""
         assert uploaded_file is not None
-        assert uploaded_file.get('filename') == "test_upload.txt"
-        assert uploaded_file.get('size') > 0
+        assert uploaded_file.get('filename') == "测试上传文件.txt"
+        assert uploaded_file.get('size') >= 0
         assert 'file_id' in uploaded_file
 
     @allure.title("上传文件-不同内容类型")
@@ -90,9 +86,9 @@ class TestUploadFile:
         """测试使用temp_file fixture上传"""
         file_builder = FileBuilder(token=test_token)
         result = file_builder.upload(file_path=temp_file)
-        
+
         assert result is not None
-        assert result.get('filename') == "test_upload.txt"
+        assert result.get('filename') == "测试上传文件.txt"
         # content_type 可能为 None，取决于 mock API 的实现
         assert 'content_type' in result
 

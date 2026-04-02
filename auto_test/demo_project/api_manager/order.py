@@ -63,7 +63,7 @@ class OrderAPI:
         @param kwargs: 更新字段
         @return: 响应字典
         """
-        response = self._client.put("/orders", data=kwargs, params={"id": order_id})
+        response = self._client.put(f"/orders/{order_id}", data=kwargs)
         return response.data
 
     def delete_order(self, order_id: int) -> dict:
@@ -73,7 +73,7 @@ class OrderAPI:
         @param order_id: 订单ID
         @return: 响应字典
         """
-        response = self._client.delete("/orders", params={"id": order_id})
+        response = self._client.delete(f"/orders/{order_id}")
         return response.data
         
             

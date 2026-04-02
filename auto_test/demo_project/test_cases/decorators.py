@@ -33,15 +33,9 @@ from functools import wraps
 import inspect
 
 # 导入项目模块
-try:
-    from auto_test.demo_project.data_factory.scenarios.base_scenario import BaseScenario
-    from auto_test.demo_project.fixtures.infra.context import TestContext
-except ImportError:
-    import sys
-    import os
-    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from data_factory.scenarios.base_scenario import BaseScenario
-    from fixtures.infra.context import TestContext
+from auto_test.demo_project.data_factory.scenarios.base_scenario import BaseScenario
+from auto_test.demo_project.fixtures.infra.context import TestContext
+
 
 
 def case_data(
@@ -79,48 +73,21 @@ def case_data(
     def decorator(func: Callable) -> Callable:
         # 获取测试数据列表
         test_data_list = _get_test_data(scenario, variants, data)
-        
-        # 使用 pytest.mark.parametrize 展开测试
-        if test_data_list:
-            # 为每个变体生成测试参数
-            parametrize_data = []
-            test_ids = []
-            
-            for i, test_data in enumerate(test_data_list):
-                # 生成测试ID
-                test_id = _generate_test_id(func.__name__, test_data, i)
-                test_ids.append(test_id)
-                
-                # 准备测试数据
-                param_data = {
-                    "_case_data": test_data,
-                    "_case_index": i,
-                    "_case_id": test_id,
-                }
-                parametrize_data.append(pytest.param(param_data, id=test_id))
-            
-            # 应用 parametrize
-            func = pytest.mark.parametrize(
-                "_case_data_wrapper",
-                parametrize_data
-            )(func)
-        
+
         # 包装函数以注入 test_context
-        @wraps(func)
-        def wrapper(*args, **func_kwargs):
-            # 获取 _case_data_wrapper 参数
-            case_wrapper = func_kwargs.pop("_case_data_wrapper", None)
-            
+        def wrapper(*args, _case_data_wrapper, **func_kwargs):
+            case_wrapper = _case_data_wrapper
+
             # 创建或获取 test_context
             test_ctx = _get_or_create_test_context(func_kwargs)
-            
+
             # 注入测试数据到 test_context
             if case_wrapper:
                 test_data = case_wrapper.get("_case_data", {})
                 test_ctx.set("_case_data", test_data)
                 test_ctx.set("_case_index", case_wrapper.get("_case_index", 0))
                 test_ctx.set("_case_id", case_wrapper.get("_case_id", ""))
-                
+
                 # 如果是场景变体，执行场景并存储结果
                 if isinstance(test_data, dict) and "scenario_class" in test_data:
                     _execute_scenario(test_ctx, test_data)
@@ -128,19 +95,39 @@ def case_data(
                     # 普通数据，直接存储
                     for key, value in test_data.items():
                         test_ctx.set(key, value)
-            
+
             # 确保 test_context 在 kwargs 中
             if "test_context" not in func_kwargs:
                 func_kwargs["test_context"] = test_ctx
-            
+
             # 调用原始函数
             return func(*args, **func_kwargs)
-        
-        # 复制 pytest 标记
-        wrapper.pytestmark = getattr(func, "pytestmark", [])
-        
+
+        # 复制元数据
+        wrapper.__name__ = func.__name__
+        wrapper.__doc__ = func.__doc__
+        wrapper.__module__ = func.__module__
+
+        # 使用 pytest.mark.parametrize 展开测试
+        if test_data_list:
+            parametrize_data = []
+
+            for i, test_data in enumerate(test_data_list):
+                test_id = _generate_test_id(func.__name__, test_data, i)
+                param_data = {
+                    "_case_data": test_data,
+                    "_case_index": i,
+                    "_case_id": test_id,
+                }
+                parametrize_data.append(pytest.param(param_data, id=test_id))
+
+            wrapper = pytest.mark.parametrize(
+                "_case_data_wrapper",
+                parametrize_data
+            )(wrapper)
+
         return wrapper
-    
+
     return decorator
 
 

@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description: 报销申请构造器 - 使用Entity的新版本 (D级)
+# @Description: 报销申请构造器 - 支持C/D依赖自动解决 (B级)
 # @Time   : 2026-04-01
 # @Author : 毛鹏
 from typing import Optional, List, Dict, Any
 import uuid
 
 from ..base_builder import BaseBuilder, BuilderContext, DependencyLevel
+from ..budget.budget_builder import BudgetBuilder
+from ..user.user_builder import UserBuilder
 from ...entities.reimbursement import ReimbursementEntity
 from ...registry import register_builder
 from ....api_manager import demo_project
@@ -15,7 +17,7 @@ from ....api_manager import demo_project
 @register_builder("reimbursement")
 class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
     """
-    报销申请构造器 - D级模块（基础层）
+    报销申请构造器 - B级模块（流程层）
     
     特性：
     1. 集成Strategy层（支持API/Mock/DB/Hybrid）
@@ -47,11 +49,11 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
         # 自动清理
     """
     
-    # 依赖层级：D级（最底层，无依赖）
-    DEPENDENCY_LEVEL = DependencyLevel.LEVEL_D
-    
-    # 无依赖（D级是基础层）
-    DEPENDENCIES = []
+    # 依赖层级：B级（依赖C/D）
+    DEPENDENCY_LEVEL = DependencyLevel.LEVEL_B
+
+    # 依赖预算与用户Builder（Budget会继续依赖Org）
+    DEPENDENCIES = [BudgetBuilder, UserBuilder]
 
     def __init__(
         self,
@@ -81,22 +83,30 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
     def _prepare_dependencies(self, **kwargs) -> Dict[str, Any]:
         """
         【智能依赖解决】准备依赖数据
-        
-        D级模块无依赖，此方法仅做参数校验和补充默认值
-        
+
+        B级模块依赖：User + Budget(→Org)
+
         @param kwargs: 原始参数
         @return: 补充后的参数
         """
-        # 补充默认值
-        if "user_id" not in kwargs:
-            kwargs["user_id"] = 1  # 默认用户ID
-        
         if "amount" not in kwargs:
-            kwargs["amount"] = 100.00  # 默认金额
-            
+            kwargs["amount"] = 100.00
+
         if "reason" not in kwargs:
             kwargs["reason"] = f"差旅报销 - {uuid.uuid4().hex[:6]}"
-        
+
+        if self.context.auto_prepare_deps:
+            if "user_id" not in kwargs:
+                user_builder = self._get_or_create_builder(UserBuilder)
+                user = user_builder.create(role="employee")
+                kwargs["user_id"] = user.id if user and user.id else 1
+
+            # 触发C→D依赖链，确保预算/组织准备完成
+            budget_builder = self._get_or_create_builder(BudgetBuilder)
+            budget_builder.create(total_amount=max(float(kwargs["amount"]) * 10, 500000))
+        elif "user_id" not in kwargs:
+            kwargs["user_id"] = 1
+
         return kwargs
 
     def build(

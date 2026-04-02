@@ -25,7 +25,7 @@ class ProductBuilder(BaseBuilder):
             demo_project.product.set_token(token)
 
     def build(self, name: str = None, price: float = None,
-              description: str = None, **kwargs) -> Dict[str, Any]:
+              description: str = None, stock: int = 0, **kwargs) -> Dict[str, Any]:
         """
         构造产品数据（不调用API）
         @return: 产品数据字典
@@ -33,21 +33,23 @@ class ProductBuilder(BaseBuilder):
         return {
             "name": name or f"Product {uuid.uuid4().hex[:6]}",
             "price": price or 99.99,
-            "description": description or f"Test product description {uuid.uuid4().hex[:4]}"
+            "description": description or f"Test product description {uuid.uuid4().hex[:4]}",
+            "stock": stock,
         }
 
     def create(self, name: str = None, price: float = None,
-               description: str = None, **kwargs) -> Dict[str, Any]:
+               description: str = None, stock: int = 0, **kwargs) -> Dict[str, Any]:
         """
         创建产品
         @return: 创建的产品数据
         """
-        product_data = self.build(name, price, description)
+        product_data = self.build(name, price, description, stock)
 
         result = demo_project.product.create_product(
             name=product_data["name"],
             price=product_data["price"],
-            description=product_data["description"]
+            description=product_data["description"],
+            stock=product_data["stock"],
         )
         
         if result.get("code") == 200:

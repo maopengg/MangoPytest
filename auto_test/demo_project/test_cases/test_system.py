@@ -8,11 +8,12 @@ import allure
 
 from auto_test.demo_project.data_factory.builders.system import SystemBuilder
 from auto_test.demo_project.fixtures.conftest import *
+from auto_test.demo_project.test_cases.base import UnitTest, IntegrationTest
 
 
 @allure.feature("系统管理")
 @allure.story("健康检查")
-class TestHealthCheck:
+class TestHealthCheck(UnitTest):
     """健康检查接口测试"""
 
     @allure.title("健康检查-正常")
@@ -46,7 +47,7 @@ class TestHealthCheck:
 
 @allure.feature("系统管理")
 @allure.story("服务器信息")
-class TestServerInfo:
+class TestServerInfo(UnitTest):
     """服务器信息接口测试"""
 
     @allure.title("获取服务器信息")
@@ -57,7 +58,7 @@ class TestServerInfo:
 
         assert result is not None
         assert result.get("app_name") == "Mock API Service"
-        assert result.get("version") == "1.0.0"
+        assert result.get("version") == "2.0.0"
         assert result.get("framework") == "FastAPI"
         assert "python_version" in result
 
@@ -66,7 +67,7 @@ class TestServerInfo:
         """测试使用fixture获取服务器信息"""
         assert server_info is not None
         assert server_info.get("app_name") == "Mock API Service"
-        assert server_info.get("version") == "1.0.0"
+        assert server_info.get("version") == "2.0.0"
         assert server_info.get("framework") == "FastAPI"
 
     @allure.title("获取服务器信息-字段完整性")
@@ -84,7 +85,7 @@ class TestServerInfo:
 
 @allure.feature("系统管理")
 @allure.story("综合系统测试")
-class TestSystemIntegration:
+class TestSystemIntegration(IntegrationTest):
     """系统接口综合测试"""
 
     @allure.title("系统接口-完整流程")

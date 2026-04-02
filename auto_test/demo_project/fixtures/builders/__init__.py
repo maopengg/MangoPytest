@@ -11,7 +11,7 @@ Builder Fixtures 模块
 
 分层结构：
 - D模块（基础层）: user_builder
-- C模块（预算层）: (预留)
+- C模块（预算层）: org_builder, budget_builder
 - B模块（报销层）: reimb_builder
 - A模块（付款层）: payment_builder
 """
@@ -36,6 +36,8 @@ __all__ = [
     # D模块
     "user_builder",
     # C模块
+    "org_builder",
+    "budget_builder",
     # B模块
     "reimb_builder",
     "approved_reimbursement",
