@@ -47,12 +47,19 @@ from auto_test.demo_project.data_factory.scenarios import FullApprovalScenario
 
 # 基类
 from .base_scenario import (
-    BaseScenario, 
-    ScenarioResult, 
-    Dependencies, 
+    BaseScenario,
+    ScenarioResult,
+    Dependencies,
     Creates  # 【新增】
 )
-
+# 登录场景
+from .login import LoginScenario, RegisterAndLoginScenario
+# 报销审批场景
+from .reimbursement import (
+    CreateReimbursementScenario,
+    FullApprovalWorkflowScenario,
+    RejectionWorkflowScenario,
+)
 # 变体矩阵
 from .variant_matrix import (
     VariantMatrix,
@@ -64,16 +71,6 @@ from .variant_matrix import (
     cartesian_product,
     filter_variants,
     group_variants,
-)
-
-# 登录场景
-from .login import LoginScenario, RegisterAndLoginScenario
-
-# 报销审批场景
-from .reimbursement import (
-    CreateReimbursementScenario,
-    FullApprovalWorkflowScenario,
-    RejectionWorkflowScenario,
 )
 
 # 【新增】完整审批流场景（使用增强版 BaseScenario）

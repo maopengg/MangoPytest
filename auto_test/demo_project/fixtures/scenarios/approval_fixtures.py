@@ -17,8 +17,10 @@ Approval Scenario Fixtures 模块
         assert result.success
 """
 
-import pytest
 from typing import Generator
+
+import pytest
+
 from auto_test.demo_project.data_factory.scenarios import FullApprovalScenario
 from auto_test.demo_project.data_factory.scenarios.base_scenario import ScenarioResult
 
@@ -38,9 +40,9 @@ def full_approval_scenario(test_token) -> Generator[FullApprovalScenario, None, 
             assert result.get_entity("reimbursement").status == "ceo_approved"
     """
     scenario = FullApprovalScenario(token=test_token)
-    
+
     yield scenario
-    
+
     # 自动清理
     scenario.cleanup()
 

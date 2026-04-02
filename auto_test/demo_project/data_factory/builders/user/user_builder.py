@@ -3,8 +3,8 @@
 # @Description: 用户构造器 - 使用Entity的新版本
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-from typing import Optional, List
 import uuid
+from typing import Optional, List
 
 from ..base_builder import BaseBuilder
 from ...entities.user import UserEntity
@@ -21,12 +21,12 @@ class UserBuilder(BaseBuilder[UserEntity]):
     """
 
     def __init__(
-        self,
-        token: str = None,
-        context=None,
-        strategy=None,
-        parent_builders=None,
-        factory=None,
+            self,
+            token: str = None,
+            context=None,
+            strategy=None,
+            parent_builders=None,
+            factory=None,
     ):
         super().__init__(
             token=token,
@@ -40,12 +40,12 @@ class UserBuilder(BaseBuilder[UserEntity]):
             demo_project.user.set_token(token)
 
     def build(
-        self,
-        username: str = None,
-        email: str = None,
-        full_name: str = None,
-        password: str = None,
-        role: str = "user",
+            self,
+            username: str = None,
+            email: str = None,
+            full_name: str = None,
+            password: str = None,
+            role: str = "user",
     ) -> UserEntity:
         """
         构造用户实体（不调用API）

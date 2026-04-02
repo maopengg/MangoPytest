@@ -10,8 +10,8 @@ Core 认证管理模块
 提供统一的认证管理功能
 """
 
-from typing import Optional, Dict, Any, Callable
 from datetime import datetime, timedelta
+from typing import Optional, Dict, Any, Callable
 
 
 class AuthManager:
@@ -29,20 +29,20 @@ class AuthManager:
         else:
             auth.refresh_token()
     """
-    
+
     def __init__(self):
         self._token: Optional[str] = None
         self._refresh_token: Optional[str] = None
         self._expires_at: Optional[datetime] = None
         self._token_type: str = "Bearer"
         self._refresh_callback: Optional[Callable] = None
-    
+
     def set_token(
-        self,
-        token: str,
-        refresh_token: Optional[str] = None,
-        expires_in: Optional[int] = None,
-        token_type: str = "Bearer"
+            self,
+            token: str,
+            refresh_token: Optional[str] = None,
+            expires_in: Optional[int] = None,
+            token_type: str = "Bearer"
     ):
         """
         设置 token
@@ -55,38 +55,38 @@ class AuthManager:
         self._token = token
         self._refresh_token = refresh_token
         self._token_type = token_type
-        
+
         if expires_in:
             self._expires_at = datetime.now() + timedelta(seconds=expires_in)
         else:
             self._expires_at = None
-    
+
     def get_token(self) -> Optional[str]:
         """获取当前 token"""
         return self._token
-    
+
     def get_auth_header(self) -> Optional[str]:
         """获取认证头值"""
         if self._token:
             return f"{self._token_type} {self._token}"
         return None
-    
+
     def is_valid(self) -> bool:
         """检查 token 是否有效"""
         if not self._token:
             return False
-        
+
         if self._expires_at and datetime.now() >= self._expires_at:
             return False
-        
+
         return True
-    
+
     def is_expired(self) -> bool:
         """检查 token 是否已过期"""
         if not self._expires_at:
             return False
         return datetime.now() >= self._expires_at
-    
+
     def set_refresh_callback(self, callback: Callable[[], str]):
         """
         设置刷新回调函数
@@ -94,7 +94,7 @@ class AuthManager:
         @param callback: 刷新回调函数，返回新的 token
         """
         self._refresh_callback = callback
-    
+
     def refresh_token(self) -> Optional[str]:
         """
         刷新 token
@@ -106,15 +106,15 @@ class AuthManager:
             if new_token:
                 self._token = new_token
                 return new_token
-        
+
         return None
-    
+
     def clear(self):
         """清除认证信息"""
         self._token = None
         self._refresh_token = None
         self._expires_at = None
-    
+
     def get_info(self) -> Dict[str, Any]:
         """获取认证信息"""
         return {
@@ -133,15 +133,15 @@ class TokenStorage:
     
     定义 token 存储接口
     """
-    
+
     def save(self, key: str, token: str) -> bool:
         """保存 token"""
         raise NotImplementedError
-    
+
     def load(self, key: str) -> Optional[str]:
         """加载 token"""
         raise NotImplementedError
-    
+
     def delete(self, key: str) -> bool:
         """删除 token"""
         raise NotImplementedError
@@ -149,17 +149,17 @@ class TokenStorage:
 
 class MemoryTokenStorage(TokenStorage):
     """内存 Token 存储"""
-    
+
     def __init__(self):
         self._storage: Dict[str, str] = {}
-    
+
     def save(self, key: str, token: str) -> bool:
         self._storage[key] = token
         return True
-    
+
     def load(self, key: str) -> Optional[str]:
         return self._storage.get(key)
-    
+
     def delete(self, key: str) -> bool:
         if key in self._storage:
             del self._storage[key]

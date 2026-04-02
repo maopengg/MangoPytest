@@ -75,8 +75,3 @@ class OrderAPI:
         """
         response = self._client.delete(f"/orders/{order_id}")
         return response.data
-        
-            
-        
-            
-        

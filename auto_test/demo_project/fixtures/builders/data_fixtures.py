@@ -3,8 +3,9 @@
 # @Description: 数据模块 fixtures
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-import pytest
 from typing import Generator, Dict, Any
+
+import pytest
 
 from auto_test.demo_project.data_factory.builders.data import DataBuilder
 
@@ -24,5 +25,5 @@ def submitted_data(data_builder) -> Generator[Dict[str, Any], None, None]:
     result = data_builder.submit(name="test_data", value=100)
     if not result:
         pytest.skip("无法提交测试数据")
-    
+
     yield result

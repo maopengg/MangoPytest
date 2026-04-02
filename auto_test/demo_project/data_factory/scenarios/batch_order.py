@@ -3,12 +3,12 @@
 # @Description: 批量订单场景
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-from typing import Dict, Any, List
+from typing import Dict, Any
 
 from .base_scenario import BaseScenario
-from ..builders.d_module.user_builder import UserBuilder
-from ..builders.c_module.product_builder import ProductBuilder
 from ..builders.b_module.order_builder import OrderBuilder
+from ..builders.c_module.product_builder import ProductBuilder
+from ..builders.d_module.user_builder import UserBuilder
 
 
 class BatchOrderScenario(BaseScenario):

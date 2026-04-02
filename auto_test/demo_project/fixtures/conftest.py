@@ -24,24 +24,75 @@ fixtures注册中心 - 新架构
         assert reimbursement is not None
 """
 
-# ========== 基础设施fixtures ==========
-from .infra.client import (
-    api_client,
-    authenticated_client,
-    api_client_with_cleanup,
+# ========== 认证模块fixtures ==========
+from .builders.auth_fixtures import (
+    auth_builder,
+    test_token,
+    registered_user,
 )
-
-from .infra.context import (
-    test_context,
-    TestContext,
+# ========== C模块构造器fixtures ==========
+from .builders.c_fixtures import (
+    org_builder,
+    budget_builder,
 )
-
-from .infra.db import (
-    db_session,
-    db_transaction,
-    clean_db_state,
+# ========== 总经理审批模块fixtures ==========
+from .builders.ceo_approval_fixtures import (
+    ceo_approval_builder,
+    fully_approved_reimbursement,
+    ceo_rejected_reimbursement,
+    ceo_id,
+    workflow_data,
 )
-
+# ========== 数据模块fixtures ==========
+from .builders.data_fixtures import (
+    data_builder,
+    submitted_data,
+)
+# ========== 部门审批模块fixtures ==========
+from .builders.dept_approval_fixtures import (
+    dept_approval_builder,
+    dept_approved_reimbursement,
+    dept_rejected_reimbursement,
+    dept_manager_id,
+)
+# ========== 文件模块fixtures ==========
+from .builders.file_fixtures import (
+    file_builder,
+    temp_file,
+    uploaded_file,
+)
+# ========== 财务审批模块fixtures ==========
+from .builders.finance_approval_fixtures import (
+    finance_approval_builder,
+    finance_approved_reimbursement,
+    finance_rejected_reimbursement,
+    finance_manager_id,
+)
+# ========== 订单模块fixtures ==========
+from .builders.order_fixtures import (
+    order_builder,
+    test_order,
+    order_with_product,
+)
+# ========== 产品模块fixtures ==========
+from .builders.product_fixtures import (
+    product_builder,
+    test_product,
+    product_list,
+)
+# ========== 报销申请模块fixtures ==========
+from .builders.reimbursement_fixtures import (
+    reimbursement_builder,
+    created_reimbursement,
+    pending_reimbursement,
+    multiple_reimbursements,
+)
+# ========== 系统模块fixtures ==========
+from .builders.system_fixtures import (
+    system_builder,
+    server_health,
+    server_info,
+)
 # ========== 用户模块fixtures ==========
 from .builders.user_fixtures import (
     user_builder,
@@ -52,94 +103,21 @@ from .builders.user_fixtures import (
     finance_manager_user,
     ceo_user,
 )
-
-# ========== 报销申请模块fixtures ==========
-from .builders.reimbursement_fixtures import (
-    reimbursement_builder,
-    created_reimbursement,
-    pending_reimbursement,
-    multiple_reimbursements,
+# ========== 基础设施fixtures ==========
+from .infra.client import (
+    api_client,
+    authenticated_client,
+    api_client_with_cleanup,
 )
-
-# ========== C模块构造器fixtures ==========
-from .builders.c_fixtures import (
-    org_builder,
-    budget_builder,
+from .infra.context import (
+    test_context,
+    TestContext,
 )
-
-# ========== 部门审批模块fixtures ==========
-from .builders.dept_approval_fixtures import (
-    dept_approval_builder,
-    dept_approved_reimbursement,
-    dept_rejected_reimbursement,
-    dept_manager_id,
+from .infra.db import (
+    db_session,
+    db_transaction,
+    clean_db_state,
 )
-
-# ========== 财务审批模块fixtures ==========
-from .builders.finance_approval_fixtures import (
-    finance_approval_builder,
-    finance_approved_reimbursement,
-    finance_rejected_reimbursement,
-    finance_manager_id,
-)
-
-# ========== 总经理审批模块fixtures ==========
-from .builders.ceo_approval_fixtures import (
-    ceo_approval_builder,
-    fully_approved_reimbursement,
-    ceo_rejected_reimbursement,
-    ceo_id,
-    workflow_data,
-)
-
-# ========== 产品模块fixtures ==========
-from .builders.product_fixtures import (
-    product_builder,
-    test_product,
-    product_list,
-)
-
-# ========== 订单模块fixtures ==========
-from .builders.order_fixtures import (
-    order_builder,
-    test_order,
-    order_with_product,
-)
-
-# ========== 文件模块fixtures ==========
-from .builders.file_fixtures import (
-    file_builder,
-    temp_file,
-    uploaded_file,
-)
-
-# ========== 数据模块fixtures ==========
-from .builders.data_fixtures import (
-    data_builder,
-    submitted_data,
-)
-
-# ========== 认证模块fixtures ==========
-from .builders.auth_fixtures import (
-    auth_builder,
-    test_token,
-    registered_user,
-)
-
-# ========== 系统模块fixtures ==========
-from .builders.system_fixtures import (
-    system_builder,
-    server_health,
-    server_info,
-)
-
-# ========== 场景fixtures ==========
-from .scenarios.scenario_fixtures import (
-    login_scenario,
-    register_and_login_scenario,
-    logged_in_token,
-)
-
 from .scenarios.approval_scenario_fixtures import (
     create_reimbursement_scenario,
     full_approval_scenario,
@@ -153,6 +131,12 @@ from .scenarios.approval_scenario_fixtures import (
     pending_at_finance,
     pending_at_ceo,
     multi_level_workflows,
+)
+# ========== 场景fixtures ==========
+from .scenarios.scenario_fixtures import (
+    login_scenario,
+    register_and_login_scenario,
+    logged_in_token,
 )
 
 __all__ = [

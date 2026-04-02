@@ -41,7 +41,7 @@ class DeptApprovalAPI:
         return response.data
 
     def create_dept_approval(
-        self, reimbursement_id: int, approver_id: int, status: str, comment: str = None
+            self, reimbursement_id: int, approver_id: int, status: str, comment: str = None
     ) -> dict:
         """
         创建部门审批

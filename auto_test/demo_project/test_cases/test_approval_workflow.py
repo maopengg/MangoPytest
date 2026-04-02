@@ -17,18 +17,10 @@
 - 变体矩阵 - VariantMatrix 参数化测试
 """
 
-import pytest
 import allure
+import pytest
 
-from auto_test.demo_project.test_cases.base import IntegrationTest, E2ETest
-from auto_test.demo_project.fixtures.conftest import *
 from auto_test.demo_project.api_manager import demo_project
-
-# 【新增】导入最新架构组件
-from auto_test.demo_project.data_factory.scenarios import (
-    FullApprovalScenario,
-    RejectionWorkflowScenario,
-)
 from auto_test.demo_project.data_factory.context import Context
 from auto_test.demo_project.data_factory.entities import (
     UserEntity,
@@ -36,11 +28,16 @@ from auto_test.demo_project.data_factory.entities import (
     OrgEntity,
     BudgetEntity,
 )
+# 【新增】导入最新架构组件
+from auto_test.demo_project.data_factory.scenarios import (
+    FullApprovalScenario,
+    RejectionWorkflowScenario,
+)
 from auto_test.demo_project.data_factory.scenarios.variant_matrix import (
     VariantMatrix,
     Dimension,
-    Variant,
 )
+from auto_test.demo_project.test_cases.base import IntegrationTest, E2ETest
 
 
 # =============================================================================
@@ -55,7 +52,7 @@ class TestFullApprovalWorkflow(E2ETest):
 
     @allure.title("完整4级审批流程 - 全部通过")
     def test_full_approval_workflow_success(
-        self, api_client, approval_scenarios, test_context
+            self, api_client, approval_scenarios, test_context
     ):
         """测试完整的4级审批流程 - 全部通过"""
         workflow = approval_scenarios.create_full_approval_workflow(
@@ -84,7 +81,7 @@ class TestFullApprovalWorkflow(E2ETest):
 
     @allure.title("部门审批拒绝流程")
     def test_dept_rejection_workflow(
-        self, api_client, approval_scenarios, test_context
+            self, api_client, approval_scenarios, test_context
     ):
         """测试部门审批拒绝流程"""
         workflow = approval_scenarios.create_dept_rejected_workflow(
@@ -100,7 +97,7 @@ class TestFullApprovalWorkflow(E2ETest):
 
     @allure.title("财务审批拒绝流程")
     def test_finance_rejection_workflow(
-        self, api_client, approval_scenarios, test_context
+            self, api_client, approval_scenarios, test_context
     ):
         """测试财务审批拒绝流程"""
         workflow = approval_scenarios.create_finance_rejected_workflow(
@@ -210,7 +207,7 @@ class TestApprovalDependencies(IntegrationTest):
 
     @allure.title("获取完整审批流程信息")
     def test_get_full_workflow(
-        self, authenticated_client, fully_approved_reimbursement, ceo_approval_builder
+            self, authenticated_client, fully_approved_reimbursement, ceo_approval_builder
     ):
         """测试获取完整审批流程信息"""
         reimbursement_id = fully_approved_reimbursement["reimbursement"]["id"]
@@ -272,7 +269,7 @@ class TestApprovalDependencyValidation(IntegrationTest):
 
     @allure.title("不能跳过部门审批直接进行财务审批")
     def test_cannot_skip_dept_approval(
-        self, authenticated_client, pending_reimbursement, finance_manager_id, ceo_id
+            self, authenticated_client, pending_reimbursement, finance_manager_id, ceo_id
     ):
         """测试不能跳过部门审批直接进行财务审批"""
         # 尝试直接进行财务审批（没有部门审批）
@@ -288,7 +285,7 @@ class TestApprovalDependencyValidation(IntegrationTest):
 
     @allure.title("不能跳过财务审批直接进行总经理审批")
     def test_cannot_skip_finance_approval(
-        self, authenticated_client, dept_approved_reimbursement, ceo_id
+            self, authenticated_client, dept_approved_reimbursement, ceo_id
     ):
         """测试不能跳过财务审批直接进行总经理审批"""
         # 尝试直接进行总经理审批（没有财务审批）
@@ -304,7 +301,7 @@ class TestApprovalDependencyValidation(IntegrationTest):
 
     @allure.title("部门拒绝后不能进行财务审批")
     def test_dept_rejected_cannot_proceed(
-        self, authenticated_client, dept_rejected_reimbursement, finance_manager_id
+            self, authenticated_client, dept_rejected_reimbursement, finance_manager_id
     ):
         """测试部门拒绝后不能进行财务审批"""
         dept_approval_id = dept_rejected_reimbursement["dept_approval"]["id"]
@@ -321,7 +318,7 @@ class TestApprovalDependencyValidation(IntegrationTest):
 
     @allure.title("财务拒绝后不能进行总经理审批")
     def test_finance_rejected_cannot_proceed(
-        self, authenticated_client, finance_rejected_reimbursement, ceo_id
+            self, authenticated_client, finance_rejected_reimbursement, ceo_id
     ):
         """测试财务拒绝后不能进行总经理审批"""
         finance_approval_id = finance_rejected_reimbursement["finance_approval"]["id"]
@@ -352,7 +349,7 @@ class TestApprovalParameterized(E2ETest):
         ],
     )
     def test_approval_with_different_amounts(
-        self, approval_scenarios, test_context, amount, expected_success
+            self, approval_scenarios, test_context, amount, expected_success
     ):
         """参数化测试不同金额的审批流程"""
         workflow = approval_scenarios.create_full_approval_workflow(
@@ -369,11 +366,11 @@ class TestApprovalParameterized(E2ETest):
 
     @allure.title("审批流程场景矩阵")
     def test_approval_scenario_matrix(
-        self,
-        full_approval_workflow,
-        dept_rejected_workflow,
-        finance_rejected_workflow,
-        ceo_rejected_workflow,
+            self,
+            full_approval_workflow,
+            dept_rejected_workflow,
+            finance_rejected_workflow,
+            ceo_rejected_workflow,
     ):
         """测试审批流程场景矩阵"""
         # 验证所有场景fixture都正常工作
@@ -636,10 +633,10 @@ class TestApprovalWithVariantMatrix(E2ETest):
 
             # 检查是否是 small + urgent 组合
             if (
-                amount_variant
-                and amount_variant.get("amount") == 1000
-                and urgency_variant
-                and urgency_variant.get("priority") == "high"
+                    amount_variant
+                    and amount_variant.get("amount") == 1000
+                    and urgency_variant
+                    and urgency_variant.get("priority") == "high"
             ):
                 # 合并两个变体的 values
                 target_values = {**amount_variant.values, **urgency_variant.values}
@@ -671,7 +668,7 @@ class TestApprovalWithVariantMatrix(E2ETest):
         result = scenario.execute()
         assert result.success, f"场景执行失败: {result.message}"
         assert (
-            result.data.get("final_status") == "finance_approved"
+                result.data.get("final_status") == "finance_approved"
         )  # small 金额不需要 CEO 审批
 
         test_context.set("specific_variant", result)

@@ -11,12 +11,12 @@
 - test_context 上下文管理
 """
 
-import pytest
-import allure
 import uuid
 
+import allure
+import pytest
+
 from auto_test.demo_project.test_cases.base import UnitTest
-from auto_test.demo_project.fixtures.conftest import *
 
 
 @allure.feature("认证模块")
@@ -275,18 +275,18 @@ class TestAuthLoginScenario(UnitTest):
             result = demo_project.auth.api_login(username=username, password=password)
             success = result.get("code") == 200
             assert (
-                success == expected_success
+                    success == expected_success
             ), f"期望登录{'成功' if expected_success else '失败'}，实际{'成功' if success else '失败'}"
             return
 
         if expected_success:
             assert (
-                token is not None
+                    token is not None
             ), f"期望登录成功，但实际失败: {login_data['description']}"
             assert token.startswith("mock_token_")
         else:
             assert (
-                token is None
+                    token is None
             ), f"期望登录失败，但实际成功: {login_data['description']}"
 
 

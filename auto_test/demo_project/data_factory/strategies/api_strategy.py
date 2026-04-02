@@ -45,10 +45,10 @@ class APIStrategy(BaseStrategy[T]):
     }
 
     def __init__(
-        self,
-        token: Optional[str] = None,
-        context: Optional[Any] = None,
-        config: Optional[Dict] = None,
+            self,
+            token: Optional[str] = None,
+            context: Optional[Any] = None,
+            config: Optional[Dict] = None,
     ):
         """
         初始化API策略

@@ -3,7 +3,8 @@
 # @Description: 数据构造器注册中心
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-from typing import Dict, Type, Any
+from typing import Dict, Type
+
 from .builders.base_builder import BaseBuilder
 
 
@@ -66,7 +67,9 @@ def register_builder(name: str):
     class UserBuilder(BaseBuilder):
         ...
     """
+
     def decorator(builder_class: Type[BaseBuilder]):
         BuilderRegistry.register(name, builder_class)
         return builder_class
+
     return decorator

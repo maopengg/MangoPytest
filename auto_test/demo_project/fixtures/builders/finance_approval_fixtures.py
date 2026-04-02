@@ -44,7 +44,7 @@ def _entity_to_dict(entity):
 
 @pytest.fixture
 def finance_approved_reimbursement(
-    reimbursement_builder, dept_approval_builder, finance_approval_builder
+        reimbursement_builder, dept_approval_builder, finance_approval_builder
 ) -> dict:
     """
     已通过财务审批的报销申请Fixture
@@ -72,7 +72,7 @@ def finance_approved_reimbursement(
 
 @pytest.fixture
 def finance_rejected_reimbursement(
-    reimbursement_builder, dept_approval_builder, finance_approval_builder
+        reimbursement_builder, dept_approval_builder, finance_approval_builder
 ) -> dict:
     """
     被财务拒绝的报销申请Fixture

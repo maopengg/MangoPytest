@@ -3,10 +3,6 @@
 # @Description: pytest配置文件 - 新架构
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-import pytest
-
-# 从fixtures模块导入所有fixtures
-from .fixtures.conftest import *
 
 
 # 项目级别的pytest配置

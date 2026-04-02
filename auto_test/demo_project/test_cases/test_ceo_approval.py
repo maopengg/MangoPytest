@@ -3,10 +3,8 @@
 # @Description: 总经理审批模块测试 - A级模块 (依赖B级)
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-import pytest
 
 from auto_test.demo_project.api_manager import demo_project
-from auto_test.demo_project.fixtures.conftest import *
 from auto_test.demo_project.test_cases.base import UnitTest, IntegrationTest
 
 
@@ -18,7 +16,7 @@ class TestCEOApprovalAPI(IntegrationTest):
     """
 
     def test_create_ceo_approval(
-        self, api_client, finance_approved_reimbursement, ceo_id
+            self, api_client, finance_approved_reimbursement, ceo_id
     ):
         """测试创建总经理审批 - 依赖B级财务审批"""
         reimbursement_id = finance_approved_reimbursement["reimbursement"]["id"]
@@ -38,7 +36,7 @@ class TestCEOApprovalAPI(IntegrationTest):
         assert result["data"]["status"] == "approved"
 
     def test_create_ceo_approval_without_finance_approval(
-        self, api_client, dept_approved_reimbursement, ceo_id
+            self, api_client, dept_approved_reimbursement, ceo_id
     ):
         """测试创建总经理审批 - 财务审批不存在"""
         demo_project.ceo_approval.set_token(api_client.token)
@@ -54,7 +52,7 @@ class TestCEOApprovalAPI(IntegrationTest):
         assert result["code"] == 404
 
     def test_create_ceo_approval_finance_rejected(
-        self, api_client, finance_rejected_reimbursement, ceo_id
+            self, api_client, finance_rejected_reimbursement, ceo_id
     ):
         """测试创建总经理审批 - 财务审批未通过"""
         reimbursement_id = finance_rejected_reimbursement["reimbursement"]["id"]
@@ -83,7 +81,7 @@ class TestCEOApprovalAPI(IntegrationTest):
         assert result["code"] == 200
 
     def test_get_ceo_approvals_by_reimbursement(
-        self, api_client, fully_approved_reimbursement
+            self, api_client, fully_approved_reimbursement
     ):
         """测试根据报销申请ID获取总经理审批"""
         reimbursement_id = fully_approved_reimbursement["reimbursement"]["id"]
@@ -121,7 +119,7 @@ class TestCEOApprovalBuilder(UnitTest):
         assert approval.status == "approved"
 
     def test_builder_approve(
-        self, ceo_approval_builder, finance_approved_reimbursement
+            self, ceo_approval_builder, finance_approved_reimbursement
     ):
         """测试Builder快捷通过方法"""
         approval = ceo_approval_builder.approve(
@@ -144,7 +142,7 @@ class TestCEOApprovalBuilder(UnitTest):
         assert approval.status == "rejected"
 
     def test_builder_get_by_reimbursement(
-        self, ceo_approval_builder, fully_approved_reimbursement
+            self, ceo_approval_builder, fully_approved_reimbursement
     ):
         """测试Builder根据报销申请获取审批"""
         reimbursement_id = fully_approved_reimbursement["reimbursement"]["id"]
@@ -154,7 +152,7 @@ class TestCEOApprovalBuilder(UnitTest):
         assert approval.reimbursement_id == reimbursement_id
 
     def test_builder_get_workflow(
-        self, ceo_approval_builder, fully_approved_reimbursement
+            self, ceo_approval_builder, fully_approved_reimbursement
     ):
         """测试Builder获取完整审批流程"""
         reimbursement_id = fully_approved_reimbursement["reimbursement"]["id"]

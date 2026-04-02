@@ -3,10 +3,9 @@
 # @Description: 数据工厂 - 根据mock_api接口生成测试数据
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-from typing import Dict, Any, List, Optional
-import uuid
 import hashlib
-from datetime import datetime
+import uuid
+from typing import Dict, Any, List, Optional
 
 from auto_test.demo_project.api_manager import demo_project
 from models.api_model import ApiDataModel, RequestModel
@@ -27,8 +26,8 @@ class DataFactory:
         }
         self.token: Optional[str] = None
 
-    def _create_api_data(self, url: str, method: str = "GET", json_data: Dict = None, 
-                        params: Dict = None, headers: Dict = None) -> ApiDataModel:
+    def _create_api_data(self, url: str, method: str = "GET", json_data: Dict = None,
+                         params: Dict = None, headers: Dict = None) -> ApiDataModel:
         """创建ApiDataModel对象"""
         request_model = RequestModel(
             url=url,
@@ -57,8 +56,8 @@ class DataFactory:
             return self.token
         return None
 
-    def create_user(self, username: str = None, email: str = None, 
-                   full_name: str = None, password: str = None) -> Dict[str, Any]:
+    def create_user(self, username: str = None, email: str = None,
+                    full_name: str = None, password: str = None) -> Dict[str, Any]:
         """
         创建用户
         @param username: 用户名
@@ -143,14 +142,14 @@ class DataFactory:
         if result.response and result.response.json().get("code") == 200:
             # 从记录中移除
             self.created_data['users'] = [
-                u for u in self.created_data['users'] 
+                u for u in self.created_data['users']
                 if u.get('id') != user_id
             ]
             return True
         return False
 
-    def create_product(self, name: str = None, price: float = None, 
-                      description: str = None) -> Dict[str, Any]:
+    def create_product(self, name: str = None, price: float = None,
+                       description: str = None) -> Dict[str, Any]:
         """
         创建产品
         @param name: 产品名称
@@ -233,7 +232,7 @@ class DataFactory:
         result = demo_project.product.delete_product(api_data)
         if result.response and result.response.json().get("code") == 200:
             self.created_data['products'] = [
-                p for p in self.created_data['products'] 
+                p for p in self.created_data['products']
                 if p.get('id') != product_id
             ]
             return True
@@ -328,7 +327,7 @@ class DataFactory:
         result = demo_project.order.delete_order(api_data)
         if result.response and result.response.json().get("code") == 200:
             self.created_data['orders'] = [
-                o for o in self.created_data['orders'] 
+                o for o in self.created_data['orders']
                 if o.get('id') != order_id
             ]
             return True
@@ -409,4 +408,3 @@ class DataFactory:
             'orders': [],
             'data': []
         }
-

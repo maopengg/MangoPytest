@@ -3,11 +3,10 @@
 # @Description: 订单构造器 - 对应 /orders 接口
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-from typing import Dict, Any, List, Optional
-import uuid
+from typing import Dict, Any, List
 
-from ..base_builder import BaseBuilder
 from auto_test.demo_project.api_manager import demo_project
+from ..base_builder import BaseBuilder
 from ...registry import register_builder
 
 
@@ -49,7 +48,7 @@ class OrderBuilder(BaseBuilder):
             quantity=order_data["quantity"],
             user_id=order_data["user_id"]
         )
-        
+
         if result.get("code") == 200:
             created_order = result["data"]
             return created_order

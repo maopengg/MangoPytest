@@ -15,14 +15,14 @@ Core Decorators 模块
 
 import functools
 import time
-from typing import Callable, Any, Optional, Type
+from typing import Callable, Any, Optional
 
 
 def retry(
-    max_attempts: int = 3,
-    delay: float = 1.0,
-    exceptions: tuple = (Exception,),
-    on_retry: Optional[Callable] = None
+        max_attempts: int = 3,
+        delay: float = 1.0,
+        exceptions: tuple = (Exception,),
+        on_retry: Optional[Callable] = None
 ):
     """
     自动重试装饰器
@@ -37,27 +37,29 @@ def retry(
         def api_call():
             return requests.get("https://api.example.com")
     """
+
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         def wrapper(*args, **kwargs) -> Any:
             last_exception = None
-            
+
             for attempt in range(max_attempts):
                 try:
                     return func(*args, **kwargs)
                 except exceptions as e:
                     last_exception = e
-                    
+
                     if attempt < max_attempts - 1:
                         if on_retry:
                             on_retry(attempt + 1, max_attempts, e)
                         time.sleep(delay)
                     else:
                         raise last_exception
-            
+
             raise last_exception or Exception("重试失败")
-        
+
         return wrapper
+
     return decorator
 
 
@@ -78,24 +80,25 @@ def timer(func: Optional[Callable] = None, *, print_time: bool = True):
         def another_function():
             pass
     """
+
     def decorator(f: Callable) -> Callable:
         @functools.wraps(f)
         def wrapper(*args, **kwargs) -> Any:
             start_time = time.time()
             result = f(*args, **kwargs)
             elapsed = time.time() - start_time
-            
+
             if print_time:
                 print(f"[{f.__name__}] 执行时间: {elapsed:.3f}s")
-            
+
             # 将执行时间附加到结果（如果是字典）
             if isinstance(result, dict):
                 result["_execution_time"] = elapsed
-            
+
             return result
-        
+
         return wrapper
-    
+
     if func is not None:
         return decorator(func)
     return decorator
@@ -115,6 +118,7 @@ def validate(**validators):
         def create_user(user_id: int, name: str):
             pass
     """
+
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         def wrapper(*args, **kwargs) -> Any:
@@ -122,14 +126,14 @@ def validate(**validators):
             import inspect
             sig = inspect.signature(func)
             param_names = list(sig.parameters.keys())
-            
+
             # 构建参数值字典
             arg_dict = {}
             for i, arg in enumerate(args):
                 if i < len(param_names):
                     arg_dict[param_names[i]] = arg
             arg_dict.update(kwargs)
-            
+
             # 执行验证
             for param_name, validator in validators.items():
                 if param_name in arg_dict:
@@ -138,10 +142,11 @@ def validate(**validators):
                         raise ValueError(
                             f"参数验证失败: {param_name}={value}"
                         )
-            
+
             return func(*args, **kwargs)
-        
+
         return wrapper
+
     return decorator
 
 

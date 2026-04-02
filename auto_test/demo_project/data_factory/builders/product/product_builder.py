@@ -3,11 +3,11 @@
 # @Description: 产品构造器 - 对应 /products 接口
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-from typing import Dict, Any, List, Optional
 import uuid
+from typing import Dict, Any, List
 
-from ..base_builder import BaseBuilder
 from auto_test.demo_project.api_manager import demo_project
+from ..base_builder import BaseBuilder
 from ...registry import register_builder
 
 
@@ -51,7 +51,7 @@ class ProductBuilder(BaseBuilder):
             description=product_data["description"],
             stock=product_data["stock"],
         )
-        
+
         if result.get("code") == 200:
             created_product = result["data"]
             return created_product

@@ -12,8 +12,9 @@ C Module Fixtures 模块
 - budget_builder: 预算构造器（依赖org_builder）
 """
 
-import pytest
 from typing import Generator
+
+import pytest
 
 from auto_test.demo_project.data_factory.builders import OrgBuilder, BudgetBuilder
 from auto_test.demo_project.data_factory.builders.base_builder import BuilderContext

@@ -3,11 +3,9 @@
 # @Description: 系统接口测试用例 - /health, /info
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-import pytest
 import allure
 
 from auto_test.demo_project.data_factory.builders.system import SystemBuilder
-from auto_test.demo_project.fixtures.conftest import *
 from auto_test.demo_project.test_cases.base import UnitTest, IntegrationTest
 
 

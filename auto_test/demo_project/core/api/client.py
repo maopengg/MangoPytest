@@ -15,19 +15,10 @@ Core API 客户端
 - 请求/响应日志打印
 """
 
-from typing import Dict, Any, Optional, Callable, List
-from dataclasses import dataclass
-import time
 import json
-import functools
-
-# 尝试导入 requests，如果没有则使用 mock
-try:
-    import requests
-
-    HAS_REQUESTS = True
-except ImportError:
-    HAS_REQUESTS = False
+import time
+from dataclasses import dataclass
+from typing import Dict, Any, Optional, Callable
 
 from .exceptions import APIException, RequestException
 
@@ -71,11 +62,11 @@ class APIClient:
     """
 
     def __init__(
-        self,
-        base_url: str = "",
-        timeout: int = 30,
-        headers: Optional[Dict[str, str]] = None,
-        auth_token: Optional[str] = None,
+            self,
+            base_url: str = "",
+            timeout: int = 30,
+            headers: Optional[Dict[str, str]] = None,
+            auth_token: Optional[str] = None,
     ):
         """
         初始化 API 客户端
@@ -120,7 +111,7 @@ class APIClient:
         return f"{self.base_url}/{path}"
 
     def _build_headers(
-        self, extra_headers: Optional[Dict[str, str]] = None
+            self, extra_headers: Optional[Dict[str, str]] = None
     ) -> Dict[str, str]:
         """构建请求头"""
         headers = self.headers.copy()
@@ -136,15 +127,15 @@ class APIClient:
         return headers
 
     def _log_request(
-        self,
-        method: str,
-        url: str,
-        headers: Dict[str, str],
-        data: Optional[Any] = None,
-        params: Optional[Dict[str, Any]] = None,
+            self,
+            method: str,
+            url: str,
+            headers: Dict[str, str],
+            data: Optional[Any] = None,
+            params: Optional[Dict[str, Any]] = None,
     ):
         """打印请求日志"""
-        print(f"\n{'='*100}")
+        print(f"\n{'=' * 100}")
         print(f"🚀 请求: {method} {url}")
 
         # 打印请求头（隐藏敏感信息）
@@ -180,15 +171,15 @@ class APIClient:
         else:
             print(f"📤 Response: {str(response.data)[:1000]}")
 
-        print(f"{'='*100}\n")
+        print(f"{'=' * 100}\n")
 
     def _do_request(
-        self,
-        method: str,
-        url: str,
-        headers: Dict[str, str],
-        data: Optional[Any] = None,
-        params: Optional[Dict[str, Any]] = None,
+            self,
+            method: str,
+            url: str,
+            headers: Dict[str, str],
+            data: Optional[Any] = None,
+            params: Optional[Dict[str, Any]] = None,
     ) -> APIResponse:
         """
         执行 HTTP 请求
@@ -256,18 +247,18 @@ class APIClient:
 
         except requests.exceptions.RequestException as e:
             print(f"💥 请求异常: {str(e)}")
-            print(f"{'='*100}\n")
+            print(f"{'=' * 100}\n")
             raise RequestException(f"请求失败: {str(e)}")
 
     def request(
-        self,
-        method: str,
-        path: str,
-        data: Optional[Any] = None,
-        params: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, str]] = None,
-        retry_count: int = 0,
-        retry_delay: float = 1.0,
+            self,
+            method: str,
+            path: str,
+            data: Optional[Any] = None,
+            params: Optional[Dict[str, Any]] = None,
+            headers: Optional[Dict[str, str]] = None,
+            retry_count: int = 0,
+            retry_delay: float = 1.0,
     ) -> APIResponse:
         """
         发送 HTTP 请求
@@ -323,7 +314,7 @@ class APIClient:
         raise last_error or RequestException("请求失败")
 
     def get(
-        self, path: str, params: Optional[Dict[str, Any]] = None, **kwargs
+            self, path: str, params: Optional[Dict[str, Any]] = None, **kwargs
     ) -> APIResponse:
         """GET 请求"""
         return self.request("GET", path, params=params, **kwargs)

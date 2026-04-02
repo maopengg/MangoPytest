@@ -3,11 +3,11 @@
 # @Description: 订单模块 fixtures
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-import pytest
 from typing import Generator, Dict, Any
 
+import pytest
+
 from auto_test.demo_project.data_factory.builders.order import OrderBuilder
-from auto_test.demo_project.data_factory.builders.product import ProductBuilder
 
 
 @pytest.fixture(scope="function")
@@ -29,9 +29,9 @@ def test_order(order_builder, test_product, test_user) -> Generator[Dict[str, An
     )
     if not order:
         pytest.skip("无法创建测试订单")
-    
+
     yield order
-    
+
     # 清理
     try:
         order_builder.delete(order.get('id'))

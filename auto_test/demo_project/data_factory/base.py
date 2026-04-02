@@ -3,9 +3,9 @@
 # @Description: 数据工厂基类
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-from typing import Dict, Any, List, Optional, TypeVar, Generic
-from abc import ABC, abstractmethod
 import uuid
+from abc import ABC, abstractmethod
+from typing import Dict, Any, List, Optional, TypeVar
 
 T = TypeVar('T')
 

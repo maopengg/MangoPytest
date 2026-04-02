@@ -5,6 +5,7 @@
 # @Author : 毛鹏
 
 import hashlib
+
 from auto_test.demo_project.core.api.client import APIClient
 
 
@@ -43,7 +44,7 @@ class AuthAPI:
         return response.data
 
     def api_register(
-        self, username: str, email: str, full_name: str, password: str
+            self, username: str, email: str, full_name: str, password: str
     ) -> dict:
         """
         用户注册接口

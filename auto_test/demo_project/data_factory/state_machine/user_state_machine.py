@@ -41,21 +41,21 @@ class UserStateMachine(StateMachine):
     
     管理用户账户的生命周期状态
     """
-    
+
     # 状态定义
     STATES = [
         State("active", description="正常状态，可以登录", is_initial=True),
         State("locked", description="锁定状态，暂时无法登录"),
         State("inactive", description="注销状态，无法登录")
     ]
-    
+
     # 状态转换规则
     TRANSITIONS = {
         "active": ["locked", "inactive"],
         "locked": ["active", "inactive"],
         "inactive": ["active"]
     }
-    
+
     # 状态字段名
     STATE_FIELD = "status"
 

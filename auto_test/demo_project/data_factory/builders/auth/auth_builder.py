@@ -3,8 +3,8 @@
 # @Description: 认证构造器 - 对应 /auth/login, /auth/register
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-from typing import Dict, Any, Optional
 import uuid
+from typing import Dict, Any, Optional
 
 from auto_test.demo_project.api_manager import demo_project
 from ...registry import register_builder
@@ -24,7 +24,7 @@ class AuthBuilder:
         self.default_password = "password123"  # 明文密码，发送前会进行 MD5 加密
 
     def build_login_data(
-        self, username: str = None, password: str = None
+            self, username: str = None, password: str = None
     ) -> Dict[str, Any]:
         """
         构造登录数据（不调用API）
@@ -36,11 +36,11 @@ class AuthBuilder:
         }
 
     def build_register_data(
-        self,
-        username: str = None,
-        email: str = None,
-        full_name: str = None,
-        password: str = None,
+            self,
+            username: str = None,
+            email: str = None,
+            full_name: str = None,
+            password: str = None,
     ) -> Dict[str, Any]:
         """
         构造注册数据（不调用API）
@@ -81,11 +81,11 @@ class AuthBuilder:
         return None
 
     def register(
-        self,
-        username: str = None,
-        email: str = None,
-        full_name: str = None,
-        password: str = None,
+            self,
+            username: str = None,
+            email: str = None,
+            full_name: str = None,
+            password: str = None,
     ) -> Dict[str, Any]:
         """
         用户注册

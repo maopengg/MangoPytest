@@ -4,7 +4,6 @@
 # @Time   : 2026-03-31
 # @Author : 毛鹏
 from typing import Any, Dict, List, Optional, Callable
-from enum import Enum
 
 
 class ValidationError(Exception):
@@ -74,6 +73,7 @@ class DataValidator:
 
     def validate_range(self, field: str, min_val: Optional[float] = None, max_val: Optional[float] = None):
         """添加范围校验"""
+
         def validator(value):
             if value is None:
                 return True
@@ -94,6 +94,7 @@ class DataValidator:
 
     def validate_length(self, field: str, min_len: Optional[int] = None, max_len: Optional[int] = None):
         """添加长度校验"""
+
         def validator(value):
             if value is None:
                 return True

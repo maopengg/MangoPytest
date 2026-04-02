@@ -14,12 +14,12 @@
 - 智能工厂方法
 """
 
-from dataclasses import dataclass, field
-from typing import Optional, List, Dict, Any
-from datetime import datetime, date
-import uuid
-import sys
 import os
+import sys
+import uuid
+from dataclasses import dataclass, field
+from datetime import datetime, date
+from typing import Optional, List, Dict, Any
 
 # 添加父目录到路径以确保导入工作
 _current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -57,57 +57,57 @@ class BudgetEntity(BaseEntity):
         status: 状态（active/frozen/expired）
         metadata: 扩展元数据
     """
-    
+
     # 基础字段
     id: Optional[str] = None
     org_id: Optional[str] = None
     year: int = field(default_factory=lambda: datetime.now().year)
-    
+
     # 金额字段
     total_amount: float = 0.0
     used_amount: float = 0.0
     reserved_amount: float = 0.0
-    
+
     # 分类和状态
     category: str = "general"  # general, project, operation, marketing
     status: str = "active"  # active, frozen, expired
-    
+
     # 时间范围
     start_date: Optional[date] = None
     end_date: Optional[date] = None
-    
+
     # 元数据
     metadata: Dict[str, Any] = field(default_factory=dict)
     created_at: datetime = field(default_factory=datetime.now)
     updated_at: datetime = field(default_factory=datetime.now)
-    
+
     def __post_init__(self):
         """初始化后处理"""
         if not self.id:
             self.id = f"budget_{uuid_short()}"
-        
+
         # 设置默认时间范围
         if not self.start_date:
             self.start_date = date(self.year, 1, 1)
         if not self.end_date:
             self.end_date = date(self.year, 12, 31)
-    
+
     # ==================== 业务行为 ====================
-    
+
     def get_available_amount(self) -> float:
         """获取可用预算"""
         return self.total_amount - self.used_amount - self.reserved_amount
-    
+
     def get_usage_rate(self) -> float:
         """获取预算使用率"""
         if self.total_amount == 0:
             return 0.0
         return (self.used_amount / self.total_amount) * 100
-    
+
     def has_enough_budget(self, amount: float) -> bool:
         """检查是否有足够预算"""
         return self.get_available_amount() >= amount
-    
+
     def consume(self, amount: float) -> bool:
         """
         消耗预算
@@ -120,11 +120,11 @@ class BudgetEntity(BaseEntity):
         """
         if not self.has_enough_budget(amount):
             return False
-        
+
         self.used_amount += amount
         self.updated_at = datetime.now()
         return True
-    
+
     def reserve(self, amount: float) -> bool:
         """
         预留预算
@@ -137,50 +137,50 @@ class BudgetEntity(BaseEntity):
         """
         if not self.has_enough_budget(amount):
             return False
-        
+
         self.reserved_amount += amount
         self.updated_at = datetime.now()
         return True
-    
+
     def release_reservation(self, amount: float):
         """释放预留预算"""
         self.reserved_amount = max(0, self.reserved_amount - amount)
         self.updated_at = datetime.now()
-    
+
     def transfer_from_reservation(self, amount: float) -> bool:
         """将预留转为已用"""
         if self.reserved_amount < amount:
             return False
-        
+
         self.reserved_amount -= amount
         self.used_amount += amount
         self.updated_at = datetime.now()
         return True
-    
+
     def freeze(self):
         """冻结预算"""
         self.status = "frozen"
         self.updated_at = datetime.now()
-    
+
     def unfreeze(self):
         """解冻预算"""
         if self.status == "frozen":
             self.status = "active"
             self.updated_at = datetime.now()
-    
+
     def expire(self):
         """设置预算过期"""
         self.status = "expired"
         self.updated_at = datetime.now()
-    
+
     def is_active(self) -> bool:
         """检查是否激活"""
         return self.status == "active"
-    
+
     def is_frozen(self) -> bool:
         """检查是否冻结"""
         return self.status == "frozen"
-    
+
     def is_expired(self) -> bool:
         """检查是否过期"""
         if self.status == "expired":
@@ -188,9 +188,9 @@ class BudgetEntity(BaseEntity):
         if self.end_date and date.today() > self.end_date:
             return True
         return False
-    
+
     # ==================== 智能工厂方法 ====================
-    
+
     @classmethod
     def for_org(cls, org_id: str, amount: float, **kwargs) -> "BudgetEntity":
         """
@@ -211,7 +211,7 @@ class BudgetEntity(BaseEntity):
             reserved_amount=0.0,
             **kwargs
         )
-    
+
     @classmethod
     def annual(cls, year: int, amount: float, **kwargs) -> "BudgetEntity":
         """
@@ -232,7 +232,7 @@ class BudgetEntity(BaseEntity):
             end_date=date(year, 12, 31),
             **kwargs
         )
-    
+
     @classmethod
     def project_budget(cls, project_name: str, amount: float, **kwargs) -> "BudgetEntity":
         """
@@ -252,7 +252,7 @@ class BudgetEntity(BaseEntity):
             metadata={"project_name": project_name, **kwargs.get("metadata", {})},
             **{k: v for k, v in kwargs.items() if k != "metadata"}
         )
-    
+
     @classmethod
     def with_high_amount(cls, amount: float = 1000000.0, **kwargs) -> "BudgetEntity":
         """
@@ -269,7 +269,7 @@ class BudgetEntity(BaseEntity):
             total_amount=amount,
             **kwargs
         )
-    
+
     @classmethod
     def random(cls) -> "BudgetEntity":
         """
@@ -283,9 +283,9 @@ class BudgetEntity(BaseEntity):
             total_amount=random.choice([50000, 100000, 200000, 500000]),
             category=random.choice(["general", "project", "operation", "marketing"]),
         )
-    
+
     # ==================== 验证方法 ====================
-    
+
     def validate(self) -> bool:
         """验证预算数据"""
         if self.total_amount < 0:
@@ -299,13 +299,13 @@ class BudgetEntity(BaseEntity):
         if self.year < 2000 or self.year > 2100:
             return False
         return True
-    
+
     def get_dependencies(self) -> List[str]:
         """获取依赖的实体类型"""
         if self.org_id:
             return ["OrgEntity"]
         return []
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """转换为字典"""
         return {

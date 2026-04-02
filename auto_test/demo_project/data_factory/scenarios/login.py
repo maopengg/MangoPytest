@@ -4,7 +4,7 @@
 # @Time   : 2026-03-31
 # @Author : 毛鹏
 import hashlib
-from typing import Optional
+
 import requests
 
 from .base_scenario import BaseScenario, ScenarioResult
@@ -50,7 +50,7 @@ class LoginScenario(BaseScenario):
             return {"code": 500, "message": str(e), "data": None}
 
     def execute(
-        self, username: str, password: str, create_user: bool = False, email: str = None
+            self, username: str, password: str, create_user: bool = False, email: str = None
     ) -> ScenarioResult:
         """
         执行登录场景
@@ -116,7 +116,7 @@ class RegisterAndLoginScenario(BaseScenario):
     """
 
     def execute(
-        self, username: str = None, password: str = None, email: str = None
+            self, username: str = None, password: str = None, email: str = None
     ) -> ScenarioResult:
         """
         执行注册并登录场景

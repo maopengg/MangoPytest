@@ -26,12 +26,12 @@ class CEOApprovalBuilder(BaseBuilder[CEOApprovalEntity]):
         super().__init__(token=token, factory=factory)
 
     def build(
-        self,
-        reimbursement_id: int = 0,
-        finance_approval_id: int = 0,
-        approver_id: int = 5,  # 默认CEO用户ID
-        status: str = "approved",
-        comment: str = None,
+            self,
+            reimbursement_id: int = 0,
+            finance_approval_id: int = 0,
+            approver_id: int = 5,  # 默认CEO用户ID
+            status: str = "approved",
+            comment: str = None,
     ) -> CEOApprovalEntity:
         """
         构造总经理审批实体（不调用API）
@@ -49,11 +49,11 @@ class CEOApprovalBuilder(BaseBuilder[CEOApprovalEntity]):
             approver_id=approver_id,
             status=status,
             comment=comment
-            or ("总经理审批通过" if status == "approved" else "总经理审批拒绝"),
+                    or ("总经理审批通过" if status == "approved" else "总经理审批拒绝"),
         )
 
     def create(
-        self, entity: CEOApprovalEntity = None, **kwargs
+            self, entity: CEOApprovalEntity = None, **kwargs
     ) -> Optional[CEOApprovalEntity]:
         """
         创建总经理审批（调用API）
@@ -166,11 +166,11 @@ class CEOApprovalBuilder(BaseBuilder[CEOApprovalEntity]):
         return []
 
     def approve(
-        self,
-        reimbursement_id: int,
-        finance_approval_id: int,
-        approver_id: int = 5,
-        comment: str = "审批通过",
+            self,
+            reimbursement_id: int,
+            finance_approval_id: int,
+            approver_id: int = 5,
+            comment: str = "审批通过",
     ) -> Optional[CEOApprovalEntity]:
         """
         快速审批通过
@@ -190,11 +190,11 @@ class CEOApprovalBuilder(BaseBuilder[CEOApprovalEntity]):
         )
 
     def reject(
-        self,
-        reimbursement_id: int,
-        finance_approval_id: int,
-        approver_id: int = 5,
-        comment: str = "审批拒绝",
+            self,
+            reimbursement_id: int,
+            finance_approval_id: int,
+            approver_id: int = 5,
+            comment: str = "审批拒绝",
     ) -> Optional[CEOApprovalEntity]:
         """
         快速审批拒绝
@@ -214,7 +214,7 @@ class CEOApprovalBuilder(BaseBuilder[CEOApprovalEntity]):
         )
 
     def get_by_reimbursement(
-        self, reimbursement_id: int
+            self, reimbursement_id: int
     ) -> Optional[CEOApprovalEntity]:
         """
         根据报销申请ID获取CEO审批
@@ -247,8 +247,6 @@ class CEOApprovalBuilder(BaseBuilder[CEOApprovalEntity]):
         @return: 包含所有审批信息的字典
         """
         from ...entities.reimbursement import ReimbursementEntity
-        from ...entities.dept_approval import DeptApprovalEntity
-        from ...entities.finance_approval import FinanceApprovalEntity
 
         # 获取报销申请
         reimbursement_result = demo_project.reimbursement.get_reimbursement_by_id(
@@ -280,7 +278,7 @@ class CEOApprovalBuilder(BaseBuilder[CEOApprovalEntity]):
         }
 
     def _get_all_by_reimbursement(
-        self, reimbursement_id: int, approval_type: str
+            self, reimbursement_id: int, approval_type: str
     ) -> list:
         """根据报销申请ID获取所有相关审批"""
         if approval_type == "dept":

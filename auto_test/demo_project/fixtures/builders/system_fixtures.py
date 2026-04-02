@@ -3,8 +3,9 @@
 # @Description: 系统模块 fixtures
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-import pytest
 from typing import Generator, Dict, Any
+
+import pytest
 
 from auto_test.demo_project.data_factory.builders.system import SystemBuilder
 
@@ -24,7 +25,7 @@ def server_health(system_builder) -> Generator[Dict[str, Any], None, None]:
     health = system_builder.health_check()
     if not health:
         pytest.skip("无法获取服务器健康状态")
-    
+
     yield health
 
 
@@ -37,5 +38,5 @@ def server_info(system_builder) -> Generator[Dict[str, Any], None, None]:
     info = system_builder.get_server_info()
     if not info:
         pytest.skip("无法获取服务器信息")
-    
+
     yield info

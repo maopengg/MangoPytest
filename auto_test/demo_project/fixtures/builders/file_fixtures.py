@@ -3,8 +3,9 @@
 # @Description: 文件模块 fixtures
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-import pytest
 from typing import Generator, Dict, Any
+
+import pytest
 
 from auto_test.demo_project.data_factory.builders.file import FileBuilder
 
@@ -35,5 +36,5 @@ def uploaded_file(file_builder, temp_file) -> Generator[Dict[str, Any], None, No
     result = file_builder.upload(file_path=temp_file)
     if not result:
         pytest.skip("无法上传测试文件")
-    
+
     yield result

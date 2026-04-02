@@ -11,8 +11,8 @@ Core Helpers 模块
 """
 
 import uuid
-from typing import Dict, Any, Optional
 from datetime import datetime
+from typing import Dict, Any, Optional
 
 
 def generate_id(prefix: str = "") -> str:
@@ -54,9 +54,9 @@ def merge_dicts(*dicts: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def filter_dict(
-    data: Dict[str, Any],
-    include: Optional[list] = None,
-    exclude: Optional[list] = None
+        data: Dict[str, Any],
+        include: Optional[list] = None,
+        exclude: Optional[list] = None
 ) -> Dict[str, Any]:
     """
     过滤字典
@@ -79,10 +79,10 @@ def filter_dict(
     """
     if include:
         return {k: v for k, v in data.items() if k in include}
-    
+
     if exclude:
         return {k: v for k, v in data.items() if k not in exclude}
-    
+
     return data.copy()
 
 

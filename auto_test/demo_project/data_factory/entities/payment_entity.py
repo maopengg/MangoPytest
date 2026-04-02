@@ -14,12 +14,12 @@
 - 智能工厂方法
 """
 
-from dataclasses import dataclass, field
-from typing import Optional, List, Dict, Any
-from datetime import datetime, date
-import uuid
-import sys
 import os
+import sys
+import uuid
+from dataclasses import dataclass, field
+from datetime import datetime, date
+from typing import Optional, List, Dict, Any
 
 # 添加父目录到路径以确保导入工作
 _current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -59,43 +59,43 @@ class PaymentEntity(BaseEntity):
         reference_no: 付款参考号
         metadata: 扩展元数据
     """
-    
+
     # 基础字段
     id: Optional[str] = None
     reimbursement_id: Optional[str] = None
-    
+
     # 付款信息
     amount: float = 0.0
     payee: str = ""
     bank_account: str = ""
     bank_name: str = ""
-    
+
     # 状态字段
     status: str = "pending"  # pending, paid, failed, cancelled
-    
+
     # 支付详情
     pay_date: Optional[date] = None
     pay_method: str = ""  # bank_transfer, alipay, wechat, cash
     reference_no: str = ""
-    
+
     # 审批信息
     approved_by: Optional[str] = None
     approved_at: Optional[datetime] = None
-    
+
     # 元数据
     metadata: Dict[str, Any] = field(default_factory=dict)
     created_at: datetime = field(default_factory=datetime.now)
     updated_at: datetime = field(default_factory=datetime.now)
-    
+
     def __post_init__(self):
         """初始化后处理"""
         if not self.id:
             self.id = f"payment_{uuid_short()}"
         if not self.reference_no:
             self.reference_no = f"PAY{datetime.now().strftime('%Y%m%d')}{self.id[-4:]}"
-    
+
     # ==================== 业务行为 ====================
-    
+
     def pay(self, pay_method: str = "bank_transfer", reference_no: str = "") -> bool:
         """
         执行付款
@@ -109,7 +109,7 @@ class PaymentEntity(BaseEntity):
         """
         if self.status != "pending":
             return False
-        
+
         self.status = "paid"
         self.pay_date = date.today()
         self.pay_method = pay_method
@@ -117,7 +117,7 @@ class PaymentEntity(BaseEntity):
             self.reference_no = reference_no
         self.updated_at = datetime.now()
         return True
-    
+
     def fail(self, reason: str = ""):
         """
         标记付款失败
@@ -128,7 +128,7 @@ class PaymentEntity(BaseEntity):
         self.status = "failed"
         self.metadata["fail_reason"] = reason
         self.updated_at = datetime.now()
-    
+
     def cancel(self, reason: str = ""):
         """
         取消付款
@@ -138,12 +138,12 @@ class PaymentEntity(BaseEntity):
         """
         if self.status == "paid":
             return False
-        
+
         self.status = "cancelled"
         self.metadata["cancel_reason"] = reason
         self.updated_at = datetime.now()
         return True
-    
+
     def approve(self, approver_id: str):
         """
         审批通过
@@ -154,29 +154,29 @@ class PaymentEntity(BaseEntity):
         self.approved_by = approver_id
         self.approved_at = datetime.now()
         self.updated_at = datetime.now()
-    
+
     def is_pending(self) -> bool:
         """检查是否待付款"""
         return self.status == "pending"
-    
+
     def is_paid(self) -> bool:
         """检查是否已付款"""
         return self.status == "paid"
-    
+
     def is_failed(self) -> bool:
         """检查是否付款失败"""
         return self.status == "failed"
-    
+
     def is_cancelled(self) -> bool:
         """检查是否已取消"""
         return self.status == "cancelled"
-    
+
     def can_pay(self) -> bool:
         """检查是否可以付款"""
         return self.status == "pending" and self.approved_by is not None
-    
+
     # ==================== 智能工厂方法 ====================
-    
+
     @classmethod
     def for_reimbursement(cls, reimbursement_id: str, amount: float, **kwargs) -> "PaymentEntity":
         """
@@ -195,7 +195,7 @@ class PaymentEntity(BaseEntity):
             amount=amount,
             **kwargs
         )
-    
+
     @classmethod
     def with_bank_info(cls, payee: str, bank_account: str, bank_name: str, **kwargs) -> "PaymentEntity":
         """
@@ -217,7 +217,7 @@ class PaymentEntity(BaseEntity):
             pay_method="bank_transfer",
             **kwargs
         )
-    
+
     @classmethod
     def with_alipay(cls, payee: str, alipay_account: str, **kwargs) -> "PaymentEntity":
         """
@@ -237,7 +237,7 @@ class PaymentEntity(BaseEntity):
             pay_method="alipay",
             **kwargs
         )
-    
+
     @classmethod
     def paid_payment(cls, amount: float, pay_date: date = None, **kwargs) -> "PaymentEntity":
         """
@@ -258,7 +258,7 @@ class PaymentEntity(BaseEntity):
             **kwargs
         )
         return payment
-    
+
     @classmethod
     def random(cls) -> "PaymentEntity":
         """
@@ -274,9 +274,9 @@ class PaymentEntity(BaseEntity):
             pay_method=random.choice(methods),
             payee=f"收款人_{uuid_short()}",
         )
-    
+
     # ==================== 验证方法 ====================
-    
+
     def validate(self) -> bool:
         """验证付款单数据"""
         if self.amount <= 0:
@@ -286,14 +286,14 @@ class PaymentEntity(BaseEntity):
         if self.status not in ["pending", "paid", "failed", "cancelled"]:
             return False
         return True
-    
+
     def get_dependencies(self) -> List[str]:
         """获取依赖的实体类型"""
         deps = []
         if self.reimbursement_id:
             deps.append("ReimbursementEntity")
         return deps
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """转换为字典"""
         return {

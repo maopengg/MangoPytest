@@ -25,7 +25,7 @@ from tools.main_run import MainRun
     -x: 一旦错误，则停止运行
     --maxfail: 设置最大失败次数，当超出这个阈值时，则不会在执行测试用例
     "--reruns=3", "--reruns-delay=2"
-    -n 2: 代表使用多进程执行用例，4是进程数
+    -n 1: 代表使用多进程执行用例，4是进程数
     '--dist=loadscope',  # 确保每个文件在单独的进程中运行
     '-p no:warnings' 忽略警告
     'ignore:Module already imported:pytest.PytestWarning' 特定警告
@@ -46,10 +46,11 @@ pytest_command = [
 ]
 
 test_project = [
-    {'project': ProjectEnum.MOCK_API, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.API},
-    {'project': ProjectEnum.MOCK_UI, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.UI},
+    # {'project': ProjectEnum.MOCK_API, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.API},
+    {'project': ProjectEnum.DEMO_PROJECT, 'test_environment': EnvironmentEnum.DEV, 'type': AutoTestTypeEnum.API},
+    # {'project': ProjectEnum.MOCK_UI, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.UI},
     # {'project': ProjectEnum.SQL, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.OTHER},
-    {'project': ProjectEnum.BAIDU, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.UI},
+    # {'project': ProjectEnum.BAIDU, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.UI},
 ]
 
 MainRun(test_project=test_project, pytest_command=pytest_command)

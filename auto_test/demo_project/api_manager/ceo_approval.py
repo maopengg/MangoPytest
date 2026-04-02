@@ -41,12 +41,12 @@ class CEOApprovalAPI:
         return response.data
 
     def create_ceo_approval(
-        self,
-        reimbursement_id: int,
-        finance_approval_id: int,
-        approver_id: int,
-        status: str,
-        comment: str = None,
+            self,
+            reimbursement_id: int,
+            finance_approval_id: int,
+            approver_id: int,
+            status: str,
+            comment: str = None,
     ) -> dict:
         """
         创建总经理审批

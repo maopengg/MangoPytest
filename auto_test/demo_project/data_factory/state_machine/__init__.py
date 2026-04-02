@@ -31,8 +31,8 @@
     user.transition_to("inactive")  # locked -> inactive
 """
 
-from .state_machine import StateMachine, State, Transition, TransitionResult
 from .exceptions import InvalidTransitionError, StateMachineError
+from .state_machine import StateMachine, State, Transition, TransitionResult
 from .user_state_machine import UserStateMachine, is_active, is_locked, is_inactive
 
 __all__ = [

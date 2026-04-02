@@ -40,7 +40,8 @@ class FinanceApprovalAPI:
         response = self._client.get("/finance-approvals", params={"id": approval_id})
         return response.data
 
-    def create_finance_approval(self, reimbursement_id: int, dept_approval_id: int, approver_id: int, status: str, comment: str = None) -> dict:
+    def create_finance_approval(self, reimbursement_id: int, dept_approval_id: int, approver_id: int, status: str,
+                                comment: str = None) -> dict:
         """
         创建财务审批
         POST /finance-approvals

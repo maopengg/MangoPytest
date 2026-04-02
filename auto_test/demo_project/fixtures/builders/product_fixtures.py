@@ -3,8 +3,9 @@
 # @Description: 产品模块 fixtures
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-import pytest
 from typing import Generator, Dict, Any
+
+import pytest
 
 from auto_test.demo_project.data_factory.builders.product import ProductBuilder
 
@@ -24,9 +25,9 @@ def test_product(product_builder) -> Generator[Dict[str, Any], None, None]:
     product = product_builder.create()
     if not product:
         pytest.skip("无法创建测试产品")
-    
+
     yield product
-    
+
     # 清理
     try:
         product_builder.delete(product.get('id'))

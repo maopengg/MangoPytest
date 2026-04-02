@@ -14,8 +14,8 @@
 4. 血缘可视化
 """
 
-import sys
 import os
+import sys
 
 # 设置编码
 sys.stdout.reconfigure(encoding='utf-8')
@@ -41,10 +41,10 @@ def demo_basic_lineage():
     print("=" * 60)
     print("演示1: 基础血缘追踪")
     print("=" * 60)
-    
+
     # 创建追踪器
     tracker = DataLineageTracker()
-    
+
     # 记录数据创建
     user_id = tracker.record_creation(
         entity_type="user",
@@ -53,7 +53,7 @@ def demo_basic_lineage():
         metadata={"username": "张三", "role": "employee"}
     )
     print(f"[OK] 记录用户创建: user_001 (节点ID: {user_id})")
-    
+
     # 记录订单创建
     order_id = tracker.record_creation(
         entity_type="order",
@@ -62,7 +62,7 @@ def demo_basic_lineage():
         metadata={"amount": 1000, "status": "pending"}
     )
     print(f"[OK] 记录订单创建: order_001 (节点ID: {order_id})")
-    
+
     # 记录依赖关系：订单依赖用户
     edge_id = tracker.record_dependency(
         from_entity=order_id,
@@ -71,7 +71,7 @@ def demo_basic_lineage():
         metadata={"relation": "created_by"}
     )
     print(f"[OK] 记录依赖关系: order_001 -> user_001 (边ID: {edge_id})")
-    
+
     # 记录支付创建
     payment_id = tracker.record_creation(
         entity_type="payment",
@@ -80,7 +80,7 @@ def demo_basic_lineage():
         metadata={"amount": 1000, "method": "alipay"}
     )
     print(f"[OK] 记录支付创建: payment_001 (节点ID: {payment_id})")
-    
+
     # 支付依赖订单
     tracker.record_dependency(
         from_entity=payment_id,
@@ -88,7 +88,7 @@ def demo_basic_lineage():
         relation_type=LineageRelation.DEPENDS_ON
     )
     print(f"[OK] 记录依赖关系: payment_001 -> order_001")
-    
+
     # 获取统计信息
     stats = tracker.graph.get_statistics()
     print(f"\n血缘图统计:")
@@ -96,7 +96,7 @@ def demo_basic_lineage():
     print(f"  - 总边数: {stats['total_edges']}")
     print(f"  - 根节点数: {stats['roots']}")
     print(f"  - 叶子节点数: {stats['leaves']}")
-    
+
     return tracker
 
 
@@ -105,19 +105,19 @@ def demo_upstream_downstream(tracker: DataLineageTracker):
     print("\n" + "=" * 60)
     print("演示2: 上下游追溯")
     print("=" * 60)
-    
+
     # 获取 payment_001 的上游
     upstream = tracker.get_upstream("payment:payment_001")
     print(f"\n[OK] payment_001 的上游依赖:")
     for node in upstream:
         print(f"  - {node.entity_type}:{node.entity_id} (来源: {node.source})")
-    
+
     # 获取 user_001 的下游
     downstream = tracker.get_downstream("user:user_001")
     print(f"\n[OK] user_001 的下游依赖:")
     for node in downstream:
         print(f"  - {node.entity_type}:{node.entity_id}")
-    
+
     # 查找路径
     path = tracker.get_lineage_path("user:user_001", "payment:payment_001")
     if path:
@@ -132,9 +132,9 @@ def demo_api_and_db_tracking():
     print("\n" + "=" * 60)
     print("演示3: API和数据库操作追踪")
     print("=" * 60)
-    
+
     tracker = DataLineageTracker()
-    
+
     # 记录API调用
     api_node_id = tracker.record_api_call(
         api_name="create_order",
@@ -144,7 +144,7 @@ def demo_api_and_db_tracking():
         response_data={"order_id": "order_002", "status": "created"}
     )
     print(f"[OK] 记录API调用: POST /api/orders (节点ID: {api_node_id})")
-    
+
     # 记录数据库操作
     db_node_id = tracker.record_database_operation(
         operation="INSERT",
@@ -153,7 +153,7 @@ def demo_api_and_db_tracking():
         sql="INSERT INTO orders (id, user_id, amount) VALUES ('order_002', 'user_001', 1000)"
     )
     print(f"[OK] 记录数据库操作: INSERT orders (节点ID: {db_node_id})")
-    
+
     # 记录实体创建
     entity_id = tracker.record_creation(
         entity_type="order",
@@ -161,7 +161,7 @@ def demo_api_and_db_tracking():
         source="api_call"
     )
     print(f"[OK] 记录实体创建: order_002")
-    
+
     return tracker
 
 
@@ -170,13 +170,13 @@ def demo_operation_context():
     print("\n" + "=" * 60)
     print("演示4: 操作上下文追踪")
     print("=" * 60)
-    
+
     tracker = DataLineageTracker()
-    
+
     # 使用上下文管理器追踪操作
     with tracker.trace_operation("create_order_flow") as op_id:
         print(f"[OK] 开始追踪操作: create_order_flow (操作ID: {op_id})")
-        
+
         # 在上下文中创建的数据会自动关联
         user_id = tracker.record_creation(
             entity_type="user",
@@ -184,23 +184,23 @@ def demo_operation_context():
             metadata={"name": "李四"}
         )
         print(f"  - 自动关联用户创建: user_003")
-        
+
         order_id = tracker.record_creation(
             entity_type="order",
             entity_id="order_003",
             metadata={"amount": 2000}
         )
         print(f"  - 自动关联订单创建: order_003")
-        
+
         payment_id = tracker.record_creation(
             entity_type="payment",
             entity_id="payment_003",
             metadata={"amount": 2000}
         )
         print(f"  - 自动关联支付创建: payment_003")
-    
+
     print(f"[OK] 操作追踪完成")
-    
+
     # 查看统计
     stats = tracker.graph.get_statistics()
     print(f"\n血缘图统计:")
@@ -213,9 +213,9 @@ def demo_impact_analysis():
     print("\n" + "=" * 60)
     print("演示5: 影响分析")
     print("=" * 60)
-    
+
     tracker = DataLineageTracker()
-    
+
     # 构建复杂依赖链
     user_id = tracker.record_creation("user", "user_004")
     order_id = tracker.record_creation("order", "order_004")
@@ -223,22 +223,22 @@ def demo_impact_analysis():
     receipt_id = tracker.record_creation("receipt", "receipt_001")
     invoice_id = tracker.record_creation("invoice", "invoice_001")
     shipment_id = tracker.record_creation("shipment", "shipment_001")
-    
+
     # 建立依赖关系
     tracker.record_dependency(order_id, user_id, LineageRelation.DEPENDS_ON)
     tracker.record_dependency(payment_id, order_id, LineageRelation.DEPENDS_ON)
     tracker.record_dependency(receipt_id, payment_id, LineageRelation.DEPENDS_ON)
     tracker.record_dependency(invoice_id, payment_id, LineageRelation.DEPENDS_ON)
     tracker.record_dependency(shipment_id, order_id, LineageRelation.DEPENDS_ON)
-    
+
     print("[OK] 构建依赖链:")
     print("  user_004 -> order_004 -> payment_004 -> receipt_001")
     print("                         -> invoice_001")
     print("           -> shipment_001")
-    
+
     # 创建分析器
     analyzer = LineageAnalyzer(tracker.graph)
-    
+
     # 分析 order_004 的影响
     impact = analyzer.analyze_impact("order", "order_004")
     print(f"\n[OK] order_004 的影响分析:")
@@ -252,33 +252,33 @@ def demo_lineage_tracing():
     print("\n" + "=" * 60)
     print("演示6: 血缘溯源")
     print("=" * 60)
-    
+
     tracker = DataLineageTracker()
-    
+
     # 构建多级依赖
     budget_id = tracker.record_creation("budget", "budget_001", metadata={"amount": 10000})
     reimb_id = tracker.record_creation("reimbursement", "reimb_001", metadata={"amount": 1000})
     dept_id = tracker.record_creation("dept_approval", "dept_001", metadata={"status": "approved"})
     finance_id = tracker.record_creation("finance_approval", "finance_001", metadata={"status": "approved"})
     payment_id = tracker.record_creation("payment", "payment_005", metadata={"amount": 1000})
-    
+
     tracker.record_dependency(reimb_id, budget_id, LineageRelation.DEPENDS_ON)
     tracker.record_dependency(dept_id, reimb_id, LineageRelation.DEPENDS_ON)
     tracker.record_dependency(finance_id, dept_id, LineageRelation.DEPENDS_ON)
     tracker.record_dependency(payment_id, finance_id, LineageRelation.DEPENDS_ON)
-    
+
     print("[OK] 构建审批流依赖链:")
     print("  budget_001 -> reimb_001 -> dept_001 -> finance_001 -> payment_005")
-    
+
     # 创建分析器
     analyzer = LineageAnalyzer(tracker.graph)
-    
+
     # 溯源 payment_005
     lineage = analyzer.trace_lineage("payment", "payment_005", direction="upstream")
     print(f"\n[OK] payment_005 的血缘溯源:")
     print(f"  - 上游实体数: {lineage['upstream']['count']}")
     print(f"  - 根来源: {lineage['upstream']['root_sources']}")
-    
+
     # 查看下游
     lineage = analyzer.trace_lineage("budget", "budget_001", direction="downstream")
     print(f"\n[OK] budget_001 的下游流向:")
@@ -291,23 +291,23 @@ def demo_visualization():
     print("\n" + "=" * 60)
     print("演示7: 可视化导出")
     print("=" * 60)
-    
+
     tracker = DataLineageTracker()
-    
+
     # 构建示例数据
     tracker.record_creation("user", "user_005")
     tracker.record_creation("order", "order_005")
     tracker.record_creation("payment", "payment_006")
-    
+
     analyzer = LineageAnalyzer(tracker.graph)
-    
+
     # 生成 Mermaid 图
     mermaid = analyzer.generate_mermaid()
     print("[OK] 生成 Mermaid 流程图:")
     print("-" * 40)
     print(mermaid)
     print("-" * 40)
-    
+
     # 生成 Graphviz DOT
     dot = analyzer.generate_graphviz()
     print("\n[OK] 生成 Graphviz DOT 格式:")
@@ -321,24 +321,24 @@ def demo_advanced_analysis():
     print("\n" + "=" * 60)
     print("演示8: 高级分析功能")
     print("=" * 60)
-    
+
     tracker = DataLineageTracker()
-    
+
     # 构建复杂图
     central_id = tracker.record_creation("user", "central_user")
-    
+
     # 创建多个下游依赖
     for i in range(8):
         order_id = tracker.record_creation("order", f"order_{i}")
         tracker.record_dependency(order_id, central_id, LineageRelation.DEPENDS_ON)
-        
+
         # 每个订单再有多个下游
         for j in range(2):
             payment_id = tracker.record_creation("payment", f"payment_{i}_{j}")
             tracker.record_dependency(payment_id, order_id, LineageRelation.DEPENDS_ON)
-    
+
     analyzer = LineageAnalyzer(tracker.graph)
-    
+
     # 查找热点
     hotspots = analyzer.find_hotspots(top_n=5)
     print("[OK] 热点数据分析:")
@@ -346,7 +346,7 @@ def demo_advanced_analysis():
         print(f"  {i}. {hotspot['type']}:{hotspot['id']}")
         print(f"     下游依赖数: {hotspot['downstream_count']}")
         print(f"     中心性: {hotspot['centrality']}")
-    
+
     # 查找孤立数据
     orphaned = analyzer.find_orphaned_data()
     print(f"\n[OK] 孤立数据检查:")
@@ -354,7 +354,7 @@ def demo_advanced_analysis():
         print(f"  发现 {len(orphaned)} 个孤立数据")
     else:
         print(f"  未发现孤立数据")
-    
+
     # 生成完整报告
     report = analyzer.generate_full_report()
     print(f"\n[OK] 完整报告摘要:")
@@ -370,23 +370,23 @@ def demo_global_tracker():
     print("\n" + "=" * 60)
     print("演示9: 全局追踪器")
     print("=" * 60)
-    
+
     # 重置全局追踪器
     reset_global_tracker()
-    
+
     # 获取全局追踪器
     tracker1 = get_global_tracker()
     tracker2 = get_global_tracker()
-    
+
     print(f"[OK] 获取全局追踪器")
     print(f"  - tracker1 ID: {id(tracker1)}")
     print(f"  - tracker2 ID: {id(tracker2)}")
     print(f"  - 是否为同一实例: {tracker1 is tracker2}")
-    
+
     # 使用全局追踪器记录数据
     tracker1.record_creation("user", "global_user_001")
     tracker1.record_creation("order", "global_order_001")
-    
+
     # 通过另一个引用查看数据
     stats = tracker2.graph.get_statistics()
     print(f"\n[OK] 通过 tracker2 查看数据:")
@@ -399,7 +399,7 @@ def run_all_demos():
     print("\n" + "=" * 60)
     print("数据血缘追踪功能演示")
     print("=" * 60)
-    
+
     # 运行演示
     tracker = demo_basic_lineage()
     demo_upstream_downstream(tracker)
@@ -410,7 +410,7 @@ def run_all_demos():
     demo_visualization()
     demo_advanced_analysis()
     demo_global_tracker()
-    
+
     print("\n" + "=" * 60)
     print("所有演示完成！")
     print("=" * 60)

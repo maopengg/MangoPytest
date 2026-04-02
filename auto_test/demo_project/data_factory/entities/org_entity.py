@@ -14,12 +14,12 @@
 - 智能工厂方法
 """
 
-from dataclasses import dataclass, field
-from typing import Optional, List, Dict, Any
-from datetime import datetime
-import uuid
-import sys
 import os
+import sys
+import uuid
+from dataclasses import dataclass, field
+from datetime import datetime
+from typing import Optional, List, Dict, Any
 
 # 添加父目录到路径以确保导入工作
 _current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -57,26 +57,26 @@ class OrgEntity(BaseEntity):
         status: 状态（active/inactive）
         metadata: 扩展元数据
     """
-    
+
     # 基础字段
     id: Optional[str] = None
     name: str = ""
     code: str = ""
     parent_id: Optional[str] = None
     level: int = 1
-    
+
     # 预算字段
     budget_total: float = 0.0
     budget_used: float = 0.0
-    
+
     # 状态字段
     status: str = "active"  # active, inactive
-    
+
     # 元数据
     metadata: Dict[str, Any] = field(default_factory=dict)
     created_at: datetime = field(default_factory=datetime.now)
     updated_at: datetime = field(default_factory=datetime.now)
-    
+
     def __post_init__(self):
         """初始化后处理"""
         if not self.id:
@@ -85,17 +85,17 @@ class OrgEntity(BaseEntity):
             self.code = f"ORG{self.id[-6:].upper()}"
         if not self.name:
             self.name = f"组织_{self.id[-4:]}"
-    
+
     # ==================== 业务行为 ====================
-    
+
     def get_available_budget(self) -> float:
         """获取可用预算"""
         return self.budget_total - self.budget_used
-    
+
     def has_enough_budget(self, amount: float) -> bool:
         """检查是否有足够预算"""
         return self.get_available_budget() >= amount
-    
+
     def consume_budget(self, amount: float) -> bool:
         """消耗预算"""
         if not self.has_enough_budget(amount):
@@ -103,28 +103,28 @@ class OrgEntity(BaseEntity):
         self.budget_used += amount
         self.updated_at = datetime.now()
         return True
-    
+
     def release_budget(self, amount: float):
         """释放预算"""
         self.budget_used = max(0, self.budget_used - amount)
         self.updated_at = datetime.now()
-    
+
     def activate(self):
         """激活组织"""
         self.status = "active"
         self.updated_at = datetime.now()
-    
+
     def deactivate(self):
         """停用组织"""
         self.status = "inactive"
         self.updated_at = datetime.now()
-    
+
     def is_active(self) -> bool:
         """检查是否激活"""
         return self.status == "active"
-    
+
     # ==================== 智能工厂方法 ====================
-    
+
     @classmethod
     def with_budget(cls, budget: float, **kwargs) -> "OrgEntity":
         """
@@ -142,7 +142,7 @@ class OrgEntity(BaseEntity):
             budget_used=0.0,
             **kwargs
         )
-    
+
     @classmethod
     def parent_org(cls, **kwargs) -> "OrgEntity":
         """
@@ -156,7 +156,7 @@ class OrgEntity(BaseEntity):
             parent_id=None,
             **kwargs
         )
-    
+
     @classmethod
     def sub_org(cls, parent_id: str, **kwargs) -> "OrgEntity":
         """
@@ -174,7 +174,7 @@ class OrgEntity(BaseEntity):
             level=2,
             **kwargs
         )
-    
+
     @classmethod
     def random(cls) -> "OrgEntity":
         """
@@ -187,9 +187,9 @@ class OrgEntity(BaseEntity):
             name=f"组织_{uuid_short()}",
             budget_total=100000.0,
         )
-    
+
     # ==================== 验证方法 ====================
-    
+
     def validate(self) -> bool:
         """验证组织数据"""
         if not self.name:
@@ -199,11 +199,11 @@ class OrgEntity(BaseEntity):
         if self.budget_used < 0 or self.budget_used > self.budget_total:
             return False
         return True
-    
+
     def get_dependencies(self) -> List[str]:
         """获取依赖的实体类型"""
         return []
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """转换为字典"""
         return {

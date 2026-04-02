@@ -19,12 +19,12 @@ class BudgetBuilder(BaseBuilder[BudgetEntity]):
     DEPENDENCIES = []
 
     def __init__(
-        self,
-        token: str = None,
-        context: BuilderContext = None,
-        strategy=None,
-        parent_builders=None,
-        factory=None,
+            self,
+            token: str = None,
+            context: BuilderContext = None,
+            strategy=None,
+            parent_builders=None,
+            factory=None,
     ):
         super().__init__(
             token=token,
@@ -54,12 +54,12 @@ class BudgetBuilder(BaseBuilder[BudgetEntity]):
         return kwargs
 
     def build(
-        self,
-        org_id: str = None,
-        total_amount: float = 500000,
-        category: str = "project",
-        year: int = 2026,
-        status: str = "active",
+            self,
+            org_id: str = None,
+            total_amount: float = 500000,
+            category: str = "project",
+            year: int = 2026,
+            status: str = "active",
     ) -> BudgetEntity:
         return BudgetEntity(
             org_id=org_id,
@@ -70,10 +70,10 @@ class BudgetBuilder(BaseBuilder[BudgetEntity]):
         )
 
     def create(
-        self,
-        entity: BudgetEntity = None,
-        auto_prepare_deps: bool = True,
-        **kwargs,
+            self,
+            entity: BudgetEntity = None,
+            auto_prepare_deps: bool = True,
+            **kwargs,
     ) -> Optional[BudgetEntity]:
         if auto_prepare_deps:
             kwargs = self._prepare_dependencies(**kwargs)

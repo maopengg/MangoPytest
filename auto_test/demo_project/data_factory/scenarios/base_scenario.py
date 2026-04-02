@@ -3,13 +3,11 @@
 # @Description: 场景基类 - 业务流程封装（增强版）
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-from abc import ABC, abstractmethod
-from typing import Dict, Any, List, Optional, TypeVar, Generic, Type, Callable, Union
-from dataclasses import dataclass, field
-from datetime import datetime
-import copy
-import sys
 import os
+import sys
+from abc import ABC
+from dataclasses import dataclass, field
+from typing import Dict, Any, List, Optional, TypeVar, Generic, Type
 
 # 添加父目录到路径以确保导入工作
 _current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -32,7 +30,6 @@ except ImportError:
         BaseEntity = None
         Context = None
         VariantMatrix = None
-
 
 T = TypeVar("T", bound=BaseEntity if BaseEntity else object)
 
@@ -138,12 +135,12 @@ class BaseScenario(ABC, Generic[T]):
     params_schema: Dict[str, Any] = {}
 
     def __init__(
-        self,
-        token: str = None,
-        factory=None,
-        auto_resolve_deps: bool = True,
-        context: Optional[Any] = None,
-        **params
+            self,
+            token: str = None,
+            factory=None,
+            auto_resolve_deps: bool = True,
+            context: Optional[Any] = None,
+            **params
     ):
         """
         初始化场景
@@ -299,7 +296,7 @@ class BaseScenario(ABC, Generic[T]):
                     self.context.create(dep_class, **self._entity_to_kwargs(entity))
 
     def _create_dependency_entity(
-        self, entity_class: Type[Any]
+            self, entity_class: Type[Any]
     ) -> Optional[Any]:
         """
         使用智能工厂方法创建依赖实体
@@ -309,7 +306,7 @@ class BaseScenario(ABC, Generic[T]):
         """
         # 尝试调用 random() 方法
         if hasattr(entity_class, "random") and callable(
-            getattr(entity_class, "random")
+                getattr(entity_class, "random")
         ):
             try:
                 return entity_class.random()
@@ -348,7 +345,7 @@ class BaseScenario(ABC, Generic[T]):
         """
         self._variant_name = variant_name
         self._current_variant = variant_data
-        
+
         # 【新增】将变体参数合并到场景参数
         if variant_data:
             for key, value in variant_data.items():
@@ -397,7 +394,7 @@ class BaseScenario(ABC, Generic[T]):
         """
         # 基础预期：成功
         expected = {"success": True}
-        
+
         # 根据变体调整预期
         if self._current_variant:
             # 检查是否有预期的失败情况
@@ -411,7 +408,7 @@ class BaseScenario(ABC, Generic[T]):
                     # 检查是否有有效标志
                     if 'valid' in values and not values['valid']:
                         expected['success'] = False
-        
+
         return expected
 
     def validate_result(self, result: ScenarioResult) -> bool:
@@ -424,7 +421,7 @@ class BaseScenario(ABC, Generic[T]):
         @return: 是否通过验证
         """
         expected = self._expected_result()
-        
+
         # 设置预期和实际结果到 result
         result.expected = expected
         result.actual = {
@@ -495,7 +492,7 @@ class BaseScenario(ABC, Generic[T]):
         self.cleanup()
 
     # 【新增】快捷方法
-    
+
     @classmethod
     def execute_variant(cls, variant_name: str, **kwargs) -> ScenarioResult:
         """
@@ -511,10 +508,10 @@ class BaseScenario(ABC, Generic[T]):
             if "=" in part:
                 dim, val = part.split("=", 1)
                 selections[dim.strip()] = val.strip()
-        
+
         # 获取变体数据
         variant_data = cls.variant(**selections)
-        
+
         # 创建场景实例并执行
         scenario = cls(**kwargs)
         scenario.set_variant(variant_name, variant_data)
@@ -530,12 +527,12 @@ class BaseScenario(ABC, Generic[T]):
         """
         results = []
         variants = cls.all_variants()
-        
+
         for i, variant in enumerate(variants):
             scenario = cls(**kwargs)
-            variant_name = f"variant_{i+1}"
+            variant_name = f"variant_{i + 1}"
             scenario.set_variant(variant_name, {"variant": variant})
             result = scenario.execute()
             results.append(result)
-        
+
         return results

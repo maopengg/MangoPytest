@@ -20,7 +20,7 @@ User Entity Fixtures 模块
 """
 
 import pytest
-from typing import Generator
+
 from auto_test.demo_project.data_factory.entities import UserEntity
 
 

@@ -4,21 +4,23 @@
 # @Time   : 2026-03-31
 # @Author : 毛鹏
 
-# 统一的API出口
-from .auth import AuthAPI
-from .user import UserAPI
-from .product import ProductAPI
-from .order import OrderAPI
-from .file import FileAPI
-from .data import DataAPI
-from .system import SystemAPI
-from .login import LoginAPI
+from typing import Optional
 
+# 统一的API出口
+from auto_test.demo_project.config import load_settings
+from .auth import AuthAPI
+from .ceo_approval import CEOApprovalAPI
+from .data import DataAPI
+from .dept_approval import DeptApprovalAPI
+from .file import FileAPI
+from .finance_approval import FinanceApprovalAPI
+from .login import LoginAPI
+from .order import OrderAPI
+from .product import ProductAPI
 # 审批流API
 from .reimbursement import ReimbursementAPI
-from .dept_approval import DeptApprovalAPI
-from .finance_approval import FinanceApprovalAPI
-from .ceo_approval import CEOApprovalAPI
+from .system import SystemAPI
+from .user import UserAPI
 
 
 class DemoProjectAPI:
@@ -28,13 +30,14 @@ class DemoProjectAPI:
 
     配置host：
         demo_project.set_host("http://localhost:8003")
+        demo_project.sync_host_from_env("pre")
     """
 
-    # Mock API 默认地址
+    # Mock API 默认地址（兜底值）
     DEFAULT_HOST = "http://localhost:8003"
 
     def __init__(self):
-        self._host = self.DEFAULT_HOST
+        self._host = load_settings().HOST or self.DEFAULT_HOST
         self._auth = None
         self._user = None
         self._product = None
@@ -48,6 +51,17 @@ class DemoProjectAPI:
         self._dept_approval = None
         self._finance_approval = None
         self._ceo_approval = None
+
+    def sync_host_from_env(self, env: Optional[str] = None) -> str:
+        """
+        根据配置环境同步 host
+
+        @param env: 指定环境（dev/test/pre/prod），不传则使用当前 ENV
+        @return: 生效后的 host
+        """
+        config = load_settings(env)
+        self.set_host(config.HOST or self.DEFAULT_HOST)
+        return self._host
 
     def set_host(self, host: str):
         """

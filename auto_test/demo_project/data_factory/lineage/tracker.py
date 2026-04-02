@@ -15,9 +15,9 @@
 - 记录测试用例执行
 """
 
-from typing import Dict, List, Optional, Any, Callable
 from contextlib import contextmanager
 from datetime import datetime
+from typing import Dict, List, Optional, Any
 
 try:
     from .node import (
@@ -49,20 +49,20 @@ class DataLineageTracker:
         current_context: 当前上下文信息
         enabled: 是否启用追踪
     """
-    
+
     def __init__(self, enabled: bool = True):
         self.graph = DataLineageGraph()
         self.current_context: Dict[str, Any] = {}
         self.enabled = enabled
         self._operation_stack: List[str] = []
-    
+
     def record_creation(
-        self,
-        entity_type: str,
-        entity_id: str,
-        source: str = "",
-        metadata: Optional[Dict[str, Any]] = None,
-        node_type: LineageNodeType = LineageNodeType.ENTITY
+            self,
+            entity_type: str,
+            entity_id: str,
+            source: str = "",
+            metadata: Optional[Dict[str, Any]] = None,
+            node_type: LineageNodeType = LineageNodeType.ENTITY
     ) -> str:
         """
         记录数据创建
@@ -79,7 +79,7 @@ class DataLineageTracker:
         """
         if not self.enabled:
             return ""
-        
+
         node = DataLineageNode.from_entity(
             entity_type=entity_type,
             entity_id=entity_id,
@@ -87,9 +87,9 @@ class DataLineageTracker:
             metadata=metadata,
             node_type=node_type
         )
-        
+
         node_id = self.graph.add_node(node)
-        
+
         # 如果有当前操作上下文，建立关联
         if self._operation_stack:
             parent_id = self._operation_stack[-1]
@@ -98,15 +98,15 @@ class DataLineageTracker:
                 to_entity=node_id,
                 relation_type=LineageRelation.CREATES
             )
-        
+
         return node_id
-    
+
     def record_dependency(
-        self,
-        from_entity: str,
-        to_entity: str,
-        relation_type: LineageRelation = LineageRelation.DEPENDS_ON,
-        metadata: Optional[Dict[str, Any]] = None
+            self,
+            from_entity: str,
+            to_entity: str,
+            relation_type: LineageRelation = LineageRelation.DEPENDS_ON,
+            metadata: Optional[Dict[str, Any]] = None
     ) -> str:
         """
         记录数据依赖关系
@@ -122,31 +122,31 @@ class DataLineageTracker:
         """
         if not self.enabled:
             return ""
-        
+
         # 解析实体ID
         source_id = self._resolve_node_id(from_entity)
         target_id = self._resolve_node_id(to_entity)
-        
+
         if not source_id or not target_id:
             return ""
-        
+
         edge = LineageEdge(
             source_id=source_id,
             target_id=target_id,
             relation=relation_type,
             metadata=metadata or {}
         )
-        
+
         return self.graph.add_edge(edge)
-    
+
     def record_api_call(
-        self,
-        api_name: str,
-        method: str,
-        endpoint: str,
-        request_data: Optional[Dict] = None,
-        response_data: Optional[Dict] = None,
-        related_entities: Optional[List[str]] = None
+            self,
+            api_name: str,
+            method: str,
+            endpoint: str,
+            request_data: Optional[Dict] = None,
+            response_data: Optional[Dict] = None,
+            related_entities: Optional[List[str]] = None
     ) -> str:
         """
         记录API调用
@@ -164,7 +164,7 @@ class DataLineageTracker:
         """
         if not self.enabled:
             return ""
-        
+
         node = DataLineageNode.from_api_call(
             api_name=api_name,
             method=method,
@@ -172,9 +172,9 @@ class DataLineageTracker:
             request_data=request_data,
             response_data=response_data
         )
-        
+
         node_id = self.graph.add_node(node)
-        
+
         # 建立与相关实体的关系
         if related_entities:
             for entity_id in related_entities:
@@ -186,16 +186,16 @@ class DataLineageTracker:
                         relation=LineageRelation.TRIGGERS
                     )
                     self.graph.add_edge(edge)
-        
+
         return node_id
-    
+
     def record_database_operation(
-        self,
-        operation: str,
-        table: str,
-        record_id: str,
-        sql: Optional[str] = None,
-        related_entities: Optional[List[str]] = None
+            self,
+            operation: str,
+            table: str,
+            record_id: str,
+            sql: Optional[str] = None,
+            related_entities: Optional[List[str]] = None
     ) -> str:
         """
         记录数据库操作
@@ -212,16 +212,16 @@ class DataLineageTracker:
         """
         if not self.enabled:
             return ""
-        
+
         node = DataLineageNode.from_database_operation(
             operation=operation,
             table=table,
             record_id=record_id,
             sql=sql
         )
-        
+
         node_id = self.graph.add_node(node)
-        
+
         # 建立与相关实体的关系
         if related_entities:
             for entity_id in related_entities:
@@ -234,15 +234,15 @@ class DataLineageTracker:
                         relation=relation
                     )
                     self.graph.add_edge(edge)
-        
+
         return node_id
-    
+
     def record_test_case(
-        self,
-        test_name: str,
-        test_file: str,
-        test_class: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None
+            self,
+            test_name: str,
+            test_file: str,
+            test_class: Optional[str] = None,
+            metadata: Optional[Dict[str, Any]] = None
     ) -> str:
         """
         记录测试用例执行
@@ -258,7 +258,7 @@ class DataLineageTracker:
         """
         if not self.enabled:
             return ""
-        
+
         node = DataLineageNode(
             node_type=LineageNodeType.TEST_CASE,
             entity_type="test_case",
@@ -272,14 +272,14 @@ class DataLineageTracker:
                 **(metadata or {})
             }
         )
-        
+
         return self.graph.add_node(node)
-    
+
     def record_scenario(
-        self,
-        scenario_name: str,
-        scenario_class: str,
-        metadata: Optional[Dict[str, Any]] = None
+            self,
+            scenario_name: str,
+            scenario_class: str,
+            metadata: Optional[Dict[str, Any]] = None
     ) -> str:
         """
         记录场景执行
@@ -294,7 +294,7 @@ class DataLineageTracker:
         """
         if not self.enabled:
             return ""
-        
+
         node = DataLineageNode(
             node_type=LineageNodeType.SCENARIO,
             entity_type="scenario",
@@ -307,9 +307,9 @@ class DataLineageTracker:
                 **(metadata or {})
             }
         )
-        
+
         return self.graph.add_node(node)
-    
+
     @contextmanager
     def trace_operation(self, operation_name: str, metadata: Optional[Dict] = None):
         """
@@ -331,7 +331,7 @@ class DataLineageTracker:
         if not self.enabled:
             yield ""
             return
-        
+
         # 创建操作节点
         node = DataLineageNode(
             node_type=LineageNodeType.BUILDER,
@@ -339,20 +339,20 @@ class DataLineageTracker:
             entity_id=operation_name,
             metadata=metadata or {}
         )
-        
+
         node_id = self.graph.add_node(node)
         self._operation_stack.append(node_id)
-        
+
         try:
             yield node_id
         finally:
             if self._operation_stack:
                 self._operation_stack.pop()
-    
+
     def get_upstream(
-        self,
-        entity_id: str,
-        max_depth: int = 10
+            self,
+            entity_id: str,
+            max_depth: int = 10
     ) -> List[DataLineageNode]:
         """
         获取实体的上游依赖
@@ -367,13 +367,13 @@ class DataLineageTracker:
         node_id = self._resolve_node_id(entity_id)
         if not node_id:
             return []
-        
+
         return self.graph.get_upstream_nodes(node_id, max_depth)
-    
+
     def get_downstream(
-        self,
-        entity_id: str,
-        max_depth: int = 10
+            self,
+            entity_id: str,
+            max_depth: int = 10
     ) -> List[DataLineageNode]:
         """
         获取实体的下游依赖
@@ -388,13 +388,13 @@ class DataLineageTracker:
         node_id = self._resolve_node_id(entity_id)
         if not node_id:
             return []
-        
+
         return self.graph.get_downstream_nodes(node_id, max_depth)
-    
+
     def get_lineage_path(
-        self,
-        source_id: str,
-        target_id: str
+            self,
+            source_id: str,
+            target_id: str
     ) -> Optional[Any]:
         """
         获取两个实体之间的血缘路径
@@ -408,15 +408,15 @@ class DataLineageTracker:
         """
         source_node_id = self._resolve_node_id(source_id)
         target_node_id = self._resolve_node_id(target_id)
-        
+
         if not source_node_id or not target_node_id:
             return None
-        
+
         return self.graph.find_path(source_node_id, target_node_id)
-    
+
     def get_impact_analysis(
-        self,
-        entity_id: str
+            self,
+            entity_id: str
     ) -> Dict[str, Any]:
         """
         获取实体的影响分析
@@ -430,12 +430,12 @@ class DataLineageTracker:
         node_id = self._resolve_node_id(entity_id)
         if not node_id:
             return {"error": f"Entity not found: {entity_id}"}
-        
+
         upstream = self.get_upstream(entity_id)
         downstream = self.get_downstream(entity_id)
-        
+
         node = self.graph.get_node(node_id)
-        
+
         return {
             "entity": node.to_dict() if node else None,
             "upstream_count": len(upstream),
@@ -450,7 +450,7 @@ class DataLineageTracker:
             ],
             "impact_level": "high" if len(downstream) > 5 else "medium" if len(downstream) > 0 else "low"
         }
-    
+
     def generate_report(self) -> Dict[str, Any]:
         """
         生成血缘追踪报告
@@ -459,7 +459,7 @@ class DataLineageTracker:
             Dict[str, Any]: 报告数据
         """
         stats = self.graph.get_statistics()
-        
+
         return {
             "summary": stats,
             "roots": [
@@ -473,7 +473,7 @@ class DataLineageTracker:
             "cycles": self.graph.detect_cycles(),
             "generated_at": datetime.now().isoformat(),
         }
-    
+
     def export_to_dict(self) -> Dict[str, Any]:
         """
         导出为字典
@@ -482,13 +482,13 @@ class DataLineageTracker:
             Dict[str, Any]: 完整血缘图数据
         """
         return self.graph.to_dict()
-    
+
     def clear(self):
         """清空追踪数据"""
         self.graph.clear()
         self.current_context.clear()
         self._operation_stack.clear()
-    
+
     def _resolve_node_id(self, entity_ref: str) -> Optional[str]:
         """
         解析实体引用为节点ID
@@ -502,7 +502,7 @@ class DataLineageTracker:
         # 如果已经是节点ID
         if entity_ref in self.graph.nodes:
             return entity_ref
-        
+
         # 尝试解析为 entity_type:entity_id 格式
         if ":" in entity_ref:
             parts = entity_ref.split(":", 1)
@@ -510,9 +510,9 @@ class DataLineageTracker:
                 node = self.graph.get_node_by_entity(parts[0], parts[1])
                 if node:
                     return node.node_id
-        
+
         return None
-    
+
     def _get_current_source(self) -> str:
         """获取当前来源"""
         if self._operation_stack:

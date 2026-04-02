@@ -24,12 +24,12 @@ class FinanceApprovalBuilder(BaseBuilder[FinanceApprovalEntity]):
         super().__init__(token=token, factory=factory)
 
     def build(
-        self,
-        reimbursement_id: int = 0,
-        dept_approval_id: int = 0,
-        approver_id: int = 4,  # 默认财务经理用户ID
-        status: str = "approved",
-        comment: str = None,
+            self,
+            reimbursement_id: int = 0,
+            dept_approval_id: int = 0,
+            approver_id: int = 4,  # 默认财务经理用户ID
+            status: str = "approved",
+            comment: str = None,
     ) -> FinanceApprovalEntity:
         """
         构造财务审批实体（不调用API）
@@ -47,11 +47,11 @@ class FinanceApprovalBuilder(BaseBuilder[FinanceApprovalEntity]):
             approver_id=approver_id,
             status=status,
             comment=comment
-            or ("财务审批通过" if status == "approved" else "财务审批拒绝"),
+                    or ("财务审批通过" if status == "approved" else "财务审批拒绝"),
         )
 
     def create(
-        self, entity: FinanceApprovalEntity = None, **kwargs
+            self, entity: FinanceApprovalEntity = None, **kwargs
     ) -> Optional[FinanceApprovalEntity]:
         """
         创建财务审批（调用API）
@@ -164,11 +164,11 @@ class FinanceApprovalBuilder(BaseBuilder[FinanceApprovalEntity]):
         return []
 
     def approve(
-        self,
-        reimbursement_id: int,
-        dept_approval_id: int,
-        approver_id: int = 4,
-        comment: str = "审批通过",
+            self,
+            reimbursement_id: int,
+            dept_approval_id: int,
+            approver_id: int = 4,
+            comment: str = "审批通过",
     ) -> Optional[FinanceApprovalEntity]:
         """
         快速审批通过
@@ -188,11 +188,11 @@ class FinanceApprovalBuilder(BaseBuilder[FinanceApprovalEntity]):
         )
 
     def reject(
-        self,
-        reimbursement_id: int,
-        dept_approval_id: int,
-        approver_id: int = 4,
-        comment: str = "审批拒绝",
+            self,
+            reimbursement_id: int,
+            dept_approval_id: int,
+            approver_id: int = 4,
+            comment: str = "审批拒绝",
     ) -> Optional[FinanceApprovalEntity]:
         """
         快速审批拒绝
@@ -212,7 +212,7 @@ class FinanceApprovalBuilder(BaseBuilder[FinanceApprovalEntity]):
         )
 
     def get_by_reimbursement(
-        self, reimbursement_id: int
+            self, reimbursement_id: int
     ) -> Optional[FinanceApprovalEntity]:
         """
         根据报销申请ID获取财务审批

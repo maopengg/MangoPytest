@@ -3,7 +3,6 @@
 # @Description: 数据序列生成器
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-import time
 import random
 import string
 from datetime import datetime

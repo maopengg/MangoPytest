@@ -16,20 +16,17 @@ Builder Fixtures 模块
 - A模块（付款层）: payment_builder
 """
 
-from .d_fixtures import (
-    user_builder,
+from .a_fixtures import (
+    payment_builder,
+    paid_payment,
 )
-
-from .c_fixtures import *
-
 from .b_fixtures import (
     reimb_builder,
     approved_reimbursement,
 )
-
-from .a_fixtures import (
-    payment_builder,
-    paid_payment,
+from .c_fixtures import *
+from .d_fixtures import (
+    user_builder,
 )
 
 __all__ = [

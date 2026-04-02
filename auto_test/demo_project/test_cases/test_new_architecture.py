@@ -3,15 +3,13 @@
 # @Description: 新架构测试示例 - 演示Entity/Scenario/Builder的使用
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-import pytest
 import allure
 
-from auto_test.demo_project.data_factory.entities import UserEntity, ReimbursementEntity
 from auto_test.demo_project.data_factory.builders import UserBuilder, ReimbursementBuilder
+from auto_test.demo_project.data_factory.entities import UserEntity, ReimbursementEntity
 from auto_test.demo_project.data_factory.scenarios import (
     LoginScenario,
     RegisterAndLoginScenario,
-    CreateReimbursementScenario,
     FullApprovalWorkflowScenario,
 )
 from auto_test.demo_project.test_cases.base import UnitTest, IntegrationTest, E2ETest

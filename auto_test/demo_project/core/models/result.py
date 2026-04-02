@@ -10,8 +10,8 @@ Core Result 模块
 提供统一的结果模型
 """
 
-from typing import Dict, Any, Optional, Generic, TypeVar
 from dataclasses import dataclass, field
+from typing import Dict, Any, Optional, Generic, TypeVar
 
 T = TypeVar("T")
 
@@ -40,34 +40,34 @@ class Result(Generic[T]):
         else:
             error = result.error
     """
-    
+
     success: bool = True
     data: Optional[T] = None
     error: Optional[str] = None
     error_code: Optional[int] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
-    
+
     @property
     def is_success(self) -> bool:
         """是否成功"""
         return self.success
-    
+
     @property
     def is_failure(self) -> bool:
         """是否失败"""
         return not self.success
-    
+
     @classmethod
     def success(cls, data: Optional[T] = None, **metadata) -> "Result[T]":
         """创建成功结果"""
         return cls(success=True, data=data, metadata=metadata)
-    
+
     @classmethod
     def failure(
-        cls,
-        error: str,
-        error_code: Optional[int] = None,
-        **metadata
+            cls,
+            error: str,
+            error_code: Optional[int] = None,
+            **metadata
     ) -> "Result[T]":
         """创建失败结果"""
         return cls(
@@ -76,7 +76,7 @@ class Result(Generic[T]):
             error_code=error_code,
             metadata=metadata
         )
-    
+
     def map(self, func) -> "Result":
         """映射结果"""
         if self.is_success:
@@ -86,19 +86,19 @@ class Result(Generic[T]):
             except Exception as e:
                 return Result.failure(str(e))
         return self
-    
+
     def on_success(self, func) -> "Result":
         """成功时执行"""
         if self.is_success:
             func(self.data)
         return self
-    
+
     def on_failure(self, func) -> "Result":
         """失败时执行"""
         if self.is_failure:
             func(self.error, self.error_code)
         return self
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """转换为字典"""
         return {

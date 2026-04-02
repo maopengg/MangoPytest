@@ -5,6 +5,7 @@
 # @Author : 毛鹏
 
 import hashlib
+
 from auto_test.demo_project.core.api.client import APIClient
 
 

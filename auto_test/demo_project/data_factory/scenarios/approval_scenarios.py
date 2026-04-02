@@ -3,13 +3,13 @@
 # @Description: 审批流场景 - 4级审批依赖场景
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any
 
 from .base_scenario import BaseScenario
-from ..builders.reimbursement import ReimbursementBuilder
+from ..builders.ceo_approval import CEOApprovalBuilder
 from ..builders.dept_approval import DeptApprovalBuilder
 from ..builders.finance_approval import FinanceApprovalBuilder
-from ..builders.ceo_approval import CEOApprovalBuilder
+from ..builders.reimbursement import ReimbursementBuilder
 
 
 class ApprovalScenarios(BaseScenario):

@@ -30,6 +30,8 @@
         reimbursement = result.get_entity("reimbursement")
 """
 
+# 导出构造器层
+from .builders.base_builder import BaseBuilder
 # 导出实体层
 from .entities import (
     BaseEntity,
@@ -40,7 +42,6 @@ from .entities import (
     FinanceApprovalEntity,
     CEOApprovalEntity,
 )
-
 # 导出场景层
 from .scenarios import (
     BaseScenario,
@@ -51,9 +52,6 @@ from .scenarios import (
     FullApprovalWorkflowScenario,
     RejectionWorkflowScenario,
 )
-
-# 导出构造器层
-from .builders.base_builder import BaseBuilder
 
 __all__ = [
     # 实体层

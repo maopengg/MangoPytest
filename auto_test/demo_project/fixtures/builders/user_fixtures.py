@@ -3,8 +3,9 @@
 # @Description: 用户模块 fixtures - 新架构
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-import pytest
 from typing import Generator, Dict, Any
+
+import pytest
 
 from auto_test.demo_project.data_factory.builders import UserBuilder
 from auto_test.demo_project.data_factory.entities import UserEntity

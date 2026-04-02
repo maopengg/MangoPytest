@@ -3,10 +3,8 @@
 # @Description: 财务审批模块测试 - B级模块 (依赖C级)
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-import pytest
 
 from auto_test.demo_project.api_manager import demo_project
-from auto_test.demo_project.fixtures.conftest import *
 from auto_test.demo_project.test_cases.base import UnitTest, IntegrationTest
 
 

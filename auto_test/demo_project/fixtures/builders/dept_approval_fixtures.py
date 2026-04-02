@@ -8,9 +8,6 @@ import pytest
 from auto_test.demo_project.data_factory.builders.dept_approval import (
     DeptApprovalBuilder,
 )
-from auto_test.demo_project.data_factory.builders.reimbursement import (
-    ReimbursementBuilder,
-)
 
 
 @pytest.fixture

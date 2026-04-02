@@ -3,13 +3,12 @@
 # @Description: 报销审批场景 - 4级审批流程
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-from typing import Optional, List
 
 from .base_scenario import BaseScenario, ScenarioResult
-from ..entities.reimbursement import ReimbursementEntity
+from ..entities.ceo_approval import CEOApprovalEntity
 from ..entities.dept_approval import DeptApprovalEntity
 from ..entities.finance_approval import FinanceApprovalEntity
-from ..entities.ceo_approval import CEOApprovalEntity
+from ..entities.reimbursement import ReimbursementEntity
 from ...api_manager import demo_project
 
 
@@ -83,11 +82,11 @@ class FullApprovalWorkflowScenario(BaseScenario):
             demo_project.ceo_approval.set_token(self.token)
 
     def execute(
-        self,
-        user_id: int = 1,
-        amount: float = 1000.00,
-        reason: str = None,
-        approvers: dict = None,
+            self,
+            user_id: int = 1,
+            amount: float = 1000.00,
+            reason: str = None,
+            approvers: dict = None,
     ) -> ScenarioResult:
         """
         执行完整审批流程
@@ -210,11 +209,11 @@ class RejectionWorkflowScenario(BaseScenario):
             demo_project.ceo_approval.set_token(self.token)
 
     def execute(
-        self,
-        reject_at: str = "dept",  # dept, finance, ceo
-        user_id: int = 1,
-        amount: float = 1000.00,
-        reason: str = None,
+            self,
+            reject_at: str = "dept",  # dept, finance, ceo
+            user_id: int = 1,
+            amount: float = 1000.00,
+            reason: str = None,
     ) -> ScenarioResult:
         """
         执行拒绝流程

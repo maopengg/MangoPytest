@@ -3,10 +3,10 @@
 # @Description: 付款单构造器 - 支持D→C→B→A级联依赖解决 (A级)
 # @Time   : 2026-04-01
 # @Author : 毛鹏
-from typing import Optional, List, Dict, Any
-import uuid
-import sys
 import os
+import sys
+import uuid
+from typing import Optional, List, Dict, Any
 
 # 添加父目录到路径以确保导入工作
 _current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -58,21 +58,21 @@ class PaymentBuilder(BaseBuilder[PaymentEntity]):
             payment = builder.create(amount=5000)
         # 自动清理：Payment → Reimbursement → Budget → Org
     """
-    
+
     # 依赖层级：A级（最高层，依赖B级）
     DEPENDENCY_LEVEL = DependencyLevel.LEVEL_A
-    
+
     # 【依赖声明】依赖的Builder类型
     # Payment(A级) → Reimbursement(B级)
     DEPENDENCIES = [ReimbursementBuilder]
-    
+
     def __init__(
-        self,
-        token: str = None,
-        context: BuilderContext = None,
-        strategy=None,
-        parent_builders=None,
-        factory=None
+            self,
+            token: str = None,
+            context: BuilderContext = None,
+            strategy=None,
+            parent_builders=None,
+            factory=None
     ):
         """
         初始化付款单构造器
@@ -90,16 +90,16 @@ class PaymentBuilder(BaseBuilder[PaymentEntity]):
             parent_builders=parent_builders,
             factory=factory
         )
-        
+
         # 延迟导入依赖Builder以避免循环导入
         self._reimb_builder = None
-    
+
     def _get_reimbursement_builder(self):
         """获取或创建报销单Builder"""
         if self._reimb_builder is None:
             self._reimb_builder = self._get_or_create_builder(ReimbursementBuilder)
         return self._reimb_builder
-    
+
     def _prepare_dependencies(self, **kwargs) -> Dict[str, Any]:
         """
         【智能依赖解决】准备依赖数据
@@ -112,42 +112,42 @@ class PaymentBuilder(BaseBuilder[PaymentEntity]):
         # 如果已提供 reimbursement_id，无需解决依赖
         if "reimbursement_id" in kwargs and kwargs["reimbursement_id"]:
             return kwargs
-        
+
         # 【智能依赖解决】自动创建已审批的报销单
         if self.context.auto_prepare_deps:
             reimb_builder = self._get_reimbursement_builder()
             if reimb_builder:
                 # 获取金额
                 amount = kwargs.get("amount", 1000.00)
-                
+
                 # 自动创建已审批的报销单（触发B→C→D构造）
                 reimb = reimb_builder.create_approved(
                     amount=amount,
                     auto_prepare_deps=True  # 级联自动解决
                 )
-                
+
                 if reimb:
                     kwargs["reimbursement_id"] = reimb.id
                     # 如果未指定金额，使用报销单金额
                     if "amount" not in kwargs:
                         kwargs["amount"] = reimb.amount
-        
+
         # 补充其他默认值
         if "payee" not in kwargs:
             kwargs["payee"] = "供应商"
-        
+
         if "pay_method" not in kwargs:
             kwargs["pay_method"] = "bank_transfer"
-        
+
         return kwargs
-    
+
     def build(
-        self,
-        reimbursement_id: int = None,
-        amount: float = 0.0,
-        payee: str = None,
-        pay_method: str = "bank_transfer",
-        **kwargs
+            self,
+            reimbursement_id: int = None,
+            amount: float = 0.0,
+            payee: str = None,
+            pay_method: str = "bank_transfer",
+            **kwargs
     ) -> PaymentEntity:
         """
         构造付款单实体（不调用API）
@@ -166,12 +166,12 @@ class PaymentBuilder(BaseBuilder[PaymentEntity]):
             status="pending",
             **kwargs
         )
-    
+
     def create(
-        self,
-        entity: PaymentEntity = None,
-        auto_prepare_deps: bool = True,
-        **kwargs
+            self,
+            entity: PaymentEntity = None,
+            auto_prepare_deps: bool = True,
+            **kwargs
     ) -> Optional[PaymentEntity]:
         """
         创建付款单（调用Strategy）
@@ -186,21 +186,21 @@ class PaymentBuilder(BaseBuilder[PaymentEntity]):
         # 【智能依赖解决】自动准备依赖
         if auto_prepare_deps:
             kwargs = self._prepare_dependencies(**kwargs)
-        
+
         # 构造实体（如果未传入）
         if entity is None:
             entity = self.build(**kwargs)
-        
+
         # 使用Strategy创建
         return self._do_create(entity)
-    
+
     def create_paid(
-        self,
-        reimbursement_id: int = None,
-        amount: float = 0.0,
-        payee: str = None,
-        pay_method: str = "bank_transfer",
-        auto_prepare_deps: bool = True
+            self,
+            reimbursement_id: int = None,
+            amount: float = 0.0,
+            payee: str = None,
+            pay_method: str = "bank_transfer",
+            auto_prepare_deps: bool = True
     ) -> Optional[PaymentEntity]:
         """
         【快捷方法】创建并已付款的付款单
@@ -222,24 +222,24 @@ class PaymentBuilder(BaseBuilder[PaymentEntity]):
             pay_method=pay_method,
             auto_prepare_deps=auto_prepare_deps
         )
-        
+
         if not payment:
             return None
-        
+
         # 执行付款
         success = self.pay(payment.id, pay_method=pay_method)
         if success:
             # 刷新状态
             payment = self.get_by_id(payment.id)
-        
+
         return payment
-    
+
     def create_failed(
-        self,
-        reimbursement_id: int = None,
-        amount: float = 0.0,
-        fail_reason: str = "余额不足",
-        auto_prepare_deps: bool = True
+            self,
+            reimbursement_id: int = None,
+            amount: float = 0.0,
+            fail_reason: str = "余额不足",
+            auto_prepare_deps: bool = True
     ) -> Optional[PaymentEntity]:
         """
         【快捷方法】创建并付款失败的付款单
@@ -258,18 +258,18 @@ class PaymentBuilder(BaseBuilder[PaymentEntity]):
             amount=amount,
             auto_prepare_deps=auto_prepare_deps
         )
-        
+
         if not payment:
             return None
-        
+
         # 标记失败
         success = self.fail(payment.id, reason=fail_reason)
         if success:
             # 刷新状态
             payment = self.get_by_id(payment.id)
-        
+
         return payment
-    
+
     def pay(self, payment_id: int, pay_method: str = "bank_transfer") -> bool:
         """
         执行付款
@@ -290,7 +290,7 @@ class PaymentBuilder(BaseBuilder[PaymentEntity]):
                 payment.pay(pay_method)
                 return True
             return False
-    
+
     def fail(self, payment_id: int, reason: str = "") -> bool:
         """
         标记付款失败
@@ -304,7 +304,7 @@ class PaymentBuilder(BaseBuilder[PaymentEntity]):
             payment.fail(reason)
             return True
         return False
-    
+
     def cancel(self, payment_id: int, reason: str = "") -> bool:
         """
         取消付款
@@ -317,7 +317,7 @@ class PaymentBuilder(BaseBuilder[PaymentEntity]):
         if payment:
             return payment.cancel(reason)
         return False
-    
+
     def update(self, entity: PaymentEntity, **kwargs) -> Optional[PaymentEntity]:
         """
         更新付款单
@@ -330,15 +330,15 @@ class PaymentBuilder(BaseBuilder[PaymentEntity]):
         for key, value in kwargs.items():
             if hasattr(entity, key):
                 setattr(entity, key, value)
-        
+
         # 使用Strategy更新
         result = self.context.strategy.update(entity, **kwargs)
-        
+
         if result.success:
             self._register_created(result.entity)
             return result.entity
         return None
-    
+
     def delete(self, entity_id: int, cascade: bool = None) -> bool:
         """
         删除付款单（支持级联清理）
@@ -351,10 +351,10 @@ class PaymentBuilder(BaseBuilder[PaymentEntity]):
         payment = self.get_by_id(entity_id)
         if not payment:
             return False
-        
+
         # 使用Strategy删除
         result = self.context.strategy.delete(PaymentEntity, entity_id)
-        
+
         # 级联清理上游依赖
         should_cascade = cascade if cascade is not None else self.context.cascade_cleanup
         if should_cascade and payment.reimbursement_id:
@@ -364,9 +364,9 @@ class PaymentBuilder(BaseBuilder[PaymentEntity]):
                     reimb_builder.delete(payment.reimbursement_id)
                 except Exception as e:
                     print(f"级联清理报销单失败: {e}")
-        
+
         return result.success
-    
+
     def get_by_id(self, entity_id: int) -> Optional[PaymentEntity]:
         """
         根据ID获取付款单
@@ -375,11 +375,11 @@ class PaymentBuilder(BaseBuilder[PaymentEntity]):
         @return: 付款单实体
         """
         result = self.context.strategy.get_by_id(PaymentEntity, entity_id)
-        
+
         if result.success:
             return result.entity
         return None
-    
+
     def get_all(self) -> List[PaymentEntity]:
         """
         获取所有付款单
@@ -390,15 +390,15 @@ class PaymentBuilder(BaseBuilder[PaymentEntity]):
         try:
             from ....api_manager import demo_project
             result = demo_project.payment.get_payments()
-            
+
             if result.get("code") == 200:
                 data_list = result["data"]
                 return [PaymentEntity(**d) for d in data_list]
         except:
             pass
-        
+
         return []
-    
+
     def get_by_reimbursement(self, reimbursement_id: int) -> List[PaymentEntity]:
         """
         根据报销单ID获取付款单
@@ -408,7 +408,7 @@ class PaymentBuilder(BaseBuilder[PaymentEntity]):
         """
         all_payments = self.get_all()
         return [p for p in all_payments if p.reimbursement_id == reimbursement_id]
-    
+
     def get_status(self, payment_id: int) -> Optional[str]:
         """
         获取付款单状态
@@ -420,7 +420,7 @@ class PaymentBuilder(BaseBuilder[PaymentEntity]):
         if entity:
             return entity.status
         return None
-    
+
     def is_pending(self, payment_id: int) -> bool:
         """
         检查是否待付款
@@ -430,7 +430,7 @@ class PaymentBuilder(BaseBuilder[PaymentEntity]):
         """
         status = self.get_status(payment_id)
         return status == "pending"
-    
+
     def is_paid(self, payment_id: int) -> bool:
         """
         检查是否已付款
@@ -440,7 +440,7 @@ class PaymentBuilder(BaseBuilder[PaymentEntity]):
         """
         status = self.get_status(payment_id)
         return status == "paid"
-    
+
     def is_failed(self, payment_id: int) -> bool:
         """
         检查是否付款失败

@@ -31,6 +31,3 @@ class DataAPI:
         """
         response = self._client.post("/api/data", data={"name": name, "value": value})
         return response.data
-
-            
-        

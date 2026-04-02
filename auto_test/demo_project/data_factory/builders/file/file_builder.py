@@ -3,14 +3,14 @@
 # @Description: 文件构造器 - 对应 /upload 接口
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-from typing import Dict, Any, Optional
+import mimetypes
 import os
 import tempfile
 import uuid
-import mimetypes
+from typing import Dict, Any, Optional
 
-from ..base_builder import BaseBuilder
 from auto_test.demo_project.api_manager import demo_project
+from ..base_builder import BaseBuilder
 from ...registry import register_builder
 
 
@@ -46,7 +46,7 @@ class FileBuilder(BaseBuilder):
         file_path = kwargs.get("file_path")
         content = kwargs.get("content")
         filename = kwargs.get("filename")
-        
+
         return self.upload(file_path, content, filename)
 
     def build_temp_file(self, content: str = None, filename: str = None) -> str:
@@ -58,13 +58,13 @@ class FileBuilder(BaseBuilder):
         """
         content = content or "This is a test file content"
         filename = filename or "test_file.txt"
-        
+
         temp_dir = tempfile.gettempdir()
         file_path = os.path.join(temp_dir, filename)
-        
+
         with open(file_path, 'w', encoding='utf-8') as f:
             f.write(content)
-        
+
         return file_path
 
     def upload(self, file_path: str = None, content: str = None,

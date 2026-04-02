@@ -34,7 +34,7 @@ class FileAPI:
         headers = {}
         if self._client.auth_token:
             headers["Authorization"] = f"Bearer {self._client.auth_token}"
-        
+
         with open(file_path, "rb") as f:
             files = {"file": f}
             response = requests.post(url, files=files, headers=headers)

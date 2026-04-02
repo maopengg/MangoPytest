@@ -24,11 +24,11 @@ class DeptApprovalBuilder(BaseBuilder[DeptApprovalEntity]):
         super().__init__(token=token, factory=factory)
 
     def build(
-        self,
-        reimbursement_id: int = 0,
-        approver_id: int = 3,  # 默认部门经理用户ID
-        status: str = "approved",
-        comment: str = None,
+            self,
+            reimbursement_id: int = 0,
+            approver_id: int = 3,  # 默认部门经理用户ID
+            status: str = "approved",
+            comment: str = None,
     ) -> DeptApprovalEntity:
         """
         构造部门审批实体（不调用API）
@@ -47,7 +47,7 @@ class DeptApprovalBuilder(BaseBuilder[DeptApprovalEntity]):
         )
 
     def create(
-        self, entity: DeptApprovalEntity = None, **kwargs
+            self, entity: DeptApprovalEntity = None, **kwargs
     ) -> Optional[DeptApprovalEntity]:
         """
         创建部门审批（调用API）
@@ -61,7 +61,8 @@ class DeptApprovalBuilder(BaseBuilder[DeptApprovalEntity]):
 
         # 验证实体数据
         if not entity.validate():
-            print(f"[DeptApprovalBuilder] 实体验证失败: reimbursement_id={entity.reimbursement_id}, approver_id={entity.approver_id}, status={entity.status}")
+            print(
+                f"[DeptApprovalBuilder] 实体验证失败: reimbursement_id={entity.reimbursement_id}, approver_id={entity.approver_id}, status={entity.status}")
             return None
 
         # 设置token到API模块
@@ -168,7 +169,7 @@ class DeptApprovalBuilder(BaseBuilder[DeptApprovalEntity]):
         return []
 
     def approve(
-        self, reimbursement_id: int, approver_id: int = 3, comment: str = "审批通过"
+            self, reimbursement_id: int, approver_id: int = 3, comment: str = "审批通过"
     ) -> Optional[DeptApprovalEntity]:
         """
         快速审批通过
@@ -186,7 +187,7 @@ class DeptApprovalBuilder(BaseBuilder[DeptApprovalEntity]):
         )
 
     def reject(
-        self, reimbursement_id: int, approver_id: int = 3, comment: str = "审批拒绝"
+            self, reimbursement_id: int, approver_id: int = 3, comment: str = "审批拒绝"
     ) -> Optional[DeptApprovalEntity]:
         """
         快速审批拒绝
@@ -204,7 +205,7 @@ class DeptApprovalBuilder(BaseBuilder[DeptApprovalEntity]):
         )
 
     def get_by_reimbursement(
-        self, reimbursement_id: int
+            self, reimbursement_id: int
     ) -> Optional[DeptApprovalEntity]:
         """
         根据报销申请ID获取部门审批

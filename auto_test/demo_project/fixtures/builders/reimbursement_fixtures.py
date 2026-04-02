@@ -4,7 +4,6 @@
 # @Time   : 2026-03-31
 # @Author : 毛鹏
 import pytest
-from typing import Generator
 
 from auto_test.demo_project.data_factory.builders.reimbursement import (
     ReimbursementBuilder,

@@ -42,10 +42,10 @@ def _entity_to_dict(entity):
 
 @pytest.fixture
 def fully_approved_reimbursement(
-    reimbursement_builder,
-    dept_approval_builder,
-    finance_approval_builder,
-    ceo_approval_builder,
+        reimbursement_builder,
+        dept_approval_builder,
+        finance_approval_builder,
+        ceo_approval_builder,
 ) -> dict:
     """
     完全审批通过的报销申请Fixture
@@ -83,10 +83,10 @@ def fully_approved_reimbursement(
 
 @pytest.fixture
 def ceo_rejected_reimbursement(
-    reimbursement_builder,
-    dept_approval_builder,
-    finance_approval_builder,
-    ceo_approval_builder,
+        reimbursement_builder,
+        dept_approval_builder,
+        finance_approval_builder,
+        ceo_approval_builder,
 ) -> dict:
     """
     被总经理拒绝的报销申请Fixture
@@ -129,10 +129,10 @@ def ceo_id() -> int:
 
 @pytest.fixture
 def ceo_approved_reimbursement(
-    reimbursement_builder,
-    dept_approval_builder,
-    finance_approval_builder,
-    ceo_approval_builder,
+        reimbursement_builder,
+        dept_approval_builder,
+        finance_approval_builder,
+        ceo_approval_builder,
 ) -> dict:
     """
     CEO审批通过的报销申请Fixture（别名：fully_approved_reimbursement）

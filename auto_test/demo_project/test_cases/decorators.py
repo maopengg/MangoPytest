@@ -27,22 +27,20 @@
         assert result["success"] == expected["success"]
 """
 
+from typing import Any, Dict, List, Optional, Callable
+
 import pytest
-from typing import Any, Dict, List, Optional, Callable, Union
-from functools import wraps
-import inspect
 
 # 导入项目模块
 from auto_test.demo_project.data_factory.scenarios.base_scenario import BaseScenario
 from auto_test.demo_project.fixtures.infra.context import TestContext
 
 
-
 def case_data(
-    scenario: Optional[BaseScenario] = None,
-    variants: Optional[List[Dict[str, Any]]] = None,
-    data: Optional[List[Dict[str, Any]]] = None,
-    **kwargs
+        scenario: Optional[BaseScenario] = None,
+        variants: Optional[List[Dict[str, Any]]] = None,
+        data: Optional[List[Dict[str, Any]]] = None,
+        **kwargs
 ):
     """
     @case_data 装饰器 - 场景变体自动展开
@@ -70,6 +68,7 @@ def case_data(
     @param kwargs: 其他参数
     @return: 装饰器函数
     """
+
     def decorator(func: Callable) -> Callable:
         # 获取测试数据列表
         test_data_list = _get_test_data(scenario, variants, data)
@@ -132,9 +131,9 @@ def case_data(
 
 
 def _get_test_data(
-    scenario: Optional[Any],
-    variants: Optional[List[Dict[str, Any]]],
-    data: Optional[List[Dict[str, Any]]]
+        scenario: Optional[Any],
+        variants: Optional[List[Dict[str, Any]]],
+        data: Optional[List[Dict[str, Any]]]
 ) -> List[Dict[str, Any]]:
     """
     获取测试数据列表
@@ -147,11 +146,11 @@ def _get_test_data(
     # 优先使用 data
     if data:
         return data
-    
+
     # 使用 variants
     if variants:
         return variants
-    
+
     # 使用 scenario
     if scenario:
         # 如果是列表（all_variants 返回的）
@@ -163,15 +162,15 @@ def _get_test_data(
                 }
                 for variant in scenario
             ]
-        
+
         # 如果是单个变体（variant 返回的）
         if isinstance(scenario, dict):
             return [{"variant": scenario, "variant_data": scenario}]
-        
+
         # 如果是 BaseScenario 实例
         if isinstance(scenario, BaseScenario):
             return [{"scenario_instance": scenario}]
-    
+
     # 默认返回空列表
     return []
 
@@ -192,7 +191,7 @@ def _generate_test_id(func_name: str, test_data: Dict[str, Any], index: int) -> 
             parts = [f"{k}={v}" for k, v in variant_data.items() if not isinstance(v, (dict, list))]
             if parts:
                 return f"{func_name}[{'_'.join(parts)}]"
-    
+
     # 默认使用索引
     return f"{func_name}[{index}]"
 
@@ -208,7 +207,7 @@ def _get_or_create_test_context(func_kwargs: Dict[str, Any]) -> TestContext:
         ctx = func_kwargs["test_context"]
         if isinstance(ctx, TestContext):
             return ctx
-    
+
     # 创建新的 TestContext
     return TestContext(auto_cleanup=True)
 
@@ -223,18 +222,18 @@ def _execute_scenario(test_ctx: TestContext, test_data: Dict[str, Any]):
     scenario_class = test_data.get("scenario_class")
     variant = test_data.get("variant")
     variant_data = test_data.get("variant_data", {})
-    
+
     if scenario_class and issubclass(scenario_class, BaseScenario):
         # 创建场景实例
         scenario = scenario_class()
-        
+
         # 设置变体
         if variant:
             scenario.set_variant(str(variant), variant_data)
-        
+
         # 执行场景
         result = scenario.execute()
-        
+
         # 存储结果
         test_ctx.set("result", {
             "success": result.success,
@@ -243,7 +242,7 @@ def _execute_scenario(test_ctx: TestContext, test_data: Dict[str, Any]):
             "expected": result.expected,
             "actual": result.actual,
         })
-        
+
         # 存储实体
         for name, entity in result.entities.items():
             test_ctx.set(name, entity)

@@ -197,11 +197,11 @@ class ApprovalScenarios:
         return str(entity)
 
     def create_full_approval_workflow(
-        self,
-        user_id: int = 1,
-        amount: float = 1000.00,
-        reason: str = None,
-        approved: bool = True,
+            self,
+            user_id: int = 1,
+            amount: float = 1000.00,
+            reason: str = None,
+            approved: bool = True,
     ) -> dict:
         """创建完整审批工作流"""
         import uuid
@@ -227,15 +227,12 @@ class ApprovalScenarios:
         return {"status": "failed", "error": result.errors}
 
     def create_pending_at_dept(
-        self, user_id: int = 1, amount: float = 1000.00, reason: str = None
+            self, user_id: int = 1, amount: float = 1000.00, reason: str = None
     ) -> dict:
         """创建待部门审批状态的工作流"""
         import uuid
         from auto_test.demo_project.data_factory.scenarios import (
             CreateReimbursementScenario,
-        )
-        from auto_test.demo_project.data_factory.entities.reimbursement import (
-            ReimbursementEntity,
         )
 
         reason = reason or f"待部门审批测试 - {uuid.uuid4().hex[:6]}"
@@ -256,7 +253,7 @@ class ApprovalScenarios:
         return {"status": "failed", "error": result.errors}
 
     def create_pending_at_finance(
-        self, user_id: int = 1, amount: float = 1000.00, reason: str = None
+            self, user_id: int = 1, amount: float = 1000.00, reason: str = None
     ) -> dict:
         """创建待财务审批状态的工作流"""
         import uuid
@@ -321,7 +318,7 @@ class ApprovalScenarios:
         }
 
     def create_pending_at_ceo(
-        self, user_id: int = 1, amount: float = 1000.00, reason: str = None
+            self, user_id: int = 1, amount: float = 1000.00, reason: str = None
     ) -> dict:
         """创建待CEO审批状态的工作流"""
         import uuid
@@ -410,7 +407,7 @@ class ApprovalScenarios:
         }
 
     def create_dept_rejected_workflow(
-        self, user_id: int, amount: float, reason: str, comment: str = "拒绝"
+            self, user_id: int, amount: float, reason: str, comment: str = "拒绝"
     ) -> dict:
         """创建部门拒绝工作流"""
         result = self._rejection.execute(
@@ -429,7 +426,7 @@ class ApprovalScenarios:
         return {"status": "failed", "error": result.errors}
 
     def create_finance_rejected_workflow(
-        self, user_id: int, amount: float, reason: str, comment: str = "拒绝"
+            self, user_id: int, amount: float, reason: str, comment: str = "拒绝"
     ) -> dict:
         """创建财务拒绝工作流"""
         result = self._rejection.execute(
@@ -451,7 +448,7 @@ class ApprovalScenarios:
         return {"status": "failed", "error": result.errors}
 
     def create_ceo_rejected_workflow(
-        self, user_id: int, amount: float, reason: str, comment: str = "拒绝"
+            self, user_id: int, amount: float, reason: str, comment: str = "拒绝"
     ) -> dict:
         """创建CEO拒绝工作流"""
         result = self._rejection.execute(

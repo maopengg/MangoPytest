@@ -15,8 +15,8 @@ Core API 模块
 5. 请求/响应日志
 """
 
-from .client import APIClient
 from .auth import AuthManager
+from .client import APIClient
 from .exceptions import APIException, AuthenticationException, RequestException
 
 __all__ = [

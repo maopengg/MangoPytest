@@ -10,6 +10,12 @@ Entity Fixtures 模块
 提供预配置的实体 fixtures
 """
 
+from .org_fixtures import (
+    default_org,
+    large_org,
+    small_org,
+    dept_org,
+)
 from .user_fixtures import (
     admin_user,
     normal_user,
@@ -18,13 +24,6 @@ from .user_fixtures import (
     manager_user,
     finance_user,
     ceo_user,
-)
-
-from .org_fixtures import (
-    default_org,
-    large_org,
-    small_org,
-    dept_org,
 )
 
 __all__ = [

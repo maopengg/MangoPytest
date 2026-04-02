@@ -13,8 +13,10 @@ D Module Fixtures 模块
 D模块是最底层，无依赖
 """
 
-import pytest
 from typing import Generator
+
+import pytest
+
 from auto_test.demo_project.data_factory.builders import UserBuilder
 from auto_test.demo_project.data_factory.builders.base_builder import BuilderContext
 

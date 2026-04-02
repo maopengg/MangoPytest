@@ -13,8 +13,10 @@ B Module Fixtures 模块
 B模块依赖 C模块（Budget）和 D模块（User/Org）
 """
 
-import pytest
 from typing import Generator
+
+import pytest
+
 from auto_test.demo_project.data_factory.builders import ReimbursementBuilder
 from auto_test.demo_project.data_factory.builders.base_builder import BuilderContext
 
@@ -37,9 +39,9 @@ def reimb_builder(test_token) -> Generator[ReimbursementBuilder, None, None]:
         token=test_token,
         context=context
     )
-    
+
     yield builder
-    
+
     # 自动清理
     builder.cleanup()
 

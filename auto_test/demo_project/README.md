@@ -2,7 +2,8 @@
 
 ## 项目概述
 
-本项目是一个基于 pytest 的自动化测试框架演示项目，展示了如何使用数据工厂（Data Factory）模式来构建可维护、可扩展的 API 自动化测试。项目采用分层架构设计，包含 Entity、Builder、Scenario、Strategy 等多个层次，实现了测试数据与测试逻辑的分离。
+本项目是一个基于 pytest 的自动化测试框架演示项目，展示了如何使用数据工厂（Data Factory）模式来构建可维护、可扩展的 API
+自动化测试。项目采用分层架构设计，包含 Entity、Builder、Scenario、Strategy 等多个层次，实现了测试数据与测试逻辑的分离。
 
 **核心特性**：
 
@@ -15,21 +16,21 @@
 
 ## 功能完成度分析
 
-| 功能模块 | 完成度 | 说明 |
-|---------|-------|------|
-| **Context 对象** | 100% | `ctx.create()`, `ctx.use()`, `ctx.action()`, `ctx.expect()`, `ctx.event()` 全部实现 |
-| **实体层 (Entity)** | 100% | UserEntity, ReimbursementEntity, OrgEntity, BudgetEntity, PaymentEntity 已实现 |
-| **构造器层 (Builder)** | 95% | 基础 Builder 实现，智能依赖解决，级联清理支持 |
-| **场景层 (Scenario)** | 100% | 依赖声明、变体矩阵、业务编排、预期结果验证全部实现 |
-| **策略层 (Strategy)** | 100% | API/Mock/DB/Hybrid 策略已实现 |
-| **状态机 (State Machine)** | 100% | 状态流转、历史记录已实现 |
-| **变体矩阵 (Variant Matrix)** | 100% | 笛卡尔积生成、约束过滤已实现 |
-| **血缘追踪 (Lineage)** | 100% | 节点、图、追踪器、分析器已实现 |
-| **配置管理 (Config)** | 100% | 环境自适应、策略配置化已实现 |
-| **Fixture 分层** | 100% | entities/, builders/, scenarios/ 分层结构已实现 |
-| **test_context Fixture** | 100% | pytest fixture 已实现 |
-| **@case_data 装饰器** | 100% | 场景变体自动展开已实现 |
-| **core/ 框架层** | 100% | API、Models、Utils 跨项目复用组件已实现 |
+| 功能模块                      | 完成度  | 说明                                                                              |
+|---------------------------|------|---------------------------------------------------------------------------------|
+| **Context 对象**            | 100% | `ctx.create()`, `ctx.use()`, `ctx.action()`, `ctx.expect()`, `ctx.event()` 全部实现 |
+| **实体层 (Entity)**          | 100% | UserEntity, ReimbursementEntity, OrgEntity, BudgetEntity, PaymentEntity 已实现     |
+| **构造器层 (Builder)**        | 95%  | 基础 Builder 实现，智能依赖解决，级联清理支持                                                     |
+| **场景层 (Scenario)**        | 100% | 依赖声明、变体矩阵、业务编排、预期结果验证全部实现                                                       |
+| **策略层 (Strategy)**        | 100% | API/Mock/DB/Hybrid 策略已实现                                                        |
+| **状态机 (State Machine)**   | 100% | 状态流转、历史记录已实现                                                                    |
+| **变体矩阵 (Variant Matrix)** | 100% | 笛卡尔积生成、约束过滤已实现                                                                  |
+| **血缘追踪 (Lineage)**        | 100% | 节点、图、追踪器、分析器已实现                                                                 |
+| **配置管理 (Config)**         | 100% | 环境自适应、策略配置化已实现                                                                  |
+| **Fixture 分层**            | 100% | entities/, builders/, scenarios/ 分层结构已实现                                        |
+| **test_context Fixture**  | 100% | pytest fixture 已实现                                                              |
+| **@case_data 装饰器**        | 100% | 场景变体自动展开已实现                                                                     |
+| **core/ 框架层**             | 100% | API、Models、Utils 跨项目复用组件已实现                                                     |
 
 **总体完成度：约 98%**
 

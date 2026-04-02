@@ -26,11 +26,12 @@ test_context Fixture 模块
         # 测试结束后自动清理
 """
 
-import pytest
-from typing import Dict, Any, List, Optional, Type, Callable
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
-import uuid
+from typing import Dict, Any, List, Optional, Type, Callable
+
+import pytest
 
 # 导入项目模块
 try:
@@ -39,6 +40,7 @@ try:
 except ImportError:
     import sys
     import os
+
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
     from data_factory.context import Context
     from data_factory.entities.base_entity import BaseEntity
@@ -71,15 +73,15 @@ class TestContext:
         _records: 创建记录列表
         _data: 上下文数据存储
     """
-    
+
     # 告诉 pytest 这不是测试类
     __test__ = False
-    
+
     def __init__(
-        self,
-        auto_cleanup: bool = True,
-        cascade_cleanup: bool = False,
-        enable_lineage: bool = True
+            self,
+            auto_cleanup: bool = True,
+            cascade_cleanup: bool = False,
+            enable_lineage: bool = True
     ):
         """
         初始化测试上下文
@@ -91,20 +93,20 @@ class TestContext:
         self.auto_cleanup = auto_cleanup
         self.cascade_cleanup = cascade_cleanup
         self.enable_lineage = enable_lineage
-        
+
         # 创建记录
         self._records: List[TestContextRecord] = []
         self._records_by_type: Dict[str, List[TestContextRecord]] = {}
-        
+
         # 上下文数据存储
         self._data: Dict[str, Any] = {}
-        
+
         # 事件追踪
         self._events: Dict[str, Dict[str, Any]] = {}
-        
+
         # 内部 Context 实例
         self._context: Optional[Context] = None
-        
+
     @property
     def context(self) -> Optional[Context]:
         """获取内部 Context 实例"""
@@ -115,7 +117,7 @@ class TestContext:
                 enable_lineage=self.enable_lineage
             )
         return self._context
-    
+
     def create(self, entity_class: Type[BaseEntity], **kwargs) -> BaseEntity:
         """
         创建实体并记录
@@ -126,7 +128,7 @@ class TestContext:
         """
         # 使用内部 Context 创建
         entity = self.context.create(entity_class, **kwargs)
-        
+
         # 记录创建
         record = TestContextRecord(
             entity_type=entity_class.__name__,
@@ -135,9 +137,9 @@ class TestContext:
             metadata={"source": "test_context.create"}
         )
         self._add_record(record)
-        
+
         return entity
-    
+
     def use(self, entity_class: Type[BaseEntity], **filters) -> Optional[BaseEntity]:
         """
         复用已创建的实体
@@ -147,7 +149,7 @@ class TestContext:
         @return: 实体或 None
         """
         return self.context.use(entity_class, **filters)
-    
+
     def action(self, action_func: Callable, *args, **kwargs) -> Any:
         """
         执行业务动作
@@ -158,7 +160,7 @@ class TestContext:
         @return: 执行结果
         """
         return self.context.action(action_func, *args, **kwargs)
-    
+
     def expect(self, actual: Any) -> 'ValueExpectation':
         """
         创建预期验证器
@@ -167,7 +169,7 @@ class TestContext:
         @return: 值预期验证器
         """
         return ValueExpectation(actual)
-    
+
     def fire_event(self, event_name: str, priority: str = "normal", **metadata):
         """
         触发事件
@@ -182,11 +184,11 @@ class TestContext:
             "timestamp": datetime.now(),
             "metadata": metadata
         }
-        
+
         # 同时触发内部 Context 的事件
         if self.context:
             self.context.fire_event(event_name, priority=priority)
-    
+
     def event(self, event_name: str) -> 'EventExpectation':
         """
         获取事件预期验证器
@@ -195,7 +197,7 @@ class TestContext:
         @return: 事件预期验证器
         """
         return EventExpectation(self._events.get(event_name, {}))
-    
+
     def set(self, key: str, value: Any):
         """
         设置上下文数据
@@ -204,7 +206,7 @@ class TestContext:
         @param value: 值
         """
         self._data[key] = value
-    
+
     def get(self, key: str, default: Any = None) -> Any:
         """
         获取上下文数据
@@ -214,7 +216,7 @@ class TestContext:
         @return: 值
         """
         return self._data.get(key, default)
-    
+
     def get_all_created(self, entity_class: Type[BaseEntity] = None) -> List[Any]:
         """
         获取所有创建的实体
@@ -225,20 +227,20 @@ class TestContext:
         if entity_class:
             entity_type = entity_class.__name__
             return [
-                r.entity for r in self._records 
+                r.entity for r in self._records
                 if r.entity_type == entity_type
             ]
         return [r.entity for r in self._records]
-    
+
     def _add_record(self, record: TestContextRecord):
         """添加记录"""
         self._records.append(record)
-        
+
         # 按类型索引
         if record.entity_type not in self._records_by_type:
             self._records_by_type[record.entity_type] = []
         self._records_by_type[record.entity_type].append(record)
-    
+
     def cleanup(self):
         """
         清理测试数据
@@ -248,7 +250,7 @@ class TestContext:
         # 清理内部 Context
         if self._context:
             self._context.cleanup()
-        
+
         # 清理记录
         for record in reversed(self._records):
             entity = record.entity
@@ -259,16 +261,16 @@ class TestContext:
                     entity.delete()
                 except:
                     pass
-        
+
         self._records.clear()
         self._records_by_type.clear()
         self._data.clear()
         self._events.clear()
-    
+
     def __enter__(self):
         """上下文管理器入口"""
         return self
-    
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         """上下文管理器出口"""
         if self.auto_cleanup:
@@ -277,30 +279,30 @@ class TestContext:
 
 class ValueExpectation:
     """值预期验证器"""
-    
+
     def __init__(self, actual: Any):
         self.actual = actual
-    
+
     def equals(self, expected: Any) -> bool:
         """验证等于"""
         return self.actual == expected
-    
+
     def is_not_none(self) -> bool:
         """验证不为 None"""
         return self.actual is not None
-    
+
     def is_true(self) -> bool:
         """验证为 True"""
         return self.actual is True
-    
+
     def is_false(self) -> bool:
         """验证为 False"""
         return self.actual is False
-    
+
     def contains(self, item: Any) -> bool:
         """验证包含"""
         return item in self.actual
-    
+
     def matches(self, predicate: Callable[[Any], bool]) -> bool:
         """验证匹配条件"""
         return predicate(self.actual)
@@ -308,18 +310,18 @@ class ValueExpectation:
 
 class EventExpectation:
     """事件预期验证器"""
-    
+
     def __init__(self, event_data: Dict[str, Any]):
         self.event_data = event_data
-    
+
     def was_fired(self) -> bool:
         """验证事件已触发"""
         return self.event_data.get("fired", False)
-    
+
     def has_priority(self, priority: str) -> bool:
         """验证优先级"""
         return self.event_data.get("priority") == priority
-    
+
     def has_metadata(self, key: str, value: Any = None) -> bool:
         """验证元数据"""
         metadata = self.event_data.get("metadata", {})
@@ -345,21 +347,21 @@ def test_context(request):
     # 从 marker 获取配置
     auto_cleanup = True
     cascade_cleanup = False
-    
+
     # 检查是否有自定义配置 marker
     marker = request.node.get_closest_marker("test_context_config")
     if marker:
         auto_cleanup = marker.kwargs.get("auto_cleanup", True)
         cascade_cleanup = marker.kwargs.get("cascade_cleanup", False)
-    
+
     # 创建测试上下文
     ctx = TestContext(
         auto_cleanup=auto_cleanup,
         cascade_cleanup=cascade_cleanup
     )
-    
+
     yield ctx
-    
+
     # 测试结束后自动清理
     if auto_cleanup:
         ctx.cleanup()

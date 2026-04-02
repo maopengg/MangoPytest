@@ -3,8 +3,8 @@
 # @Description: 报销申请构造器 - 支持C/D依赖自动解决 (B级)
 # @Time   : 2026-04-01
 # @Author : 毛鹏
-from typing import Optional, List, Dict, Any
 import uuid
+from typing import Optional, List, Dict, Any
 
 from ..base_builder import BaseBuilder, BuilderContext, DependencyLevel
 from ..budget.budget_builder import BudgetBuilder
@@ -48,7 +48,7 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
             reimb = builder.create(user_id=1, amount=1000)
         # 自动清理
     """
-    
+
     # 依赖层级：B级（依赖C/D）
     DEPENDENCY_LEVEL = DependencyLevel.LEVEL_B
 
@@ -56,12 +56,12 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
     DEPENDENCIES = [BudgetBuilder, UserBuilder]
 
     def __init__(
-        self,
-        token: str = None,
-        context: BuilderContext = None,
-        strategy=None,
-        parent_builders=None,
-        factory=None
+            self,
+            token: str = None,
+            context: BuilderContext = None,
+            strategy=None,
+            parent_builders=None,
+            factory=None
     ):
         """
         初始化报销申请构造器
@@ -110,7 +110,7 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
         return kwargs
 
     def build(
-        self, user_id: int = 1, amount: float = 100.00, reason: str = None
+            self, user_id: int = 1, amount: float = 100.00, reason: str = None
     ) -> ReimbursementEntity:
         """
         构造报销申请实体（不调用API）
@@ -127,10 +127,10 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
         )
 
     def create(
-        self,
-        entity: ReimbursementEntity = None,
-        auto_prepare_deps: bool = True,
-        **kwargs
+            self,
+            entity: ReimbursementEntity = None,
+            auto_prepare_deps: bool = True,
+            **kwargs
     ) -> Optional[ReimbursementEntity]:
         """
         创建报销申请（调用Strategy）
@@ -143,20 +143,20 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
         # 【智能依赖解决】自动准备依赖
         if auto_prepare_deps:
             kwargs = self._prepare_dependencies(**kwargs)
-        
+
         # 构造实体（如果未传入）
         if entity is None:
             entity = self.build(**kwargs)
-        
+
         # 使用Strategy创建
         return self._do_create(entity)
 
     def create_submitted(
-        self,
-        user_id: int = 1,
-        amount: float = 100.00,
-        reason: str = None,
-        auto_prepare_deps: bool = True
+            self,
+            user_id: int = 1,
+            amount: float = 100.00,
+            reason: str = None,
+            auto_prepare_deps: bool = True
     ) -> Optional[ReimbursementEntity]:
         """
         【快捷方法】创建并提交报销申请
@@ -176,25 +176,25 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
             reason=reason,
             auto_prepare_deps=auto_prepare_deps
         )
-        
+
         if not reimb:
             return None
-        
+
         # 提交报销申请
         success = self.submit(reimb.id)
         if success:
             # 刷新状态
             reimb = self.get_by_id(reimb.id)
-        
+
         return reimb
 
     def create_approved(
-        self,
-        user_id: int = 1,
-        amount: float = 100.00,
-        reason: str = None,
-        approver_id: int = None,
-        auto_prepare_deps: bool = True
+            self,
+            user_id: int = 1,
+            amount: float = 100.00,
+            reason: str = None,
+            approver_id: int = None,
+            auto_prepare_deps: bool = True
     ) -> Optional[ReimbursementEntity]:
         """
         【快捷方法】创建并审批通过的报销申请
@@ -215,26 +215,26 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
             reason=reason,
             auto_prepare_deps=auto_prepare_deps
         )
-        
+
         if not reimb:
             return None
-        
+
         # 审批通过
         success = self.approve(reimb.id, approver_id=approver_id)
         if success:
             # 刷新状态
             reimb = self.get_by_id(reimb.id)
-        
+
         return reimb
 
     def create_rejected(
-        self,
-        user_id: int = 1,
-        amount: float = 100.00,
-        reason: str = None,
-        reject_reason: str = "不符合报销标准",
-        approver_id: int = None,
-        auto_prepare_deps: bool = True
+            self,
+            user_id: int = 1,
+            amount: float = 100.00,
+            reason: str = None,
+            reject_reason: str = "不符合报销标准",
+            approver_id: int = None,
+            auto_prepare_deps: bool = True
     ) -> Optional[ReimbursementEntity]:
         """
         【快捷方法】创建并被拒绝的报销申请
@@ -256,16 +256,16 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
             reason=reason,
             auto_prepare_deps=auto_prepare_deps
         )
-        
+
         if not reimb:
             return None
-        
+
         # 审批拒绝
         success = self.reject(reimb.id, reject_reason=reject_reason, approver_id=approver_id)
         if success:
             # 刷新状态
             reimb = self.get_by_id(reimb.id)
-        
+
         return reimb
 
     def submit(self, reimbursement_id: int) -> bool:
@@ -287,7 +287,7 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
         @return: 是否审批成功
         """
         result = demo_project.reimbursement.approve_reimbursement(
-            reimbursement_id, 
+            reimbursement_id,
             approver_id=approver_id
         )
         return result.get("code") == 200
@@ -309,7 +309,7 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
         return result.get("code") == 200
 
     def update(
-        self, entity: ReimbursementEntity, **kwargs
+            self, entity: ReimbursementEntity, **kwargs
     ) -> Optional[ReimbursementEntity]:
         """
         更新报销申请（调用Strategy）
@@ -322,10 +322,10 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
         for key, value in kwargs.items():
             if hasattr(entity, key):
                 setattr(entity, key, value)
-        
+
         # 使用Strategy更新
         result = self.context.strategy.update(entity, **kwargs)
-        
+
         if result.success:
             self._register_created(result.entity)
             return result.entity
@@ -349,7 +349,7 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
         @return: 报销申请实体
         """
         result = self.context.strategy.get_by_id(ReimbursementEntity, entity_id)
-        
+
         if result.success:
             return result.entity
         return None

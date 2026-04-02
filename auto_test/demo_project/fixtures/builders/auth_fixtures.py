@@ -3,8 +3,9 @@
 # @Description: 认证模块 fixtures
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-import pytest
 from typing import Generator, Dict, Any
+
+import pytest
 
 from auto_test.demo_project.data_factory.builders.auth import AuthBuilder
 
@@ -24,7 +25,7 @@ def test_token(auth_builder) -> Generator[str, None, None]:
     token = auth_builder.login()
     if not token:
         pytest.skip("无法获取测试token")
-    
+
     yield token
 
 
@@ -37,5 +38,5 @@ def registered_user(auth_builder) -> Generator[Dict[str, Any], None, None]:
     user = auth_builder.register()
     if not user:
         pytest.skip("无法注册测试用户")
-    
+
     yield user

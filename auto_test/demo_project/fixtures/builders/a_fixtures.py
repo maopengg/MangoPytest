@@ -13,8 +13,10 @@ A Module Fixtures 模块
 A模块依赖 B模块（Reimbursement）
 """
 
-import pytest
 from typing import Generator
+
+import pytest
+
 from auto_test.demo_project.data_factory.builders import PaymentBuilder
 from auto_test.demo_project.data_factory.builders.base_builder import BuilderContext
 
@@ -37,9 +39,9 @@ def payment_builder(test_token) -> Generator[PaymentBuilder, None, None]:
         token=test_token,
         context=context
     )
-    
+
     yield builder
-    
+
     # 自动清理
     builder.cleanup()
 

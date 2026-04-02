@@ -22,7 +22,7 @@ class MainRun:
 
     def __init__(self, test_project: list[dict], pytest_command: list):
         self.case_run_list: CaseRunListModel = CaseRunListModel(case_run=test_project)
-        os.environ['TEST_ENV'] = self.case_run_list.model_dump_json()
+        os.environ["TEST_ENV"] = self.case_run_list.model_dump_json()
         self.pytest_command = pytest_command
         zip_files()
         self.run()
@@ -30,14 +30,26 @@ class MainRun:
     def run(self):
         for case_run_model in self.case_run_list.case_run:
             for i in auto_test_project_config:
-                if i.get('project_name') == case_run_model.project \
-                        and case_run_model.type == i.get('type'):
-                    self.pytest_command.append(fr'{project_dir.root_path()}\auto_test\{i.get("dir_name")}\test_case')
+                if i.get(
+                        "project_name"
+                ) == case_run_model.project and case_run_model.type == i.get("type"):
+                    if (
+                            rf'{project_dir.root_path()}\auto_test\{i.get("dir_name")}\test_case'
+                            in os.listdir()
+                    ):
+                        self.pytest_command.append(
+                            fr'{project_dir.root_path()}\auto_test\{i.get("dir_name")}\test_case'
+                        )
+                    else:
+                        self.pytest_command.append(
+                            fr'{project_dir.root_path()}\auto_test\{i.get("dir_name")}\test_cases'
+                        )
         log.info(f"开始执行测试任务......")
+        print(self.pytest_command)
         pytest.main(self.pytest_command)
         if IS_TEST_REPORT:
             os.system(r"allure generate ./report/tmp -o ./report/html --clean")
-        NoticeMain(self.case_run_list.case_run).notice_main()
+        # NoticeMain(self.case_run_list.case_run).notice_main()
         if IS_TEST_REPORT:
             os.system(f"allure serve ./report/tmp -h 127.0.0.1 -p 9999")
 

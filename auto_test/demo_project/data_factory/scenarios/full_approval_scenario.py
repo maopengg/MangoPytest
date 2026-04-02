@@ -11,9 +11,9 @@
 支持变体矩阵参数化和自动依赖解决
 """
 
-from typing import Dict, Any, Optional
-import sys
 import os
+import sys
+from typing import Dict, Any
 
 # 添加父目录到路径以确保导入工作
 _current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -336,7 +336,6 @@ class FullApprovalScenario(BaseScenario):
 
 # 导出
 __all__ = ["FullApprovalScenario"]
-
 
 # 测试代码
 if __name__ == "__main__":

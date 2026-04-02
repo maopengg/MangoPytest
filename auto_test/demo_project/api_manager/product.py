@@ -22,11 +22,11 @@ class ProductAPI:
         self._client.set_auth_token(token)
 
     def create_product(
-        self,
-        name: str,
-        price: float,
-        description: str = None,
-        stock: int = 0,
+            self,
+            name: str,
+            price: float,
+            description: str = None,
+            stock: int = 0,
     ) -> dict:
         """
         创建产品接口
@@ -81,8 +81,3 @@ class ProductAPI:
         """
         response = self._client.delete(f"/products/{product_id}")
         return response.data
-
-            
-        
-            
-        

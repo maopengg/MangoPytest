@@ -4,8 +4,8 @@
 # @Time   : 2026-04-02
 # @Author : 毛鹏
 
-from typing import Optional
 import uuid
+from typing import Optional
 
 from ..base_builder import BaseBuilder, BuilderContext, DependencyLevel
 from ...entities.org_entity import OrgEntity
@@ -20,12 +20,12 @@ class OrgBuilder(BaseBuilder[OrgEntity]):
     DEPENDENCIES = []
 
     def __init__(
-        self,
-        token: str = None,
-        context: BuilderContext = None,
-        strategy=None,
-        parent_builders=None,
-        factory=None,
+            self,
+            token: str = None,
+            context: BuilderContext = None,
+            strategy=None,
+            parent_builders=None,
+            factory=None,
     ):
         super().__init__(
             token=token,
@@ -36,12 +36,12 @@ class OrgBuilder(BaseBuilder[OrgEntity]):
         )
 
     def build(
-        self,
-        name: str = None,
-        code: str = None,
-        budget_total: float = 1000000,
-        level: int = 1,
-        parent_id: str = None,
+            self,
+            name: str = None,
+            code: str = None,
+            budget_total: float = 1000000,
+            level: int = 1,
+            parent_id: str = None,
     ) -> OrgEntity:
         uid = uuid.uuid4().hex[:6]
         return OrgEntity(
@@ -54,10 +54,10 @@ class OrgBuilder(BaseBuilder[OrgEntity]):
         )
 
     def create(
-        self,
-        entity: OrgEntity = None,
-        auto_prepare_deps: bool = True,
-        **kwargs,
+            self,
+            entity: OrgEntity = None,
+            auto_prepare_deps: bool = True,
+            **kwargs,
     ) -> Optional[OrgEntity]:
         if entity is None:
             entity = self.build(**kwargs)

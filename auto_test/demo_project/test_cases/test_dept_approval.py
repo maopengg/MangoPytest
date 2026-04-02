@@ -3,10 +3,8 @@
 # @Description: 部门审批模块测试 - C级模块 (依赖D级)
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-import pytest
 
 from auto_test.demo_project.api_manager import demo_project
-from auto_test.demo_project.fixtures.conftest import *
 from auto_test.demo_project.test_cases.base import UnitTest, IntegrationTest
 
 
@@ -18,7 +16,7 @@ class TestDeptApprovalAPI(IntegrationTest):
     """
 
     def test_create_dept_approval(
-        self, api_client, pending_reimbursement, dept_manager_id
+            self, api_client, pending_reimbursement, dept_manager_id
     ):
         """测试创建部门审批 - 依赖D级报销申请"""
         reimbursement_id = pending_reimbursement["id"]
@@ -36,7 +34,7 @@ class TestDeptApprovalAPI(IntegrationTest):
         assert result["data"]["status"] == "approved"
 
     def test_create_dept_approval_without_reimbursement(
-        self, api_client, dept_manager_id
+            self, api_client, dept_manager_id
     ):
         """测试创建部门审批 - 报销申请不存在"""
         # 使用全局token设置
@@ -53,7 +51,7 @@ class TestDeptApprovalAPI(IntegrationTest):
         assert result["code"] == 404
 
     def test_create_dept_approval_already_processed(
-        self, api_client, dept_approved_reimbursement, dept_manager_id
+            self, api_client, dept_approved_reimbursement, dept_manager_id
     ):
         """测试创建部门审批 - 报销申请已处理"""
         reimbursement_id = dept_approved_reimbursement["reimbursement"]["id"]
@@ -78,7 +76,7 @@ class TestDeptApprovalAPI(IntegrationTest):
         assert result["code"] == 200
 
     def test_get_dept_approvals_by_reimbursement(
-        self, api_client, dept_approved_reimbursement
+            self, api_client, dept_approved_reimbursement
     ):
         """测试根据报销申请ID获取部门审批"""
         reimbursement_id = dept_approved_reimbursement["reimbursement"]["id"]
@@ -127,7 +125,7 @@ class TestDeptApprovalBuilder(UnitTest):
         assert approval.status == "rejected"
 
     def test_builder_get_by_reimbursement(
-        self, dept_approval_builder, dept_approved_reimbursement
+            self, dept_approval_builder, dept_approved_reimbursement
     ):
         """测试Builder根据报销申请获取审批"""
         reimbursement_id = dept_approved_reimbursement["reimbursement"]["id"]
@@ -142,7 +140,7 @@ class TestDeptApprovalBuilder(UnitTest):
         assert can_create is True
 
     def test_builder_cannot_create_processed(
-        self, dept_approval_builder, dept_approved_reimbursement
+            self, dept_approval_builder, dept_approved_reimbursement
     ):
         """测试Builder检查已处理申请无法创建"""
         reimbursement_id = dept_approved_reimbursement["reimbursement"]["id"]

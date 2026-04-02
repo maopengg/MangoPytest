@@ -3,8 +3,8 @@
 # @Description: 数据构造器 - 对应 /api/data 接口
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-from typing import Dict, Any, Optional
 import uuid
+from typing import Dict, Any
 
 from auto_test.demo_project.api_manager import demo_project
 from ...registry import register_builder

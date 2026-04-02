@@ -5,6 +5,7 @@
 # @Author : 毛鹏
 
 import hashlib
+
 from auto_test.demo_project.core.api.client import APIClient
 
 
@@ -46,7 +47,7 @@ class UserAPI:
         return response.data
 
     def create_user(
-        self, username: str, email: str, full_name: str, password: str
+            self, username: str, email: str, full_name: str, password: str
     ) -> dict:
         """
         创建用户
