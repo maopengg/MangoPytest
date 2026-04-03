@@ -585,6 +585,49 @@ if result.is_success:
 - **FastAPI** - Mock API 服务
 - **Allure** - 测试报告
 
+## Allure 报告集成
+
+本项目已集成 Allure 报告框架，将架构功能可视化到测试报告中。
+
+### 快速开始
+
+```bash
+# 安装 allure-pytest
+pip install allure-pytest
+
+# 执行测试并生成 Allure 报告
+python -m pytest auto_test/demo_project/test_cases/ -v --alluredir=./allure-results
+
+# 查看 Allure 报告
+allure serve ./allure-results
+```
+
+### 核心功能
+
+1. **Context 操作自动记录** - create/use/action/expect/event 操作自动附加到报告
+2. **数据血缘追踪** - 数据依赖关系图自动可视化
+3. **场景变体信息** - 变体矩阵参数自动记录
+4. **状态机流转** - 状态转换历史自动附加
+5. **构造器依赖** - 依赖链自动记录
+
+### 使用示例
+
+```python
+from auto_test.demo_project.fixtures.allure_conftest import allure_feature, allure_story
+
+@allure_feature("用户管理")
+@allure_story("用户创建")
+def test_create_user(allure_context):
+    """创建用户并验证"""
+    # 创建用户（自动记录到 Allure）
+    user = allure_context.create(UserEntity, username="test", role="admin")
+    
+    # 验证（自动记录到 Allure）
+    assert user.role == "admin"
+```
+
+详见 [ALLURE_GUIDE.md](ALLURE_GUIDE.md)
+
 ## 许可证
 
 MIT License

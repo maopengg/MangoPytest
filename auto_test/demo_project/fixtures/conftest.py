@@ -26,6 +26,15 @@ fixtures注册中心 - 新架构
 
 import pytest
 
+# ========== Allure 集成 fixtures ==========
+from auto_test.demo_project.fixtures.allure_conftest import (
+    allure_context,
+    allure_lineage,
+    allure_variant,
+    allure_feature,
+    allure_story,
+)
+
 # ========== 认证模块fixtures ==========
 from auto_test.demo_project.fixtures.builders.auth_fixtures import (
     auth_builder,
@@ -243,6 +252,77 @@ class TestContext:
             return self._created[last_id].entity
         return None
 
+    def use(self, entity_class: Type[BaseEntity], **filters) -> Optional[BaseEntity]:
+        """
+        复用已创建的实体
+
+        @param entity_class: 实体类
+        @param filters: 过滤条件
+        @return: 实体或 None
+        """
+        entity_type = entity_class.__name__
+        if entity_type not in self._created_by_type:
+            return None
+
+        for entity_id in self._created_by_type[entity_type]:
+            record = self._created[entity_id]
+            entity = record.entity
+            match = True
+            for key, value in filters.items():
+                if not hasattr(entity, key) or getattr(entity, key) != value:
+                    match = False
+                    break
+            if match:
+                return entity
+        return None
+
+    def action(self, action_func: Callable, *args, **kwargs) -> Any:
+        """
+        执行业务动作
+
+        @param action_func: 业务函数
+        @param args: 位置参数
+        @param kwargs: 关键字参数
+        @return: 执行结果
+        """
+        return action_func(*args, **kwargs)
+
+    def expect(self, actual: Any) -> "ValueExpectation":
+        """
+        创建预期验证器
+
+        @param actual: 实际值
+        @return: 值预期验证器
+        """
+        return ValueExpectation(actual)
+
+    def fire_event(self, event_name: str, priority: str = "normal", **metadata):
+        """
+        触发事件
+
+        @param event_name: 事件名称
+        @param priority: 优先级
+        @param metadata: 元数据
+        """
+        if not hasattr(self, "_events"):
+            self._events: Dict[str, Dict[str, Any]] = {}
+        self._events[event_name] = {
+            "fired": True,
+            "priority": priority,
+            "metadata": metadata,
+        }
+
+    def event(self, event_name: str) -> "EventExpectation":
+        """
+        获取事件预期验证器
+
+        @param event_name: 事件名称
+        @return: 事件预期验证器
+        """
+        if not hasattr(self, "_events"):
+            self._events: Dict[str, Dict[str, Any]] = {}
+        return EventExpectation(self._events.get(event_name, {}))
+
     def cleanup(self):
         """清理所有创建的数据"""
         if not self.auto_cleanup:
@@ -259,6 +339,59 @@ class TestContext:
 
         self._created.clear()
         self._created_by_type.clear()
+
+
+class ValueExpectation:
+    """值预期验证器"""
+
+    def __init__(self, actual: Any):
+        self.actual = actual
+
+    def equals(self, expected: Any) -> bool:
+        """验证等于"""
+        return self.actual == expected
+
+    def is_not_none(self) -> bool:
+        """验证不为 None"""
+        return self.actual is not None
+
+    def is_true(self) -> bool:
+        """验证为 True"""
+        return self.actual is True
+
+    def is_false(self) -> bool:
+        """验证为 False"""
+        return self.actual is False
+
+    def contains(self, item: Any) -> bool:
+        """验证包含"""
+        return item in self.actual
+
+    def matches(self, predicate: Callable[[Any], bool]) -> bool:
+        """验证匹配条件"""
+        return predicate(self.actual)
+
+
+class EventExpectation:
+    """事件预期验证器"""
+
+    def __init__(self, event_data: Dict[str, Any]):
+        self.event_data = event_data
+
+    def was_fired(self) -> bool:
+        """验证事件已触发"""
+        return self.event_data.get("fired", False)
+
+    def has_priority(self, priority: str) -> bool:
+        """验证优先级"""
+        return self.event_data.get("priority") == priority
+
+    def has_metadata(self, key: str, value: Any = None) -> bool:
+        """验证元数据"""
+        metadata = self.event_data.get("metadata", {})
+        if value is None:
+            return key in metadata
+        return metadata.get(key) == value
 
 
 @pytest.fixture
@@ -291,12 +424,21 @@ def test_context(request):
 
 
 __all__ = [
+    # Allure 集成
+    "allure_context",
+    "allure_lineage",
+    "allure_variant",
+    "allure_feature",
+    "allure_story",
     # 基础设施
     "api_client",
     "authenticated_client",
     "api_client_with_cleanup",
     "test_context",
     "TestContext",
+    "TestContextRecord",
+    "ValueExpectation",
+    "EventExpectation",
     "db_session",
     "db_transaction",
     "clean_db_state",

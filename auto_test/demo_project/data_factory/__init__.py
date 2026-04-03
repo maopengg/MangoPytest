@@ -54,7 +54,6 @@ from .scenarios import (
 )
 # 导出 Context 对象
 from .context import Context
-from .context_allure import AllureContext, create_allure_context
 
 __all__ = [
     # 实体层
