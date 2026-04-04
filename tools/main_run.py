@@ -45,7 +45,7 @@ class MainRun:
                     #         fr'{project_dir.root_path()}\auto_test\{i.get("dir_name")}\test_cases'
                     #     )
                     self.pytest_command.append(
-                                fr'{project_dir.root_path()}\auto_test\demo_project\test_cases\test_allure_integration.py'
+                                fr'{project_dir.root_path()}\auto_test\demo_project\test_cases\test_approval_workflow.py'
                             )
         log.info(f"开始执行测试任务......")
         print(self.pytest_command)

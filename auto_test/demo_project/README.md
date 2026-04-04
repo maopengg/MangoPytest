@@ -16,51 +16,59 @@
 
 ## 功能完成度分析
 
-| 功能模块                      | 完成度  | 说明                                                                              |
-|---------------------------|------|---------------------------------------------------------------------------------|
-| **Context 对象**            | 100% | `ctx.create()`, `ctx.use()`, `ctx.action()`, `ctx.expect()`, `ctx.event()` 全部实现 |
-| **实体层 (Entity)**          | 100% | UserEntity, ReimbursementEntity, OrgEntity, BudgetEntity, PaymentEntity 已实现     |
-| **构造器层 (Builder)**        | 95%  | 基础 Builder 实现，智能依赖解决，级联清理支持                                                     |
-| **场景层 (Scenario)**        | 100% | 依赖声明、变体矩阵、业务编排、预期结果验证全部实现                                                       |
-| **策略层 (Strategy)**        | 100% | API/Mock/DB/Hybrid 策略已实现                                                        |
-| **状态机 (State Machine)**   | 100% | 状态流转、历史记录已实现                                                                    |
-| **变体矩阵 (Variant Matrix)** | 100% | 笛卡尔积生成、约束过滤已实现                                                                  |
-| **血缘追踪 (Lineage)**        | 100% | 节点、图、追踪器、分析器已实现                                                                 |
-| **配置管理 (Config)**         | 100% | 环境自适应、策略配置化已实现                                                                  |
-| **Fixture 分层**            | 100% | entities/, builders/, scenarios/ 分层结构已实现                                        |
-| **test_context Fixture**  | 100% | pytest fixture 已实现                                                              |
-| **@case_data 装饰器**        | 100% | 场景变体自动展开已实现                                                                     |
-| **core/ 框架层**             | 100% | API、Models、Utils 跨项目复用组件已实现                                                     |
+| 功能模块                      | 层级   | 完成度  | 说明                                                                              |
+| ------------------------- | ------ | ---- | ------------------------------------------------------------------------------- |
+| **API Manager（接口层）**     | **L1** | 100% | 请求封装、加密解密、认证管理、协议适配、异常处理全部实现                                    |
+| **策略层 (Strategy)**        | **L2** | 100% | API/Mock/DB/Hybrid 策略已实现                                                        |
+| **构造器层 (Builder)**        | **L2** | 95%  | 基础 Builder 实现，智能依赖解决，级联清理支持                                                     |
+| **实体层 (Entity)**          | **L3** | 100% | UserEntity, ReimbursementEntity, OrgEntity, BudgetEntity, PaymentEntity 已实现     |
+| **场景层 (Scenario)**        | **L4** | 100% | 依赖声明、变体矩阵、业务编排、预期结果验证全部实现                                                       |
+| **Context 对象**            | -      | 100% | `ctx.create()`, `ctx.use()`, `ctx.action()`, `ctx.expect()`, `ctx.event()` 全部实现 |
+| **状态机 (State Machine)**   | -      | 100% | 状态流转、历史记录已实现                                                                    |
+| **变体矩阵 (Variant Matrix)** | -      | 100% | 笛卡尔积生成、约束过滤已实现                                                                  |
+| **血缘追踪 (Lineage)**        | -      | 100% | 节点、图、追踪器、分析器已实现                                                                 |
+| **配置管理 (Config)**         | -      | 100% | 环境自适应、策略配置化已实现                                                                  |
+| **Fixture 分层**            | -      | 100% | entities/, builders/, scenarios/ 分层结构已实现                                        |
+| **test\_context Fixture** | -      | 100% | pytest fixture 已实现                                                              |
+| **@case\_data 装饰器**       | -      | 100% | 场景变体自动展开已实现                                                                     |
+| **core/ 框架层**             | -      | 100% | API、Models、Utils 跨项目复用组件已实现                                                     |
 
 **总体完成度：约 98%**
 
 ## 项目架构
 
-### 四层架构
+### 五层架构
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  L4: 用例层 (Test Case)                                  │
+│  L5: 用例层 (Test Case)                                  │
 │  ├── 单接口测试（60%）- 本模块逻辑、边界、异常            │
 │  ├── 模块集成测试（30%）- 真实依赖验证                    │
 │  └── 端到端测试（10%）- 完整业务闭环                      │
 ├─────────────────────────────────────────────────────────┤
-│  L3: 场景层 (Scenario) - 业务语义封装                    │
+│  L4: 场景层 (Scenario) - 业务语义封装                    │
 │  ├── 变体矩阵（VariantMatrix）- 参数化组合生成用例         │
 │  ├── 依赖声明（Dependencies）- 自动解决前置数据           │
 │  ├── 创建声明（Creates）- 声明场景创建的实体              │
 │  └── 业务编排（Orchestrate）- 状态机驱动流程               │
 ├─────────────────────────────────────────────────────────┤
-│  L2: 实体层 (Entity) - 领域对象定义                       │
+│  L3: 实体层 (Entity) - 领域对象定义                       │
 │  ├── 领域属性 - 业务字段强类型定义                         │
 │  ├── 业务行为 - login()/approve()/submit() 等方法         │
 │  └── 工厂方法 - admin()/locked()/with_budget() 智能构造   │
 ├─────────────────────────────────────────────────────────┤
-│  L1: 策略层 (Strategy) - 构造与持久化                    │
+│  L2: 策略层 (Strategy) - 构造与持久化                    │
 │  ├── APIStrategy - 调用REST/GraphQL接口（默认）           │
 │  ├── DBStrategy - 直接SQL插入（批量/性能）                │
 │  ├── HybridStrategy - API头+DB明细（复杂对象）            │
 │  └── MockStrategy - 本地内存对象（单元测试）              │
+├─────────────────────────────────────────────────────────┤
+│  L1: 接口层 (API Manager) - 接口通信与协议处理            │
+│  ├── 请求封装 - HTTP/HTTPS 请求统一封装                   │
+│  ├── 加密解密 - 请求/响应数据的加解密处理                   │
+│  ├── 认证管理 - Token、签名等认证机制                     │
+│  ├── 协议适配 - REST/GraphQL/WebSocket 协议适配          │
+│  └── 异常处理 - 接口级异常分类与处理                      │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -68,9 +76,9 @@
 
 ```
 auto_test/demo_project/
-├── api_manager/          # API 管理层 - 统一接口封装
+├── api_manager/          # 【L1: 接口层】API 管理层 - 统一接口封装与协议处理
 │   ├── __init__.py       # 统一出口 demo_project
-│   ├── auth.py           # 认证相关 API
+│   ├── auth.py           # 认证相关 API（Token管理、签名生成）
 │   ├── user.py           # 用户管理 API
 │   ├── product.py        # 产品管理 API
 │   ├── order.py          # 订单管理 API
@@ -218,24 +226,33 @@ with Context(auto_cleanup=True) as ctx:
     # 1. 创建实体
     user = ctx.create(UserEntity, username="test_user", role="admin")
     org = ctx.create(OrgEntity, name="测试组织", budget_total=100000)
-    
+
     # 2. 复用实体
     existing_user = ctx.use(UserEntity, role="admin")
-    
+
     # 3. 执行业务动作
     result = ctx.action(user.validate)
-    
+
     # 4. 验证预期
     is_valid = ctx.expect(user.username).equals("test_user")
-    
+
     # 5. 事件追踪
     ctx.fire_event("user_created", priority="normal")
     fired = ctx.event("user_created").was_fired()
 ```
 
-### 1. API Manager（接口管理层）
+### 1. API Manager（接口管理层 - L1）
 
-统一封装所有 API 接口，提供统一的调用方式：
+**职责**：作为五层架构的最底层（L1），负责与外部系统的接口通信，封装所有与接口相关的技术细节。
+
+**核心功能**：
+- **请求封装**：统一封装 HTTP/HTTPS 请求，处理超时、重试、连接池等
+- **加密解密**：请求数据的加密（如 AES、RSA）和响应数据的解密
+- **认证管理**：Token 管理、签名生成、鉴权信息维护
+- **协议适配**：支持 REST、GraphQL、WebSocket 等多种协议
+- **异常处理**：接口级异常分类、错误码映射、异常转换
+
+**使用示例**：
 
 ```python
 from auto_test.demo_project.api_manager import demo_project
@@ -254,9 +271,25 @@ result = demo_project.order.create_order(
 )
 ```
 
-### 2. Data Factory（数据工厂）
+**模块组成**：
 
-#### 2.1 Entity（实体层）
+| 模块 | 功能说明 |
+|------|----------|
+| `auth.py` | 认证管理：Token 获取、刷新、签名生成 |
+| `user.py` | 用户管理 API：用户 CRUD、权限查询 |
+| `product.py` | 产品管理 API：产品信息、库存查询 |
+| `order.py` | 订单管理 API：订单创建、查询、取消 |
+| `reimbursement.py` | 报销申请 API：报销单提交、查询 |
+| `dept_approval.py` | 部门审批 API：审批操作、状态查询 |
+| `finance_approval.py` | 财务审批 API：财务审核、打款 |
+| `ceo_approval.py` | CEO 审批 API：最终审批 |
+| `file.py` | 文件上传 API：文件上传、下载 |
+| `data.py` | 数据提交 API：数据上报 |
+| `system.py` | 系统信息 API：健康检查、配置查询 |
+
+### 2. Data Factory（数据工厂 - L2/L3/L4）
+
+#### 2.1 Entity（实体层 - L3）
 
 定义数据模型，包含数据验证和生命周期管理：
 
@@ -274,7 +307,7 @@ reimbursement = ReimbursementEntity(
 assert reimbursement.validate() is True
 ```
 
-#### 2.2 Builder（构造器层）
+#### 2.2 Builder（构造器层 - L2）
 
 负责构造实体数据并调用 API 创建/更新/删除数据：
 
@@ -292,7 +325,7 @@ reimbursement = builder.create_approved(
 )
 ```
 
-#### 2.3 Scenario（场景层）
+#### 2.3 Scenario（场景层 - L4）
 
 封装完整的业务流程，支持依赖声明和业务编排：
 
@@ -308,7 +341,7 @@ if result.success:
     print(f"审批流程完成，报销ID: {reimbursement.id}")
 ```
 
-#### 2.4 Strategy（策略层）
+#### 2.4 Strategy（策略层 - L2）
 
 提供多种数据构造策略，支持不同测试场景：
 
@@ -425,7 +458,7 @@ from auto_test.demo_project.fixtures.scenarios import (
 )
 ```
 
-### 4. @case_data 装饰器
+### 4. @case\_data 装饰器
 
 场景变体自动展开为多个测试用例：
 
@@ -533,7 +566,7 @@ def test_with_scenario(full_approval_scenario):
     assert result.success
 ```
 
-### 示例2：使用 @case_data 装饰器
+### 示例2：使用 @case\_data 装饰器
 
 ```python
 from auto_test.demo_project.test_cases.decorators import case_data
@@ -570,9 +603,9 @@ if result.is_success:
 ## 最佳实践
 
 1. **使用 Fixture 分层结构** - entities/ builders/ scenarios/
-2. **使用 @case_data 装饰器** - 自动展开场景变体
-3. **使用 test_context** - 统一追踪和清理测试数据
-4. **使用 Builder 快捷方法** - create_approved, create_paid 等
+2. **使用 @case\_data 装饰器** - 自动展开场景变体
+3. **使用 test\_context** - 统一追踪和清理测试数据
+4. **使用 Builder 快捷方法** - create\_approved, create\_paid 等
 5. **使用 core/ 框架层** - 跨项目复用核心组件
 6. **分层测试** - 单元测试（快）→ 集成测试（真）→ 端到端测试（全）
 
@@ -626,7 +659,7 @@ def test_create_user(allure_context):
     assert user.role == "admin"
 ```
 
-详见 [ALLURE_GUIDE.md](ALLURE_GUIDE.md)
+详见 [ALLURE\_GUIDE.md](ALLURE_GUIDE.md)
 
 ## 许可证
 

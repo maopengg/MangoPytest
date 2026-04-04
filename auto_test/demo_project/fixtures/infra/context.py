@@ -16,13 +16,13 @@ test_context Fixture 模块
     def test_example(test_context):
         # 创建数据
         user = test_context.create(UserEntity, username="test")
-        
+
         # 执行业务操作
         result = test_context.action(user.login)
-        
+
         # 验证结果
         assert test_context.expect(result.success).is_true()
-        
+
         # 测试结束后自动清理
 """
 
@@ -37,10 +37,10 @@ from auto_test.demo_project.data_factory.context import Context
 from auto_test.demo_project.data_factory import BaseEntity
 
 
-
 @dataclass
 class TestContextRecord:
     """测试上下文记录"""
+
     entity_type: str
     entity_id: str
     entity: Any
@@ -51,13 +51,13 @@ class TestContextRecord:
 class TestContext:
     """
     测试上下文 - 用于 pytest fixture
-    
+
     职责：
     1. 追踪测试中创建的数据
     2. 自动清理测试数据
     3. 提供统一的上下文访问接口
     4. 支持级联清理
-    
+
     Attributes:
         auto_cleanup: 是否自动清理
         cascade_cleanup: 是否级联清理
@@ -70,14 +70,14 @@ class TestContext:
     __test__ = False
 
     def __init__(
-            self,
-            auto_cleanup: bool = True,
-            cascade_cleanup: bool = False,
-            enable_lineage: bool = True
+        self,
+        auto_cleanup: bool = True,
+        cascade_cleanup: bool = False,
+        enable_lineage: bool = True,
     ):
         """
         初始化测试上下文
-        
+
         @param auto_cleanup: 是否自动清理
         @param cascade_cleanup: 是否级联清理
         @param enable_lineage: 是否启用血缘追踪
@@ -106,14 +106,14 @@ class TestContext:
             self._context = Context(
                 auto_cleanup=self.auto_cleanup,
                 cascade_cleanup=self.cascade_cleanup,
-                enable_lineage=self.enable_lineage
+                enable_lineage=self.enable_lineage,
             )
         return self._context
 
     def create(self, entity_class: Type[BaseEntity], **kwargs) -> BaseEntity:
         """
         创建实体并记录
-        
+
         @param entity_class: 实体类
         @param kwargs: 实体属性
         @return: 创建的实体
@@ -124,9 +124,9 @@ class TestContext:
         # 记录创建
         record = TestContextRecord(
             entity_type=entity_class.__name__,
-            entity_id=getattr(entity, 'id', str(uuid.uuid4())),
+            entity_id=getattr(entity, "id", str(uuid.uuid4())),
             entity=entity,
-            metadata={"source": "test_context.create"}
+            metadata={"source": "test_context.create"},
         )
         self._add_record(record)
 
@@ -135,7 +135,7 @@ class TestContext:
     def use(self, entity_class: Type[BaseEntity], **filters) -> Optional[BaseEntity]:
         """
         复用已创建的实体
-        
+
         @param entity_class: 实体类
         @param filters: 过滤条件
         @return: 实体或 None
@@ -145,7 +145,7 @@ class TestContext:
     def action(self, action_func: Callable, *args, **kwargs) -> Any:
         """
         执行业务动作
-        
+
         @param action_func: 业务函数
         @param args: 位置参数
         @param kwargs: 关键字参数
@@ -153,10 +153,10 @@ class TestContext:
         """
         return self.context.action(action_func, *args, **kwargs)
 
-    def expect(self, actual: Any) -> 'ValueExpectation':
+    def expect(self, actual: Any) -> "ValueExpectation":
         """
         创建预期验证器
-        
+
         @param actual: 实际值
         @return: 值预期验证器
         """
@@ -165,7 +165,7 @@ class TestContext:
     def fire_event(self, event_name: str, priority: str = "normal", **metadata):
         """
         触发事件
-        
+
         @param event_name: 事件名称
         @param priority: 优先级
         @param metadata: 元数据
@@ -174,17 +174,17 @@ class TestContext:
             "fired": True,
             "priority": priority,
             "timestamp": datetime.now(),
-            "metadata": metadata
+            "metadata": metadata,
         }
 
         # 同时触发内部 Context 的事件
         if self.context:
             self.context.fire_event(event_name, priority=priority)
 
-    def event(self, event_name: str) -> 'EventExpectation':
+    def event(self, event_name: str) -> "EventExpectation":
         """
         获取事件预期验证器
-        
+
         @param event_name: 事件名称
         @return: 事件预期验证器
         """
@@ -193,7 +193,7 @@ class TestContext:
     def set(self, key: str, value: Any):
         """
         设置上下文数据
-        
+
         @param key: 键
         @param value: 值
         """
@@ -202,7 +202,7 @@ class TestContext:
     def get(self, key: str, default: Any = None) -> Any:
         """
         获取上下文数据
-        
+
         @param key: 键
         @param default: 默认值
         @return: 值
@@ -212,16 +212,13 @@ class TestContext:
     def get_all_created(self, entity_class: Type[BaseEntity] = None) -> List[Any]:
         """
         获取所有创建的实体
-        
+
         @param entity_class: 实体类（可选，用于过滤）
         @return: 实体列表
         """
         if entity_class:
             entity_type = entity_class.__name__
-            return [
-                r.entity for r in self._records
-                if r.entity_type == entity_type
-            ]
+            return [r.entity for r in self._records if r.entity_type == entity_type]
         return [r.entity for r in self._records]
 
     def _add_record(self, record: TestContextRecord):
@@ -236,7 +233,7 @@ class TestContext:
     def cleanup(self):
         """
         清理测试数据
-        
+
         按照创建顺序的逆序清理
         """
         # 清理内部 Context
@@ -246,9 +243,9 @@ class TestContext:
         # 清理记录
         for record in reversed(self._records):
             entity = record.entity
-            if hasattr(entity, 'mark_as_deleted'):
+            if hasattr(entity, "mark_as_deleted"):
                 entity.mark_as_deleted()
-            elif hasattr(entity, 'delete') and callable(getattr(entity, 'delete')):
+            elif hasattr(entity, "delete") and callable(getattr(entity, "delete")):
                 try:
                     entity.delete()
                 except:
@@ -327,9 +324,9 @@ class EventExpectation:
 def test_context(request):
     """
     test_context Fixture
-    
+
     提供测试上下文，自动追踪和清理测试数据
-    
+
     使用示例：
         def test_example(test_context):
             user = test_context.create(UserEntity, username="test")
@@ -347,10 +344,7 @@ def test_context(request):
         cascade_cleanup = marker.kwargs.get("cascade_cleanup", False)
 
     # 创建测试上下文
-    ctx = TestContext(
-        auto_cleanup=auto_cleanup,
-        cascade_cleanup=cascade_cleanup
-    )
+    ctx = TestContext(auto_cleanup=auto_cleanup, cascade_cleanup=cascade_cleanup)
 
     yield ctx
 
@@ -371,7 +365,7 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers",
         "test_context_config(auto_cleanup=True, cascade_cleanup=False): "
-        "配置 test_context fixture"
+        "配置 test_context fixture",
     )
 
 

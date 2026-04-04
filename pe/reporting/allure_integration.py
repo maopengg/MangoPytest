@@ -13,6 +13,16 @@ Allure 集成模块
 3. 场景变体信息（variant matrix）
 4. 状态机流转（state transitions）
 5. 构造器依赖链（builder dependencies）
+
+使用示例：
+    from pe.reporting import AllureHelper, allure_step
+    
+    # 记录步骤
+    with allure_step("创建用户"):
+        user = create_user()
+    
+    # 附加数据
+    AllureHelper.attach_json("用户信息", user.to_dict())
 """
 
 import json
@@ -333,3 +343,8 @@ def allure_attach_json(name: str, data: Dict[str, Any]):
 def allure_attach_text(name: str, text: str):
     """便捷文本附加"""
     AllureHelper.attach_text(name, text)
+
+
+def allure_attach_html(name: str, html: str):
+    """便捷 HTML 附加"""
+    AllureHelper.attach_html(name, html)

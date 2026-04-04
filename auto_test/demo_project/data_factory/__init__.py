@@ -76,6 +76,4 @@ __all__ = [
     "BaseBuilder",
     # Context 对象
     "Context",
-    "AllureContext",
-    "create_allure_context",
 ]

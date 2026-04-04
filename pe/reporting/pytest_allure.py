@@ -5,7 +5,7 @@
 # @Author : 毛鹏
 
 """
-Allure 集成钩子
+Allure 集成 pytest 钩子
 
 自动将以下信息记录到 Allure 报告：
 1. 测试用例的 feature/story/title
@@ -13,6 +13,21 @@ Allure 集成钩子
 3. 数据血缘追踪
 4. 场景变体信息
 5. 状态机流转
+
+使用示例：
+    # 在 conftest.py 中导入
+    from pe.reporting.pytest_allure import (
+        allure_context,
+        allure_lineage,
+        allure_variant,
+        allure_feature,
+        allure_story,
+    )
+    
+    # 在测试中使用
+    def test_example(allure_context):
+        user = allure_context.create(UserEntity, username="test")
+        assert user is not None
 """
 
 import pytest
@@ -24,7 +39,7 @@ try:
 except ImportError:
     HAS_ALLURE = False
 
-from auto_test.demo_project.core.allure_integration import (
+from .allure_integration import (
     AllureHelper,
     ContextAllureAdapter,
     LineageAllureAdapter,
@@ -52,11 +67,11 @@ class AllureIntegrationPlugin:
         if item.function.__doc__:
             doc = item.function.__doc__.strip()
             lines = doc.split('\n')
-            
+
             # 第一行作为标题
             if lines:
                 AllureHelper.title(lines[0])
-            
+
             # 其余行作为描述
             if len(lines) > 1:
                 description = '\n'.join(lines[1:]).strip()
@@ -103,8 +118,13 @@ def pytest_configure(config):
 def allure_context(test_context):
     """
     Allure 集成的 Context fixture
-    
+
     自动将 Context 操作记录到 Allure 报告
+
+    使用示例：
+        def test_example(allure_context):
+            user = allure_context.create(UserEntity, username="test")
+            assert user is not None
     """
     if not HAS_ALLURE:
         return test_context
@@ -173,7 +193,7 @@ def allure_context(test_context):
 def allure_lineage(test_context):
     """
     Allure 集成的血缘追踪 fixture
-    
+
     自动将数据血缘信息附加到 Allure 报告
     """
     if not HAS_ALLURE:
@@ -192,7 +212,7 @@ def allure_lineage(test_context):
 def allure_variant(request):
     """
     Allure 集成的变体矩阵 fixture
-    
+
     自动将变体信息附加到 Allure 报告
     """
     if not HAS_ALLURE:

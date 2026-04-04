@@ -26,14 +26,6 @@ fixtures注册中心 - 新架构
 
 import pytest
 
-# ========== Allure 集成 fixtures ==========
-from auto_test.demo_project.fixtures.allure_conftest import (
-    allure_context,
-    allure_lineage,
-    allure_variant,
-    allure_feature,
-    allure_story,
-)
 
 # ========== 认证模块fixtures ==========
 from auto_test.demo_project.fixtures.builders.auth_fixtures import (
@@ -214,10 +206,13 @@ class TestContext:
         """创建实体"""
         entity = entity_class(**kwargs)
 
+        # 生成唯一ID（如果实体没有有效ID）
         entity_id = str(uuid.uuid4())[:8]
         if hasattr(entity, "id") and entity.id:
+            # 实体已有有效ID，使用它
             entity_id = str(entity.id)
-        elif not hasattr(entity, "id"):
+        else:
+            # 实体没有ID或ID为None，设置生成的ID
             entity.id = entity_id
 
         record = TestContextRecord(
@@ -428,8 +423,6 @@ __all__ = [
     "allure_context",
     "allure_lineage",
     "allure_variant",
-    "allure_feature",
-    "allure_story",
     # 基础设施
     "api_client",
     "authenticated_client",

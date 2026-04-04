@@ -11,28 +11,27 @@ Allure 集成示例
 1. 使用 @allure_feature/@allure_story 标记
 2. 使用 allure_context fixture 自动记录 Context 操作
 3. 使用 allure_lineage fixture 自动记录血缘信息
-4. 使用 AllureHelper 手动记录步骤和附件
+4. 使用 AllureAdapter 手动记录步骤和附件
 """
 
 import pytest
-from auto_test.demo_project.fixtures.allure_conftest import (
-    allure_feature,
-    allure_story,
-    AllureHelper,
+import allure
+from pe.reporting import (
+    AllureAdapter,
+    step as allure_step,
 )
 from auto_test.demo_project.data_factory.entities import UserEntity, ReimbursementEntity
-from auto_test.demo_project.core.allure_integration import allure_step
 
 
-@allure_feature("用户管理")
-@allure_story("用户创建与验证")
+@allure.feature("用户管理")
+@allure.story("用户创建与验证")
 class TestUserWithAllure:
     """用户管理相关测试 - 集成 Allure 报告"""
 
     def test_create_user_with_context(self, allure_context):
         """
         创建用户并验证
-        
+
         测试流程：
         1. 创建管理员用户
         2. 验证用户属性
@@ -40,10 +39,7 @@ class TestUserWithAllure:
         """
         # 创建用户（自动记录到 Allure）
         user = allure_context.create(
-            UserEntity,
-            username="admin_user",
-            email="admin@example.com",
-            role="admin"
+            UserEntity, username="admin_user", email="admin@example.com", role="admin"
         )
 
         # 验证用户属性（自动记录到 Allure）
@@ -57,18 +53,14 @@ class TestUserWithAllure:
     def test_reuse_user_with_context(self, allure_context):
         """
         复用已有用户
-        
+
         测试流程：
         1. 创建用户
         2. 复用用户
         3. 验证复用成功
         """
         # 创建用户
-        user1 = allure_context.create(
-            UserEntity,
-            username="test_user",
-            role="user"
-        )
+        user1 = allure_context.create(UserEntity, username="test_user", role="user")
 
         # 复用用户（自动记录到 Allure）
         user2 = allure_context.use(UserEntity, role="user")
@@ -78,15 +70,15 @@ class TestUserWithAllure:
         assert user2.username == user1.username
 
 
-@allure_feature("报销管理")
-@allure_story("报销流程")
+@allure.feature("报销管理")
+@allure.story("报销流程")
 class TestReimbursementWithAllure:
     """报销管理相关测试 - 集成 Allure 报告"""
 
     def test_create_reimbursement_with_lineage(self, allure_context, allure_lineage):
         """
         创建报销单并追踪血缘
-        
+
         测试流程：
         1. 创建用户
         2. 创建报销单
@@ -95,17 +87,12 @@ class TestReimbursementWithAllure:
         """
         # 创建用户
         user = allure_context.create(
-            UserEntity,
-            username="reimbursement_user",
-            role="user"
+            UserEntity, username="reimbursement_user", role="user"
         )
 
         # 创建报销单
         reimbursement = allure_context.create(
-            ReimbursementEntity,
-            user_id=user.id,
-            amount=1000.00,
-            reason="差旅报销"
+            ReimbursementEntity, user_id=user.id, amount=1000.00, reason="差旅报销"
         )
 
         # 验证报销单
@@ -117,7 +104,7 @@ class TestReimbursementWithAllure:
     def test_multiple_operations_with_allure(self, allure_context):
         """
         多个操作的完整流程
-        
+
         测试流程：
         1. 创建多个用户
         2. 创建多个报销单
@@ -130,7 +117,7 @@ class TestReimbursementWithAllure:
             user = allure_context.create(
                 UserEntity,
                 username=f"user_{i}",
-                role="user" if i % 2 == 0 else "manager"
+                role="user" if i % 2 == 0 else "manager",
             )
             users.append(user)
 
@@ -141,7 +128,7 @@ class TestReimbursementWithAllure:
                 ReimbursementEntity,
                 user_id=user.id,
                 amount=1000.00 * (i + 1),
-                reason=f"报销 {i+1}"
+                reason=f"报销 {i+1}",
             )
             reimbursements.append(reimbursement)
 
@@ -152,15 +139,15 @@ class TestReimbursementWithAllure:
         # 操作摘要自动附加到 Allure 报告
 
 
-@allure_feature("高级功能")
-@allure_story("手动步骤记录")
+@allure.feature("高级功能")
+@allure.story("手动步骤记录")
 class TestManualAllureSteps:
     """手动记录 Allure 步骤的示例"""
 
     def test_manual_steps(self):
         """
         手动记录测试步骤
-        
+
         展示如何使用 AllureHelper 手动记录步骤和附件
         """
         # 步骤1：准备数据
@@ -168,14 +155,14 @@ class TestManualAllureSteps:
             test_data = {
                 "username": "test_user",
                 "email": "test@example.com",
-                "role": "admin"
+                "role": "admin",
             }
-            AllureHelper.attach_json("测试数据", test_data)
+            AllureAdapter.attach_json("测试数据", test_data)
 
         # 步骤2：执行操作
         with allure_step("执行创建操作"):
             user = UserEntity(**test_data)
-            AllureHelper.attach_text("创建结果", f"用户ID: {user.id}")
+            AllureAdapter.attach_text("创建结果", f"用户ID: {user.id}")
 
         # 步骤3：验证结果
         with allure_step("验证结果"):
@@ -185,7 +172,7 @@ class TestManualAllureSteps:
     def test_attach_html_report(self):
         """
         附加 HTML 报告
-        
+
         展示如何附加 HTML 格式的报告
         """
         html_report = """
@@ -209,7 +196,7 @@ class TestManualAllureSteps:
         """
 
         with allure_step("生成 HTML 报告"):
-            AllureHelper.attach_html("用户列表", html_report)
+            AllureAdapter.attach_html("用户列表", html_report)
 
         assert True
 

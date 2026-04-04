@@ -13,13 +13,15 @@ Core API 客户端
 - 请求/响应拦截
 - 统一的错误处理
 - 请求/响应日志打印
+
+使用 httpx 库实现，支持同步和异步请求
 """
 
 import time
 from dataclasses import dataclass
 from typing import Dict, Any, Optional, Callable, List
 
-import requests
+import httpx
 
 from tools.log import log
 from .exceptions import APIException, RequestException
@@ -91,6 +93,9 @@ class APIClient:
         self._request_count = 0
         self._error_count = 0
 
+        # 创建 httpx 客户端
+        self._client = httpx.Client(timeout=timeout)
+
     def set_auth_token(self, token: str):
         """设置认证 token"""
         self.auth_token = token
@@ -128,8 +133,6 @@ class APIClient:
 
         return headers
 
-
-
     def _do_request(
             self,
             method: str,
@@ -152,20 +155,15 @@ class APIClient:
         start_time = time.time()
 
         try:
+            # 使用 httpx 发送请求
             if method == "GET":
-                response = requests.get(
-                    url, headers=headers, params=params, timeout=self.timeout
-                )
+                response = self._client.get(url, headers=headers, params=params)
             elif method == "POST":
-                response = requests.post(
-                    url, headers=headers, json=data, timeout=self.timeout
-                )
+                response = self._client.post(url, headers=headers, json=data)
             elif method == "PUT":
-                response = requests.put(
-                    url, headers=headers, json=data, timeout=self.timeout
-                )
+                response = self._client.put(url, headers=headers, json=data)
             elif method == "DELETE":
-                response = requests.delete(url, headers=headers, timeout=self.timeout)
+                response = self._client.delete(url, headers=headers)
             else:
                 raise RequestException(f"不支持的 HTTP 方法: {method}")
 
@@ -187,7 +185,7 @@ class APIClient:
 
             return api_response
 
-        except requests.exceptions.RequestException as e:
+        except httpx.RequestError as e:
             print(f"💥 请求异常: {str(e)}")
             print(f"{'=' * 100}\n")
             raise RequestException(f"请求失败: {str(e)}")
@@ -280,3 +278,15 @@ class APIClient:
             "error_count": self._error_count,
             "success_rate": 1.0 - (self._error_count / max(self._request_count, 1)),
         }
+
+    def close(self):
+        """关闭客户端"""
+        self._client.close()
+
+    def __enter__(self):
+        """上下文管理器入口"""
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """上下文管理器退出"""
+        self.close()
