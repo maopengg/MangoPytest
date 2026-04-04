@@ -24,7 +24,6 @@ from .api import (
     log_decorator,
     CleanupContext,
     api_allure_logger,
-    _log_api_response_to_allure,
 )
 # 其他测试装饰器
 from .other import (
@@ -61,7 +60,6 @@ __all__ = [
     'log_decorator',
     'CleanupContext',
     'api_allure_logger',
-    '_log_api_response_to_allure',
     # UI测试装饰器
     'ui_case_data',
     # 其他测试装饰器

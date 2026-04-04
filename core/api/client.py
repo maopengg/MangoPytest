@@ -27,7 +27,7 @@ import httpx
 
 from core.utils import log
 from core.models.api_model import APIResponse
-from core.decorators import api_allure_logger, _log_api_response_to_allure
+from core.decorators import api_allure_logger
 from core.exceptions import ApiError
 
 
@@ -59,7 +59,6 @@ class APIClient:
             timeout: int = 30,
             headers: Optional[Dict[str, str]] = None,
             auth_token: Optional[str] = None,
-            enable_allure: bool = True,
     ):
         """
         初始化 API 客户端
@@ -74,7 +73,6 @@ class APIClient:
         self.timeout = timeout
         self.headers = headers or {}
         self.auth_token = auth_token
-        self.enable_allure = enable_allure
 
         # 请求/响应拦截器
         self._request_interceptors: List[Callable] = []
@@ -227,9 +225,6 @@ class APIClient:
                         f"API 错误: {response.status_code}，数据：{str(response.data)}",
                     )
 
-                # 记录到 Allure
-                if self.enable_allure:
-                    _log_api_response_to_allure(response)
 
                 return response
 
