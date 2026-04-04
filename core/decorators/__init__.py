@@ -13,7 +13,7 @@
 - 工具装饰器
 
 使用方式：
-    from core.decorators import case_data, request_data, timer
+    from core.decorators.ui import case_data, request_data, timer
 """
 
 # API测试装饰器

@@ -10,8 +10,8 @@ from auto_tests.ui_mango_mock import base_data_model
 from auto_tests.ui_mango_mock.abstract.home_page import HomePage
 from auto_tests.ui_mango_mock.abstract.input_page import InputPage
 from core.models.ui_model import UiDataModel
-from tools.decorator.ui import case_data
-from tools.obtain_test_data import ObtainTestData
+from core.decorators.ui import case_data
+from core.utils.obtain_test_data  import ObtainTestData
 
 
 @allure.epic('演示-UI自动化-WEB项目-MockUI服务')

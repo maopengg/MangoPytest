@@ -9,9 +9,9 @@ import pytest
 
 from auto_tests.api_mango_mock.abstract.data.data import DataAPI
 from core.models.api_model import ApiDataModel
-from tools.base_request.case_tool import CaseTool
-from tools.decorator.response import case_data
-from tools.obtain_test_data import ObtainTestData
+from core.api.case_tool import CaseTool
+from core.decorators.ui import case_data
+from core.utils.obtain_test_data  import ObtainTestData
 
 
 @allure.epic('演示-API自动化-常规API-MockAPI服务')

@@ -9,8 +9,8 @@ from mangoautomation.uidrive import BaseData
 
 from auto_tests.project_config import ProjectEnum
 from core.models.tools_model import BaseDataModel
-from tools.base_object.base_object import WebBaseObject
-from tools.obtain_test_data import ObtainTestData
+from core.base import WebBaseObject
+from core.utils.obtain_test_data  import ObtainTestData
 
 
 class MousePage(WebBaseObject):

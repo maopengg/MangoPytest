@@ -6,7 +6,7 @@
 import requests
 
 from core.models.api_model import RequestModel, ResponseModel
-from tools.base_request.request_tool import RequestTool
+from core.api.request_tool import RequestTool
 
 
 def inside_request():
