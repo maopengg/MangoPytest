@@ -62,9 +62,7 @@ def get_db_connection():
     """获取数据库连接上下文管理器"""
     conn = None
     try:
-        print('开始创建mysql')
         conn = pymysql.connect(**MYSQL_CONFIG)
-        print(f'mysql链接信息：{conn}')
         yield conn
     except Exception as e:
         raise

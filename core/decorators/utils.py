@@ -111,7 +111,6 @@ def timeit(func: Callable = None, *, unit: str = "ms") -> Callable:
             multipliers = {"s": 1, "ms": 1000, "us": 1000000}
             elapsed = (end - start) * multipliers.get(unit, 1000)
 
-            print(f"{fn.__name__} took {elapsed:.4f} {unit}")
             return result
 
         return wrapper

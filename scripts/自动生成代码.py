@@ -6,7 +6,6 @@ import os
 def batch_test():
     """批量读取"""
     file_dir = os.path.join(os.path.dirname(__file__))
-    print(file_dir)
     return_list = []
     for root, dirs, files in os.walk(file_dir):
         for str_filename in files:

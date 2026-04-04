@@ -19,12 +19,10 @@ def data_init():
         AutoTestTypeEnum.API
     )
     login_url = f'auth/login'
-    print(urljoin(test_data.test_object.host, login_url))
     response = requests.request(url=urljoin(test_data.test_object.host, login_url),
                                 method="POST",
                                 json=user_info,
                                 proxies={'http': None, 'https': None})
-    print(response.text)
     test_data.headers['X-Token'] = response.json()['data']['token']
     test_data.headers['Content-Type'] = 'application/json'
     log.info(f'{ProjectEnum.MOCK_API.value}的API在自动化基础信息设置完成！')
