@@ -4,22 +4,11 @@
 # @Time   : 2026-01-18 13:56
 # @Author : 毛鹏
 
-from core.api.client import APIClient
+from core.base import BaseAPI
 
 
-class ProductAPI:
+class ProductAPI(BaseAPI):
     """产品API - 对应 /products 接口"""
-
-    def __init__(self):
-        self._client = APIClient(base_url="http://localhost:8003")
-
-    def set_host(self, host: str):
-        """设置API服务器地址"""
-        self._client.set_base_url(host)
-
-    def set_token(self, token: str):
-        """设置认证token"""
-        self._client.set_auth_token(token)
 
     def create_product(
             self,
@@ -39,7 +28,7 @@ class ProductAPI:
         data = {"name": name, "price": price, "stock": stock}
         if description:
             data["description"] = description
-        response = self._client.post("/products", data=data)
+        response = self.client.post("/products", json=data)
         return response.data
 
     def get_all_products(self) -> dict:
@@ -48,7 +37,7 @@ class ProductAPI:
         GET /products
         @return: 响应字典
         """
-        response = self._client.get("/products")
+        response = self.client.get("/products")
         return response.data
 
     def get_product_by_id(self, product_id: int) -> dict:
@@ -58,7 +47,7 @@ class ProductAPI:
         @param product_id: 产品ID
         @return: 响应字典
         """
-        response = self._client.get("/products", params={"id": product_id})
+        response = self.client.get("/products", params={"id": product_id})
         return response.data
 
     def update_product_info(self, product_id: int, **kwargs) -> dict:
@@ -69,7 +58,7 @@ class ProductAPI:
         @param kwargs: 更新字段
         @return: 响应字典
         """
-        response = self._client.put(f"/products/{product_id}", data=kwargs)
+        response = self.client.put(f"/products/{product_id}", json=kwargs)
         return response.data
 
     def delete_product(self, product_id: int) -> dict:
@@ -79,5 +68,5 @@ class ProductAPI:
         @param product_id: 产品ID
         @return: 响应字典
         """
-        response = self._client.delete(f"/products/{product_id}")
+        response = self.client.delete(f"/products/{product_id}")
         return response.data

@@ -6,22 +6,11 @@
 
 import hashlib
 
-from core.api.client import APIClient
+from core.base import BaseAPI
 
 
-class UserAPI:
+class UserAPI(BaseAPI):
     """用户API - 对应 /users 接口"""
-
-    def __init__(self):
-        self._client = APIClient(base_url="http://localhost:8003")
-
-    def set_host(self, host: str):
-        """设置API服务器地址"""
-        self._client.set_base_url(host)
-
-    def set_token(self, token: str):
-        """设置认证token"""
-        self._client.set_auth_token(token)
 
     def _encrypt_password(self, password: str) -> str:
         """对密码进行 MD5 加密"""
@@ -33,7 +22,7 @@ class UserAPI:
         GET /users
         @return: 响应字典
         """
-        response = self._client.get("/users")
+        response = self.client.get("/users")
         return response.data
 
     def get_user_by_id(self, user_id: int) -> dict:
@@ -43,7 +32,7 @@ class UserAPI:
         @param user_id: 用户ID
         @return: 响应字典
         """
-        response = self._client.get("/users", params={"id": user_id})
+        response = self.client.get("/users", params={"id": user_id})
         return response.data
 
     def create_user(
@@ -60,9 +49,9 @@ class UserAPI:
         """
         # 对密码进行 MD5 加密
         password_md5 = self._encrypt_password(password)
-        response = self._client.post(
+        response = self.client.post(
             "/users",
-            data={
+            json={
                 "username": username,
                 "email": email,
                 "full_name": full_name,
@@ -79,9 +68,9 @@ class UserAPI:
         @param kwargs: 更新字段
         @return: 响应字典
         """
-        response = self._client.put(
+        response = self.client.put(
             f"/users/{user_id}",
-            data=kwargs
+            json=kwargs
         )
         return response.data
 
@@ -92,5 +81,5 @@ class UserAPI:
         @param user_id: 用户ID
         @return: 响应字典
         """
-        response = self._client.delete(f"/users/{user_id}")
+        response = self.client.delete(f"/users/{user_id}")
         return response.data

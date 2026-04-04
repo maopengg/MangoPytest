@@ -4,22 +4,11 @@
 # @Time   : 2024-03-17 19:50
 # @Author : 毛鹏
 
-from core.api.client import APIClient
+from core.base import BaseAPI
 
 
-class FinanceApprovalAPI:
+class FinanceApprovalAPI(BaseAPI):
     """财务审批API - 对应 /finance-approvals 接口"""
-
-    def __init__(self):
-        self._client = APIClient(base_url="http://localhost:8003")
-
-    def set_host(self, host: str):
-        """设置API服务器地址"""
-        self._client.set_base_url(host)
-
-    def set_token(self, token: str):
-        """设置认证token"""
-        self._client.set_auth_token(token)
 
     def get_finance_approvals(self) -> dict:
         """
@@ -27,7 +16,7 @@ class FinanceApprovalAPI:
         GET /finance-approvals
         @return: 响应字典
         """
-        response = self._client.get("/finance-approvals")
+        response = self.client.get("/finance-approvals")
         return response.data
 
     def get_finance_approval_by_id(self, approval_id: int) -> dict:
@@ -37,7 +26,7 @@ class FinanceApprovalAPI:
         @param approval_id: 审批ID
         @return: 响应字典
         """
-        response = self._client.get("/finance-approvals", params={"id": approval_id})
+        response = self.client.get("/finance-approvals", params={"id": approval_id})
         return response.data
 
     def create_finance_approval(self, reimbursement_id: int, dept_approval_id: int, approver_id: int, status: str,
@@ -60,7 +49,7 @@ class FinanceApprovalAPI:
         }
         if comment:
             data["comment"] = comment
-        response = self._client.post("/finance-approvals", data=data)
+        response = self.client.post("/finance-approvals", json=data)
         return response.data
 
     def update_finance_approval(self, approval_id: int, **kwargs) -> dict:
@@ -71,7 +60,7 @@ class FinanceApprovalAPI:
         @param kwargs: 更新字段
         @return: 响应字典
         """
-        response = self._client.put("/finance-approvals", data=kwargs, params={"approval_id": approval_id})
+        response = self.client.put("/finance-approvals", json=kwargs, params={"approval_id": approval_id})
         return response.data
 
     def delete_finance_approval(self, approval_id: int) -> dict:
@@ -81,5 +70,5 @@ class FinanceApprovalAPI:
         @param approval_id: 审批ID
         @return: 响应字典
         """
-        response = self._client.delete("/finance-approvals", params={"approval_id": approval_id})
+        response = self.client.delete("/finance-approvals", params={"approval_id": approval_id})
         return response.data

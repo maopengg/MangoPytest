@@ -4,22 +4,11 @@
 # @Time   : 2026-01-18 13:57
 # @Author : 毛鹏
 
-from core.api.client import APIClient
+from core.base import BaseAPI
 
 
-class OrderAPI:
+class OrderAPI(BaseAPI):
     """订单API - 对应 /orders 接口"""
-
-    def __init__(self):
-        self._client = APIClient(base_url="http://localhost:8003")
-
-    def set_host(self, host: str):
-        """设置API服务器地址"""
-        self._client.set_base_url(host)
-
-    def set_token(self, token: str):
-        """设置认证token"""
-        self._client.set_auth_token(token)
 
     def create_order(self, product_id: int, quantity: int, user_id: int) -> dict:
         """
@@ -30,9 +19,9 @@ class OrderAPI:
         @param user_id: 用户ID
         @return: 响应字典
         """
-        response = self._client.post(
+        response = self.client.post(
             "/orders",
-            data={"product_id": product_id, "quantity": quantity, "user_id": user_id}
+            json={"product_id": product_id, "quantity": quantity, "user_id": user_id}
         )
         return response.data
 
@@ -42,7 +31,7 @@ class OrderAPI:
         GET /orders
         @return: 响应字典
         """
-        response = self._client.get("/orders")
+        response = self.client.get("/orders")
         return response.data
 
     def get_order_by_id(self, order_id: int) -> dict:
@@ -52,7 +41,7 @@ class OrderAPI:
         @param order_id: 订单ID
         @return: 响应字典
         """
-        response = self._client.get(f"/orders/{order_id}")
+        response = self.client.get(f"/orders/{order_id}")
         return response.data
 
     def update_order_info(self, order_id: int, **kwargs) -> dict:
@@ -63,7 +52,7 @@ class OrderAPI:
         @param kwargs: 更新字段
         @return: 响应字典
         """
-        response = self._client.put(f"/orders/{order_id}", data=kwargs)
+        response = self.client.put(f"/orders/{order_id}", json=kwargs)
         return response.data
 
     def delete_order(self, order_id: int) -> dict:
@@ -73,5 +62,5 @@ class OrderAPI:
         @param order_id: 订单ID
         @return: 响应字典
         """
-        response = self._client.delete(f"/orders/{order_id}")
+        response = self.client.delete(f"/orders/{order_id}")
         return response.data

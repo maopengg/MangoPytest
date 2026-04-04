@@ -4,22 +4,11 @@
 # @Time   : 2026-01-18 13:58
 # @Author : 毛鹏
 
-from core.api.client import APIClient
+from core.base import BaseAPI
 
 
-class SystemAPI:
+class SystemAPI(BaseAPI):
     """系统API - 对应 /health, /info 接口"""
-
-    def __init__(self):
-        self._client = APIClient(base_url="http://localhost:8003")
-
-    def set_host(self, host: str):
-        """设置API服务器地址"""
-        self._client.set_base_url(host)
-
-    def set_token(self, token: str):
-        """设置认证token"""
-        self._client.set_auth_token(token)
 
     def health_check(self) -> dict:
         """
@@ -27,7 +16,7 @@ class SystemAPI:
         GET /health
         @return: 响应字典
         """
-        response = self._client.get("/health")
+        response = self.client.get("/health")
         return response.data
 
     def get_server_info(self) -> dict:
@@ -36,5 +25,5 @@ class SystemAPI:
         GET /info
         @return: 响应字典
         """
-        response = self._client.get("/info")
+        response = self.client.get("/info")
         return response.data

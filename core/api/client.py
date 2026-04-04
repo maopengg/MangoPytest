@@ -58,7 +58,8 @@ class APIClient:
             base_url: str = "",
             timeout: int = 30,
             headers: Optional[Dict[str, str]] = None,
-            auth_token: Optional[str] = None,
+            pool_connections: int = 10,
+            pool_maxsize: int = 10,
     ):
         """
         初始化 API 客户端
@@ -66,13 +67,12 @@ class APIClient:
         @param base_url: 基础 URL
         @param timeout: 超时时间(秒)
         @param headers: 默认请求头
-        @param auth_token: 认证 token
-        @param enable_allure: 是否启用 Allure 日志记录
+        @param pool_connections: 连接池连接数
+        @param pool_maxsize: 连接池最大连接数
         """
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
         self.headers = headers or {}
-        self.auth_token = auth_token
 
         # 请求/响应拦截器
         self._request_interceptors: List[Callable] = []
@@ -82,12 +82,12 @@ class APIClient:
         self._request_count = 0
         self._error_count = 0
 
-        # 创建 httpx 客户端
-        self._client = httpx.Client(timeout=timeout)
-
-    def set_auth_token(self, token: str):
-        """设置认证 token"""
-        self.auth_token = token
+        # 创建 httpx 客户端，配置连接池
+        limits = httpx.Limits(
+            max_connections=pool_maxsize,
+            max_keepalive_connections=pool_connections,
+        )
+        self._client = httpx.Client(timeout=timeout, limits=limits)
 
     def set_base_url(self, base_url: str):
         """设置基础 URL"""
@@ -106,29 +106,15 @@ class APIClient:
         path = path.lstrip("/")
         return f"{self.base_url}/{path}"
 
-    def _build_headers(
-            self, extra_headers: Optional[Dict[str, str]] = None
-    ) -> Dict[str, str]:
-        """构建请求头"""
-        headers = self.headers.copy()
-        headers["Content-Type"] = "application/json"
-        headers["Accept"] = "application/json"
-
-        if self.auth_token:
-            headers["Authorization"] = f"Bearer {self.auth_token}"
-
-        if extra_headers:
-            headers.update(extra_headers)
-
-        return headers
-
     def _do_request(
             self,
             method: str,
             url: str,
             headers: Dict[str, str],
             data: Optional[Any] = None,
+            json: Optional[Any] = None,
             params: Optional[Dict[str, Any]] = None,
+            files: Optional[Dict[str, Any]] = None,
     ) -> APIResponse:
         """
         执行 HTTP 请求
@@ -136,22 +122,25 @@ class APIClient:
         @param method: HTTP 方法
         @param url: 请求 URL
         @param headers: 请求头
-        @param data: 请求数据
+        @param data: 表单数据或文件上传时的附加数据
+        @param json: JSON 数据
         @param params: 查询参数
+        @param files: 文件上传参数
         @return: API 响应
         """
 
         start_time = time.time()
 
         # 使用 httpx 发送请求
-        if method == "GET":
-            response = self._client.get(url, headers=headers, params=params)
-        elif method == "POST":
-            response = self._client.post(url, headers=headers, json=data)
-        elif method == "PUT":
-            response = self._client.put(url, headers=headers, json=data)
-        elif method == "DELETE":
-            response = self._client.delete(url, headers=headers)
+        if files:
+            headers.pop("Content-Type", None)
+        response = self._client.request(
+            method, url, headers=headers,
+            data=data if files else None,
+            files=files,
+            params=params if not files else None,
+            json=json if not files else None
+        )
         elapsed_ms = (time.time() - start_time) * 1000
 
         # 解析响应数据
@@ -176,13 +165,16 @@ class APIClient:
         return api_response
 
 
+    @api_allure_logger
     def request(
             self,
             method: str,
             path: str,
             data: Optional[Any] = None,
+            json: Optional[Any] = None,
             params: Optional[Dict[str, Any]] = None,
             headers: Optional[Dict[str, str]] = None,
+            files: Optional[Dict[str, Any]] = None,
             retry_count: int = 0,
             retry_delay: float = 1.0,
     ) -> APIResponse:
@@ -191,15 +183,17 @@ class APIClient:
 
         @param method: HTTP 方法
         @param path: 请求路径
-        @param data: 请求数据
+        @param data: 表单数据或文件上传时的附加数据
+        @param json: JSON 数据
         @param params: 查询参数
-        @param headers: 额外请求头
+        @param headers: 请求头
+        @param files: 文件上传参数
         @param retry_count: 重试次数
         @param retry_delay: 重试延迟(秒)
         @return: API 响应
         """
         url = self._build_url(path)
-        request_headers = self._build_headers(headers)
+        request_headers = headers or {}
 
         # 执行请求拦截器
         for interceptor in self._request_interceptors:
@@ -212,7 +206,7 @@ class APIClient:
         last_error = None
         for attempt in range(retry_count + 1):
             try:
-                response = self._do_request(method, url, request_headers, data, params)
+                response = self._do_request(method, url, request_headers, data, json, params, files)
 
                 # 执行响应拦截器
                 for interceptor in self._response_interceptors:
@@ -239,27 +233,41 @@ class APIClient:
 
         raise last_error
 
-    @api_allure_logger
     def get(
             self, path: str, params: Optional[Dict[str, Any]] = None, **kwargs
     ) -> APIResponse:
         """GET 请求"""
         return self.request("GET", path, params=params, **kwargs)
 
-    @api_allure_logger
-    def post(self, path: str, data: Optional[Any] = None, **kwargs) -> APIResponse:
+    def post(self, path: str, json: Optional[Any] = None, **kwargs) -> APIResponse:
         """POST 请求"""
-        return self.request("POST", path, data=data, **kwargs)
+        return self.request("POST", path, json=json, **kwargs)
 
-    @api_allure_logger
-    def put(self, path: str, data: Optional[Any] = None, **kwargs) -> APIResponse:
+    def put(self, path: str, json: Optional[Any] = None, **kwargs) -> APIResponse:
         """PUT 请求"""
-        return self.request("PUT", path, data=data, **kwargs)
+        return self.request("PUT", path, json=json, **kwargs)
 
-    @api_allure_logger
     def delete(self, path: str, **kwargs) -> APIResponse:
         """DELETE 请求"""
         return self.request("DELETE", path, **kwargs)
+
+    def upload(self, path: str, file_path: str, data: Optional[Dict[str, Any]] = None, headers: Optional[Dict[str, str]] = None, **kwargs) -> APIResponse:
+        """
+        文件上传
+
+        @param path: 上传路径
+        @param file_path: 本地文件路径
+        @param data: 额外表单数据
+        @param headers: 请求头
+        @return: API 响应
+
+        使用示例：
+            response = client.upload("/upload", "/path/to/file.pdf")
+            response = client.upload("/upload", "/path/to/file.pdf", data={"folder": "docs"})
+        """
+        with open(file_path, "rb") as f:
+            files = {"file": (file_path.split("/")[-1].split("\\")[-1], f)}
+            return self.request("POST", path, data=data, files=files, headers=headers, **kwargs)
 
     def get_stats(self) -> Dict[str, Any]:
         """获取统计信息"""

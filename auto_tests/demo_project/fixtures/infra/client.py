@@ -25,9 +25,7 @@ def authenticated_client(api_client):
     """
     from auto_tests.demo_project.api_manager import demo_project
 
-    # 使用 testuser 用户登录
-    # mock API 中 testuser 的密码明文是 "password123"
-    # api_login 会自动进行 MD5 加密
+
     result = demo_project.auth.api_login(username="testuser", password="password123")
 
     if result.get("code") != 200:

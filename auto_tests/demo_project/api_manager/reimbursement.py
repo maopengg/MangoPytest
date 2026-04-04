@@ -4,22 +4,11 @@
 # @Time   : 2024-03-17 19:50
 # @Author : 毛鹏
 
-from core.api.client import APIClient
+from core.base import BaseAPI
 
 
-class ReimbursementAPI:
+class ReimbursementAPI(BaseAPI):
     """报销申请API - 对应 /reimbursements 接口"""
-
-    def __init__(self):
-        self._client = APIClient(base_url="http://localhost:8003")
-
-    def set_host(self, host: str):
-        """设置API服务器地址"""
-        self._client.set_base_url(host)
-
-    def set_token(self, token: str):
-        """设置认证token"""
-        self._client.set_auth_token(token)
 
     def get_reimbursements(self) -> dict:
         """
@@ -27,7 +16,7 @@ class ReimbursementAPI:
         GET /reimbursements
         @return: 响应字典
         """
-        response = self._client.get("/reimbursements")
+        response = self.client.get("/reimbursements")
         return response.data
 
     def get_reimbursement_by_id(self, reimbursement_id: int) -> dict:
@@ -37,7 +26,7 @@ class ReimbursementAPI:
         @param reimbursement_id: 报销申请ID
         @return: 响应字典
         """
-        response = self._client.get("/reimbursements", params={"id": reimbursement_id})
+        response = self.client.get("/reimbursements", params={"id": reimbursement_id})
         return response.data
 
     def create_reimbursement(self, user_id: int, amount: float, reason: str) -> dict:
@@ -49,9 +38,9 @@ class ReimbursementAPI:
         @param reason: 报销原因
         @return: 响应字典
         """
-        response = self._client.post(
+        response = self.client.post(
             "/reimbursements",
-            data={"user_id": user_id, "amount": amount, "reason": reason}
+            json={"user_id": user_id, "amount": amount, "reason": reason}
         )
         return response.data
 
@@ -63,7 +52,7 @@ class ReimbursementAPI:
         @param kwargs: 更新字段
         @return: 响应字典
         """
-        response = self._client.put(f"/reimbursements/{reimbursement_id}", data=kwargs)
+        response = self.client.put(f"/reimbursements/{reimbursement_id}", json=kwargs)
         return response.data
 
     def delete_reimbursement(self, reimbursement_id: int) -> dict:
@@ -73,5 +62,5 @@ class ReimbursementAPI:
         @param reimbursement_id: 报销申请ID
         @return: 响应字典
         """
-        response = self._client.delete(f"/reimbursements/{reimbursement_id}")
+        response = self.client.delete(f"/reimbursements/{reimbursement_id}")
         return response.data

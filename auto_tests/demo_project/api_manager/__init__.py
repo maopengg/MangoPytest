@@ -4,8 +4,6 @@
 # @Time   : 2026-03-31
 # @Author : 毛鹏
 
-from typing import Optional
-
 # 统一的API出口
 from auto_tests.demo_project.config import load_settings
 from .auth import AuthAPI
@@ -33,11 +31,8 @@ class DemoProjectAPI:
         demo_project.sync_host_from_env("pre")
     """
 
-    # Mock API 默认地址（兜底值）
-    DEFAULT_HOST = "http://localhost:8003"
-
     def __init__(self):
-        self._host = load_settings().HOST or self.DEFAULT_HOST
+        self._host = load_settings().HOST
         self._auth = None
         self._user = None
         self._product = None
@@ -51,41 +46,6 @@ class DemoProjectAPI:
         self._dept_approval = None
         self._finance_approval = None
         self._ceo_approval = None
-
-    def sync_host_from_env(self, env: Optional[str] = None) -> str:
-        """
-        根据配置环境同步 host
-
-        @param env: 指定环境（dev/test/pre/prod），不传则使用当前 ENV
-        @return: 生效后的 host
-        """
-        config = load_settings(env)
-        self.set_host(config.HOST or self.DEFAULT_HOST)
-        return self._host
-
-    def set_host(self, host: str):
-        """
-        设置API服务器地址
-        @param host: 服务器地址，如 http://localhost:8003
-        """
-        self._host = host.rstrip("/")
-        # 更新所有已创建的API实例的host
-        for api in [
-            self._auth,
-            self._user,
-            self._product,
-            self._order,
-            self._file,
-            self._data,
-            self._system,
-            self._login,
-            self._reimbursement,
-            self._dept_approval,
-            self._finance_approval,
-            self._ceo_approval,
-        ]:
-            if api is not None:
-                api.set_host(self._host)
 
     def get_host(self) -> str:
         """获取当前API服务器地址"""

@@ -6,18 +6,11 @@
 
 import hashlib
 
-from core.api.client import APIClient
+from core.base import BaseAPI
 
 
-class LoginAPI:
+class LoginAPI(BaseAPI):
     """登录API - 对应 /auth/login 接口"""
-
-    def __init__(self):
-        self._client = APIClient(base_url="http://localhost:8003")
-
-    def set_host(self, host: str):
-        """设置API服务器地址"""
-        self._client.set_base_url(host)
 
     def _encrypt_password(self, password: str) -> str:
         """对密码进行 MD5 加密"""
@@ -33,8 +26,8 @@ class LoginAPI:
         """
         # 对密码进行 MD5 加密
         password_md5 = self._encrypt_password(password)
-        response = self._client.post(
+        response = self.client.post(
             "/auth/login",
-            data={"username": username, "password": password_md5}
+            json={"username": username, "password": password_md5}
         )
         return response.data

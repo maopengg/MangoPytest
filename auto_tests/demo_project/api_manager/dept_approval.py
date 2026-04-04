@@ -4,22 +4,11 @@
 # @Time   : 2024-03-17 19:50
 # @Author : 毛鹏
 
-from core.api.client import APIClient
+from core.base import BaseAPI
 
 
-class DeptApprovalAPI:
+class DeptApprovalAPI(BaseAPI):
     """部门审批API - 对应 /dept-approvals 接口"""
-
-    def __init__(self):
-        self._client = APIClient(base_url="http://localhost:8003")
-
-    def set_host(self, host: str):
-        """设置API服务器地址"""
-        self._client.set_base_url(host)
-
-    def set_token(self, token: str):
-        """设置认证token"""
-        self._client.set_auth_token(token)
 
     def get_dept_approvals(self) -> dict:
         """
@@ -27,7 +16,7 @@ class DeptApprovalAPI:
         GET /dept-approvals
         @return: 响应字典
         """
-        response = self._client.get("/dept-approvals")
+        response = self.client.get("/dept-approvals")
         return response.data
 
     def get_dept_approval_by_id(self, approval_id: int) -> dict:
@@ -37,7 +26,7 @@ class DeptApprovalAPI:
         @param approval_id: 审批ID
         @return: 响应字典
         """
-        response = self._client.get("/dept-approvals", params={"id": approval_id})
+        response = self.client.get("/dept-approvals", params={"id": approval_id})
         return response.data
 
     def create_dept_approval(
@@ -59,7 +48,7 @@ class DeptApprovalAPI:
         }
         if comment:
             data["comment"] = comment
-        response = self._client.post("/dept-approvals", data=data)
+        response = self.client.post("/dept-approvals", json=data)
         return response.data
 
     def update_dept_approval(self, approval_id: int, **kwargs) -> dict:
@@ -70,9 +59,9 @@ class DeptApprovalAPI:
         @param kwargs: 更新字段
         @return: 响应字典
         """
-        response = self._client.put(
+        response = self.client.put(
             "/dept-approvals",
-            data=kwargs,
+            json=kwargs,
             params={"approval_id": approval_id}
         )
         return response.data
@@ -84,5 +73,5 @@ class DeptApprovalAPI:
         @param approval_id: 审批ID
         @return: 响应字典
         """
-        response = self._client.delete("/dept-approvals", params={"approval_id": approval_id})
+        response = self.client.delete("/dept-approvals", params={"approval_id": approval_id})
         return response.data
