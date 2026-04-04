@@ -24,10 +24,9 @@ from typing import Optional
 import requests
 from requests.models import Response
 
-from models.api_model import ApiDataModel, RequestModel, ResponseModel
+from core.models.api_model import ApiDataModel, RequestModel, ResponseModel
 from core.decorators import timer, log_decorator
-from tools.log import log
-from tools.obtain_test_data import ObtainTestData
+from core.utils import log, ObtainTestData
 
 
 class RequestTool:

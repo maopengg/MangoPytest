@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description: 
+# @Description:
 # @Time   : 2024-10-25 21:46
 # @Author : 毛鹏
 from mangotools.log_collector import set_log
@@ -8,4 +8,4 @@ from mangotools.log_collector import set_log
 from core.settings.settings import IS_DEBUG
 from core.utils.project_dir import project_dir
 
-log = set_log(project_dir.logs(), IS_DEBUG, 'process')
+log = set_log(project_dir.logs(), IS_DEBUG, "process")

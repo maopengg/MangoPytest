@@ -26,7 +26,7 @@ from ..entities import UserEntity, ReimbursementEntity
 from ..entities.org_entity import OrgEntity
 from ..entities.budget_entity import BudgetEntity
 from ..context import Context
-from .variant_matrix import VariantMatrix, Dimension, Variant
+from core.models import VariantMatrix, Dimension, Variant
 
 
 class FullApprovalScenario(BaseScenario):

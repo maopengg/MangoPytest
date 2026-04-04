@@ -12,8 +12,7 @@ from mangotools.models import EmailNoticeModel, WeChatNoticeModel, TestReportMod
 from mangotools.notice import EmailSend, WeChatSend
 
 from auto_tests.project_config import ProjectEnum
-from core.enums.tools_enum import ClientNameEnum, EnvironmentEnum, AutoTestTypeEnum
-from core.enums.tools_enum import StatusEnum
+from core.enums.tools_enum import ClientNameEnum, EnvironmentEnum, AutoTestTypeEnum, StatusEnum
 from core.models.tools_model import CaseRunModel
 from core.settings.settings import SEND_USER, EMAIL_HOST, STAMP_KEY
 from core.sources import SourcesData

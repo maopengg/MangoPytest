@@ -8,8 +8,8 @@ import os
 from mangotools.data_processor import DataProcessor
 
 from auto_tests.project_config import auto_test_project_config
-from exceptions import ToolsError, ERROR_MSG_0042
-from tools import project_dir
+from core.exceptions import ToolsError, ERROR_MSG_0042
+from core.utils import project_dir
 
 
 class ObtainTestData(DataProcessor):
@@ -24,7 +24,7 @@ class ObtainTestData(DataProcessor):
             if i.get('project_name').value == project_name:
                 return os.path.join(
                     project_dir.root_path(),
-                    'auto_test',
+                    'auto_tests',
                     i.get('dir_name'),
                     'upload',
                     file_name
@@ -33,5 +33,5 @@ class ObtainTestData(DataProcessor):
 
 
 if __name__ == '__main__':
-    today_weekday = ObtainTestData.get_today_weekday()
+    today_weekday = ObtainTestData.time_random_weekday()
     print(f"今天是: {today_weekday}")

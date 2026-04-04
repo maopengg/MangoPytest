@@ -7,7 +7,7 @@ import time
 
 import allure
 
-from tools.log import log
+from core.utils import log
 
 
 class TestDemo:

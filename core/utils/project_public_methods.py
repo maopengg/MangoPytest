@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description: 
+# @Description:
 # @Time   : 2024-03-17 19:10
 # @Author : 毛鹏
 import json
@@ -12,9 +12,8 @@ from pydantic_core._pydantic_core import ValidationError
 
 from core.enums.tools_enum import PytestSystemEnum
 from core.enums.tools_enum import StatusEnum, AutoTestTypeEnum, EnvironmentEnum
-from exceptions import *
-from models.tools_model import CaseRunListModel, BaseDataModel, ProjectModel, TestObjectModel
-from sources import SourcesData
+from core.exceptions import *
+from core.models.tools_model import CaseRunListModel, BaseDataModel, ProjectModel, TestObjectModel
 
 
 class InitBaseData:
@@ -34,10 +33,14 @@ class InitBaseData:
 
     @classmethod
     def __project(cls, project_name: str) -> ProjectModel:
+        from core.sources import SourcesData
+
         return ProjectModel(**SourcesData.get_project(name=project_name))
 
     @classmethod
     def __test_object(cls, project: ProjectModel, _type: AutoTestTypeEnum) -> tuple[TestObjectModel, EnvironmentEnum]:
+        from core.sources import SourcesData
+
         try:
             case_list = CaseRunListModel(**json.loads(os.environ['TEST_ENV']))
             if case_list.case_run:

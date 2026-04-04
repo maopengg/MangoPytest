@@ -44,7 +44,7 @@
       "request": "launch",
       "module": "pytest",
       "args": [
-        "auto_test",
+        "auto_tests",
         "-v",
         "-s"
       ],

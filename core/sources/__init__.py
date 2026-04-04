@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description: 
+# @Description:
 # @Time   : 2024-04-02 9:48
 # @Author : 毛鹏
 import numpy as np
 from pandas.core.frame import DataFrame
 
 from core.enums.tools_enum import SourcesTypeEnum
-from exceptions import *
-from settings.settings import SOURCES_TYPE
-from sources.excel.excel_data import ExcelData
-from sources.feishu.document_data import DocumentData
-from sources.sql.sql_data import SqlData
+from core.exceptions import *
+from core.settings.settings import SOURCES_TYPE
+from core.sources.excel.excel_data import ExcelData
+from core.sources.feishu.document_data import DocumentData
+from core.sources.sql.sql_data import SqlData
 
 
 class SourcesData:
@@ -88,7 +88,7 @@ class SourcesData:
             if isinstance(value, list):
                 condition = df[key].isin(value)
             else:
-                condition = (df[key] == value)
+                condition = df[key] == value
             if conditions is None:
                 conditions = condition
             else:
@@ -100,7 +100,7 @@ class SourcesData:
         elif len(result) == 1:
             data = result.squeeze().to_dict()
         else:
-            data = result.to_dict(orient='records')
+            data = result.to_dict(orient="records")
         if isinstance(data, list) and is_dict:
             raise ToolsError(*ERROR_MSG_0348, value=(str(kwargs),))
         elif isinstance(data, list) and not is_dict:
@@ -108,9 +108,11 @@ class SourcesData:
         elif isinstance(data, dict) and is_dict:
             return data
         elif isinstance(data, dict) and not is_dict:
-            return [data, ]
+            return [
+                data,
+            ]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     api_info_dict = SourcesData.get_api_info(id=1)
     print(api_info_dict)

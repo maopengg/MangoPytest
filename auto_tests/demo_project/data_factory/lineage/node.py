@@ -18,7 +18,7 @@
 
 # 从统一的枚举和模型文件导入
 from core.enums.demo_enum import LineageNodeType, LineageRelation
-from models.demo_model import LineageEdge, DataLineageNode, LineagePath
+from core.models.demo_model import LineageEdge, DataLineageNode, LineagePath
 
 # 保持向后兼容的导出
 __all__ = [

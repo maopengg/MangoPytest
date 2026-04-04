@@ -8,7 +8,7 @@ import allure
 
 from auto_tests.ui_baidu import base_data_model
 from auto_tests.ui_baidu.abstract.home_page import HomePage
-from models.ui_model import UiDataModel
+from core.models.ui_model import UiDataModel
 from tools.decorator.ui import case_data
 from tools.obtain_test_data import ObtainTestData
 

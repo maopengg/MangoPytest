@@ -18,7 +18,7 @@
 
 from core.enums.demo_enum import Environment, CreateStrategy
 # 从统一的模型文件导入
-from models.demo_model import (
+from core.models.demo_model import (
     Settings, get_settings,
     BaseConfig, DevConfig, TestConfig, PreConfig, ProdConfig, CIConfig
 )

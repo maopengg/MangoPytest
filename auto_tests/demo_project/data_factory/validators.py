@@ -6,6 +6,6 @@
 from typing import Any, Dict, List, Optional, Callable
 
 # 从统一异常模块导入
-from exceptions import ValidationError
+from core.exceptions import ValidationError
 
 __all__ = ['ValidationError']

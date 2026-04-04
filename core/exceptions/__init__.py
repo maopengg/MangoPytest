@@ -13,11 +13,10 @@
 - ToolsError: 工具类异常
 
 使用方式：
-    from exceptions import ApiError, ERROR_MSG_0001
+    from core.exceptions import ApiError, ERROR_MSG_0001
     raise ApiError(*ERROR_MSG_0001)
 """
-from tools.log import log
-from exceptions.error_msg import *
+from core.exceptions.error_msg import *
 
 class PytestAutoTestError(Exception):
     """基础异常类"""
@@ -25,6 +24,7 @@ class PytestAutoTestError(Exception):
     def __init__(self, code: int, msg: str, value: tuple = None, error: any = None):
         self.msg = msg.format(*value) if value else msg
         self.code = code
+        from core.utils import log
         if error:
             log.error(f'报错提示：{self.msg}， 报错内容：{error}')
         else:

@@ -9,7 +9,7 @@
 使用统一的异常体系，从 exceptions 导入基础异常类
 """
 
-from exceptions import ApiError, DataError
+from core.exceptions import ApiError, DataError
 
 # 为了保持向后兼容，提供别名
 StateMachineError = DataError

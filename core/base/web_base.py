@@ -33,11 +33,10 @@ from mangotools.decorator import sync_retry
 from mangotools.enums import StatusEnum
 from playwright.sync_api import Locator
 
-from exceptions import PytestAutoTestError
-from exceptions.error_msg import ERROR_MSG_0001
-from sources import SourcesData
-from tools.log import log
-from tools.obtain_test_data import ObtainTestData
+from core.exceptions import PytestAutoTestError, ERROR_MSG_0001
+from core.sources import SourcesData
+from core.utils import log
+from core.utils.obtain_test_data import ObtainTestData
 
 
 class WebBaseObject(SyncWebDevice):

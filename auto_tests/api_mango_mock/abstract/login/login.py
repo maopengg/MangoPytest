@@ -4,7 +4,7 @@
 # @Time   : 2024-03-17 19:50
 # @Author : 毛鹏
 from auto_tests.api_mango_mock import base_data
-from models.api_model import ApiDataModel
+from core.models.api_model import ApiDataModel
 from tools.base_request.request_tool import RequestTool
 from tools.decorator.response import request_data
 

@@ -13,10 +13,10 @@
 import allure
 import pytest
 
-from exceptions import PytestAutoTestError
-from exceptions.error_msg import ERROR_MSG_0350
-from models.other_model import OtherDataModel, OtherTestCaseModel
-from tools.log import log
+from core.exceptions import PytestAutoTestError
+from core.exceptions.error_msg import ERROR_MSG_0350
+from core.models.other_model import OtherDataModel, OtherTestCaseModel
+from core.utils import log
 
 
 def case_data(case_id: int | list[int] | None = None, case_name: str | list[str] | None = None):
@@ -30,7 +30,7 @@ def case_data(case_id: int | list[int] | None = None, case_name: str | list[str]
 
     def decorator(func):
         log.debug(f'开始查询用例：{case_id if case_id else case_name}')
-        from sources import SourcesData
+        from core.sources import SourcesData
         if case_id:
             test_case_list = SourcesData.get_other_test_case(is_dict=False, id=case_id)
         elif case_name:

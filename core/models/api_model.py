@@ -13,7 +13,7 @@ from mangotools.data_processor import DataClean
 from pydantic import BaseModel, ConfigDict
 
 from core.enums.api_enum import IsSchemaEnum
-from exceptions import *
+from core.exceptions import *
 
 warnings.filterwarnings(
     "ignore",

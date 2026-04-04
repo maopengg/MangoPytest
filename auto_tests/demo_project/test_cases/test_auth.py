@@ -330,7 +330,6 @@ class TestAuthRegisterScenario(UnitTest):
 
         from auto_tests.demo_project.data_factory.builders.user import UserBuilder
         from auto_tests.demo_project.api_manager import demo_project
-        from auto_tests.demo_project.core.api.exceptions import APIException
 
         # 设置全局token，确保API调用使用正确的token
         demo_project.token = token
@@ -338,14 +337,7 @@ class TestAuthRegisterScenario(UnitTest):
 
         user_builder = UserBuilder(token=token)
 
-        try:
-            current_user = user_builder.get_by_id(user.get("id"))
-        except APIException as e:
-            # 如果API返回401，可能是mock API不支持token验证，跳过验证
-            if e.status_code == 401:
-                pytest.skip("mock API 返回 401，可能不支持token验证，跳过用户详情验证")
-            raise
-
+        current_user = user_builder.get_by_id(user.get("id"))
         # 如果API返回空，可能是mock API不支持此功能
         if current_user is None:
             pytest.skip("mock API 返回空，可能不支持用户详情查询")

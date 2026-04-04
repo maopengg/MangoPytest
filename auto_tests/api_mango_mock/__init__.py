@@ -4,9 +4,8 @@ import requests
 
 from auto_tests.project_config import ProjectEnum
 from core.enums.tools_enum import AutoTestTypeEnum
-from models.tools_model import BaseDataModel
-from tools.log import log
-from tools.project_public_methods import InitBaseData
+from core.models.tools_model import BaseDataModel
+from core.utils import log, InitBaseData
 
 user_info: dict = {"username": "testuser", "password": "482c811da5d5b4bc6d497ffa98491e38"}
 

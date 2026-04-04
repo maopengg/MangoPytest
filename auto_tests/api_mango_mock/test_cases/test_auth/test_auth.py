@@ -8,7 +8,7 @@ import allure
 import pytest
 
 from auto_tests.api_mango_mock.abstract.auth.auth import AuthAPI
-from models.api_model import ApiDataModel
+from core.models.api_model import ApiDataModel
 from tools.base_request.case_tool import CaseTool
 from tools.decorator.response import case_data
 from tools.obtain_test_data import ObtainTestData

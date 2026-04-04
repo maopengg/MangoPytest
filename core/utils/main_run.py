@@ -10,11 +10,10 @@ import socket
 import pytest
 
 from auto_tests.project_config import auto_test_project_config
-from models.tools_model import CaseRunListModel
-from settings.settings import IS_TEST_REPORT
-from tools import project_dir
-from tools.files.zip_files import zip_files
-from tools.log import log
+from core.models.tools_model import CaseRunListModel
+from core.utils.project_dir import project_dir
+from core.utils.zip_files import zip_files
+from core.utils import log
 
 
 class MainRun:
@@ -44,7 +43,7 @@ class MainRun:
                     #         fr'{project_dir.root_path()}\auto_test\{i.get("dir_name")}\test_cases'
                     #     )
                     self.pytest_command.append(
-                        fr'{project_dir.root_path()}\auto_test\demo_project\test_cases\test_approval_workflow.py'
+                        fr'{project_dir.root_path()}\auto_tests\demo_project\test_cases\test_approval_workflow.py'
                     )
         log.info(f"开始执行测试任务......")
         print(self.pytest_command)

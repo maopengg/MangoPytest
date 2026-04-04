@@ -18,7 +18,7 @@ Core API 模块
 
 异常处理：
     使用全局异常类：
-    from exceptions import ApiError, ERROR_MSG_0400
+    from core.exceptions import ApiError, ERROR_MSG_0400
     raise ApiError(*ERROR_MSG_0400.format("请求超时"))
 """
 

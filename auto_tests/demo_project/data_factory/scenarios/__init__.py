@@ -17,18 +17,18 @@
 
 使用示例：
 from auto_tests.demo_project.data_factory.scenarios import FullApprovalScenario
-    
+
     # 基础用法
     scenario = FullApprovalScenario(token="xxx")
     result = scenario.execute(amount=50000)
-    
+
     if result.success:
         reimbursement = result.get_entity("reimbursement")
         print(f"审批流程完成，报销ID: {reimbursement.id}")
 
 变体矩阵示例：
     from auto_tests.demo_project.data_factory.scenarios import VariantMatrix, Dimension, Variant
-    
+
     matrix = VariantMatrix([
         Dimension("amount", [
             Variant("small", {"amount": 1000}, 0),
@@ -36,11 +36,11 @@ from auto_tests.demo_project.data_factory.scenarios import FullApprovalScenario
         ]),
     ])
     variants = matrix.generate()
-    
+
 快捷方法示例：
     # 执行指定变体
     result = FullApprovalScenario.execute_variant("amount=large,urgency=urgent")
-    
+
     # 执行所有变体
     results = FullApprovalScenario.execute_all_variants()
 """
@@ -50,25 +50,28 @@ from .base_scenario import (
     BaseScenario,
     ScenarioResult,
     Dependencies,
-    Creates  # 【新增】
+    Creates,  # 【新增】
 )
+
 # 登录场景
 from .login import LoginScenario, RegisterAndLoginScenario
+
 # 报销审批场景
 from .reimbursement import (
     CreateReimbursementScenario,
     FullApprovalWorkflowScenario,
     RejectionWorkflowScenario,
 )
+
 # 变体矩阵
-from .variant_matrix import (
+from core.models import (
     VariantMatrix,
     Dimension,
     Variant,
-    VariantStatus,
     VariantMatrixResult,
     VariantExecutor,
 )
+from core.enums import VariantStatus
 
 # 【新增】完整审批流场景（使用增强版 BaseScenario）
 from .full_approval_scenario import FullApprovalScenario

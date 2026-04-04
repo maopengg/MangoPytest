@@ -4,5 +4,5 @@
 # @Time   : 2026-04-01
 # @Author : 毛鹏
 pytest_plugins = [
-    "auto_test.demo_project.fixtures.infra.client",
+    "auto_tests.demo_project.fixtures.infra.client",
 ]

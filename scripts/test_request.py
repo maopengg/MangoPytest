@@ -5,7 +5,7 @@
 # @Author : 毛鹏
 import requests
 
-from models.api_model import RequestModel, ResponseModel
+from core.models.api_model import RequestModel, ResponseModel
 from tools.base_request.request_tool import RequestTool
 
 

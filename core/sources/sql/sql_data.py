@@ -1,8 +1,8 @@
 import pandas
 from mangotools.database import SQLiteConnect
 
-from exceptions import *
-from tools import project_dir
+from core.exceptions import *
+from core.utils import project_dir
 
 sql_statement_1 = 'SELECT * FROM ui_element where project_id = ? and module_name = ?;'
 sql_statement_2 = 'SELECT * FROM project WHERE `name` = ?;'

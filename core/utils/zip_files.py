@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description: 
+# @Description:
 # @Time   : 2023-09-05 9:53
 # @Author : 毛鹏
 import datetime
 import os
 import zipfile
 
-from tools import project_dir
+from core.utils.project_dir import project_dir
 
 
 def delete_directory_contents(directory):
@@ -26,9 +26,11 @@ def zip_files():
     if len(file_list) != 0:
         timestamp = datetime.datetime.now().strftime("%Y年%m月%d日%H时%M分%S秒")
         output_path = os.path.join(project_dir.reports(), f"{timestamp}.zip")
-        with zipfile.ZipFile(output_path, 'w') as zipf:
+        with zipfile.ZipFile(output_path, "w") as zipf:
             for root, dirs, files in os.walk(project_dir.report()):
                 for file in files:
                     file_path = os.path.join(root, file)
-                    zipf.write(file_path, os.path.relpath(file_path, project_dir.report()))
+                    zipf.write(
+                        file_path, os.path.relpath(file_path, project_dir.report())
+                    )
         delete_directory_contents(project_dir.report())

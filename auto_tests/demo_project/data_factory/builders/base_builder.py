@@ -9,7 +9,6 @@ Builder基类模块
 注意：基类已从 core.base 导入，此类保留用于向后兼容
 """
 
-# 从 core.base 导入基类
 from core.base import BaseBuilder, BuilderContext
 
 # 从统一的枚举文件导入

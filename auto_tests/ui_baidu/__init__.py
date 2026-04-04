@@ -6,9 +6,8 @@
 
 from auto_tests.project_config import ProjectEnum
 from core.enums.tools_enum import AutoTestTypeEnum
-from models.tools_model import BaseDataModel
-from tools.log import log
-from tools.project_public_methods import InitBaseData
+from core.models.tools_model import BaseDataModel
+from core.utils import log, InitBaseData
 
 
 def data_init() -> BaseDataModel:

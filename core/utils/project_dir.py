@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description: 
+# @Description:
 # @Time   : 2023-03-05 20:39
 # @Author : 毛鹏
 
@@ -52,6 +52,7 @@ class ProjectDir:
 
 
 project_dir = ProjectDir()
+
 if __name__ == '__main__':
     print(project_dir.root_path())
     print(project_dir.download())

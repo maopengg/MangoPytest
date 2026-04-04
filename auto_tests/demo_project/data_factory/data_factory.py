@@ -8,7 +8,7 @@ import uuid
 from typing import Dict, Any, List, Optional
 
 from auto_tests.demo_project.api_manager import demo_project
-from models.api_model import ApiDataModel, RequestModel
+from core.models.api_model import ApiDataModel, RequestModel
 
 
 class DataFactory:

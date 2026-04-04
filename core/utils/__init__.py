@@ -12,22 +12,28 @@ Core Utils 模块
 
 from .helpers import generate_id, merge_dicts, filter_dict
 from .log import log
-from .notice import NoticeMain
-from .main_run import MainRun
 from .obtain_test_data import ObtainTestData
+from .project_dir import ProjectDir
 from .project_public_methods import InitBaseData
 from .zip_files import zip_files
-from .project_dir import project_dir
+
+project_dir = ProjectDir()
+
 __all__ = [
     # 辅助函数
     "generate_id",
     "merge_dicts",
     "filter_dict",
     "log",
-    "NoticeMain",
-    "MainRun",
     "ObtainTestData",
     "InitBaseData",
     "zip_files",
-    "project_dir"
+    "project_dir",
 ]
+
+if __name__ == '__main__':
+    print(project_dir.root_path())
+    print(project_dir.download())
+    print(project_dir.logs())
+    print(project_dir.reports())
+    print(project_dir.report())

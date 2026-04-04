@@ -23,13 +23,13 @@ import os
 import requests
 from requests import RequestException
 
-from models.api_model import ApiDataModel
-from tools import project_dir
-from tools.assertion import Assertion
-from tools.log import log
+from core.models.api_model import ApiDataModel
+from core.utils import project_dir
+from core.base import AssertionBase
+from core.utils import log
 
 
-class CaseTool(Assertion):
+class CaseTool(AssertionBase):
     """
     API 测试用例工具类
     
