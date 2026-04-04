@@ -4,7 +4,7 @@
 # @Time   : 2026-03-31
 # @Author : 毛鹏
 
-from auto_test.demo_project.api_manager import demo_project
+from auto_tests.demo_project.api_manager import demo_project
 from core.base.layering_base import UnitTest, IntegrationTest
 
 

@@ -20,7 +20,7 @@ from models import (
 )
 
 # 从 enums 导入变体状态
-from enums import VariantStatus
+from core.enums VariantStatus
 
 __all__ = [
     'VariantStatus',

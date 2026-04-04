@@ -4,8 +4,8 @@
 # @Time   : 2026-03-03 14:07
 # @Author : 毛鹏
 
-from auto_test.project_config import ProjectEnum
-from enums.tools_enum import AutoTestTypeEnum
+from auto_tests.project_config import ProjectEnum
+from core.enums.tools_enum import AutoTestTypeEnum
 from models.tools_model import BaseDataModel
 from tools.log import log
 from tools.project_public_methods import InitBaseData

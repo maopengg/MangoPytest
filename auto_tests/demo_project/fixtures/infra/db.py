@@ -33,7 +33,7 @@ def clean_db_state():
     清理数据库状态fixture
     测试前清理数据，确保测试环境干净
     """
-    from auto_test.demo_project.data_factory import data_factory
+    from auto_tests.demo_project.data_factory import data_factory
 
     # 测试前清理
     data_factory.cleanup_all()

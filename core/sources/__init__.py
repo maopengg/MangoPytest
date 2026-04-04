@@ -6,7 +6,7 @@
 import numpy as np
 from pandas.core.frame import DataFrame
 
-from enums.tools_enum import SourcesTypeEnum
+from core.enums.tools_enum import SourcesTypeEnum
 from exceptions import *
 from settings.settings import SOURCES_TYPE
 from sources.excel.excel_data import ExcelData

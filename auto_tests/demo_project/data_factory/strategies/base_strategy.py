@@ -13,6 +13,6 @@
 from core.base import BaseStrategy, StrategyResult
 
 # 从统一的枚举文件导入
-from enums.demo_enum import CreateStrategyAuto as CreateStrategy
+from core.enums.demo_enum import CreateStrategyAuto as CreateStrategy
 
 __all__ = ['BaseStrategy', 'StrategyResult', 'CreateStrategy']

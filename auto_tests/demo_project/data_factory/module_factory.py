@@ -59,8 +59,8 @@ class ModuleDataFactory:
         print("创建D模块数据...")
 
         # 使用API管理模块创建基础数据
-        from auto_test.demo_project.api_manager.auth import AuthAPI
-        from auto_test.demo_project.api_manager.user import UserAPI
+        from auto_tests.demo_project.api_manager.auth import AuthAPI
+        from auto_tests.demo_project.api_manager.user import UserAPI
 
         auth_api = AuthAPI()
         user_api = UserAPI()
@@ -100,7 +100,7 @@ class ModuleDataFactory:
             raise ValueError("D模块数据未创建，无法创建C模块数据")
 
         # 使用API管理模块
-        from auto_test.demo_project.api_manager.product import ProductAPI
+        from auto_tests.demo_project.api_manager.product import ProductAPI
 
         product_api = ProductAPI()
 
@@ -134,7 +134,7 @@ class ModuleDataFactory:
             raise ValueError("C模块数据未创建，无法创建B模块数据")
 
         # 使用API管理模块
-        from auto_test.demo_project.api_manager.order import OrderAPI
+        from auto_tests.demo_project.api_manager.order import OrderAPI
 
         order_api = OrderAPI()
 
@@ -185,9 +185,9 @@ class ModuleDataFactory:
             raise ValueError("B模块数据未创建，无法创建A模块数据")
 
         # 使用API管理模块
-        from auto_test.demo_project.api_manager.data import DataAPI
-        from auto_test.demo_project.api_manager.system import SystemAPI
-        from auto_test.demo_project.api_manager.file import FileAPI
+        from auto_tests.demo_project.api_manager.data import DataAPI
+        from auto_tests.demo_project.api_manager.system import SystemAPI
+        from auto_tests.demo_project.api_manager.file import FileAPI
 
         data_api = DataAPI()
         system_api = SystemAPI()

@@ -10,8 +10,8 @@ from mangotools.database import MysqlConnect
 from mangotools.models import MysqlConingModel
 from pydantic_core._pydantic_core import ValidationError
 
-from enums.tools_enum import PytestSystemEnum
-from enums.tools_enum import StatusEnum, AutoTestTypeEnum, EnvironmentEnum
+from core.enums.tools_enum import PytestSystemEnum
+from core.enums.tools_enum import StatusEnum, AutoTestTypeEnum, EnvironmentEnum
 from exceptions import *
 from models.tools_model import CaseRunListModel, BaseDataModel, ProjectModel, TestObjectModel
 from sources import SourcesData

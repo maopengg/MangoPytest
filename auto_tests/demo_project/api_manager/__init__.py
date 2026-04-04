@@ -7,7 +7,7 @@
 from typing import Optional
 
 # 统一的API出口
-from auto_test.demo_project.config import load_settings
+from auto_tests.demo_project.config import load_settings
 from .auth import AuthAPI
 from .ceo_approval import CEOApprovalAPI
 from .data import DataAPI

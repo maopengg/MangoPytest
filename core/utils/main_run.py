@@ -9,7 +9,7 @@ import socket
 
 import pytest
 
-from auto_test.project_config import auto_test_project_config
+from auto_tests.project_config import auto_test_project_config
 from models.tools_model import CaseRunListModel
 from settings.settings import IS_TEST_REPORT
 from tools import project_dir

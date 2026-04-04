@@ -13,6 +13,6 @@ Builder基类模块
 from core.base import BaseBuilder, BuilderContext
 
 # 从统一的枚举文件导入
-from enums.demo_enum import DependencyLevel
+from core.enums.demo_enum import DependencyLevel
 
 __all__ = ['BaseBuilder', 'BuilderContext', 'DependencyLevel']

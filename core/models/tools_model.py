@@ -9,9 +9,9 @@ from mangotools.database import MysqlConnect
 from mangotools.models import MysqlConingModel
 from pydantic import BaseModel, ConfigDict
 
-from auto_test.project_config import ProjectEnum
-from enums.tools_enum import AutoTestTypeEnum, EnvironmentEnum
-from tools.obtain_test_data import ObtainTestData
+from auto_tests.project_config import ProjectEnum
+from core.enums.tools_enum import AutoTestTypeEnum, EnvironmentEnum
+from core.utils.obtain_test_data import ObtainTestData
 
 warnings.filterwarnings(
     "ignore",

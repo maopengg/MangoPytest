@@ -16,7 +16,7 @@
 6. 【新增】快捷方法支持
 
 使用示例：
-    from auto_test.demo_project.data_factory.builders import UserBuilder, PaymentBuilder
+    from auto_tests.demo_project.data_factory.builders import UserBuilder, PaymentBuilder
 
     # 基础用法
     builder = UserBuilder()

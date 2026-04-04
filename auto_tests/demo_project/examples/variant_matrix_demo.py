@@ -18,7 +18,7 @@ import sys
 
 sys.path.insert(0, r'd:\code\MangoPytest')
 
-from auto_test.demo_project.data_factory.scenarios import (
+from auto_tests.demo_project.data_factory.scenarios import (
     VariantMatrix,
     Dimension,
     Variant,

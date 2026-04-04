@@ -12,7 +12,7 @@ from urllib.parse import parse_qsl
 from mangotools.data_processor import DataClean
 from pydantic import BaseModel, ConfigDict
 
-from enums.api_enum import IsSchemaEnum
+from core.enums.api_enum import IsSchemaEnum
 from exceptions import *
 
 warnings.filterwarnings(

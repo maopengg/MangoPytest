@@ -16,7 +16,7 @@
 注意：枚举和模型已从 enums.demo_enum 和 models.demo_model 导入
 """
 
-from enums.demo_enum import Environment, CreateStrategy
+from core.enums.demo_enum import Environment, CreateStrategy
 # 从统一的模型文件导入
 from models.demo_model import (
     Settings, get_settings,

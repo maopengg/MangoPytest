@@ -24,7 +24,7 @@ from typing import Dict, TYPE_CHECKING
 from ..adapter import AllureAdapter
 
 if TYPE_CHECKING:
-    from auto_test.demo_project.data_factory.state_machine.state_machine import StateMachine
+    from auto_tests.demo_project.data_factory.state_machine.state_machine import StateMachine
 
 
 class StateMachineEnhancer:

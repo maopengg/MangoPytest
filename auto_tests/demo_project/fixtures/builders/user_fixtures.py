@@ -7,8 +7,8 @@ from typing import Generator, Dict, Any
 
 import pytest
 
-from auto_test.demo_project.data_factory.builders import UserBuilder
-from auto_test.demo_project.data_factory.entities import UserEntity
+from auto_tests.demo_project.data_factory.builders import UserBuilder
+from auto_tests.demo_project.data_factory.entities import UserEntity
 
 
 @pytest.fixture(scope="function")

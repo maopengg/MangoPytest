@@ -5,7 +5,7 @@
 # @Author : 毛鹏
 import pytest
 
-from auto_test.demo_project.data_factory.builders.ceo_approval import CEOApprovalBuilder
+from auto_tests.demo_project.data_factory.builders.ceo_approval import CEOApprovalBuilder
 
 
 @pytest.fixture

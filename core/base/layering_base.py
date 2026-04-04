@@ -12,7 +12,7 @@
 - E2ETest: 端到端测试（10%）- 完整业务流程
 
 使用示例：
-    from auto_test.demo_project.test_cases import UnitTest, IntegrationTest, E2ETest
+    from auto_tests.demo_project.test_cases import UnitTest, IntegrationTest, E2ETest
 
     class TestUserAPI(UnitTest):
         def test_create_user(self):
@@ -103,7 +103,7 @@ class TestContext:
     def create(self, entity_type: Type, **kwargs) -> Any:
         """创建实体"""
         # 延迟导入避免循环依赖
-        from auto_test.demo_project.data_factory.strategies import APIStrategy
+        from auto_tests.demo_project.data_factory.strategies import APIStrategy
 
         strategy = APIStrategy(token=self.token)
         result = strategy.create(entity_type, **kwargs)

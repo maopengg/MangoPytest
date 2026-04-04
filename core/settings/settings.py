@@ -3,7 +3,7 @@
 # @Description: 
 # @Time   : 2023-08-11 11:08
 # @Author : 毛鹏
-from enums.tools_enum import SourcesTypeEnum
+from core.enums.tools_enum import SourcesTypeEnum
 
 # -------------------------------------是否开启调试-------------------------------------
 IS_DEBUG = True

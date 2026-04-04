@@ -13,6 +13,6 @@
 from core.base import BaseEntity
 
 # 从统一的枚举文件导入
-from enums.demo_enum import EntityStatus
+from core.enums.demo_enum import EntityStatus
 
 __all__ = ['BaseEntity', 'EntityStatus']

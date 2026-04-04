@@ -24,7 +24,7 @@ from .node import DataLineageNode, LineageEdge, LineageRelation, LineagePath
 from .graph import DataLineageGraph
 
 # 从统一的枚举文件导入
-from enums.demo_enum import ImpactLevel
+from core.enums.demo_enum import ImpactLevel
 
 
 class LineageAnalyzer:

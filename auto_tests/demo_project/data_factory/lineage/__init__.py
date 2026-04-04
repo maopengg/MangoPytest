@@ -16,7 +16,7 @@
     └── analyzer.py          # 血缘分析器
 
 使用示例：
-    from auto_test.demo_project.data_factory.lineage import (
+    from auto_tests.demo_project.data_factory.lineage import (
         DataLineageTracker,
         LineageAnalyzer,
         LineageNodeType,

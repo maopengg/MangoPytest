@@ -7,7 +7,7 @@ from urllib.parse import urljoin
 
 from mangoautomation.uidrives import BaseData
 
-from auto_test.project_config import ProjectEnum
+from auto_tests.project_config import ProjectEnum
 from models.tools_model import BaseDataModel
 from tools.base_object.base_object import WebBaseObject
 from tools.obtain_test_data import ObtainTestData

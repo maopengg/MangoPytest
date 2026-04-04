@@ -20,7 +20,7 @@ from pe.reporting import (
     step as allure_step,
 )
 
-from auto_test.demo_project.data_factory.entities import UserEntity, ReimbursementEntity
+from auto_tests.demo_project.data_factory.entities import UserEntity, ReimbursementEntity
 
 
 @allure.feature("用户管理")

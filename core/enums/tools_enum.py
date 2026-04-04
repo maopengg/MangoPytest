@@ -4,7 +4,7 @@
 # @Time   : 2023-07-04 13:42
 # @Author : 毛鹏
 
-from enums import BaseEnum
+from core.enums import BaseEnum
 
 
 class SourcesTypeEnum(BaseEnum):

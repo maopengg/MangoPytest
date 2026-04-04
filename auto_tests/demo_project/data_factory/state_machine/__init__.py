@@ -14,7 +14,7 @@
 - 智能工厂方法
 
 使用示例：
-    from auto_test.demo_project.data_factory.state_machine import StateMachine, State
+    from auto_tests.demo_project.data_factory.state_machine import StateMachine, State
 
     # 定义状态机
     class UserStateMachine(StateMachine):

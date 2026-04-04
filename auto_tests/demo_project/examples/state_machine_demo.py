@@ -19,8 +19,8 @@ import sys
 
 sys.path.insert(0, r'd:\code\MangoPytest')
 
-from auto_test.demo_project.data_factory.entities import UserEntity
-from auto_test.demo_project.data_factory.state_machine import UserStateMachine
+from auto_tests.demo_project.data_factory.entities import UserEntity
+from auto_tests.demo_project.data_factory.state_machine import UserStateMachine
 
 
 def demo_basic_state_transition():

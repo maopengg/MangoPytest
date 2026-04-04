@@ -5,7 +5,7 @@
 # @Author : 毛鹏
 
 # 导出 demo_project 专用模型（方便使用方导入）
-from models.demo_model import (
+from core.models.demo_model import (
     # 配置相关
     BaseConfig, DevConfig, TestConfig, PreConfig, ProdConfig, CIConfig,
     Settings, get_settings, settings,

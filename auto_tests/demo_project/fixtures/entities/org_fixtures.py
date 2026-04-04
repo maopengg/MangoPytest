@@ -19,7 +19,7 @@ Org Entity Fixtures 模块
 
 import pytest
 
-from auto_test.demo_project.data_factory.entities.org_entity import OrgEntity
+from auto_tests.demo_project.data_factory.entities.org_entity import OrgEntity
 
 
 @pytest.fixture

@@ -5,7 +5,7 @@
 # @Author : 毛鹏
 import allure
 
-from auto_test.demo_project.data_factory.builders.system import SystemBuilder
+from auto_tests.demo_project.data_factory.builders.system import SystemBuilder
 from core.base.layering_base import UnitTest, IntegrationTest
 
 

@@ -20,20 +20,20 @@
 import allure
 import pytest
 
-from auto_test.demo_project.api_manager import demo_project
-from auto_test.demo_project.data_factory.context import Context
-from auto_test.demo_project.data_factory.entities import (
+from auto_tests.demo_project.api_manager import demo_project
+from auto_tests.demo_project.data_factory.context import Context
+from auto_tests.demo_project.data_factory.entities import (
     UserEntity,
     ReimbursementEntity,
     OrgEntity,
     BudgetEntity,
 )
 # 【新增】导入最新架构组件
-from auto_test.demo_project.data_factory.scenarios import (
+from auto_tests.demo_project.data_factory.scenarios import (
     FullApprovalScenario,
     RejectionWorkflowScenario,
 )
-from auto_test.demo_project.data_factory.scenarios.variant_matrix import (
+from auto_tests.demo_project.data_factory.scenarios.variant_matrix import (
     VariantMatrix,
     Dimension,
 )

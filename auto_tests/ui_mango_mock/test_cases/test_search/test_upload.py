@@ -8,9 +8,9 @@ import os
 
 import allure
 
-from auto_test.ui_mango_mock import base_data_model
-from auto_test.ui_mango_mock.abstract.home_page import HomePage
-from auto_test.ui_mango_mock.abstract.upload_page import UploadPage
+from auto_tests.ui_mango_mock import base_data_model
+from auto_tests.ui_mango_mock.abstract.home_page import HomePage
+from auto_tests.ui_mango_mock.abstract.upload_page import UploadPage
 from models.ui_model import UiDataModel
 from tools.decorator.ui import case_data
 from tools.obtain_test_data import ObtainTestData

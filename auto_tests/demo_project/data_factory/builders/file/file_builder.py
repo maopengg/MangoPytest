@@ -9,7 +9,7 @@ import tempfile
 import uuid
 from typing import Dict, Any, Optional
 
-from auto_test.demo_project.api_manager import demo_project
+from auto_tests.demo_project.api_manager import demo_project
 from ..base_builder import BaseBuilder
 from ...registry import register_builder
 

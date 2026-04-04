@@ -7,7 +7,7 @@ from typing import Generator, Dict, Any
 
 import pytest
 
-from auto_test.demo_project.data_factory.builders.file import FileBuilder
+from auto_tests.demo_project.data_factory.builders.file import FileBuilder
 
 
 @pytest.fixture(scope="function")

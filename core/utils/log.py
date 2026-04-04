@@ -5,7 +5,7 @@
 # @Author : 毛鹏
 from mangotools.log_collector import set_log
 
-from settings.settings import IS_DEBUG
-from tools import project_dir
+from core.settings.settings import IS_DEBUG
+from core.utils.project_dir import project_dir
 
 log = set_log(project_dir.logs(), IS_DEBUG, 'process')

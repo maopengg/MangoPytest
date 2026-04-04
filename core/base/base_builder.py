@@ -24,7 +24,7 @@ T = TypeVar("T", bound=BaseEntity)
 
 def _get_default_strategy():
     """延迟导入默认策略，避免循环导入"""
-    from auto_test.demo_project.data_factory.strategies import APIStrategy
+    from auto_tests.demo_project.data_factory.strategies import APIStrategy
 
     return APIStrategy()
 

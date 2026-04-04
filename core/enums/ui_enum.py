@@ -3,7 +3,7 @@
 # @Description: 
 # @Time   : 2024-01-17 11:13
 # @Author : 毛鹏
-from enums import BaseEnum
+from core.enums import BaseEnum
 
 
 class BrowserTypeEnum(BaseEnum):

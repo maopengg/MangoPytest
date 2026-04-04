@@ -219,8 +219,8 @@ auto_test/demo_project/
 统一管理实体创建、复用、业务动作执行：
 
 ```python
-from auto_test.demo_project.data_factory.context import Context
-from auto_test.demo_project.data_factory.entities import UserEntity, OrgEntity
+from auto_tests.demo_project.data_factory.context import Context
+from auto_tests.demo_project.data_factory.entities import UserEntity, OrgEntity
 
 with Context(auto_cleanup=True) as ctx:
     # 1. 创建实体
@@ -256,7 +256,7 @@ with Context(auto_cleanup=True) as ctx:
 **使用示例**：
 
 ```python
-from auto_test.demo_project.api_manager import demo_project
+from auto_tests.demo_project.api_manager import demo_project
 
 # 设置认证 token
 demo_project.auth.set_token("your_token")
@@ -295,7 +295,7 @@ result = demo_project.order.create_order(
 定义数据模型，包含数据验证和生命周期管理：
 
 ```python
-from auto_test.demo_project.data_factory.entities import ReimbursementEntity
+from auto_tests.demo_project.data_factory.entities import ReimbursementEntity
 
 # 创建实体
 reimbursement = ReimbursementEntity(
@@ -313,7 +313,7 @@ assert reimbursement.validate() is True
 负责构造实体数据并调用 API 创建/更新/删除数据：
 
 ```python
-from auto_test.demo_project.data_factory.builders import ReimbursementBuilder
+from auto_tests.demo_project.data_factory.builders import ReimbursementBuilder
 
 # 创建 Builder
 builder = ReimbursementBuilder(token="your_token")
@@ -331,7 +331,7 @@ reimbursement = builder.create_approved(
 封装完整的业务流程，支持依赖声明和业务编排：
 
 ```python
-from auto_test.demo_project.data_factory.scenarios import FullApprovalScenario
+from auto_tests.demo_project.data_factory.scenarios import FullApprovalScenario
 
 # 执行完整审批流场景
 scenario = FullApprovalScenario()
@@ -347,7 +347,7 @@ if result.success:
 提供多种数据构造策略，支持不同测试场景：
 
 ```python
-from auto_test.demo_project.data_factory.strategies import (
+from auto_tests.demo_project.data_factory.strategies import (
     APIContextStrategy,
     MockStrategy,
 )
@@ -364,7 +364,7 @@ mock_strategy = MockStrategy()
 实体状态管理，支持状态流转和验证：
 
 ```python
-from auto_test.demo_project.data_factory.state_machine import UserStateMachine
+from auto_tests.demo_project.data_factory.state_machine import UserStateMachine
 
 # 创建状态机
 sm = UserStateMachine()
@@ -378,7 +378,7 @@ sm.transition_to("locked")
 数据血缘自动记录和追踪：
 
 ```python
-from auto_test.demo_project.data_factory.lineage import DataLineageTracker
+from auto_tests.demo_project.data_factory.lineage import DataLineageTracker
 
 # 创建追踪器
 tracker = DataLineageTracker()
@@ -392,7 +392,7 @@ tracker.record_creation("user", "user_001")
 参数化测试，笛卡尔积自动生成用例：
 
 ```python
-from auto_test.demo_project.data_factory.scenarios.variant_matrix import (
+from auto_tests.demo_project.data_factory.scenarios.variant_matrix import (
     VariantMatrix, Dimension, Variant
 )
 
@@ -413,7 +413,7 @@ variants = matrix.generate()
 #### 3.1 基础设施 Fixtures
 
 ```python
-from auto_test.demo_project.fixtures.infra import (
+from auto_tests.demo_project.fixtures.infra import (
     api_client,      # API 客户端
     test_token,      # 测试 token
     test_context,    # 测试上下文
@@ -423,7 +423,7 @@ from auto_test.demo_project.fixtures.infra import (
 #### 3.2 实体 Fixtures
 
 ```python
-from auto_test.demo_project.fixtures.entities import (
+from auto_tests.demo_project.fixtures.entities import (
     admin_user,      # 管理员用户
     locked_user,     # 已锁定用户
     employee_user,   # 员工用户
@@ -435,7 +435,7 @@ from auto_test.demo_project.fixtures.entities import (
 #### 3.3 构造器 Fixtures（分层）
 
 ```python
-from auto_test.demo_project.fixtures.builders import (
+from auto_tests.demo_project.fixtures.builders import (
     # D模块（基础层）
     org_builder,     # 组织构造器
     user_builder,    # 用户构造器
@@ -453,7 +453,7 @@ from auto_test.demo_project.fixtures.builders import (
 #### 3.4 场景 Fixtures
 
 ```python
-from auto_test.demo_project.fixtures.scenarios import (
+from auto_tests.demo_project.fixtures.scenarios import (
     full_approval_scenario,   # 完整审批流场景
     full_approval_result,     # 完整审批流结果
 )
@@ -464,8 +464,8 @@ from auto_test.demo_project.fixtures.scenarios import (
 场景变体自动展开为多个测试用例：
 
 ```python
-from auto_test.demo_project.test_cases.decorators import case_data
-from auto_test.demo_project.data_factory.scenarios import LoginScenario
+from auto_tests.demo_project.test_cases.decorators import case_data
+from auto_tests.demo_project.data_factory.scenarios import LoginScenario
 
 # 单变体测试
 @case_data(scenario=LoginScenario.variant(actor="admin", credential="correct"))
@@ -486,9 +486,9 @@ def test_login_all_combinations(self, test_context):
 跨项目复用的核心组件：
 
 ```python
-from auto_test.demo_project.core import APIClient, BaseEntity, Result
-from auto_test.demo_project.core.api import AuthManager
-from auto_test.demo_project.core.utils import retry, timer, generate_id
+from auto_tests.demo_project.core import APIClient, BaseEntity, Result
+from auto_tests.demo_project.core.api import AuthManager
+from auto_tests.demo_project.core.utils import retry, timer, generate_id
 
 # API 客户端
 client = APIClient(base_url="https://api.example.com")
@@ -511,7 +511,7 @@ id = generate_id("user")  # "user_a1b2c3d4"
 ### 6. 配置管理
 
 ```python
-from auto_test.demo_project.config.settings import settings, CreateStrategy, Environment
+from auto_tests.demo_project.config.settings import settings, CreateStrategy, Environment
 
 print(f"当前环境: {settings.ENV.value}")
 print(f"默认策略: {settings.DEFAULT_STRATEGY.value}")
@@ -572,8 +572,8 @@ def test_with_scenario(full_approval_scenario):
 ### 示例2：使用 @case\_data 装饰器
 
 ```python
-from auto_test.demo_project.test_cases.decorators import case_data
-from auto_test.demo_project.data_factory.scenarios import LoginScenario
+from auto_tests.demo_project.test_cases.decorators import case_data
+from auto_tests.demo_project.data_factory.scenarios import LoginScenario
 
 class TestLogin:
     @case_data(scenario=LoginScenario.variant(actor="admin", credential="correct"))
@@ -590,8 +590,8 @@ class TestLogin:
 ### 示例3：使用 core/ 框架层
 
 ```python
-from auto_test.demo_project.core import APIClient, Result
-from auto_test.demo_project.core.utils import retry, generate_id
+from auto_tests.demo_project.core import APIClient, Result
+from auto_tests.demo_project.core.utils import retry, generate_id
 
 # API 客户端
 client = APIClient(base_url="https://api.example.com")
@@ -649,7 +649,7 @@ allure serve ./allure-results
 ### 使用示例
 
 ```python
-from auto_test.demo_project.fixtures.allure_conftest import allure_feature, allure_story
+from auto_tests.demo_project.fixtures.allure_conftest import allure_feature, allure_story
 
 @allure_feature("用户管理")
 @allure_story("用户创建")

@@ -3,8 +3,8 @@
 # @Description: 
 # @Time   : 2024-01-17 11:34
 # @Author : 毛鹏
-from enums import BaseEnum
-from enums.tools_enum import AutoTestTypeEnum
+from core.enums import BaseEnum
+from core.enums.tools_enum import AutoTestTypeEnum
 
 
 # 名称要和项目表的名称保持一致

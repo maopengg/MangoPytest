@@ -21,7 +21,7 @@ User Entity Fixtures 模块
 
 import pytest
 
-from auto_test.demo_project.data_factory.entities import UserEntity
+from auto_tests.demo_project.data_factory.entities import UserEntity
 
 
 @pytest.fixture

@@ -15,12 +15,12 @@ import pytest
 from mangoautomation.uidrive import DriverObject
 from mangoautomation.uidrives import BaseData
 
-from enums.ui_enum import BrowserTypeEnum
-from exceptions import PytestAutoTestError
-from exceptions.error_msg import ERROR_MSG_0350
-from models.ui_model import UiDataModel, UiTestCaseModel
-from tools import project_dir
-from tools.log import log
+from core.enums.ui_enum import BrowserTypeEnum
+from core.exceptions import PytestAutoTestError
+from core.exceptions.error_msg import ERROR_MSG_0350
+from core.models.ui_model import UiDataModel, UiTestCaseModel
+from core.utils import project_dir
+from core.utils import log
 
 # 全局driver对象
 driver_object = DriverObject(log)
@@ -38,7 +38,7 @@ def case_data(case_id: int | list[int] | None = None, case_name: str | list[str]
 
     def decorator(func):
         log.debug(f'开始查询用例，用例ID:{case_id} 用例名称：{case_name}')
-        from sources import SourcesData
+        from core.sources import SourcesData
         if case_id:
             test_case_list = SourcesData.get_ui_test_case(is_dict=False, id=case_id)
         elif case_name:

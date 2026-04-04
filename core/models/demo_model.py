@@ -9,7 +9,7 @@ from datetime import datetime
 from itertools import product
 from typing import Dict, List, Optional, Any, Callable, Iterator
 
-from enums.demo_enum import (
+from core.enums.demo_enum import (
     CreateStrategy, Environment, LineageNodeType, LineageRelation, VariantStatus
 )
 

@@ -25,7 +25,7 @@ from typing import TYPE_CHECKING
 from ..adapter import AllureAdapter
 
 if TYPE_CHECKING:
-    from auto_test.demo_project.data_factory.lineage.tracker import DataLineageTracker
+    from auto_tests.demo_project.data_factory.lineage.tracker import DataLineageTracker
 
 
 class LineageEnhancer:

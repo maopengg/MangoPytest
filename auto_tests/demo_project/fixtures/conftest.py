@@ -12,7 +12,7 @@ fixtures注册中心 - 新架构
 
 使用示例：
     # test_example.py
-    from auto_test.demo_project.fixtures.conftest import *
+    from auto_tests.demo_project.fixtures.conftest import *
 
     def test_with_user(test_user):
         assert test_user.id is not None
@@ -32,20 +32,20 @@ from typing import Dict, Any, List, Optional, Type, Callable
 
 import pytest
 
-from auto_test.demo_project.data_factory import BaseEntity
+from auto_tests.demo_project.data_factory import BaseEntity
 # ========== 认证模块fixtures ==========
-from auto_test.demo_project.fixtures.builders.auth_fixtures import (
+from auto_tests.demo_project.fixtures.builders.auth_fixtures import (
     auth_builder,
     test_token,
     registered_user,
 )
 # ========== C模块构造器fixtures ==========
-from auto_test.demo_project.fixtures.builders.c_fixtures import (
+from auto_tests.demo_project.fixtures.builders.c_fixtures import (
     org_builder,
     budget_builder,
 )
 # ========== 总经理审批模块fixtures ==========
-from auto_test.demo_project.fixtures.builders.ceo_approval_fixtures import (
+from auto_tests.demo_project.fixtures.builders.ceo_approval_fixtures import (
     ceo_approval_builder,
     fully_approved_reimbursement,
     ceo_rejected_reimbursement,
@@ -53,57 +53,57 @@ from auto_test.demo_project.fixtures.builders.ceo_approval_fixtures import (
     workflow_data,
 )
 # ========== 数据模块fixtures ==========
-from auto_test.demo_project.fixtures.builders.data_fixtures import (
+from auto_tests.demo_project.fixtures.builders.data_fixtures import (
     data_builder,
     submitted_data,
 )
 # ========== 部门审批模块fixtures ==========
-from auto_test.demo_project.fixtures.builders.dept_approval_fixtures import (
+from auto_tests.demo_project.fixtures.builders.dept_approval_fixtures import (
     dept_approval_builder,
     dept_approved_reimbursement,
     dept_rejected_reimbursement,
     dept_manager_id,
 )
 # ========== 文件模块fixtures ==========
-from auto_test.demo_project.fixtures.builders.file_fixtures import (
+from auto_tests.demo_project.fixtures.builders.file_fixtures import (
     file_builder,
     temp_file,
     uploaded_file,
 )
 # ========== 财务审批模块fixtures ==========
-from auto_test.demo_project.fixtures.builders.finance_approval_fixtures import (
+from auto_tests.demo_project.fixtures.builders.finance_approval_fixtures import (
     finance_approval_builder,
     finance_approved_reimbursement,
     finance_rejected_reimbursement,
     finance_manager_id,
 )
 # ========== 订单模块fixtures ==========
-from auto_test.demo_project.fixtures.builders.order_fixtures import (
+from auto_tests.demo_project.fixtures.builders.order_fixtures import (
     order_builder,
     test_order,
     order_with_product,
 )
 # ========== 产品模块fixtures ==========
-from auto_test.demo_project.fixtures.builders.product_fixtures import (
+from auto_tests.demo_project.fixtures.builders.product_fixtures import (
     product_builder,
     test_product,
     product_list,
 )
 # ========== 报销申请模块fixtures ==========
-from auto_test.demo_project.fixtures.builders.reimbursement_fixtures import (
+from auto_tests.demo_project.fixtures.builders.reimbursement_fixtures import (
     reimbursement_builder,
     created_reimbursement,
     pending_reimbursement,
     multiple_reimbursements,
 )
 # ========== 系统模块fixtures ==========
-from auto_test.demo_project.fixtures.builders.system_fixtures import (
+from auto_tests.demo_project.fixtures.builders.system_fixtures import (
     system_builder,
     server_health,
     server_info,
 )
 # ========== 用户模块fixtures ==========
-from auto_test.demo_project.fixtures.builders.user_fixtures import (
+from auto_tests.demo_project.fixtures.builders.user_fixtures import (
     user_builder,
     test_user,
     new_user,
@@ -113,17 +113,17 @@ from auto_test.demo_project.fixtures.builders.user_fixtures import (
     ceo_user,
 )
 # ========== 基础设施fixtures ==========
-from auto_test.demo_project.fixtures.infra.client import (
+from auto_tests.demo_project.fixtures.infra.client import (
     api_client,
     authenticated_client,
     api_client_with_cleanup,
 )
-from auto_test.demo_project.fixtures.infra.db import (
+from auto_tests.demo_project.fixtures.infra.db import (
     db_session,
     db_transaction,
     clean_db_state,
 )
-from auto_test.demo_project.fixtures.scenarios.approval_scenario_fixtures import (
+from auto_tests.demo_project.fixtures.scenarios.approval_scenario_fixtures import (
     create_reimbursement_scenario,
     full_approval_scenario,
     rejection_scenario,
@@ -138,7 +138,7 @@ from auto_test.demo_project.fixtures.scenarios.approval_scenario_fixtures import
     multi_level_workflows,
 )
 # ========== 场景fixtures ==========
-from auto_test.demo_project.fixtures.scenarios.scenario_fixtures import (
+from auto_tests.demo_project.fixtures.scenarios.scenario_fixtures import (
     login_scenario,
     register_and_login_scenario,
     logged_in_token,

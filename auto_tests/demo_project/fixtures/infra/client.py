@@ -5,7 +5,7 @@
 # @Author : 毛鹏
 import pytest
 
-from auto_test.demo_project.api_manager import demo_project
+from auto_tests.demo_project.api_manager import demo_project
 
 
 @pytest.fixture(scope="session")
@@ -23,7 +23,7 @@ def authenticated_client(api_client):
     已认证的API客户端fixture
     自动登录并返回带token的客户端
     """
-    from auto_test.demo_project.api_manager import demo_project
+    from auto_tests.demo_project.api_manager import demo_project
 
     # 使用 testuser 用户登录
     # mock API 中 testuser 的密码明文是 "password123"

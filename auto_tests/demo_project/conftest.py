@@ -6,7 +6,7 @@
 
 
 # 导入 fixtures
-from auto_test.demo_project.fixtures.conftest import (
+from auto_tests.demo_project.fixtures.conftest import (
     # 基础设施
     api_client,
     authenticated_client,

@@ -38,7 +38,7 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
         reimb = builder.create_approved(user_id=1, amount=1000)
         
         # 使用Mock策略（单元测试）
-        from auto_test.demo_project.data_factory.strategies import MockStrategy
+        from auto_tests.demo_project.data_factory.strategies import MockStrategy
         context = BuilderContext(strategy=MockStrategy())
         builder = ReimbursementBuilder(context=context)
         reimb = builder.create(user_id=1, amount=1000)  # 不调用真实API

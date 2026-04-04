@@ -5,7 +5,7 @@
 # @Author : 毛鹏
 import pytest
 
-from auto_test.demo_project.data_factory.scenarios import (
+from auto_tests.demo_project.data_factory.scenarios import (
     FullApprovalWorkflowScenario,
     RejectionWorkflowScenario,
     CreateReimbursementScenario,
@@ -231,7 +231,7 @@ class ApprovalScenarios:
     ) -> dict:
         """创建待部门审批状态的工作流"""
         import uuid
-        from auto_test.demo_project.data_factory.scenarios import (
+        from auto_tests.demo_project.data_factory.scenarios import (
             CreateReimbursementScenario,
         )
 
@@ -257,16 +257,16 @@ class ApprovalScenarios:
     ) -> dict:
         """创建待财务审批状态的工作流"""
         import uuid
-        from auto_test.demo_project.data_factory.scenarios import (
+        from auto_tests.demo_project.data_factory.scenarios import (
             CreateReimbursementScenario,
         )
-        from auto_test.demo_project.data_factory.entities.reimbursement import (
+        from auto_tests.demo_project.data_factory.entities.reimbursement import (
             ReimbursementEntity,
         )
-        from auto_test.demo_project.data_factory.entities.dept_approval import (
+        from auto_tests.demo_project.data_factory.entities.dept_approval import (
             DeptApprovalEntity,
         )
-        from auto_test.demo_project.api_manager import demo_project
+        from auto_tests.demo_project.api_manager import demo_project
 
         reason = reason or f"待财务审批测试 - {uuid.uuid4().hex[:6]}"
 
@@ -322,19 +322,19 @@ class ApprovalScenarios:
     ) -> dict:
         """创建待CEO审批状态的工作流"""
         import uuid
-        from auto_test.demo_project.data_factory.scenarios import (
+        from auto_tests.demo_project.data_factory.scenarios import (
             CreateReimbursementScenario,
         )
-        from auto_test.demo_project.data_factory.entities.reimbursement import (
+        from auto_tests.demo_project.data_factory.entities.reimbursement import (
             ReimbursementEntity,
         )
-        from auto_test.demo_project.data_factory.entities.dept_approval import (
+        from auto_tests.demo_project.data_factory.entities.dept_approval import (
             DeptApprovalEntity,
         )
-        from auto_test.demo_project.data_factory.entities.finance_approval import (
+        from auto_tests.demo_project.data_factory.entities.finance_approval import (
             FinanceApprovalEntity,
         )
-        from auto_test.demo_project.api_manager import demo_project
+        from auto_tests.demo_project.api_manager import demo_project
 
         reason = reason or f"待CEO审批测试 - {uuid.uuid4().hex[:6]}"
 

@@ -33,9 +33,9 @@ Core 框架层
         └── validators.py      # 验证器
 
 使用示例：
-    from auto_test.demo_project.core import APIClient
-    from auto_test.demo_project.core.models import BaseEntity
-    from auto_test.demo_project.core.utils import retry
+    from auto_tests.demo_project.core import APIClient
+    from auto_tests.demo_project.core.models import BaseEntity
+    from auto_tests.demo_project.core.utils import retry
 """
 
 __version__ = "1.0.0"

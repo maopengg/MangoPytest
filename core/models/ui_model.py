@@ -9,7 +9,7 @@ import warnings
 from mangotools.data_processor import DataClean
 from pydantic import BaseModel, ConfigDict
 
-from enums.ui_enum import BrowserTypeEnum
+from core.enums.ui_enum import BrowserTypeEnum
 
 warnings.filterwarnings(
     "ignore",

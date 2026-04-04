@@ -7,7 +7,7 @@ import os
 
 from mangotools.data_processor import DataProcessor
 
-from auto_test.project_config import auto_test_project_config
+from auto_tests.project_config import auto_test_project_config
 from exceptions import ToolsError, ERROR_MSG_0042
 from tools import project_dir
 

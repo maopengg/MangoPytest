@@ -39,7 +39,7 @@ class TestAuthLogin(UnitTest):
     @allure.title("正常登录 - 使用test_context")
     def test_login_success_with_context(self, test_context):
         """测试使用test_context管理登录状态"""
-        from auto_test.demo_project.data_factory.builders.auth import AuthBuilder
+        from auto_tests.demo_project.data_factory.builders.auth import AuthBuilder
 
         # 使用context执行动作 - 第一个参数应该是可调用对象
         auth_builder = AuthBuilder()
@@ -126,7 +126,7 @@ class TestAuthRegister(UnitTest):
         test_context.set("registered_user", user)
 
         # 验证可以登录 - 使用注册时的密码
-        from auto_test.demo_project.data_factory.builders.auth import AuthBuilder
+        from auto_tests.demo_project.data_factory.builders.auth import AuthBuilder
 
         login_builder = AuthBuilder()
         token = login_builder.login(username=user.get("username"), password=password)
@@ -270,7 +270,7 @@ class TestAuthLoginScenario(UnitTest):
             token = auth_builder.login(username=username, password=password)
         else:
             # 空值测试使用API直接调用
-            from auto_test.demo_project.api_manager import demo_project
+            from auto_tests.demo_project.api_manager import demo_project
 
             result = demo_project.auth.api_login(username=username, password=password)
             success = result.get("code") == 200
@@ -298,7 +298,7 @@ class TestAuthRegisterScenario(UnitTest):
     @allure.title("注册并验证登录流程")
     def test_register_and_login_flow(self, test_context):
         """测试完整的注册登录流程"""
-        from auto_test.demo_project.data_factory.builders.auth import AuthBuilder
+        from auto_tests.demo_project.data_factory.builders.auth import AuthBuilder
 
         # 1. 注册新用户 - 使用指定密码
         password = "testpassword123"
@@ -328,9 +328,9 @@ class TestAuthRegisterScenario(UnitTest):
         if not token:
             pytest.skip("无法获取token，跳过受保护资源访问验证")
 
-        from auto_test.demo_project.data_factory.builders.user import UserBuilder
-        from auto_test.demo_project.api_manager import demo_project
-        from auto_test.demo_project.core.api.exceptions import APIException
+        from auto_tests.demo_project.data_factory.builders.user import UserBuilder
+        from auto_tests.demo_project.api_manager import demo_project
+        from auto_tests.demo_project.core.api.exceptions import APIException
 
         # 设置全局token，确保API调用使用正确的token
         demo_project.token = token
@@ -359,7 +359,7 @@ class TestAuthRegisterScenario(UnitTest):
     @allure.title("批量注册用户")
     def test_register_multiple_users(self, test_context):
         """测试批量注册用户"""
-        from auto_test.demo_project.data_factory.builders.auth import AuthBuilder
+        from auto_tests.demo_project.data_factory.builders.auth import AuthBuilder
 
         users = []
         for i in range(3):
@@ -406,8 +406,8 @@ class TestTokenManagement(UnitTest):
     def test_invalid_token_access(self, api_client):
         """测试使用无效token访问"""
         # 设置无效token - 通过设置全局token
-        from auto_test.demo_project.api_manager import demo_project
-        from auto_test.demo_project.core.api.exceptions import APIException
+        from auto_tests.demo_project.api_manager import demo_project
+        from auto_tests.demo_project.core.api.exceptions import APIException
 
         # 使用全局token设置
         demo_project.token = "invalid_token_12345"

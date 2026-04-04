@@ -35,7 +35,7 @@ class BaseEnum(Enum):
 
 
 # 导出 demo_project 专用枚举（方便使用方导入）
-from enums.demo_enum import (
+from core.enums.demo_enum import (
     # 配置相关
     CreateStrategy,
     Environment,
