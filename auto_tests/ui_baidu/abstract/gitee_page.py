@@ -9,7 +9,7 @@ from playwright.sync_api import Page, BrowserContext
 
 from auto_tests.project_config import ProjectEnum
 from core.models.tools_model import BaseDataModel
-from core.base import WebBaseObject
+from core.ui import WebBaseObject
 from core.utils.obtain_test_data  import ObtainTestData
 
 

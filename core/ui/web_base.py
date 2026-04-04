@@ -12,7 +12,7 @@ Web UI 基础对象模块
 - 数据替换
 
 使用示例：
-    from core.base import WebBaseObject
+    from core.ui import WebBaseObject
     
     web_obj = WebBaseObject(
         project_name="demo",

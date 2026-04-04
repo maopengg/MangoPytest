@@ -53,9 +53,6 @@ class CleanupContext:
 def case_data(
         case_id: Union[int, List[int], None] = None,
         case_name: Union[str, List[str], None] = None,
-        # 新增：声明需要的fixture数据
-        require_fixtures: List[str] = None,  # e.g., ["org", "user", "budget"]
-        auto_cleanup: bool = True
 ):
     """
     用例数据装饰器 - 融合Fixture支持
@@ -63,10 +60,7 @@ def case_data(
     Args:
         case_id: 用例ID
         case_name: 用例名称
-        require_fixtures: 需要的fixture数据类型列表
-        auto_cleanup: 是否自动清理fixture数据
     """
-    require_fixtures = require_fixtures or []
 
     def decorator(func):
         log.debug(f'开始查询用例，用例ID:{case_id} 用例名称：{case_name}')
@@ -94,26 +88,9 @@ def case_data(
             allure.dynamic.title(test_case.get('name'))
             allure.attach(test_case_model.model_dump_json(), '用例数据', allure.attachment_type.JSON)
 
-            # ========== 核心：Fixture 数据准备 ==========
             data = ApiDataModel(test_case=test_case_model)
-            cleanup_ctx = CleanupContext()
 
             try:
-                # 根据 require_fixtures 自动调用对应 builder
-                for fixture_name in require_fixtures:
-                    fixture_data = _prepare_fixture_data(
-                        fixture_name,
-                        fixture_kwargs,
-                        cleanup_ctx
-                    )
-                    data.add_fixture_data(fixture_name, fixture_data)
-                    allure.attach(
-                        str(fixture_data),
-                        f'Fixture数据:{fixture_name}',
-                        allure.attachment_type.JSON
-                    )
-
-                data.cleanup_context = cleanup_ctx
                 log.debug(f'准备开始执行API用例，数据：{data.model_dump_json()}')
 
                 # 执行测试函数
@@ -127,10 +104,6 @@ def case_data(
                 allure.attach(error.msg, '发生已知异常', allure.attachment_type.TEXT)
                 raise error
 
-            finally:
-                # 自动清理
-                if auto_cleanup and cleanup_ctx.created_entities:
-                    _cleanup_fixture_data(cleanup_ctx)
 
         return wrapper
 

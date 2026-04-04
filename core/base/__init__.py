@@ -44,8 +44,6 @@ from .state_machine import (
     StateMachine,
 )
 from .base_assertion import AssertionBase
-# Web UI 基类（从 web_base.py 导入）
-from .web_base import WebBaseObject
 
 __all__ = [
     # 实体基类
@@ -69,8 +67,6 @@ __all__ = [
     "Transition",
     "TransitionResult",
     "StateMachine",
-    # Web UI 基类
-    "WebBaseObject",
     # 断言基类
     "AssertionBase"
 ]
