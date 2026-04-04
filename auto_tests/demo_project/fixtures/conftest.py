@@ -403,10 +403,6 @@ def test_context(request):
 
 
 __all__ = [
-    # Allure 集成
-    "allure_context",
-    "allure_lineage",
-    "allure_variant",
     # 基础设施
     "api_client",
     "authenticated_client",

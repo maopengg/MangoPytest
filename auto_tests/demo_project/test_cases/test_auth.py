@@ -275,18 +275,18 @@ class TestAuthLoginScenario(UnitTest):
             result = demo_project.auth.api_login(username=username, password=password)
             success = result.get("code") == 200
             assert (
-                    success == expected_success
+                success == expected_success
             ), f"期望登录{'成功' if expected_success else '失败'}，实际{'成功' if success else '失败'}"
             return
 
         if expected_success:
             assert (
-                    token is not None
+                token is not None
             ), f"期望登录成功，但实际失败: {login_data['description']}"
             assert token.startswith("mock_token_")
         else:
             assert (
-                    token is None
+                token is None
             ), f"期望登录失败，但实际成功: {login_data['description']}"
 
 
@@ -401,13 +401,21 @@ class TestTokenManagement(UnitTest):
         from auto_tests.demo_project.api_manager import demo_project
         from core.exceptions import ApiError
 
-        # 使用全局token设置
-        demo_project.token = "invalid_token_12345"
-        demo_project.user.set_token("invalid_token_12345")
+        # 保存原始token
+        original_token = demo_project.token
 
-        # 尝试访问受保护资源，期望抛出401异常
-        with pytest.raises(ApiError) as exc_info:
-            api_client.user.get_users()
+        try:
+            # 使用全局token设置
+            demo_project.token = "invalid_token_12345"
+            demo_project.user.set_token("invalid_token_12345")
 
-        # 验证异常状态码是401
-        assert exc_info.value.code == 401
+            # 尝试访问受保护资源，期望抛出401异常
+            with pytest.raises(ApiError) as exc_info:
+                api_client.user.get_users()
+
+            # 验证异常状态码是401
+            assert exc_info.value.code == 401
+        finally:
+            # 恢复原始token，避免影响其他测试
+            demo_project.token = original_token
+            demo_project.user.set_token(original_token)

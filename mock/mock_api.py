@@ -551,17 +551,18 @@ async def create_order(order: Order, token: str = Depends(verify_token)):
                 return error(400, "库存不足")
 
             # 计算订单金额
-            total_amount = product["price"] * order.quantity
+            unit_price = product["price"]
+            total_amount = unit_price * order.quantity
             order_no = f"ORD{datetime.now().strftime('%Y%m%d%H%M%S')}{str(uuid.uuid4())[:4]}"
 
             # 创建订单
             sql = """
-                INSERT INTO orders (order_no, product_id, quantity, user_id, total_amount, status, created_at, updated_at)
-                VALUES (%s, %s, %s, %s, %s, 'pending', NOW(), NOW())
+                INSERT INTO orders (order_no, product_id, quantity, user_id, unit_price, total_amount, status, created_at, updated_at)
+                VALUES (%s, %s, %s, %s, %s, %s, 'pending', NOW(), NOW())
             """
             cursor.execute(
                 sql,
-                (order_no, order.product_id, order.quantity, order.user_id, total_amount),
+                (order_no, order.product_id, order.quantity, order.user_id, unit_price, total_amount),
             )
             order_id = cursor.lastrowid
 
@@ -625,12 +626,38 @@ async def update_order(order_id: int, order: Order, token: str = Depends(verify_
             if not cursor.fetchone():
                 return error(404, "订单不存在")
 
-            sql = """
-                UPDATE orders 
-                SET status = %s, updated_at = NOW()
-                WHERE id = %s
-            """
-            cursor.execute(sql, (order.status, order_id))
+            # 构建动态更新字段
+            update_fields = []
+            params = []
+            
+            # 更新数量（如果提供且大于0）
+            if order.quantity and order.quantity > 0:
+                update_fields.append("quantity = %s")
+                params.append(order.quantity)
+                
+                # 重新计算总金额
+                sql = "SELECT unit_price FROM orders WHERE id = %s"
+                cursor.execute(sql, (order_id,))
+                result = cursor.fetchone()
+                if result:
+                    new_total = result['unit_price'] * order.quantity
+                    update_fields.append("total_amount = %s")
+                    params.append(new_total)
+            
+            # 更新状态（如果提供）
+            if order.status:
+                update_fields.append("status = %s")
+                params.append(order.status)
+            
+            # 执行更新
+            if update_fields:
+                sql = f"""
+                    UPDATE orders 
+                    SET {', '.join(update_fields)}, updated_at = NOW()
+                    WHERE id = %s
+                """
+                params.append(order_id)
+                cursor.execute(sql, params)
 
             sql = "SELECT * FROM orders WHERE id = %s"
             cursor.execute(sql, (order_id,))
