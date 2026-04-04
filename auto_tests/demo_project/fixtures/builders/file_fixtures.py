@@ -22,7 +22,7 @@ def temp_file() -> Generator[str, None, None]:
     临时文件 fixture
     使用项目内固定测试文件路径
     """
-    file_path = r"D:\code\MangoPytest\auto_test\demo_project\data\uploads\测试上传文件.txt"
+    file_path = r"D:\code\MangoPytest\auto_tests\demo_project\data\uploads\测试上传文件.txt"
 
     yield file_path
 

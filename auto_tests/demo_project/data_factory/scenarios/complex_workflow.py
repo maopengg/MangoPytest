@@ -6,10 +6,10 @@
 from typing import Dict, Any
 
 from .base_scenario import BaseScenario
-from ..builders.a_module.data_builder import DataBuilder
-from ..builders.b_module.order_builder import OrderBuilder
-from ..builders.c_module.product_builder import ProductBuilder
-from ..builders.d_module.user_builder import UserBuilder
+from ..builders.data import DataBuilder
+from ..builders.order import OrderBuilder
+from ..builders.product import ProductBuilder
+from ..builders.user import UserBuilder
 
 
 class ComplexWorkflowScenario(BaseScenario):

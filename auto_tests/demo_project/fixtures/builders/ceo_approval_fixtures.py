@@ -3,13 +3,15 @@
 # @Description: 总经理审批模块fixtures (A级)
 # @Time   : 2026-03-31
 # @Author : 毛鹏
+from typing import Any, Generator
+
 import pytest
 
 from auto_tests.demo_project.data_factory.builders.ceo_approval import CEOApprovalBuilder
 
 
 @pytest.fixture
-def ceo_approval_builder(authenticated_client) -> CEOApprovalBuilder:
+def ceo_approval_builder(authenticated_client) -> Generator[CEOApprovalBuilder, Any, None]:
     """
     总经理审批Builder Fixture
     提供CEOApprovalBuilder实例用于创建和管理总经理审批数据

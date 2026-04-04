@@ -5,7 +5,8 @@
 # @Author : 毛鹏
 import allure
 
-from auto_tests.demo_project.data_factory.builders import UserBuilder, ReimbursementBuilder
+from auto_tests.demo_project.data_factory.builders.reimbursement import ReimbursementBuilder
+from auto_tests.demo_project.data_factory.builders.user import UserBuilder
 from auto_tests.demo_project.data_factory.entities import UserEntity, ReimbursementEntity
 from auto_tests.demo_project.data_factory.scenarios import (
     LoginScenario,

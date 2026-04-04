@@ -31,8 +31,7 @@
     # 注销用户
     user.deactivate()  # active -> inactive
 """
-
-from .state_machine import StateMachine, State
+from core.base import StateMachine, State
 
 
 class UserStateMachine(StateMachine):

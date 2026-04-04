@@ -7,7 +7,8 @@
 import uuid
 from typing import Optional
 
-from ..base_builder import BaseBuilder, BuilderContext, DependencyLevel
+from core.base import BaseBuilder, BuilderContext
+from core.enums import DependencyLevel
 from ...entities.org_entity import OrgEntity
 from ...registry import register_builder
 

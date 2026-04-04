@@ -6,7 +6,7 @@
 import uuid
 from typing import Optional, List
 
-from ..base_builder import BaseBuilder
+from core.base import BaseBuilder
 from ...entities.user import UserEntity
 from ...registry import register_builder
 from ....api_manager import demo_project

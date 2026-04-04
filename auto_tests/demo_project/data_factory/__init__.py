@@ -30,8 +30,8 @@
         reimbursement = result.get_entity("reimbursement")
 """
 
-# 导出构造器层
-from .builders.base_builder import BaseBuilder
+# 导出构造器基类
+from core.base import BaseBuilder
 # 导出 Context 对象
 from .context import Context
 # 导出实体层

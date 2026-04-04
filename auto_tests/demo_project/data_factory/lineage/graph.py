@@ -17,7 +17,8 @@
 from collections import defaultdict, deque
 from typing import Dict, List, Optional, Set, Any
 
-from .node import DataLineageNode, LineageEdge, LineageRelation, LineagePath
+from core.enums import LineageRelation
+from core.models import DataLineageNode, LineageEdge, LineagePath
 
 
 class DataLineageGraph:

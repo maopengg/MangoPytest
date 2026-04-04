@@ -7,8 +7,8 @@ from abc import ABC
 from dataclasses import dataclass, field
 from typing import Dict, Any, List, Optional, TypeVar, Generic, Type
 
+from core.base import BaseEntity
 from ..context import Context
-from ..entities.base_entity import BaseEntity
 
 T = TypeVar("T", bound=BaseEntity if BaseEntity else object)
 

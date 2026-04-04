@@ -43,14 +43,9 @@
 
 from .analyzer import LineageAnalyzer
 from .graph import DataLineageGraph
-from .node import DataLineageNode, LineageNodeType, LineageRelation
 from .tracker import DataLineageTracker
 
 __all__ = [
-    # 节点类型
-    "DataLineageNode",
-    "LineageNodeType",
-    "LineageRelation",
     # 图管理
     "DataLineageGraph",
     # 追踪器

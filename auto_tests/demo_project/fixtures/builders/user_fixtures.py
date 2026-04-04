@@ -7,7 +7,7 @@ from typing import Generator, Dict, Any
 
 import pytest
 
-from auto_tests.demo_project.data_factory.builders import UserBuilder
+from auto_tests.demo_project.data_factory.builders.user import UserBuilder
 from auto_tests.demo_project.data_factory.entities import UserEntity
 
 

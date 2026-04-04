@@ -20,7 +20,7 @@
 from collections import defaultdict
 from typing import Dict, List, Optional, Any
 
-from .node import DataLineageNode, LineageEdge, LineageRelation, LineagePath
+from core.models import DataLineageNode
 from .graph import DataLineageGraph
 
 # 从统一的枚举文件导入

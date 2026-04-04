@@ -6,8 +6,7 @@
 from datetime import datetime
 from typing import Type, Optional, Dict, Any, TypeVar, List
 
-from .base_strategy import BaseStrategy, StrategyResult
-from ..entities.base_entity import BaseEntity
+from core.base import BaseEntity, BaseStrategy, StrategyResult
 
 T = TypeVar("T", bound=BaseEntity)
 

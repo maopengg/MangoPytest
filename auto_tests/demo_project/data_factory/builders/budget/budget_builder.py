@@ -6,7 +6,8 @@
 
 from typing import Optional, Dict, Any
 
-from ..base_builder import BaseBuilder, BuilderContext, DependencyLevel
+from core.base import BaseBuilder, BuilderContext
+from core.enums import DependencyLevel
 from ...entities.budget_entity import BudgetEntity
 from ...registry import register_builder
 

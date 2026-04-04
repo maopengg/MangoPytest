@@ -44,6 +44,8 @@ from .state_machine import (
     StateMachine,
 )
 from .base_assertion import AssertionBase
+from .data_factory_base import DataFactoryBase
+from .data_builder_base import BaseDataBuilder
 
 __all__ = [
     # 实体基类
@@ -68,5 +70,8 @@ __all__ = [
     "TransitionResult",
     "StateMachine",
     # 断言基类
-    "AssertionBase"
+    "AssertionBase",
+    # 数据工厂基类
+    "DataFactoryBase",
+    "BaseDataBuilder",
 ]

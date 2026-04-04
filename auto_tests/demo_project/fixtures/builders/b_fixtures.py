@@ -17,8 +17,8 @@ from typing import Generator
 
 import pytest
 
-from auto_tests.demo_project.data_factory.builders import ReimbursementBuilder
-from auto_tests.demo_project.data_factory.builders.base_builder import BuilderContext
+from auto_tests.demo_project.data_factory.builders.reimbursement import ReimbursementBuilder
+from core.base import BuilderContext
 
 
 @pytest.fixture

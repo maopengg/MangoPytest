@@ -5,7 +5,7 @@
 # @Author : 毛鹏
 from typing import Optional, List
 
-from ..base_builder import BaseBuilder
+from core.base import BaseBuilder
 from ...entities.ceo_approval import CEOApprovalEntity
 from ...registry import register_builder
 from ....api_manager import demo_project

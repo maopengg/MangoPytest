@@ -20,7 +20,8 @@
     user.validate()  # 验证数据有效性
 """
 
-from .base_entity import BaseEntity, EntityStatus
+from core.base import BaseEntity
+from core.enums.demo_enum import EntityStatus
 from .budget_entity import BudgetEntity
 from .ceo_approval import CEOApprovalEntity
 from .dept_approval import DeptApprovalEntity

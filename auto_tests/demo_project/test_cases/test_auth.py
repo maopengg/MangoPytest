@@ -396,15 +396,18 @@ class TestTokenManagement(UnitTest):
 
     @allure.title("无效token访问")
     def test_invalid_token_access(self, api_client):
-        """测试使用无效token访问"""
+        """测试使用无效token访问 - 期望返回401错误"""
         # 设置无效token - 通过设置全局token
         from auto_tests.demo_project.api_manager import demo_project
+        from core.exceptions import ApiError
 
         # 使用全局token设置
         demo_project.token = "invalid_token_12345"
         demo_project.user.set_token("invalid_token_12345")
 
-        # 尝试访问受保护资源
-        result = api_client.user.get_users()
-        # 如果API不验证token，可能会返回结果
-        assert result is not None
+        # 尝试访问受保护资源，期望抛出401异常
+        with pytest.raises(ApiError) as exc_info:
+            api_client.user.get_users()
+
+        # 验证异常状态码是401
+        assert exc_info.value.code == 401

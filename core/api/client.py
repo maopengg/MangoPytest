@@ -28,6 +28,7 @@ import httpx
 from core.utils import log
 from core.models.api_model import APIResponse
 from core.decorators import api_allure_logger, _log_api_response_to_allure
+from core.exceptions import ApiError
 
 
 class APIClient:
@@ -229,10 +230,9 @@ class APIClient:
 
                 # 检查响应状态
                 if response.is_error:
-                    raise APIException(
-                        f"API 错误: {response.status_code}",
-                        status_code=response.status_code,
-                        response_data=response.data,
+                    raise ApiError(
+                        response.status_code,
+                        f"API 错误: {response.status_code}，数据：{str(response.data)}",
                     )
 
                 # 记录到 Allure
@@ -250,7 +250,7 @@ class APIClient:
                     self._error_count += 1
                     raise
 
-        raise last_error or RequestException("请求失败")
+        raise last_error
 
     @api_allure_logger
     def get(

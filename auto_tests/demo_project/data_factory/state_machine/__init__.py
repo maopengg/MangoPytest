@@ -31,20 +31,9 @@
     user.transition_to("inactive")  # locked -> inactive
 """
 
-from .exceptions import InvalidTransitionError, StateMachineError
-from .state_machine import StateMachine, State, Transition, TransitionResult
 from .user_state_machine import UserStateMachine, is_active, is_locked, is_inactive
 
 __all__ = [
-    # 核心类
-    "StateMachine",
-    "State",
-    "Transition",
-    "TransitionResult",
-    # 异常
-    "InvalidTransitionError",
-    "StateMachineError",
-    # 具体状态机
     "UserStateMachine",
     # 便捷函数
     "is_active",

@@ -6,7 +6,7 @@
 from typing import Dict, Any, Optional
 
 from auto_tests.demo_project.api_manager import demo_project
-from ..base_builder import BaseBuilder
+from core.base import BaseBuilder
 from ...registry import register_builder
 
 

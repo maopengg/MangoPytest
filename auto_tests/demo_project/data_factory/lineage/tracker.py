@@ -19,12 +19,8 @@ from contextlib import contextmanager
 from datetime import datetime
 from typing import Dict, List, Optional, Any
 
-from .node import (
-    DataLineageNode,
-    LineageEdge,
-    LineageNodeType,
-    LineageRelation,
-)
+from core.enums import LineageRelation, LineageNodeType
+from core.models import DataLineageNode, LineageEdge, LineagePath
 from .graph import DataLineageGraph
 
 

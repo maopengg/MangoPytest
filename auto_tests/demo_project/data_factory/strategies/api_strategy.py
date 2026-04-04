@@ -5,8 +5,7 @@
 # @Author : 毛鹏
 from typing import Type, Optional, Dict, Any, TypeVar
 
-from .base_strategy import BaseStrategy, StrategyResult
-from ..entities.base_entity import BaseEntity
+from core.base import BaseEntity, BaseStrategy, StrategyResult
 from ...api_manager import demo_project
 
 T = TypeVar("T", bound=BaseEntity)

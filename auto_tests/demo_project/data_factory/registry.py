@@ -5,7 +5,7 @@
 # @Author : 毛鹏
 from typing import Dict, Type
 
-from .builders.base_builder import BaseBuilder
+from core.base import BaseBuilder
 
 
 class BuilderRegistry:

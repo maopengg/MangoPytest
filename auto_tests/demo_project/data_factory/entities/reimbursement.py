@@ -6,7 +6,7 @@
 from dataclasses import dataclass
 from typing import Dict, Any, List
 
-from .base_entity import BaseEntity
+from core.base import BaseEntity
 
 
 @dataclass

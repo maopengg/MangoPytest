@@ -25,16 +25,11 @@
 """
 
 from .api_strategy import APIStrategy
-from .base_strategy import BaseStrategy, StrategyResult, CreateStrategy
 from .db_strategy import DBStrategy
 from .hybrid_strategy import HybridStrategy
 from .mock_strategy import MockStrategy
 
 __all__ = [
-    # 基类与枚举
-    "BaseStrategy",
-    "StrategyResult",
-    "CreateStrategy",
     # 具体策略
     "APIStrategy",
     "DBStrategy",

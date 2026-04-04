@@ -6,7 +6,7 @@
 from dataclasses import dataclass
 from typing import Dict, Any, List, TYPE_CHECKING
 
-from .base_entity import BaseEntity
+from core.base import BaseEntity
 
 if TYPE_CHECKING:
     from ..state_machine import UserStateMachine, TransitionResult

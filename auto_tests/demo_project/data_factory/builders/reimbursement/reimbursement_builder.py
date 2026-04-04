@@ -6,7 +6,8 @@
 import uuid
 from typing import Optional, List, Dict, Any
 
-from ..base_builder import BaseBuilder, BuilderContext, DependencyLevel
+from core.base import BaseBuilder, BuilderContext
+from core.enums import DependencyLevel
 from ..budget.budget_builder import BudgetBuilder
 from ..user.user_builder import UserBuilder
 from ...entities.reimbursement import ReimbursementEntity

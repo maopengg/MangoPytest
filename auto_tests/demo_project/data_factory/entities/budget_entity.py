@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, date
 from typing import Optional, List, Dict, Any
 
-from .base_entity import BaseEntity
+from core.base import BaseEntity
 
 
 def uuid_short() -> str:

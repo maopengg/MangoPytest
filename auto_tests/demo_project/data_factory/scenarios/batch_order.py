@@ -6,9 +6,9 @@
 from typing import Dict, Any
 
 from .base_scenario import BaseScenario
-from ..builders.b_module.order_builder import OrderBuilder
-from ..builders.c_module.product_builder import ProductBuilder
-from ..builders.d_module.user_builder import UserBuilder
+from ..builders.order import OrderBuilder
+from ..builders.product import ProductBuilder
+from ..builders.user import UserBuilder
 
 
 class BatchOrderScenario(BaseScenario):
