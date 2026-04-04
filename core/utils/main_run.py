@@ -15,7 +15,6 @@ from settings.settings import IS_TEST_REPORT
 from tools import project_dir
 from tools.files.zip_files import zip_files
 from tools.log import log
-from tools.notice import NoticeMain
 
 
 class MainRun:
@@ -45,16 +44,16 @@ class MainRun:
                     #         fr'{project_dir.root_path()}\auto_test\{i.get("dir_name")}\test_cases'
                     #     )
                     self.pytest_command.append(
-                                fr'{project_dir.root_path()}\auto_test\demo_project\test_cases\test_approval_workflow.py'
-                            )
+                        fr'{project_dir.root_path()}\auto_test\demo_project\test_cases\test_approval_workflow.py'
+                    )
         log.info(f"开始执行测试任务......")
         print(self.pytest_command)
         pytest.main(self.pytest_command)
-        if IS_TEST_REPORT:
-            os.system(r"allure generate ./report/tmp -o ./report/html --clean")
-        # NoticeMain(self.case_run_list.case_run).notice_main()
-        if IS_TEST_REPORT:
-            os.system(f"allure serve ./report/tmp -h 127.0.0.1 -p 9999")
+        # if IS_TEST_REPORT:
+        #     os.system(r"allure generate ./report/tmp -o ./report/html --clean")
+        # # NoticeMain(self.case_run_list.case_run).notice_main()
+        # if IS_TEST_REPORT:
+        #     os.system(f"allure serve ./report/tmp -h 127.0.0.1 -p 9999")
 
     @staticmethod
     def get_local_ip():

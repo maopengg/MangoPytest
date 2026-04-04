@@ -4,21 +4,21 @@
 # @Time   : 2026-04-01
 # @Author : 毛鹏
 
-from fastapi import FastAPI, HTTPException, Depends, Header
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
-from typing import Optional, List, Dict, Any
-import uvicorn
-import uuid
-from datetime import datetime
 import hashlib
-from pydantic import BaseModel
-from fastapi import Request, UploadFile, File
-import pymysql
-from contextlib import contextmanager
-import json
 import time
+import uuid
+from contextlib import contextmanager
+from datetime import datetime
+from typing import Optional
+
+import pymysql
+import uvicorn
+from fastapi import FastAPI, HTTPException, Depends, Header
+from fastapi import Request, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 
 # MySQL 配置
 MYSQL_CONFIG = {
@@ -253,8 +253,8 @@ def error(code, message):
 
 
 async def verify_token(
-    x_token: str = Header(None),
-    authorization: str = Header(None, alias="Authorization"),
+        x_token: str = Header(None),
+        authorization: str = Header(None, alias="Authorization"),
 ):
     """
     验证token
@@ -314,7 +314,7 @@ async def login(user_login: UserLogin):
 
             # 检查密码是否已经是 MD5 格式（32位十六进制字符串）
             if len(user_login.password) == 32 and all(
-                c in "0123456789abcdef" for c in user_login.password.lower()
+                    c in "0123456789abcdef" for c in user_login.password.lower()
             ):
                 # 密码已经是 MD5 格式，直接使用
                 password_md5 = user_login.password.lower()
@@ -363,7 +363,7 @@ async def register(user: UserCreate):
             # 创建用户
             # 检查密码是否已经是 MD5 格式（32位十六进制字符串）
             if len(user.password) == 32 and all(
-                c in "0123456789abcdef" for c in user.password.lower()
+                    c in "0123456789abcdef" for c in user.password.lower()
             ):
                 # 密码已经是 MD5 格式，直接使用
                 password_md5 = user.password.lower()
@@ -372,9 +372,9 @@ async def register(user: UserCreate):
                 password_md5 = hashlib.md5(user.password.encode()).hexdigest()
 
             sql = """
-                INSERT INTO users (username, email, full_name, password, role, status, created_at, updated_at)
-                VALUES (%s, %s, %s, %s, %s, 'active', NOW(), NOW())
-            """
+                  INSERT INTO users (username, email, full_name, password, role, status, created_at, updated_at)
+                  VALUES (%s, %s, %s, %s, %s, 'active', NOW(), NOW()) \
+                  """
             cursor.execute(
                 sql,
                 (user.username, user.email, user.full_name, password_md5, user.role),
@@ -439,10 +439,14 @@ async def update_user(user_id: int, user: User, token: str = Depends(verify_toke
 
             # 更新用户
             sql = """
-                UPDATE users 
-                SET username = %s, email = %s, full_name = %s, role = %s, updated_at = NOW()
-                WHERE id = %s
-            """
+                  UPDATE users
+                  SET username   = %s,
+                      email      = %s,
+                      full_name  = %s,
+                      role       = %s,
+                      updated_at = NOW()
+                  WHERE id = %s \
+                  """
             cursor.execute(
                 sql, (user.username, user.email, user.full_name, user.role, user_id)
             )
@@ -488,9 +492,9 @@ async def create_product(product: Product, token: str = Depends(verify_token)):
     try:
         with get_db_cursor() as cursor:
             sql = """
-                INSERT INTO products (name, price, description, stock, created_at, updated_at)
-                VALUES (%s, %s, %s, %s, NOW(), NOW())
-            """
+                  INSERT INTO products (name, price, description, stock, created_at, updated_at)
+                  VALUES (%s, %s, %s, %s, NOW(), NOW()) \
+                  """
             cursor.execute(
                 sql, (product.name, product.price, product.description, product.stock)
             )
@@ -527,7 +531,7 @@ async def get_products(id: Optional[int] = None, token: str = Depends(verify_tok
 
 @app.put("/products/{product_id}", summary="更新产品")
 async def update_product(
-    product_id: int, product: Product, token: str = Depends(verify_token)
+        product_id: int, product: Product, token: str = Depends(verify_token)
 ):
     try:
         with get_db_cursor() as cursor:
@@ -537,10 +541,14 @@ async def update_product(
                 return error(404, "产品不存在")
 
             sql = """
-                UPDATE products 
-                SET name = %s, price = %s, description = %s, stock = %s, updated_at = NOW()
-                WHERE id = %s
-            """
+                  UPDATE products
+                  SET name        = %s,
+                      price       = %s,
+                      description = %s,
+                      stock       = %s,
+                      updated_at  = NOW()
+                  WHERE id = %s \
+                  """
             cursor.execute(
                 sql,
                 (
@@ -603,9 +611,10 @@ async def create_order(order: Order, token: str = Depends(verify_token)):
 
             # 创建订单
             sql = """
-                INSERT INTO orders (order_no, product_id, quantity, user_id, total_amount, status, created_at, updated_at)
-                VALUES (%s, %s, %s, %s, %s, 'pending', NOW(), NOW())
-            """
+                  INSERT INTO orders (order_no, product_id, quantity, user_id, total_amount, status, created_at,
+                                      updated_at)
+                  VALUES (%s, %s, %s, %s, %s, 'pending', NOW(), NOW()) \
+                  """
             cursor.execute(
                 sql,
                 (order_no, order.product_id, order.quantity, order.user_id, total_amount),
@@ -630,12 +639,12 @@ async def get_orders(token: str = Depends(verify_token)):
     try:
         with get_db_cursor() as cursor:
             sql = """
-                SELECT o.*, p.name as product_name, u.username 
-                FROM orders o
-                LEFT JOIN products p ON o.product_id = p.id
-                LEFT JOIN users u ON o.user_id = u.id
-                ORDER BY o.id DESC
-            """
+                  SELECT o.*, p.name as product_name, u.username
+                  FROM orders o
+                           LEFT JOIN products p ON o.product_id = p.id
+                           LEFT JOIN users u ON o.user_id = u.id
+                  ORDER BY o.id DESC \
+                  """
             cursor.execute(sql)
             orders = cursor.fetchall()
             return success(orders, "获取成功")
@@ -648,12 +657,12 @@ async def get_order(order_id: int, token: str = Depends(verify_token)):
     try:
         with get_db_cursor() as cursor:
             sql = """
-                SELECT o.*, p.name as product_name, u.username 
-                FROM orders o
-                LEFT JOIN products p ON o.product_id = p.id
-                LEFT JOIN users u ON o.user_id = u.id
-                WHERE o.id = %s
-            """
+                  SELECT o.*, p.name as product_name, u.username
+                  FROM orders o
+                           LEFT JOIN products p ON o.product_id = p.id
+                           LEFT JOIN users u ON o.user_id = u.id
+                  WHERE o.id = %s \
+                  """
             cursor.execute(sql, (order_id,))
             order = cursor.fetchone()
             if order:
@@ -673,10 +682,11 @@ async def update_order(order_id: int, order: Order, token: str = Depends(verify_
                 return error(404, "订单不存在")
 
             sql = """
-                UPDATE orders 
-                SET status = %s, updated_at = NOW()
-                WHERE id = %s
-            """
+                  UPDATE orders
+                  SET status     = %s,
+                      updated_at = NOW()
+                  WHERE id = %s \
+                  """
             cursor.execute(sql, (order.status, order_id))
 
             sql = "SELECT * FROM orders WHERE id = %s"
@@ -742,9 +752,9 @@ async def submit_data(request: Request, token: str = Depends(verify_token)):
         # 存储到数据库
         with get_db_cursor() as cursor:
             sql = """
-                INSERT INTO data_submissions (name, value, created_at)
-                VALUES (%s, %s, NOW())
-            """
+                  INSERT INTO data_submissions (name, value, created_at)
+                  VALUES (%s, %s, NOW()) \
+                  """
             cursor.execute(sql, (name, int(value)))
 
         return success(
@@ -774,9 +784,9 @@ async def upload_file(file: UploadFile = File(...), token: str = Depends(verify_
         # 存储文件信息到数据库
         with get_db_cursor() as cursor:
             sql = """
-                INSERT INTO files (file_id, filename, original_name, content_type, size, created_at)
-                VALUES (%s, %s, %s, %s, %s, NOW())
-            """
+                  INSERT INTO files (file_id, filename, original_name, content_type, size, created_at)
+                  VALUES (%s, %s, %s, %s, %s, NOW()) \
+                  """
             cursor.execute(
                 sql,
                 (
@@ -852,7 +862,7 @@ async def server_info(token: str = Depends(verify_token)):
 
 @app.post("/reimbursements", summary="创建报销申请")
 async def create_reimbursement(
-    reimbursement: Reimbursement, token: str = Depends(verify_token)
+        reimbursement: Reimbursement, token: str = Depends(verify_token)
 ):
     """D级模块：创建报销申请"""
     if reimbursement.amount <= 0:
@@ -869,9 +879,9 @@ async def create_reimbursement(
             )
 
             sql = """
-                INSERT INTO reimbursements (reimb_no, user_id, amount, reason, status, created_at, updated_at)
-                VALUES (%s, %s, %s, %s, 'pending', NOW(), NOW())
-            """
+                  INSERT INTO reimbursements (reimb_no, user_id, amount, reason, status, created_at, updated_at)
+                  VALUES (%s, %s, %s, %s, 'pending', NOW(), NOW()) \
+                  """
             cursor.execute(
                 sql,
                 (
@@ -894,7 +904,7 @@ async def create_reimbursement(
 
 @app.get("/reimbursements", summary="获取报销申请列表")
 async def get_reimbursements(
-    id: Optional[int] = None, token: str = Depends(verify_token)
+        id: Optional[int] = None, token: str = Depends(verify_token)
 ):
     """D级模块：获取报销申请列表"""
     try:
@@ -908,11 +918,11 @@ async def get_reimbursements(
                 return error(404, "报销申请不存在")
 
             sql = """
-                SELECT r.*, u.username 
-                FROM reimbursements r
-                LEFT JOIN users u ON r.user_id = u.id
-                ORDER BY r.id DESC
-            """
+                  SELECT r.*, u.username
+                  FROM reimbursements r
+                           LEFT JOIN users u ON r.user_id = u.id
+                  ORDER BY r.id DESC \
+                  """
             cursor.execute(sql)
             reimbs = cursor.fetchall()
             return success(reimbs, "获取成功")
@@ -922,7 +932,7 @@ async def get_reimbursements(
 
 @app.put("/reimbursements/{reimbursement_id}", summary="更新报销申请")
 async def update_reimbursement(
-    reimbursement_id: int, data: Reimbursement, token: str = Depends(verify_token)
+        reimbursement_id: int, data: Reimbursement, token: str = Depends(verify_token)
 ):
     """D级模块：更新报销申请"""
     try:
@@ -938,10 +948,12 @@ async def update_reimbursement(
                 return error(400, "只能更新待审批的申请")
 
             sql = """
-                UPDATE reimbursements 
-                SET amount = %s, reason = %s, updated_at = NOW()
-                WHERE id = %s
-            """
+                  UPDATE reimbursements
+                  SET amount     = %s,
+                      reason     = %s,
+                      updated_at = NOW()
+                  WHERE id = %s \
+                  """
             cursor.execute(sql, (data.amount, data.reason, reimbursement_id))
 
             sql = "SELECT * FROM reimbursements WHERE id = %s"
@@ -955,7 +967,7 @@ async def update_reimbursement(
 
 @app.delete("/reimbursements/{reimbursement_id}", summary="删除报销申请")
 async def delete_reimbursement(
-    reimbursement_id: int, token: str = Depends(verify_token)
+        reimbursement_id: int, token: str = Depends(verify_token)
 ):
     """D级模块：删除报销申请"""
     try:
@@ -981,7 +993,7 @@ async def delete_reimbursement(
 
 @app.post("/dept-approvals", summary="创建部门审批")
 async def create_dept_approval(
-    approval: DeptApproval, token: str = Depends(verify_token)
+        approval: DeptApproval, token: str = Depends(verify_token)
 ):
     """C级模块：部门审批"""
     try:
@@ -1004,9 +1016,9 @@ async def create_dept_approval(
 
             # 创建部门审批
             sql = """
-                INSERT INTO dept_approvals (approval_no, reimbursement_id, approver_id, status, comment, created_at)
-                VALUES (%s, %s, %s, %s, %s, NOW())
-            """
+                  INSERT INTO dept_approvals (approval_no, reimbursement_id, approver_id, status, comment, created_at)
+                  VALUES (%s, %s, %s, %s, %s, NOW()) \
+                  """
             cursor.execute(
                 sql,
                 (
@@ -1040,7 +1052,7 @@ async def create_dept_approval(
 
 @app.get("/dept-approvals", summary="获取部门审批列表")
 async def get_dept_approvals(
-    reimbursement_id: Optional[int] = None, token: str = Depends(verify_token)
+        reimbursement_id: Optional[int] = None, token: str = Depends(verify_token)
 ):
     """C级模块：获取部门审批列表"""
     try:
@@ -1060,7 +1072,7 @@ async def get_dept_approvals(
 
 @app.post("/finance-approvals", summary="创建财务审批")
 async def create_finance_approval(
-    approval: FinanceApproval, token: str = Depends(verify_token)
+        approval: FinanceApproval, token: str = Depends(verify_token)
 ):
     """B级模块：财务审批"""
     try:
@@ -1091,9 +1103,10 @@ async def create_finance_approval(
 
             # 创建财务审批
             sql = """
-                INSERT INTO finance_approvals (approval_no, reimbursement_id, dept_approval_id, approver_id, status, comment, created_at)
-                VALUES (%s, %s, %s, %s, %s, %s, NOW())
-            """
+                  INSERT INTO finance_approvals (approval_no, reimbursement_id, dept_approval_id, approver_id, status,
+                                                 comment, created_at)
+                  VALUES (%s, %s, %s, %s, %s, %s, NOW()) \
+                  """
             cursor.execute(
                 sql,
                 (
@@ -1130,7 +1143,7 @@ async def create_finance_approval(
 
 @app.get("/finance-approvals", summary="获取财务审批列表")
 async def get_finance_approvals(
-    reimbursement_id: Optional[int] = None, token: str = Depends(verify_token)
+        reimbursement_id: Optional[int] = None, token: str = Depends(verify_token)
 ):
     """B级模块：获取财务审批列表"""
     try:
@@ -1150,7 +1163,7 @@ async def get_finance_approvals(
 
 @app.post("/ceo-approvals", summary="创建总经理审批")
 async def create_ceo_approval(
-    approval: CEOApproval, token: str = Depends(verify_token)
+        approval: CEOApproval, token: str = Depends(verify_token)
 ):
     """A级模块：总经理审批"""
     try:
@@ -1183,9 +1196,10 @@ async def create_ceo_approval(
 
             # 创建总经理审批
             sql = """
-                INSERT INTO ceo_approvals (approval_no, reimbursement_id, finance_approval_id, approver_id, status, comment, created_at)
-                VALUES (%s, %s, %s, %s, %s, %s, NOW())
-            """
+                  INSERT INTO ceo_approvals (approval_no, reimbursement_id, finance_approval_id, approver_id, status,
+                                             comment, created_at)
+                  VALUES (%s, %s, %s, %s, %s, %s, NOW()) \
+                  """
             cursor.execute(
                 sql,
                 (
@@ -1220,7 +1234,7 @@ async def create_ceo_approval(
 
 @app.get("/ceo-approvals", summary="获取总经理审批列表")
 async def get_ceo_approvals(
-    reimbursement_id: Optional[int] = None, token: str = Depends(verify_token)
+        reimbursement_id: Optional[int] = None, token: str = Depends(verify_token)
 ):
     """A级模块：获取总经理审批列表"""
     try:
@@ -1356,12 +1370,16 @@ async def startup_event():
 
             for user in users_data:
                 sql = """
-                    INSERT INTO users (id, username, email, full_name, password, role, status, created_at, updated_at)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW())
-                    ON DUPLICATE KEY UPDATE 
-                    email = VALUES(email), full_name = VALUES(full_name), 
-                    password = VALUES(password), role = VALUES(role), status = VALUES(status)
-                """
+                      INSERT INTO users (id, username, email, full_name, password, role, status, created_at, updated_at)
+                      VALUES (%s, %s, %s, %s, %s, %s, %s, NOW(), NOW()) ON DUPLICATE KEY
+                      UPDATE
+                          email =
+                      VALUES (email), full_name =
+                      VALUES (full_name), password =
+                      VALUES (password), role =
+                      VALUES (role), status =
+                      VALUES (status) \
+                      """
                 cursor.execute(sql, user)
 
             # 初始化产品数据
@@ -1374,9 +1392,9 @@ async def startup_event():
 
             for product in products_data:
                 sql = """
-                    INSERT INTO products (name, price, description, stock, created_at, updated_at)
-                    VALUES (%s, %s, %s, %s, NOW(), NOW())
-                """
+                      INSERT INTO products (name, price, description, stock, created_at, updated_at)
+                      VALUES (%s, %s, %s, %s, NOW(), NOW()) \
+                      """
                 cursor.execute(sql, product)
 
             return success({"message": "数据初始化成功"}, "初始化完成")

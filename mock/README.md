@@ -49,8 +49,9 @@
 ### 认证相关
 
 #### 1. `POST /auth/login` - 用户登录
+
 - **请求头**: `Content-Type: application/json`
-- **请求体**: 
+- **请求体**:
   ```json
   {
     "username": "testuser",
@@ -72,8 +73,9 @@
   ```
 
 #### 2. `POST /auth/register` - 用户注册
+
 - **请求头**: `Content-Type: application/json`
-- **请求体**: 
+- **请求体**:
   ```json
   {
     "username": "newuser",
@@ -102,6 +104,7 @@
 ### 用户管理
 
 #### 3. `GET /users` - 获取所有用户
+
 - **请求头**: `X-Token: {token}`
 - **请求体**: 无
 - **响应示例**:
@@ -121,6 +124,7 @@
   ```
 
 #### 4. `GET /users/{user_id}` - 根据ID获取用户
+
 - **请求头**: `X-Token: {token}`
 - **路径参数**: `user_id` - 用户ID
 - **响应示例**:
@@ -138,9 +142,10 @@
   ```
 
 #### 5. `PUT /users/{user_id}` - 更新用户信息
+
 - **请求头**: `Content-Type: application/json`, `X-Token: {token}`
 - **路径参数**: `user_id` - 用户ID
-- **请求体**: 
+- **请求体**:
   ```json
   {
     "username": "updateduser",
@@ -163,6 +168,7 @@
   ```
 
 #### 6. `DELETE /users/{user_id}` - 删除用户
+
 - **请求头**: `X-Token: {token}`
 - **路径参数**: `user_id` - 用户ID
 - **响应示例**:
@@ -178,8 +184,9 @@
 ### 产品管理
 
 #### 7. `POST /products` - 创建产品
+
 - **请求头**: `Content-Type: application/json`, `X-Token: {token}`
-- **请求体**: 
+- **请求体**:
   ```json
   {
     "name": "New Product",
@@ -204,6 +211,7 @@
   ```
 
 #### 8. `GET /products` - 获取所有产品
+
 - **请求头**: `X-Token: {token}`
 - **响应示例**:
   ```json
@@ -223,9 +231,10 @@
   ```
 
 #### 9. `PUT /products/{product_id}` - 更新产品信息
+
 - **请求头**: `Content-Type: application/json`, `X-Token: {token}`
 - **路径参数**: `product_id` - 产品ID
-- **请求体**: 
+- **请求体**:
   ```json
   {
     "name": "Updated iPhone 15",
@@ -250,6 +259,7 @@
   ```
 
 #### 10. `DELETE /products/{product_id}` - 删除产品
+
 - **请求头**: `X-Token: {token}`
 - **路径参数**: `product_id` - 产品ID
 - **响应示例**:
@@ -265,8 +275,9 @@
 ### 订单管理
 
 #### 11. `POST /orders` - 创建订单
+
 - **请求头**: `Content-Type: application/json`, `X-Token: {token}`
-- **请求体**: 
+- **请求体**:
   ```json
   {
     "product_id": 1,
@@ -291,6 +302,7 @@
   ```
 
 #### 12. `GET /orders` - 获取所有订单
+
 - **请求头**: `X-Token: {token}`
 - **响应示例**:
   ```json
@@ -311,6 +323,7 @@
   ```
 
 #### 13. `GET /orders/{order_id}` - 根据ID获取订单
+
 - **请求头**: `X-Token: {token}`
 - **路径参数**: `order_id` - 订单ID
 - **响应示例**:
@@ -330,9 +343,10 @@
   ```
 
 #### 14. `PUT /orders/{order_id}` - 更新订单信息
+
 - **请求头**: `Content-Type: application/json`, `X-Token: {token}`
 - **路径参数**: `order_id` - 订单ID
-- **请求体**: 
+- **请求体**:
   ```json
   {
     "product_id": 2,
@@ -357,6 +371,7 @@
   ```
 
 #### 15. `DELETE /orders/{order_id}` - 删除订单
+
 - **请求头**: `X-Token: {token}`
 - **路径参数**: `order_id` - 订单ID
 - **响应示例**:
@@ -372,8 +387,9 @@
 ### 报销申请管理 (D级模块)
 
 #### 16. `POST /reimbursements` - 创建报销申请
+
 - **请求头**: `Content-Type: application/json`, `X-Token: {token}`
-- **请求体**: 
+- **请求体**:
   ```json
   {
     "user_id": 1,
@@ -405,9 +421,10 @@
   ```
 
 #### 17. `GET /reimbursements` - 获取报销申请列表
+
 - **请求头**: `X-Token: {token}`
-- **查询参数**: 
-  - `status` (可选): 状态筛选 (pending, dept_approved, finance_approved, ceo_approved, rejected)
+- **查询参数**:
+    - `status` (可选): 状态筛选 (pending, dept_approved, finance_approved, ceo_approved, rejected)
 - **响应示例**:
   ```json
   {
@@ -428,9 +445,10 @@
   ```
 
 #### 18. `PUT /reimbursements/{reimbursement_id}` - 更新报销申请
+
 - **请求头**: `Content-Type: application/json`, `X-Token: {token}`
 - **路径参数**: `reimbursement_id` - 报销申请ID
-- **请求体**: 
+- **请求体**:
   ```json
   {
     "amount": 1500.00,
@@ -453,6 +471,7 @@
   ```
 
 #### 19. `DELETE /reimbursements/{reimbursement_id}` - 删除报销申请
+
 - **请求头**: `X-Token: {token}`
 - **路径参数**: `reimbursement_id` - 报销申请ID
 - **响应示例**:
@@ -468,8 +487,9 @@
 ### 部门审批管理 (C级模块)
 
 #### 20. `POST /dept-approvals` - 创建部门审批
+
 - **请求头**: `Content-Type: application/json`, `X-Token: {token}`
-- **请求体**: 
+- **请求体**:
   ```json
   {
     "reimbursement_id": 1,
@@ -495,9 +515,10 @@
   ```
 
 #### 21. `GET /dept-approvals` - 获取部门审批列表
+
 - **请求头**: `X-Token: {token}`
-- **查询参数**: 
-  - `reimbursement_id` (可选): 按报销申请ID筛选
+- **查询参数**:
+    - `reimbursement_id` (可选): 按报销申请ID筛选
 - **响应示例**:
   ```json
   {
@@ -520,8 +541,9 @@
 ### 财务审批管理 (B级模块)
 
 #### 22. `POST /finance-approvals` - 创建财务审批
+
 - **请求头**: `Content-Type: application/json`, `X-Token: {token}`
-- **请求体**: 
+- **请求体**:
   ```json
   {
     "reimbursement_id": 1,
@@ -549,9 +571,10 @@
   ```
 
 #### 23. `GET /finance-approvals` - 获取财务审批列表
+
 - **请求头**: `X-Token: {token}`
-- **查询参数**: 
-  - `reimbursement_id` (可选): 按报销申请ID筛选
+- **查询参数**:
+    - `reimbursement_id` (可选): 按报销申请ID筛选
 - **响应示例**:
   ```json
   {
@@ -575,8 +598,9 @@
 ### 总经理审批管理 (A级模块)
 
 #### 24. `POST /ceo-approvals` - 创建总经理审批
+
 - **请求头**: `Content-Type: application/json`, `X-Token: {token}`
-- **请求体**: 
+- **请求体**:
   ```json
   {
     "reimbursement_id": 1,
@@ -604,9 +628,10 @@
   ```
 
 #### 25. `GET /ceo-approvals` - 获取总经理审批列表
+
 - **请求头**: `X-Token: {token}`
-- **查询参数**: 
-  - `reimbursement_id` (可选): 按报销申请ID筛选
+- **查询参数**:
+    - `reimbursement_id` (可选): 按报销申请ID筛选
 - **响应示例**:
   ```json
   {
@@ -630,6 +655,7 @@
 ### 审批工作流
 
 #### 26. `GET /workflow/{reimbursement_id}` - 获取完整审批流程
+
 - **请求头**: `X-Token: {token}`
 - **路径参数**: `reimbursement_id` - 报销申请ID
 - **响应示例**:
@@ -668,6 +694,7 @@
 ### 其他功能
 
 #### 27. `POST /upload` - 文件上传
+
 - **请求头**: `Content-Type: multipart/form-data`, `X-Token: {token}`
 - **请求体**: 表单数据，包含文件字段 `file`
 - **响应示例**:
@@ -685,6 +712,7 @@
   ```
 
 #### 28. `POST /api/data` - 提交数据
+
 - **请求头**: `Content-Type: application/x-www-form-urlencoded`, `X-Token: {token}`
 - **请求体**: 表单数据，包含字段 `name` 和 `value`
 - **响应示例**:
@@ -701,6 +729,7 @@
   ```
 
 #### 29. `GET /health` - 健康检查
+
 - **请求头**: `X-Token: {token}`
 - **响应示例**:
   ```json
@@ -715,6 +744,7 @@
   ```
 
 #### 30. `GET /info` - 获取服务器信息
+
 - **请求头**: `X-Token: {token}`
 - **响应示例**:
   ```json
@@ -731,6 +761,7 @@
   ```
 
 #### 31. `GET /startup` - 初始化数据
+
 - **请求头**: 无
 - **说明**: 初始化测试数据（用户、产品等）
 - **响应示例**:
@@ -796,6 +827,7 @@ uvicorn service.mock_api:app --host 0.0.0.0 --port 8003
 4. **A级 - 总经理审批**: CEO审批（大额需要，需要B级通过）
 
 状态流转：
+
 ```
 pending → dept_approved → finance_approved → ceo_approved → fully_approved
    ↓           ↓                ↓                  ↓
