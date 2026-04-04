@@ -60,14 +60,18 @@ from .adapter import (
     tag,
     label,
 )
-
+# 增强器
+from .enhancers import (
+    LineageEnhancer,
+    MatrixEnhancer,
+    StateMachineEnhancer,
+)
 # fixtures
 from .fixtures import (
     allure_context,
     allure_lineage,
     allure_variant,
 )
-
 # pytest 钩子和装饰器
 from .hooks import (
     pytest_configure,
@@ -76,13 +80,6 @@ from .hooks import (
     allure_severity,
     allure_tag,
     allure_label,
-)
-
-# 增强器
-from .enhancers import (
-    LineageEnhancer,
-    MatrixEnhancer,
-    StateMachineEnhancer,
 )
 
 __all__ = [

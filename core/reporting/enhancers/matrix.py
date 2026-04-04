@@ -22,7 +22,7 @@
     MatrixEnhancer.attach_variant_matrix(variant_matrix)
 """
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from ..adapter import AllureAdapter
 
@@ -39,7 +39,7 @@ class MatrixEnhancer:
             variant_data: 变体数据
         """
         AllureAdapter.title(f"变体: {variant_name}")
-        
+
         with AllureAdapter.step(f"变体参数: {variant_name}"):
             AllureAdapter.attach_json("变体参数", variant_data)
 

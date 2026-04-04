@@ -1,0 +1,407 @@
+# -*- coding: utf-8 -*-
+# @Project: 芒果测试平台
+# @Description: API测试装饰器
+# @Time   : 2026-04-04
+# @Author : 毛鹏
+"""
+API测试装饰器模块
+
+包含：
+- case_data: 用例数据装饰器
+- request_data: 请求数据装饰器
+- timer: 计时装饰器
+- log_decorator: 日志装饰器
+- api_allure_logger: API Allure日志装饰器
+"""
+
+import functools
+import json
+import time
+from typing import Union, List, Callable
+from urllib.parse import urljoin
+
+import allure
+import pytest
+from genson import SchemaBuilder
+from requests.models import Response
+
+from enums.api_enum import MethodEnum, IsSchemaEnum
+from exceptions import PytestAutoTestError
+from exceptions.error_msg import ERROR_MSG_0350
+from models.api_model import ApiDataModel, ResponseModel, ApiTestCaseModel, RequestModel, ApiInfoModel, APIResponse
+from settings.settings import PRINT_EXECUTION_RESULTS, REQUEST_TIMEOUT_FAILURE_TIME
+from sources import SourcesData
+from tools.log import log
+
+from core.reporting.adapter import AllureAdapter
+
+
+class CleanupContext:
+    """
+    清理上下文管理器
+    用于跟踪和管理测试中创建的fixture数据
+    """
+
+    def __init__(self):
+        self.created_entities: list = []
+
+    def track(self, entity_type: str, entity_id: int, builder=None):
+        """
+        跟踪创建的实体
+
+        @param entity_type: 实体类型
+        @param entity_id: 实体ID
+        @param builder: 用于清理的builder实例
+        """
+        self.created_entities.append({
+            "type": entity_type,
+            "id": entity_id,
+            "builder": builder
+        })
+
+
+def case_data(
+        case_id: Union[int, List[int], None] = None,
+        case_name: Union[str, List[str], None] = None,
+        require_fixtures: List[str] = None,
+        auto_cleanup: bool = True
+):
+    """
+    用例数据装饰器 - 融合Fixture支持
+
+    Args:
+        case_id: 用例ID
+        case_name: 用例名称
+        require_fixtures: 需要的fixture数据类型列表
+        auto_cleanup: 是否自动清理fixture数据
+    """
+    require_fixtures = require_fixtures or []
+
+    def decorator(func):
+        log.debug(f'开始查询用例，用例ID:{case_id} 用例名称：{case_name}')
+
+        if case_id:
+            test_case_list = SourcesData.get_api_test_case(is_dict=False, id=case_id)
+        elif case_name:
+            test_case_list = SourcesData.get_api_test_case(is_dict=False, name=case_name)
+        else:
+            raise PytestAutoTestError(*ERROR_MSG_0350)
+
+        @pytest.mark.flaky(reruns=3)
+        @pytest.mark.parametrize("test_case", test_case_list)
+        def wrapper(self, test_case, **fixture_kwargs):
+            test_case_model = ApiTestCaseModel.get_obj(test_case)
+
+            allure.dynamic.feature(test_case.get('module'))
+            allure.dynamic.story(test_case.get('scene'))
+            allure.dynamic.title(test_case.get('name'))
+            allure.attach(test_case_model.model_dump_json(), '用例数据', allure.attachment_type.JSON)
+
+            data = ApiDataModel(test_case=test_case_model)
+            cleanup_ctx = CleanupContext()
+
+            try:
+                for fixture_name in require_fixtures:
+                    fixture_data = _prepare_fixture_data(
+                        fixture_name,
+                        fixture_kwargs,
+                        cleanup_ctx
+                    )
+                    data.add_fixture_data(fixture_name, fixture_data)
+                    allure.attach(
+                        str(fixture_data),
+                        f'Fixture数据:{fixture_name}',
+                        allure.attachment_type.JSON
+                    )
+
+                data.cleanup_context = cleanup_ctx
+                log.debug(f'准备开始执行API用例，数据：{data.model_dump_json()}')
+
+                func(self, data=data)
+                self.ass_main(data)
+
+            except PytestAutoTestError as error:
+                log.error(error.msg)
+                allure.attach(error.msg, '发生已知异常', allure.attachment_type.TEXT)
+                raise error
+
+            finally:
+                if auto_cleanup and cleanup_ctx.created_entities:
+                    _cleanup_fixture_data(cleanup_ctx)
+
+        return wrapper
+
+    return decorator
+
+
+def _prepare_fixture_data(fixture_name: str, fixture_kwargs: dict, cleanup_ctx: CleanupContext):
+    """根据名称准备fixture数据"""
+    prepared_key = f"prepared_{fixture_name}"
+    if prepared_key in fixture_kwargs:
+        return fixture_kwargs[prepared_key]
+
+    builder_key = f"{fixture_name}_builder"
+    if builder_key in fixture_kwargs:
+        builder = fixture_kwargs[builder_key]
+        data = builder.create()
+        cleanup_ctx.track(fixture_name, data.get("id"), builder)
+        return data
+
+    raise PytestAutoTestError(f"未找到fixture: {fixture_name}，请确保在测试类中定义对应的fixture")
+
+
+def _cleanup_fixture_data(cleanup_ctx: CleanupContext):
+    """清理fixture数据（LIFO顺序）"""
+    log.debug(f"开始清理 {len(cleanup_ctx.created_entities)} 个fixture数据")
+    for entity in reversed(cleanup_ctx.created_entities):
+        try:
+            builder = entity.get("builder")
+            if builder and hasattr(builder, 'delete'):
+                builder.delete(entity["id"])
+                log.debug(f"已清理 {entity['type']}: {entity['id']}")
+        except Exception as e:
+            log.warning(f"清理失败 {entity['type']}: {entity['id']}, 错误: {e}")
+
+
+def request_data(api_info_id):
+    """请求数据装饰器"""
+
+    def decorator(func):
+        def wrapper(self, data: ApiDataModel) -> ApiDataModel:
+            log.debug(f'开始查询接口数据，ID：{api_info_id}')
+            api_info_model = ApiInfoModel.get_obj(SourcesData.get_api_info(id=api_info_id))
+            log.debug(f'查询到接口的数据，接口ID：{api_info_model.model_dump_json()}')
+            data.request = RequestModel(
+                url=urljoin(self.base_data.test_object.host, api_info_model.url),
+                method=MethodEnum.get_value(api_info_model.method),
+                headers=api_info_model.headers if api_info_model.headers else self.base_data.headers,
+                params=data.test_case.params,
+                data=data.test_case.data,
+                json=data.test_case.json if data.test_case.json is not None else api_info_model.json,
+                file=data.test_case.file,
+            )
+            if api_info_model.is_schema == IsSchemaEnum.open and api_info_model.ass_schema and data.test_case.ass_schema is None:
+                data.test_case.ass_schema = api_info_model.ass_schema
+            log.debug(f'默认准备好的请求，数据：{data.request.model_dump_json()}')
+            res_args = func(self, data)
+            allure.attach(str(data.request.url), 'URL', allure.attachment_type.TEXT)
+            allure.attach(str(data.request.method), '请求方法', allure.attachment_type.TEXT)
+            allure.attach(json.dumps(data.request.headers, ensure_ascii=False), '请求头', allure.attachment_type.JSON)
+            if data.request.params:
+                allure.attach(json.dumps(data.request.params, ensure_ascii=False), '参数', allure.attachment_type.TEXT)
+            if data.request.data:
+                allure.attach(json.dumps(data.request.data, ensure_ascii=False), '表单', allure.attachment_type.JSON)
+            if data.request.json:
+                allure.attach(json.dumps(data.request.json, ensure_ascii=False), 'JSON', allure.attachment_type.JSON)
+            if data.request.file:
+                allure.attach(str(data.request.file), '文件', allure.attachment_type.JSON)
+            allure.attach(str(data.response.status_code), '响应状态码', allure.attachment_type.TEXT)
+            allure.attach(str(data.response.response_time * 1000), '响应时间（毫秒）', allure.attachment_type.TEXT)
+            allure.attach(data.response.response_text, '响应结果', allure.attachment_type.TEXT)
+            return res_args
+
+        return wrapper
+
+    return decorator
+
+
+def timer(func):
+    """计时装饰器 - 记录响应时间和生成schema"""
+
+    @functools.wraps(func)
+    def swapper(self, request_model: RequestModel) -> ResponseModel:
+        start = time.time()
+        response: Response = func(self, request_model)
+        try:
+            builder = SchemaBuilder()
+            builder.add_object(response.json())
+            schema = builder.to_schema()
+            schema_str = json.dumps(schema, ensure_ascii=False)
+            allure.attach(schema_str, '结构化断言数据', allure.attachment_type.JSON)
+        except Exception as e:
+            allure.attach(f'获取结构化数据失败：{e}', '结构化断言数据', allure.attachment_type.TEXT)
+
+        response_time = time.time() - start
+        if response_time > REQUEST_TIMEOUT_FAILURE_TIME:
+            log.error(
+                f"\n{'=' * 100}\n"
+                f"测试用例执行时间较长，请关注.\n"
+                f"函数运行时间: {response_time} ms\n"
+                f"测试用例相关数据: {response}\n"
+                f"{'=' * 100}")
+        try:
+            response_dict = response.json()
+        except json.JSONDecodeError as error:
+            response_dict = {
+                'error_msg': '您可以检查返回的值是否是json，如果不是，就不要使用response_dict',
+                'error': str(error)
+            }
+        formatted_response = ''.join(response.text.split())
+        log.debug(f'请求的结果，response：{formatted_response}')
+        return ResponseModel(
+            url=response.url,
+            status_code=response.status_code,
+            method=request_model.method,
+            headers=response.headers,
+            response_text=formatted_response,
+            response_dict=response_dict,
+            response_time=response_time,
+            content=response.content
+        )
+
+    return swapper
+
+
+def log_decorator(func):
+    """日志装饰器 - 记录请求响应信息"""
+
+    @functools.wraps(func)
+    def swapper(self, data: ApiDataModel) -> ApiDataModel:
+        data = func(self, data)
+        log.debug(f'用例执行完成，整个响应体：{data.response.model_dump()}')
+        if PRINT_EXECUTION_RESULTS:
+            _log_msg = f"\n{'=' * 200}\n" \
+                       f"用例标题: {data.test_case.name}\n" \
+                       f"请求路径: {data.response.url}\n" \
+                       f"请求方式: {data.response.method}\n" \
+                       f"请 求 头:  {data.request.headers}\n"
+            if data.request.params is not None:
+                _log_msg += f"请求params：{data.request.params}\n"
+            if data.request.data is not None:
+                _log_msg += f"请求data：{data.request.data}\n"
+            if data.request.json is not None:
+                _log_msg += f"请求json：{data.request.json}\n"
+            if data.request.file is not None:
+                _log_msg += f"请求文件：{data.request.file}\n"
+            _log_msg += f"Http状态码: {data.response.status_code}\n" \
+                        f"接口响应时长: {data.response.response_time} ms\n" \
+                        f"接口响应内容: {data.response.response_text}\n" \
+                        f"{'=' * 200}"
+            if data.response.status_code == 200 or data.response.status_code == 300:
+                log.info(_log_msg)
+            else:
+                log.error(_log_msg)
+        return data
+
+    return swapper
+
+
+def api_allure_logger(func: Callable) -> Callable:
+    """
+    API 请求 Allure 日志装饰器
+    
+    自动记录 API 请求和响应信息到 Allure 报告
+    
+    使用示例：
+        @api_allure_logger
+        def test_api_call():
+            response = client.get("/users")
+            return response
+    """
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        # 执行原始函数
+        response = func(*args, **kwargs)
+
+        # 如果响应不是 APIResponse，直接返回
+        if not isinstance(response, APIResponse):
+            return response
+
+        # 记录 API 请求信息到 Allure
+        _log_api_response_to_allure(response)
+
+        return response
+
+    return wrapper
+
+
+def _log_api_response_to_allure(response: APIResponse):
+    """
+    将 API 响应信息记录到 Allure 和命令行日志
+    
+    @param response: APIResponse 对象
+    """
+    # 构建命令行日志
+    _log_msg = f"\n{'=' * 100}\n" \
+               f"请求路径: {response.request_url}\n" \
+               f"请求方式: {response.request_method}\n" \
+               f"请 求 头: {response.request_headers}\n"
+
+    if response.request_params is not None:
+        _log_msg += f"请求params: {response.request_params}\n"
+    if response.request_data is not None:
+        _log_msg += f"请求data: {response.request_data}\n"
+
+    # 限制响应内容长度，只打印前1000字符
+    response_content = json.dumps(response.data, ensure_ascii=False, default=str)[:1000]
+
+    _log_msg += f"Http状态码: {response.status_code}\n" \
+                f"接口响应时长: {response.elapsed_ms} ms\n" \
+                f"接口响应内容: {response_content}\n" \
+                f"{'=' * 100}"
+
+    # 打印到命令行
+    if response.status_code == 200 or response.status_code == 300:
+        log.info(_log_msg)
+    else:
+        log.error(_log_msg)
+
+    # 记录到 Allure
+    from allure_commons.types import AttachmentType
+
+    with AllureAdapter.step(f"API 请求: {response.request_method} {response.request_url}"):
+        # 使用 allure.attach 直接添加各项信息
+        allure.attach(
+            str(response.request_url),
+            '请求URL',
+            AttachmentType.TEXT
+        )
+        allure.attach(
+            str(response.request_method),
+            '请求方法',
+            AttachmentType.TEXT
+        )
+        allure.attach(
+            json.dumps(response.request_headers, ensure_ascii=False, indent=2),
+            '请求头',
+            AttachmentType.JSON
+        )
+
+        # 添加请求数据（如果有）
+        if response.request_params:
+            allure.attach(
+                json.dumps(response.request_params, ensure_ascii=False, indent=2),
+                '请求Params',
+                AttachmentType.JSON
+            )
+        if response.request_data:
+            allure.attach(
+                json.dumps(response.request_data, ensure_ascii=False, indent=2, default=str),
+                '请求数据',
+                AttachmentType.JSON
+            )
+
+        # 添加响应信息
+        allure.attach(
+            str(response.status_code),
+            'HTTP状态码',
+            AttachmentType.TEXT
+        )
+        allure.attach(
+            str(response.elapsed_ms),
+            '响应时长(ms)',
+            AttachmentType.TEXT
+        )
+
+        # 附加响应内容
+        allure.attach(
+            json.dumps(response.data, ensure_ascii=False, indent=2, default=str),
+            '响应数据',
+            AttachmentType.JSON
+        )
+        allure.attach(
+            json.dumps(response.headers, ensure_ascii=False, indent=2),
+            '响应头',
+            AttachmentType.JSON
+        )

@@ -19,7 +19,7 @@
     StateMachineEnhancer.attach_state_transitions(state_machine)
 """
 
-from typing import Any, Dict, List, TYPE_CHECKING
+from typing import Dict, TYPE_CHECKING
 
 from ..adapter import AllureAdapter
 

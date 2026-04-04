@@ -20,7 +20,7 @@
     LineageEnhancer.attach_lineage_analysis(tracker)
 """
 
-from typing import Any, Dict, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from ..adapter import AllureAdapter
 
@@ -42,7 +42,7 @@ class LineageEnhancer:
             return
 
         graph = tracker.graph
-        
+
         # 构建图数据
         graph_data = {
             "nodes": [
@@ -82,17 +82,17 @@ class LineageEnhancer:
             return
 
         analyzer = tracker.analyzer
-        
+
         # 收集分析数据
         analysis = {
             "total_nodes": len(analyzer.graph.nodes),
             "total_edges": len(analyzer.graph.edges),
             "entity_types": list(set(
-                node.entity_type 
+                node.entity_type
                 for node in analyzer.graph.nodes.values()
             )),
             "sources": list(set(
-                node.source 
+                node.source
                 for node in analyzer.graph.nodes.values()
             )),
             "dependency_chains": analyzer.find_all_chains() if hasattr(analyzer, 'find_all_chains') else []
@@ -115,7 +115,7 @@ class LineageEnhancer:
             "实体数量": len(tracker.graph.nodes),
             "依赖关系": len(tracker.graph.edges),
             "实体类型": list(set(
-                node.entity_type 
+                node.entity_type
                 for node in tracker.graph.nodes.values()
             ))
         }

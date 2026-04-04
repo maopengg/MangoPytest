@@ -25,148 +25,113 @@ AllureAdapter - Allure 报告核心适配器
 """
 
 import json
-from typing import Any, Dict, Optional, Callable
 from functools import wraps
+from typing import Any, Dict, Optional, Callable
 
-try:
-    import allure
-    from allure_commons.types import AttachmentType
-    HAS_ALLURE = True
-except ImportError:
-    HAS_ALLURE = False
-    AttachmentType = None
-
-
-class NullContext:
-    """空上下文管理器（当 Allure 不可用时使用）"""
-    def __enter__(self):
-        return self
-    def __exit__(self, *args):
-        pass
+import allure
+from allure_commons.types import AttachmentType
 
 
 class AllureAdapter:
     """Allure 适配器 - 核心功能封装"""
 
-    @staticmethod
-    def is_available() -> bool:
-        """检查 Allure 是否可用"""
-        return HAS_ALLURE
-
     # ========== 标签管理 ==========
-    
+
     @staticmethod
     def feature(name: str):
         """标记功能模块"""
-        if HAS_ALLURE:
-            allure.feature(name)
+        allure.feature(name)
 
     @staticmethod
     def story(name: str):
         """标记用户故事"""
-        if HAS_ALLURE:
-            allure.story(name)
+        allure.story(name)
 
     @staticmethod
     def title(name: str):
         """设置测试标题"""
-        if HAS_ALLURE:
-            allure.title(name)
+        allure.title(name)
 
     @staticmethod
     def description(text: str):
         """设置测试描述"""
-        if HAS_ALLURE:
-            allure.description(text)
+        allure.description(text)
 
     @staticmethod
     def severity(level: str):
         """设置严重级别
-        
+
         Args:
             level: blocker, critical, normal, minor, trivial
         """
-        if HAS_ALLURE:
-            allure.severity(getattr(allure.severity_level, level.upper(), allure.severity_level.NORMAL))
+        allure.severity(getattr(allure.severity_level, level.upper(), allure.severity_level.NORMAL))
 
     @staticmethod
     def tag(*tags: str):
         """添加标签"""
-        if HAS_ALLURE:
-            for tag in tags:
-                allure.tag(tag)
+        for tag in tags:
+            allure.tag(tag)
 
     @staticmethod
     def label(name: str, value: str):
         """添加自定义标签"""
-        if HAS_ALLURE:
-            allure.label(name, value)
+        allure.label(name, value)
 
     # ========== 步骤管理 ==========
-    
+
     @staticmethod
     def step(name: str):
         """记录测试步骤
-        
+
         使用示例：
             with AllureAdapter.step("创建用户"):
                 user = UserEntity(username="test")
         """
-        if HAS_ALLURE:
-            return allure.step(name)
-        return NullContext()
+        return allure.step(name)
 
     @staticmethod
     def nested_step(name: str):
         """创建嵌套步骤（用于动态步骤）"""
-        if HAS_ALLURE:
-            return allure.step(name)
-        return NullContext()
+        return allure.step(name)
 
     # ========== 附件管理 ==========
-    
+
     @staticmethod
     def attach_json(name: str, data: Dict[str, Any]):
         """附加 JSON 数据"""
-        if HAS_ALLURE:
-            allure.attach(
-                json.dumps(data, ensure_ascii=False, indent=2, default=str),
-                name=name,
-                attachment_type=AttachmentType.JSON
-            )
+        allure.attach(
+            json.dumps(data, ensure_ascii=False, indent=2, default=str),
+            name=name,
+            attachment_type=AttachmentType.JSON
+        )
 
     @staticmethod
     def attach_text(name: str, text: str):
         """附加文本数据"""
-        if HAS_ALLURE:
-            allure.attach(text, name=name, attachment_type=AttachmentType.TEXT)
+        allure.attach(text, name=name, attachment_type=AttachmentType.TEXT)
 
     @staticmethod
     def attach_html(name: str, html: str):
         """附加 HTML 数据"""
-        if HAS_ALLURE:
-            allure.attach(html, name=name, attachment_type=AttachmentType.HTML)
+        allure.attach(html, name=name, attachment_type=AttachmentType.HTML)
 
     @staticmethod
     def attach_image(name: str, image_bytes: bytes):
         """附加图片数据"""
-        if HAS_ALLURE:
-            allure.attach(image_bytes, name=name, attachment_type=AttachmentType.PNG)
+        allure.attach(image_bytes, name=name, attachment_type=AttachmentType.PNG)
 
     @staticmethod
     def attach_file(filepath: str, name: Optional[str] = None):
         """附加文件"""
-        if HAS_ALLURE:
-            allure.attach.file(filepath, name=name or filepath)
+        allure.attach.file(filepath, name=name or filepath)
 
     @staticmethod
     def attach_bytes(name: str, data: bytes, mime_type: str = "application/octet-stream"):
         """附加二进制数据"""
-        if HAS_ALLURE:
-            allure.attach(data, name=name, attachment_type=mime_type)
+        allure.attach(data, name=name, attachment_type=mime_type)
 
     # ========== 装饰器 ==========
-    
+
     @staticmethod
     def step_decorator(name: str):
         """步骤装饰器
@@ -176,13 +141,16 @@ class AllureAdapter:
             def create_user():
                 return UserEntity()
         """
+
         def decorator(func: Callable) -> Callable:
             @wraps(func)
             def wrapper(*args, **kwargs):
                 step_name = name.format(*args, **kwargs)
                 with AllureAdapter.step(step_name):
                     return func(*args, **kwargs)
+
             return wrapper
+
         return decorator
 
 

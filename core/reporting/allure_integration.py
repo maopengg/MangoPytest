@@ -26,14 +26,10 @@ Allure 集成模块
 """
 
 import json
-from typing import Any, Dict, Optional, List
 from datetime import datetime
+from typing import Any, Dict, List
 
-try:
-    import allure
-    HAS_ALLURE = True
-except ImportError:
-    HAS_ALLURE = False
+import allure
 
 
 class AllureHelper:
@@ -42,62 +38,46 @@ class AllureHelper:
     @staticmethod
     def feature(name: str):
         """标记功能模块"""
-        if HAS_ALLURE:
-            allure.feature(name)
+        allure.feature(name)
 
     @staticmethod
     def story(name: str):
         """标记用户故事"""
-        if HAS_ALLURE:
-            allure.story(name)
+        allure.story(name)
 
     @staticmethod
     def title(name: str):
         """设置测试标题"""
-        if HAS_ALLURE:
-            allure.title(name)
+        allure.title(name)
 
     @staticmethod
     def description(text: str):
         """设置测试描述"""
-        if HAS_ALLURE:
-            allure.description(text)
+        allure.description(text)
 
     @staticmethod
     def step(name: str, *args, **kwargs):
         """记录测试步骤"""
-        if HAS_ALLURE:
-            return allure.step(name)
-        else:
-            # 返回空上下文管理器
-            class NullContext:
-                def __enter__(self):
-                    return self
-                def __exit__(self, *args):
-                    pass
-            return NullContext()
+        return allure.step(name)
 
     @staticmethod
     def attach_json(name: str, data: Dict[str, Any]):
         """附加 JSON 数据"""
-        if HAS_ALLURE:
-            allure.attach(
-                json.dumps(data, ensure_ascii=False, indent=2),
-                name=name,
-                attachment_type=allure.attachment_type.JSON
-            )
+        allure.attach(
+            json.dumps(data, ensure_ascii=False, indent=2),
+            name=name,
+            attachment_type=allure.attachment_type.JSON
+        )
 
     @staticmethod
     def attach_text(name: str, text: str):
         """附加文本数据"""
-        if HAS_ALLURE:
-            allure.attach(text, name=name, attachment_type=allure.attachment_type.TEXT)
+        allure.attach(text, name=name, attachment_type=allure.attachment_type.TEXT)
 
     @staticmethod
     def attach_html(name: str, html: str):
         """附加 HTML 数据"""
-        if HAS_ALLURE:
-            allure.attach(html, name=name, attachment_type=allure.attachment_type.HTML)
+        allure.attach(html, name=name, attachment_type=allure.attachment_type.HTML)
 
 
 class ContextAllureAdapter:

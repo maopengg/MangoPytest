@@ -3,3 +3,8 @@
 # @Description: 
 # @Time   : 2026-04-04 16:24
 # @Author : 毛鹏
+from mangotools.assertion import MangoAssertion
+
+
+class AssertionBase(MangoAssertion):
+    pass

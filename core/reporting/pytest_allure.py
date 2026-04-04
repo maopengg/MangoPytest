@@ -30,22 +30,17 @@ Allure 集成 pytest 钩子
         assert user is not None
 """
 
-import pytest
 from typing import Optional
 
-try:
-    import allure
-    HAS_ALLURE = True
-except ImportError:
-    HAS_ALLURE = False
+import pytest
+
+import allure
 
 from .allure_integration import (
     AllureHelper,
     ContextAllureAdapter,
     LineageAllureAdapter,
     VariantAllureAdapter,
-    StateMachineAllureAdapter,
-    BuilderAllureAdapter,
 )
 
 
@@ -58,9 +53,6 @@ class AllureIntegrationPlugin:
 
     def pytest_runtest_setup(self, item):
         """测试开始前"""
-        if not HAS_ALLURE:
-            return
-
         self.current_test = item
 
         # 从测试函数的 docstring 提取信息
@@ -88,7 +80,7 @@ class AllureIntegrationPlugin:
 
     def pytest_runtest_teardown(self, item):
         """测试结束后"""
-        if not HAS_ALLURE or not self.context_adapter:
+        if not self.context_adapter:
             return
 
         # 附加 Context 操作摘要
@@ -102,16 +94,15 @@ allure_plugin = AllureIntegrationPlugin()
 
 def pytest_configure(config):
     """pytest 配置钩子"""
-    if HAS_ALLURE:
-        config.pluginmanager.register(allure_plugin)
+    config.pluginmanager.register(allure_plugin)
 
-        # 添加自定义 marker
-        config.addinivalue_line(
-            "markers", "feature(name): 标记功能模块"
-        )
-        config.addinivalue_line(
-            "markers", "story(name): 标记用户故事"
-        )
+    # 添加自定义 marker
+    config.addinivalue_line(
+        "markers", "feature(name): 标记功能模块"
+    )
+    config.addinivalue_line(
+        "markers", "story(name): 标记用户故事"
+    )
 
 
 @pytest.fixture(scope="function")
@@ -126,9 +117,6 @@ def allure_context(test_context):
             user = allure_context.create(UserEntity, username="test")
             assert user is not None
     """
-    if not HAS_ALLURE:
-        return test_context
-
     # 创建适配器
     adapter = ContextAllureAdapter(test_context)
     allure_plugin.context_adapter = adapter
@@ -196,9 +184,6 @@ def allure_lineage(test_context):
 
     自动将数据血缘信息附加到 Allure 报告
     """
-    if not HAS_ALLURE:
-        return
-
     yield
 
     # 测试结束后附加血缘信息
@@ -215,14 +200,12 @@ def allure_variant(request):
 
     自动将变体信息附加到 Allure 报告
     """
-    if not HAS_ALLURE:
-        return
-
     # 从 request 中获取变体信息
     if hasattr(request, 'param'):
         variant_data = request.param
         variant_name = getattr(variant_data, 'name', 'unknown')
-        VariantAllureAdapter.attach_variant_info(variant_name, variant_data.data if hasattr(variant_data, 'data') else {})
+        VariantAllureAdapter.attach_variant_info(variant_name,
+                                                 variant_data.data if hasattr(variant_data, 'data') else {})
 
     yield
 

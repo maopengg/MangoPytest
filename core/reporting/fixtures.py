@@ -18,16 +18,12 @@ Allure pytest fixtures
         assert user is not None
 """
 
-import pytest
-from typing import Optional, Any
 from datetime import datetime
+from typing import Any
 
-try:
-    import allure
+import pytest
 
-    HAS_ALLURE = True
-except ImportError:
-    HAS_ALLURE = False
+import allure
 
 from .adapter import AllureAdapter
 from .enhancers import LineageEnhancer, MatrixEnhancer
@@ -125,10 +121,6 @@ def allure_context(test_context):
             user = allure_context.create(UserEntity, username="test")
             assert user is not None
     """
-    if not HAS_ALLURE:
-        yield test_context
-        return
-
     # 创建记录器
     recorder = ContextAllureRecorder(test_context)
 
@@ -185,9 +177,8 @@ def allure_lineage(test_context):
 
     # 测试结束后附加血缘信息
     if (
-        HAS_ALLURE
-        and hasattr(test_context, "_lineage_tracker")
-        and test_context._lineage_tracker
+            hasattr(test_context, "_lineage_tracker")
+            and test_context._lineage_tracker
     ):
         tracker = test_context._lineage_tracker
         LineageEnhancer.attach_lineage_graph(tracker)
@@ -207,13 +198,12 @@ def allure_variant(request):
             # 变体信息自动附加到报告
             pass
     """
-    if HAS_ALLURE:
-        # 从 request 中获取变体信息
-        if hasattr(request, "param"):
-            variant_data = request.param
-            variant_name = getattr(variant_data, "name", "unknown")
-            MatrixEnhancer.attach_variant_info(
-                variant_name, variant_data.data if hasattr(variant_data, "data") else {}
-            )
+    # 从 request 中获取变体信息
+    if hasattr(request, "param"):
+        variant_data = request.param
+        variant_name = getattr(variant_data, "name", "unknown")
+        MatrixEnhancer.attach_variant_info(
+            variant_name, variant_data.data if hasattr(variant_data, "data") else {}
+        )
 
     yield

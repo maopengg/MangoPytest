@@ -27,13 +27,8 @@ pytest 钩子集成
 """
 
 import pytest
-from typing import Optional
 
-try:
-    import allure
-    HAS_ALLURE = True
-except ImportError:
-    HAS_ALLURE = False
+import allure
 
 from .adapter import AllureAdapter
 
@@ -47,9 +42,6 @@ class AllureHooksPlugin:
 
     def pytest_runtest_setup(self, item):
         """测试开始前"""
-        if not HAS_ALLURE:
-            return
-
         self.current_test = item
         import time
         self.test_start_time = time.time()
@@ -81,7 +73,8 @@ class AllureHooksPlugin:
         # 提取 severity
         severity_marker = item.get_closest_marker('severity')
         if severity_marker:
-            allure.severity(getattr(allure.severity_level, severity_marker.args[0].upper(), allure.severity_level.NORMAL))
+            allure.severity(
+                getattr(allure.severity_level, severity_marker.args[0].upper(), allure.severity_level.NORMAL))
 
         # 提取 tags
         tag_marker = item.get_closest_marker('tag')
@@ -91,9 +84,6 @@ class AllureHooksPlugin:
 
     def pytest_runtest_teardown(self, item):
         """测试结束后"""
-        if not HAS_ALLURE:
-            return
-
         # 可以在这里记录测试执行时间等额外信息
         if self.test_start_time:
             import time
@@ -105,9 +95,6 @@ class AllureHooksPlugin:
 
     def pytest_runtest_makereport(self, item, call):
         """生成测试报告时"""
-        if not HAS_ALLURE:
-            return
-
         # 在测试失败时附加额外信息
         if call.when == "call" and call.excinfo is not None:
             # 附加异常信息
@@ -128,22 +115,21 @@ def pytest_configure(config):
     
     在 conftest.py 中导入此函数以自动启用 Allure 钩子
     """
-    if HAS_ALLURE:
-        config.pluginmanager.register(allure_hooks_plugin)
+    config.pluginmanager.register(allure_hooks_plugin)
 
-        # 添加自定义 marker
-        config.addinivalue_line(
-            "markers", "feature(name): 标记功能模块 (Allure)"
-        )
-        config.addinivalue_line(
-            "markers", "story(name): 标记用户故事 (Allure)"
-        )
-        config.addinivalue_line(
-            "markers", "severity(level): 设置严重级别 blocker/critical/normal/minor/trivial (Allure)"
-        )
-        config.addinivalue_line(
-            "markers", "tag(name): 添加标签 (Allure)"
-        )
+    # 添加自定义 marker
+    config.addinivalue_line(
+        "markers", "feature(name): 标记功能模块 (Allure)"
+    )
+    config.addinivalue_line(
+        "markers", "story(name): 标记用户故事 (Allure)"
+    )
+    config.addinivalue_line(
+        "markers", "severity(level): 设置严重级别 blocker/critical/normal/minor/trivial (Allure)"
+    )
+    config.addinivalue_line(
+        "markers", "tag(name): 添加标签 (Allure)"
+    )
 
 
 # ========== 便捷装饰器 ==========
