@@ -287,100 +287,89 @@ def api_allure_logger(func: Callable) -> Callable:
         if not isinstance(response, APIResponse):
             return response
 
-        # 记录 API 请求信息到 Allure
-        _log_api_response_to_allure(response)
+        _log_msg = f"\n{'=' * 100}\n" \
+                   f"请求路径: {response.request_url}\n" \
+                   f"请求方式: {response.request_method}\n" \
+                   f"请 求 头: {response.request_headers}\n"
+
+        if response.request_params is not None:
+            _log_msg += f"请求params: {response.request_params}\n"
+        if response.request_data is not None:
+            _log_msg += f"请求data: {response.request_data}\n"
+
+        # 限制响应内容长度，只打印前1000字符
+        response_content = json.dumps(response.data, ensure_ascii=False, default=str)[:1000]
+
+        _log_msg += f"Http状态码: {response.status_code}\n" \
+                    f"接口响应时长: {response.elapsed_ms} ms\n" \
+                    f"接口响应内容: {response_content}\n" \
+                    f"{'=' * 100}"
+
+        # 打印到命令行
+        if response.status_code == 200 or response.status_code == 300:
+            log.info(_log_msg)
+        else:
+            log.error(_log_msg)
+
+        from allure_commons.types import AttachmentType
+
+        with AllureAdapter.step(f"API 请求: {response.request_method} {response.request_url}"):
+            # 使用 allure.attach 直接添加各项信息
+            allure.attach(
+                str(response.request_url),
+                '请求URL',
+                AttachmentType.TEXT
+            )
+            allure.attach(
+                str(response.request_method),
+                '请求方法',
+                AttachmentType.TEXT
+            )
+            allure.attach(
+                json.dumps(response.request_headers, ensure_ascii=False, indent=2),
+                '请求头',
+                AttachmentType.JSON
+            )
+
+            # 添加请求数据（如果有）
+            if response.request_params:
+                allure.attach(
+                    json.dumps(response.request_params, ensure_ascii=False, indent=2),
+                    '请求Params',
+                    AttachmentType.JSON
+                )
+            if response.request_data:
+                allure.attach(
+                    json.dumps(response.request_data, ensure_ascii=False, indent=2, default=str),
+                    '请求数据',
+                    AttachmentType.JSON
+                )
+
+            # 添加响应信息
+            allure.attach(
+                str(response.status_code),
+                'HTTP状态码',
+                AttachmentType.TEXT
+            )
+            allure.attach(
+                str(response.elapsed_ms),
+                '响应时长(ms)',
+                AttachmentType.TEXT
+            )
+
+            # 附加响应内容
+            allure.attach(
+                json.dumps(response.data, ensure_ascii=False, indent=2, default=str),
+                '响应数据',
+                AttachmentType.JSON
+            )
+            allure.attach(
+                json.dumps(response.headers, ensure_ascii=False, indent=2),
+                '响应头',
+                AttachmentType.JSON
+            )
 
         return response
 
     return wrapper
 
-
-def _log_api_response_to_allure(response: APIResponse):
-    """
-    将 API 响应信息记录到 Allure 和命令行日志
-
-    @param response: APIResponse 对象
-    """
-    # 构建命令行日志
-    _log_msg = f"\n{'=' * 100}\n" \
-               f"请求路径: {response.request_url}\n" \
-               f"请求方式: {response.request_method}\n" \
-               f"请 求 头: {response.request_headers}\n"
-
-    if response.request_params is not None:
-        _log_msg += f"请求params: {response.request_params}\n"
-    if response.request_data is not None:
-        _log_msg += f"请求data: {response.request_data}\n"
-
-    # 限制响应内容长度，只打印前1000字符
-    response_content = json.dumps(response.data, ensure_ascii=False, default=str)[:1000]
-
-    _log_msg += f"Http状态码: {response.status_code}\n" \
-                f"接口响应时长: {response.elapsed_ms} ms\n" \
-                f"接口响应内容: {response_content}\n" \
-                f"{'=' * 100}"
-
-    # 打印到命令行
-    if response.status_code == 200 or response.status_code == 300:
-        log.info(_log_msg)
-    else:
-        log.error(_log_msg)
-
-    # 记录到 Allure
-    from allure_commons.types import AttachmentType
-
-    with AllureAdapter.step(f"API 请求: {response.request_method} {response.request_url}"):
-        # 使用 allure.attach 直接添加各项信息
-        allure.attach(
-            str(response.request_url),
-            '请求URL',
-            AttachmentType.TEXT
-        )
-        allure.attach(
-            str(response.request_method),
-            '请求方法',
-            AttachmentType.TEXT
-        )
-        allure.attach(
-            json.dumps(response.request_headers, ensure_ascii=False, indent=2),
-            '请求头',
-            AttachmentType.JSON
-        )
-
-        # 添加请求数据（如果有）
-        if response.request_params:
-            allure.attach(
-                json.dumps(response.request_params, ensure_ascii=False, indent=2),
-                '请求Params',
-                AttachmentType.JSON
-            )
-        if response.request_data:
-            allure.attach(
-                json.dumps(response.request_data, ensure_ascii=False, indent=2, default=str),
-                '请求数据',
-                AttachmentType.JSON
-            )
-
-        # 添加响应信息
-        allure.attach(
-            str(response.status_code),
-            'HTTP状态码',
-            AttachmentType.TEXT
-        )
-        allure.attach(
-            str(response.elapsed_ms),
-            '响应时长(ms)',
-            AttachmentType.TEXT
-        )
-
-        # 附加响应内容
-        allure.attach(
-            json.dumps(response.data, ensure_ascii=False, indent=2, default=str),
-            '响应数据',
-            AttachmentType.JSON
-        )
-        allure.attach(
-            json.dumps(response.headers, ensure_ascii=False, indent=2),
-            '响应头',
-            AttachmentType.JSON
-        )

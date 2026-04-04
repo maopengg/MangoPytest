@@ -145,46 +145,38 @@ class APIClient:
 
         start_time = time.time()
 
+        # 使用 httpx 发送请求
+        if method == "GET":
+            response = self._client.get(url, headers=headers, params=params)
+        elif method == "POST":
+            response = self._client.post(url, headers=headers, json=data)
+        elif method == "PUT":
+            response = self._client.put(url, headers=headers, json=data)
+        elif method == "DELETE":
+            response = self._client.delete(url, headers=headers)
+        elapsed_ms = (time.time() - start_time) * 1000
+
+        # 解析响应数据
         try:
-            # 使用 httpx 发送请求
-            if method == "GET":
-                response = self._client.get(url, headers=headers, params=params)
-            elif method == "POST":
-                response = self._client.post(url, headers=headers, json=data)
-            elif method == "PUT":
-                response = self._client.put(url, headers=headers, json=data)
-            elif method == "DELETE":
-                response = self._client.delete(url, headers=headers)
-            else:
-                raise RequestException(f"不支持的 HTTP 方法: {method}")
+            response_data = response.json()
+        except Exception as e:
+            log.info(f'解析json格式数据错误：{e}')
+            response_data = response.text
 
-            elapsed_ms = (time.time() - start_time) * 1000
+        api_response = APIResponse(
+            status_code=response.status_code,
+            data=response_data,
+            headers=dict(response.headers),
+            elapsed_ms=elapsed_ms,
+            request_method=method,
+            request_url=url,
+            request_headers=headers,
+            request_params=params,
+            request_data=data,
+        )
 
-            # 解析响应数据
-            try:
-                response_data = response.json()
-            except Exception as e:
-                log.info(f'解析json格式数据错误：{e}')
-                response_data = response.text
+        return api_response
 
-            api_response = APIResponse(
-                status_code=response.status_code,
-                data=response_data,
-                headers=dict(response.headers),
-                elapsed_ms=elapsed_ms,
-                request_method=method,
-                request_url=url,
-                request_headers=headers,
-                request_params=params,
-                request_data=data,
-            )
-
-            return api_response
-
-        except httpx.RequestError as e:
-            print(f"请求异常: {str(e)}")
-            print(f"{'=' * 100}\n")
-            raise RequestException(f"请求失败: {str(e)}")
 
     def request(
             self,
