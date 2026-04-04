@@ -25,11 +25,10 @@ from requests import RequestException
 
 from core.models.api_model import ApiDataModel
 from core.utils import project_dir
-from core.base import AssertionBase
 from core.utils import log
 
 
-class CaseTool(AssertionBase):
+class CaseTool:
     """
     API 测试用例工具类
     
@@ -52,14 +51,18 @@ class CaseTool(AssertionBase):
         @param data: ApiDataModel
         @return: ApiDataModel
         """
+        # 延迟导入以避免循环导入和pytest收集问题
+        from core.base import AssertionBase
+        assertion = AssertionBase()
+        
         if data.test_case.ass_response_whole:
             log.debug(
                 f'准备开始全匹配断言，预期值：{data.test_case.ass_response_whole}，实际值：{data.response.response_dict}')
-            self.ass_response_whole(data.response.response_dict, data.test_case.ass_response_whole)
+            assertion.ass_response_whole(data.response.response_dict, data.test_case.ass_response_whole)
         actual = data.response.response_dict
         expect = data.test_case.ass_schema
         if actual and expect:
-            self.ass_schema(actual, expect)
+            assertion.ass_schema(actual, expect)
         return data
 
     def set_admin_headers(self, data: ApiDataModel, headers_type: str = 'admin'):

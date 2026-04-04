@@ -91,7 +91,7 @@ def case_data(
             data = ApiDataModel(test_case=test_case_model)
 
             try:
-                log.debug(f'准备开始执行API用例，数据：{data.model_dump_json()}')
+                log.debug(f'准备开始执行API用例，数据：{data.model_dump()}')
 
                 # 执行测试函数
                 func(self, data=data)
