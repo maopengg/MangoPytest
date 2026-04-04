@@ -4,10 +4,10 @@
 # @Time   : 2026-01-18 13:58
 # @Author : 毛鹏
 
-from core.base import BaseAPI
+from .base import DemoProjectBaseAPI
 
 
-class SystemAPI(BaseAPI):
+class SystemAPI(DemoProjectBaseAPI):
     """系统API - 对应 /health, /info 接口"""
 
     def health_check(self) -> dict:

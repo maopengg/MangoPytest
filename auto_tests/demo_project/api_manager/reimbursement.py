@@ -4,10 +4,10 @@
 # @Time   : 2024-03-17 19:50
 # @Author : 毛鹏
 
-from core.base import BaseAPI
+from .base import DemoProjectBaseAPI
 
 
-class ReimbursementAPI(BaseAPI):
+class ReimbursementAPI(DemoProjectBaseAPI):
     """报销申请API - 对应 /reimbursements 接口"""
 
     def get_reimbursements(self) -> dict:

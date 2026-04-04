@@ -20,12 +20,15 @@
 """
 
 from .base_builder import BaseBuilder
+
 # 实体基类
 from .base_entity import BaseEntity
 from .base_strategy import BaseStrategy
 from .strategy_result import StrategyResult
+
 # Builder相关
 from .builder_context import BuilderContext
+
 # 测试分层基类（从 layering_base.py 导入）
 from .layering_base import (
     TestLayer,
@@ -36,6 +39,7 @@ from .layering_base import (
     TestCaseResult,
     TestLayerType,
 )
+
 # 状态机基类（从 state_machine.py 导入）
 from .state_machine import (
     State,
@@ -46,7 +50,6 @@ from .state_machine import (
 from .base_assertion import AssertionBase
 from .data_factory_base import DataFactoryBase
 from .data_builder_base import BaseDataBuilder
-from .api_base import BaseAPI
 
 __all__ = [
     # 实体基类
@@ -75,6 +78,4 @@ __all__ = [
     # 数据工厂基类
     "DataFactoryBase",
     "BaseDataBuilder",
-    # API 基类
-    "BaseAPI",
 ]

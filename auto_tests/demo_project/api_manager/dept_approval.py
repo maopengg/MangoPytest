@@ -4,10 +4,10 @@
 # @Time   : 2024-03-17 19:50
 # @Author : 毛鹏
 
-from core.base import BaseAPI
+from .base import DemoProjectBaseAPI
 
 
-class DeptApprovalAPI(BaseAPI):
+class DeptApprovalAPI(DemoProjectBaseAPI):
     """部门审批API - 对应 /dept-approvals 接口"""
 
     def get_dept_approvals(self) -> dict:

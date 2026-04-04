@@ -4,10 +4,10 @@
 # @Time   : 2024-03-17 19:50
 # @Author : 毛鹏
 
-from core.base import BaseAPI
+from .base import DemoProjectBaseAPI
 
 
-class FinanceApprovalAPI(BaseAPI):
+class FinanceApprovalAPI(DemoProjectBaseAPI):
     """财务审批API - 对应 /finance-approvals 接口"""
 
     def get_finance_approvals(self) -> dict:

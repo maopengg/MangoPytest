@@ -4,10 +4,10 @@
 # @Time   : 2026-01-18 13:56
 # @Author : 毛鹏
 
-from core.base import BaseAPI
+from .base import DemoProjectBaseAPI
 
 
-class ProductAPI(BaseAPI):
+class ProductAPI(DemoProjectBaseAPI):
     """产品API - 对应 /products 接口"""
 
     def create_product(

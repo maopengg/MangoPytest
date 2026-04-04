@@ -31,15 +31,13 @@ def authenticated_client(api_client):
     if result.get("code") != 200:
         pytest.skip(f"无法获取认证token，跳过测试: {result.get('message')}")
 
-    # 设置token到全局和所有API模块
+    # 设置token到全局
     token = result["data"]["token"]
     api_client.token = token
     demo_project.token = token
-    demo_project.user.set_token(token)
-    demo_project.reimbursement.set_token(token)
-    demo_project.dept_approval.set_token(token)
-    demo_project.finance_approval.set_token(token)
-    demo_project.ceo_approval.set_token(token)
+    # 设置全局 token，所有 API 请求会自动添加 Authorization header
+    from auto_tests.demo_project.api_manager import DemoProjectBaseAPI
+    DemoProjectBaseAPI.set_token(token)
     return api_client
 
 

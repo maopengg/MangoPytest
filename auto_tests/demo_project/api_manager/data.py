@@ -4,10 +4,10 @@
 # @Time   : 2026-01-18 13:57
 # @Author : 毛鹏
 
-from core.base import BaseAPI
+from .base import DemoProjectBaseAPI
 
 
-class DataAPI(BaseAPI):
+class DataAPI(DemoProjectBaseAPI):
     """数据API - 对应 /api/data 接口"""
 
     def submit_data(self, name: str, value: int) -> dict:

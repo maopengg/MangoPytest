@@ -4,10 +4,10 @@
 # @Time   : 2026-01-18 13:57
 # @Author : 毛鹏
 
-from core.base import BaseAPI
+from .base import DemoProjectBaseAPI
 
 
-class OrderAPI(BaseAPI):
+class OrderAPI(DemoProjectBaseAPI):
     """订单API - 对应 /orders 接口"""
 
     def create_order(self, product_id: int, quantity: int, user_id: int) -> dict:

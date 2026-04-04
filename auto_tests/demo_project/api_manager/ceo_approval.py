@@ -4,10 +4,10 @@
 # @Time   : 2024-03-17 19:50
 # @Author : 毛鹏
 
-from core.base import BaseAPI
+from .base import DemoProjectBaseAPI
 
 
-class CEOApprovalAPI(BaseAPI):
+class CEOApprovalAPI(DemoProjectBaseAPI):
     """总经理审批API - 对应 /ceo-approvals 接口"""
 
     def get_ceo_approvals(self) -> dict:

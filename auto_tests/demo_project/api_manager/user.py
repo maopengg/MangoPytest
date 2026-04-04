@@ -6,10 +6,10 @@
 
 import hashlib
 
-from core.base import BaseAPI
+from .base import DemoProjectBaseAPI
 
 
-class UserAPI(BaseAPI):
+class UserAPI(DemoProjectBaseAPI):
     """用户API - 对应 /users 接口"""
 
     def _encrypt_password(self, password: str) -> str:

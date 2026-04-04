@@ -4,10 +4,10 @@
 # @Time   : 2026-01-18 13:57
 # @Author : 毛鹏
 
-from core.base import BaseAPI
+from .base import DemoProjectBaseAPI
 
 
-class FileAPI(BaseAPI):
+class FileAPI(DemoProjectBaseAPI):
     """文件API - 对应 /upload 接口"""
 
     def upload_file(self, file_path: str, headers: dict = None) -> dict:

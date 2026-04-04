@@ -6,10 +6,10 @@
 
 import hashlib
 
-from core.base import BaseAPI
+from .base import DemoProjectBaseAPI
 
 
-class AuthAPI(BaseAPI):
+class AuthAPI(DemoProjectBaseAPI):
     """认证API - 对应 /auth/login, /auth/register"""
 
     def api_login(self, username: str, password: str) -> dict:
