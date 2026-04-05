@@ -1,36 +1,5 @@
-# 芒果测试平台 - AI 开发注意事项
+# mango_pytest - AI 开发注意事项
 
-## 快速参考
-
-### 常用导入清单
-
-```python
-# 日志（最常用）
-from core.utils import log
-log.info("信息日志")
-log.error("错误日志")
-log.debug("调试日志")
-
-# 基类
-from core.base import BaseEntity, BaseBuilder, BaseStrategy
-
-# 装饰器
-from core.decorators import retry, timer, api_case_data
-
-# API 工具
-from core.api import APIClient, CaseTool, RequestTool
-
-# 数据模型
-from core.models. import ApiDataModel, RequestModel, ResponseModel
-
-# 枚举
-from core.enums import MethodEnum, ClientEnum
-
-# 异常
-from core.exceptions import ApiError, UiError, ERROR_MSG_0400
-```
-
----
 
 ## 目录结构规范
 
@@ -47,7 +16,6 @@ from core.exceptions import ApiError, UiError, ERROR_MSG_0400
 - `strategy_result.py` - 策略执行结果 (StrategyResult)
 - `layering_base.py` - 测试分层基类 (UnitTest, IntegrationTest, E2ETest)
 - `state_machine.py` - 状态机基类 (State, Transition, StateMachine)
-- `web_base.py` - Web UI 基础对象 (WebBaseObject)
 
 **导出规则**:
 ```python
@@ -161,7 +129,51 @@ raise ApiError(*ERROR_MSG_0400)
 
 ---
 
-#### 1.7 core/utils/ - 工具模块
+#### 1.7 core/reporting/ - 测试报告
+**用途**: Allure 报告集成和可视化
+
+**核心模块**:
+- `allure_integration.py` - Allure 辅助类 (feature/story/title/attach)
+- `api_logger.py` - API 请求自动记录到 Allure
+- `fixtures.py` - pytest fixtures (allure_context/allure_lineage)
+- `hooks.py` - pytest 钩子集成
+- `enhancers/` - 增强器 (lineage/matrix/state_machine)
+
+**使用示例**:
+```python
+from core.reporting import AllureHelper, allure_step
+
+@allure_step("创建用户")
+def test_create():
+    AllureHelper.attach_json("结果", data)
+```
+
+**禁止**:
+- ❌ 在业务代码中直接调用 `allure.attach()` 或 `allure.step()`
+- ❌ 在业务代码中创建自定义的 Allure 报告工具类
+- ❌ 在 test_cases/ 或其他地方写 Allure 报告生成逻辑
+
+---
+
+#### 1.8 core/settings/ - 项目配置
+**用途**: 全局配置和常量
+
+**核心文件**:
+- `settings.py` - 全局配置 (DEBUG/超时/邮件/代理)
+
+**关键配置项**:
+- `IS_DEBUG` - 调试模式
+- `SOURCES_TYPE` - 数据源类型
+
+**禁止**:
+- ❌ 在业务代码中定义全局配置常量
+- ❌ 在业务代码中修改 `settings.py` 中的配置
+- ❌ 在业务代码中创建新的配置文件
+- ❌ 在 test_cases/ 或其他地方写配置读取/写入逻辑
+
+---
+
+#### 1.9 core/utils/ - 工具模块
 **用途**: 存放通用工具函数和日志
 
 **现有文件**:
@@ -178,7 +190,23 @@ raise ApiError(*ERROR_MSG_0400)
 ```python
 # 统一从 core.utils 导入
 from core.utils import log
-from core.utils import NoticeMain
+```
+
+**日志使用规范**:
+
+**使用原则**:
+- ✅ **优先使用 `debug`** - 大部分日志应该是 debug 级别，避免 info 过多
+- ✅ 循环内部、频繁调用的方法必须使用 `debug`
+- ✅ 关键业务节点（开始/结束/结果）使用 `info`
+- ✅ 异常处理中使用 `error` 或 `warning`
+
+**示例**:
+```python
+from core.utils import log
+log.debug(f'开始查询用例：{case_id}')
+log.info('开始执行测试套件')
+log.warning(f'资源未找到，使用默认值：{default}')
+log.error(f'API请求失败：{error.msg}')
 ```
 
 ---
