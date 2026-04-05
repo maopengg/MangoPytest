@@ -33,85 +33,116 @@ from typing import Dict, Any, List, Optional, Type, Callable
 import pytest
 
 from auto_tests.demo_project.data_factory import BaseEntity
+
 # ========== 认证模块fixtures ==========
-from auto_tests.demo_project.fixtures.builders.auth_fixtures import (
+from auto_tests.demo_project.fixtures.builders.auth import (
     auth_builder,
     test_token,
     registered_user,
 )
-# ========== C模块构造器fixtures ==========
-from auto_tests.demo_project.fixtures.builders.c_fixtures import (
+
+# ========== 预算模块fixtures ==========
+from auto_tests.demo_project.fixtures.builders.budget import (
     org_builder,
     budget_builder,
 )
+
 # ========== 总经理审批模块fixtures ==========
-from auto_tests.demo_project.fixtures.builders.ceo_approval_fixtures import (
+from auto_tests.demo_project.fixtures.builders.ceo_approval import (
     ceo_approval_builder,
     fully_approved_reimbursement,
     ceo_rejected_reimbursement,
     ceo_id,
+    ceo_approved_reimbursement,
     workflow_data,
 )
+
 # ========== 数据模块fixtures ==========
-from auto_tests.demo_project.fixtures.builders.data_fixtures import (
+from auto_tests.demo_project.fixtures.builders.data import (
     data_builder,
+    test_data,
+    data_list,
     submitted_data,
 )
+
 # ========== 部门审批模块fixtures ==========
-from auto_tests.demo_project.fixtures.builders.dept_approval_fixtures import (
+from auto_tests.demo_project.fixtures.builders.dept_approval import (
     dept_approval_builder,
     dept_approved_reimbursement,
     dept_rejected_reimbursement,
     dept_manager_id,
 )
+
 # ========== 文件模块fixtures ==========
-from auto_tests.demo_project.fixtures.builders.file_fixtures import (
+from auto_tests.demo_project.fixtures.builders.file import (
     file_builder,
-    temp_file,
     uploaded_file,
+    file_list,
+    temp_file,
 )
+
 # ========== 财务审批模块fixtures ==========
-from auto_tests.demo_project.fixtures.builders.finance_approval_fixtures import (
+from auto_tests.demo_project.fixtures.builders.finance_approval import (
     finance_approval_builder,
     finance_approved_reimbursement,
     finance_rejected_reimbursement,
     finance_manager_id,
 )
+
 # ========== 订单模块fixtures ==========
-from auto_tests.demo_project.fixtures.builders.order_fixtures import (
+from auto_tests.demo_project.fixtures.builders.order import (
     order_builder,
     test_order,
+    order_list,
+    paid_order,
     order_with_product,
 )
+
+# ========== 付款模块fixtures ==========
+from auto_tests.demo_project.fixtures.builders.payment import (
+    payment_builder,
+    paid_payment,
+)
+
 # ========== 产品模块fixtures ==========
-from auto_tests.demo_project.fixtures.builders.product_fixtures import (
+from auto_tests.demo_project.fixtures.builders.product import (
     product_builder,
     test_product,
     product_list,
+    out_of_stock_product,
 )
+
 # ========== 报销申请模块fixtures ==========
-from auto_tests.demo_project.fixtures.builders.reimbursement_fixtures import (
-    reimbursement_builder,
-    created_reimbursement,
+from auto_tests.demo_project.fixtures.builders.reimbursement import (
+    reimb_builder,
+    approved_reimbursement,
     pending_reimbursement,
-    multiple_reimbursements,
+    created_reimbursement,
+    employee_user,
 )
+
+# 别名：reimbursement_builder -> reimb_builder
+reimbursement_builder = reimb_builder
+
 # ========== 系统模块fixtures ==========
-from auto_tests.demo_project.fixtures.builders.system_fixtures import (
+from auto_tests.demo_project.fixtures.builders.system import (
     system_builder,
+    system_status,
+    system_config,
     server_health,
     server_info,
 )
+
 # ========== 用户模块fixtures ==========
-from auto_tests.demo_project.fixtures.builders.user_fixtures import (
+from auto_tests.demo_project.fixtures.builders.user import (
     user_builder,
     test_user,
-    new_user,
     admin_user,
     dept_manager_user,
     finance_manager_user,
     ceo_user,
 )
+
 # ========== 基础设施fixtures ==========
 from auto_tests.demo_project.fixtures.infra.client import (
     api_client,
@@ -122,6 +153,13 @@ from auto_tests.demo_project.fixtures.infra.db import (
     db_session,
     db_transaction,
     clean_db_state,
+)
+
+# ========== 场景fixtures ==========
+from auto_tests.demo_project.fixtures.scenarios.scenario_fixtures import (
+    login_scenario,
+    register_and_login_scenario,
+    logged_in_token,
 )
 from auto_tests.demo_project.fixtures.scenarios.approval_scenario_fixtures import (
     create_reimbursement_scenario,
@@ -137,18 +175,11 @@ from auto_tests.demo_project.fixtures.scenarios.approval_scenario_fixtures impor
     pending_at_ceo,
     multi_level_workflows,
 )
-# ========== 场景fixtures ==========
-from auto_tests.demo_project.fixtures.scenarios.scenario_fixtures import (
-    login_scenario,
-    register_and_login_scenario,
-    logged_in_token,
-)
 
 
 @dataclass
 class TestContextRecord:
     """测试上下文记录"""
-
     entity_type: str
     entity_id: str
     entity: Any
@@ -174,10 +205,10 @@ class TestContext:
     """
 
     def __init__(
-            self,
-            auto_cleanup: bool = True,
-            cascade_cleanup: bool = False,
-            enable_lineage: bool = True,
+        self,
+        auto_cleanup: bool = True,
+        cascade_cleanup: bool = False,
+        enable_lineage: bool = True,
     ):
         self.auto_cleanup = auto_cleanup
         self.cascade_cleanup = cascade_cleanup
@@ -418,17 +449,18 @@ __all__ = [
     # 用户模块
     "user_builder",
     "test_user",
-    "new_user",
     "admin_user",
     "dept_manager_user",
     "finance_manager_user",
     "ceo_user",
     # 报销申请模块
-    "reimbursement_builder",
-    "created_reimbursement",
+    "reimb_builder",
+    "reimbursement_builder",  # 别名
+    "approved_reimbursement",
     "pending_reimbursement",
-    "multiple_reimbursements",
-    # C模块构造器
+    "created_reimbursement",
+    "employee_user",
+    # 预算模块
     "org_builder",
     "budget_builder",
     # 部门审批模块
@@ -446,21 +478,31 @@ __all__ = [
     "fully_approved_reimbursement",
     "ceo_rejected_reimbursement",
     "ceo_id",
+    "ceo_approved_reimbursement",
     "workflow_data",
     # 产品模块
     "product_builder",
     "test_product",
     "product_list",
+    "out_of_stock_product",
     # 订单模块
     "order_builder",
     "test_order",
+    "order_list",
+    "paid_order",
     "order_with_product",
+    # 付款模块
+    "payment_builder",
+    "paid_payment",
     # 文件模块
     "file_builder",
-    "temp_file",
     "uploaded_file",
+    "file_list",
+    "temp_file",
     # 数据模块
     "data_builder",
+    "test_data",
+    "data_list",
     "submitted_data",
     # 认证模块
     "auth_builder",
@@ -468,12 +510,15 @@ __all__ = [
     "registered_user",
     # 系统模块
     "system_builder",
+    "system_status",
+    "system_config",
     "server_health",
     "server_info",
     # 场景
     "login_scenario",
     "register_and_login_scenario",
     "logged_in_token",
+    # 审批场景
     "create_reimbursement_scenario",
     "full_approval_scenario",
     "rejection_scenario",

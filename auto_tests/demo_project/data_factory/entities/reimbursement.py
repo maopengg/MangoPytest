@@ -3,7 +3,7 @@
 # @Description: 报销申请实体 - D级模块
 # @Time   : 2026-03-31
 # @Author : 毛鹏
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 from typing import Dict, Any, List
 
 from core.base import BaseEntity
@@ -31,6 +31,29 @@ class ReimbursementEntity(BaseEntity):
 
     # 审批状态
     # pending, dept_approved, dept_rejected, finance_approved, finance_rejected, ceo_approved, ceo_rejected
+
+    def __getitem__(self, key: str) -> Any:
+        """
+        支持 dict 风格的访问
+        例如: entity["id"] 等同于 entity.id
+        """
+        if hasattr(self, key):
+            return getattr(self, key)
+        raise KeyError(f"'{self.__class__.__name__}' object has no key '{key}'")
+
+    def __contains__(self, key: str) -> bool:
+        """
+        支持 'in' 操作符
+        例如: "id" in entity
+        """
+        return hasattr(self, key)
+
+    def get(self, key: str, default: Any = None) -> Any:
+        """
+        支持 dict 风格的 get 方法
+        例如: entity.get("id", 0)
+        """
+        return getattr(self, key, default)
 
     def validate(self) -> bool:
         """

@@ -80,6 +80,7 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
             parent_builders=parent_builders,
             factory=factory
         )
+        self._created = []
 
     def _prepare_dependencies(self, **kwargs) -> Dict[str, Any]:
         """
@@ -150,7 +151,10 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
             entity = self.build(**kwargs)
 
         # 使用Strategy创建
-        return self._do_create(entity)
+        created = self._do_create(entity)
+        if created:
+            self._created.append(created)
+        return created
 
     def create_submitted(
             self,
@@ -421,3 +425,9 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
         """
         status = self.get_status(reimbursement_id)
         return status == "rejected"
+
+    def cleanup(self):
+        """
+        清理创建的数据
+        """
+        self._created.clear()

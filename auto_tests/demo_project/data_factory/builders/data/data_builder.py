@@ -20,6 +20,7 @@ class DataBuilder:
     def __init__(self, token: str = None, factory=None):
         self.token = token
         self.factory = factory
+        self._created = []
 
     def build(self, name: str = None, value: int = None) -> Dict[str, Any]:
         """
@@ -41,5 +42,42 @@ class DataBuilder:
         demo_project.data.set_token(self.token)
         result = demo_project.data.submit_data(**data)
         if result.get("code") == 200:
-            return result.get("data")
+            created_data = result.get("data")
+            if created_data:
+                self._created.append(created_data)
+            return created_data
         return None
+
+    def create(self, name: str = None, value: int = None) -> Dict[str, Any]:
+        """
+        创建数据（别名：submit）
+        @return: 创建的数据
+        """
+        return self.submit(name, value)
+
+    def create_submitted(self, name: str = None, value: int = None) -> Dict[str, Any]:
+        """
+        创建已提交的数据
+        @return: 已提交的数据
+        """
+        return self.submit(name, value)
+
+    def create_batch(self, count: int = 5) -> list:
+        """
+        批量创建数据
+        @param count: 数量
+        @return: 创建的数据列表
+        """
+        results = []
+        for i in range(count):
+            data = self.submit(name=f"batch_data_{i}", value=100 + i)
+            if data:
+                results.append(data)
+        return results
+
+    def cleanup(self):
+        """
+        清理创建的数据
+        """
+        # 这里可以实现清理逻辑
+        self._created.clear()

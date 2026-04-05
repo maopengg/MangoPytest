@@ -23,6 +23,7 @@ class ProductBuilder(BaseBuilder):
         # 设置token到API模块
         if token:
             demo_project.product.set_token(token)
+        self._created = []
 
     def build(self, name: str = None, price: float = None,
               description: str = None, stock: int = 100, **kwargs) -> Dict[str, Any]:
@@ -54,8 +55,30 @@ class ProductBuilder(BaseBuilder):
 
         if result.get("code") == 200:
             created_product = result["data"]
+            self._created.append(created_product)
             return created_product
         return None
+
+    def create_out_of_stock(self, name: str = None, price: float = None,
+                            description: str = None) -> Dict[str, Any]:
+        """
+        创建缺货产品
+        @return: 缺货产品数据
+        """
+        return self.create(name, price, description, stock=0)
+
+    def create_batch(self, count: int = 5) -> list:
+        """
+        批量创建产品
+        @param count: 数量
+        @return: 创建的产品列表
+        """
+        results = []
+        for i in range(count):
+            product = self.create(name=f"Product {i}", price=99.99 + i, stock=100)
+            if product:
+                results.append(product)
+        return results
 
     def get_all(self) -> List[Dict[str, Any]]:
         """
@@ -103,3 +126,9 @@ class ProductBuilder(BaseBuilder):
         if result.get("code") == 200:
             return True
         return False
+
+    def cleanup(self):
+        """
+        清理创建的数据
+        """
+        self._created.clear()

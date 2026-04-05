@@ -22,6 +22,7 @@ class OrderBuilder(BaseBuilder):
         # 设置token到API模块
         if token:
             demo_project.order.set_token(token)
+        self._created = []
 
     def build(self, product_id: int = None, quantity: int = None,
               user_id: int = None, **kwargs) -> Dict[str, Any]:
@@ -51,8 +52,46 @@ class OrderBuilder(BaseBuilder):
 
         if result.get("code") == 200:
             created_order = result["data"]
+            self._created.append(created_order)
             return created_order
         return None
+
+    def create_paid(self, product_id: int = None, quantity: int = None,
+                    user_id: int = None) -> Dict[str, Any]:
+        """
+        创建已支付订单
+        @return: 已支付订单数据
+        """
+        order = self.create(product_id, quantity, user_id)
+        if order:
+            order["status"] = "paid"
+            self.update(order.get("id", 0), {"status": "paid"})
+            order["status"] = "paid"
+        return order
+
+    def create_with_product(self, product_id: int, quantity: int = None,
+                            user_id: int = None) -> Dict[str, Any]:
+        """
+        创建包含指定产品的订单
+        @param product_id: 产品ID
+        @param quantity: 数量
+        @param user_id: 用户ID
+        @return: 订单数据
+        """
+        return self.create(product_id, quantity, user_id)
+
+    def create_batch(self, count: int = 5) -> list:
+        """
+        批量创建订单
+        @param count: 数量
+        @return: 创建的订单列表
+        """
+        results = []
+        for i in range(count):
+            order = self.create(product_id=1, quantity=i + 1, user_id=1)
+            if order:
+                results.append(order)
+        return results
 
     def get_all(self) -> List[Dict[str, Any]]:
         """
@@ -100,3 +139,9 @@ class OrderBuilder(BaseBuilder):
         if result.get("code") == 200:
             return True
         return False
+
+    def cleanup(self):
+        """
+        清理创建的数据
+        """
+        self._created.clear()

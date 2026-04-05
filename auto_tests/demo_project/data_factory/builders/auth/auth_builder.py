@@ -41,6 +41,7 @@ class AuthBuilder:
             email: str = None,
             full_name: str = None,
             password: str = None,
+            role: str = None,
     ) -> Dict[str, Any]:
         """
         构造注册数据（不调用API）
@@ -51,6 +52,7 @@ class AuthBuilder:
             "email": email or f"{uuid.uuid4().hex[:8]}@example.com",
             "full_name": full_name or f"Test User {uuid.uuid4().hex[:4]}",
             "password": password or "123456",
+            "role": role or "user",
         }
 
     def login(self, username: str = None, password: str = None) -> Optional[str]:
@@ -78,12 +80,18 @@ class AuthBuilder:
             email: str = None,
             full_name: str = None,
             password: str = None,
+            role: str = None,
     ) -> Dict[str, Any]:
         """
         用户注册
+        @param username: 用户名
+        @param email: 邮箱
+        @param full_name: 全名
+        @param password: 密码
+        @param role: 角色（注：API可能不支持，仅用于返回数据）
         @return: 创建的用户数据
         """
-        register_data = self.build_register_data(username, email, full_name, password)
+        register_data = self.build_register_data(username, email, full_name, password, role)
 
         # 直接传递明文密码，由 API 层进行加密
         result = demo_project.auth.api_register(
@@ -93,5 +101,9 @@ class AuthBuilder:
             password=register_data["password"],
         )
         if result.get("code") == 200:
-            return result["data"]
+            data = result["data"]
+            # 如果指定了 role 但 API 返回的数据中没有，则添加它
+            if role and "role" not in data:
+                data["role"] = role
+            return data
         return {}

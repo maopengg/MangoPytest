@@ -58,3 +58,17 @@ class SystemBuilder(BaseBuilder):
         if result.get("code") == 200:
             return result.get("data")
         return None
+
+    def get_status(self) -> Dict[str, Any]:
+        """
+        获取系统状态
+        @return: 系统状态
+        """
+        return self.health_check() or {"status": "unknown"}
+
+    def get_config(self) -> Dict[str, Any]:
+        """
+        获取系统配置
+        @return: 系统配置
+        """
+        return self.get_server_info() or {}

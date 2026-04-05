@@ -26,6 +26,7 @@ class FileBuilder(BaseBuilder):
         # 设置token到API模块
         if token:
             demo_project.file.set_token(token)
+        self._created = []
 
     def build(self, **kwargs) -> str:
         """
@@ -84,18 +85,56 @@ class FileBuilder(BaseBuilder):
         result = demo_project.file.upload_file(file_path)
 
         if result.get("code") == 200:
-            return result.get("data")
+            uploaded = result.get("data")
+            if uploaded:
+                self._created.append(uploaded)
+            return uploaded
 
         # 兼容当前mock_api文件表结构（original_name无默认值）
         # 发生该后端异常时，回退本地元数据构造，保证demo测试可用
         message = str(result.get("message", ""))
         if "original_name" in message:
             guessed_type, _ = mimetypes.guess_type(file_path)
-            return {
+            fallback = {
                 "filename": os.path.basename(file_path),
                 "content_type": guessed_type,
                 "size": os.path.getsize(file_path),
                 "file_id": f"fallback_{uuid.uuid4().hex[:12]}",
             }
+            self._created.append(fallback)
+            return fallback
 
         return None
+
+    def upload_batch(self, count: int = 3) -> list:
+        """
+        批量上传文件
+        @param count: 数量
+        @return: 上传结果列表
+        """
+        results = []
+        for i in range(count):
+            result = self.upload(filename=f"test_file_{i}.txt", content=f"Content {i}")
+            if result:
+                results.append(result)
+        return results
+
+    def create_temp_file(self, content: str = None, filename: str = None) -> Dict[str, Any]:
+        """
+        创建临时文件并返回文件信息
+        @param content: 文件内容
+        @param filename: 文件名
+        @return: 文件信息
+        """
+        file_path = self.build_temp_file(content, filename)
+        return {
+            "filename": os.path.basename(file_path),
+            "path": file_path,
+            "size": os.path.getsize(file_path),
+        }
+
+    def cleanup(self):
+        """
+        清理创建的数据
+        """
+        self._created.clear()

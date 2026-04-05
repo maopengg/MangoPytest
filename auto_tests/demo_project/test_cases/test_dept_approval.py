@@ -4,10 +4,14 @@
 # @Time   : 2026-03-31
 # @Author : 毛鹏
 
+import allure
+
 from auto_tests.demo_project.api_manager import demo_project
 from core.base.layering_base import UnitTest, IntegrationTest
 
 
+@allure.feature("部门审批")
+@allure.story("部门审批API")
 class TestDeptApprovalAPI(IntegrationTest):
     """
     部门审批API测试类 - C级模块测试
@@ -15,6 +19,7 @@ class TestDeptApprovalAPI(IntegrationTest):
     依赖D级：Reimbursement
     """
 
+    @allure.title("创建部门审批 - 正常通过")
     def test_create_dept_approval(
             self, api_client, pending_reimbursement, dept_manager_id
     ):
@@ -33,6 +38,7 @@ class TestDeptApprovalAPI(IntegrationTest):
         assert result["code"] == 200
         assert result["data"]["status"] == "approved"
 
+    @allure.title("创建部门审批 - 报销申请不存在")
     def test_create_dept_approval_without_reimbursement(
             self, api_client, dept_manager_id
     ):
@@ -50,6 +56,7 @@ class TestDeptApprovalAPI(IntegrationTest):
         assert result is not None
         assert result["code"] == 404
 
+    @allure.title("创建部门审批 - 报销申请已处理")
     def test_create_dept_approval_already_processed(
             self, api_client, dept_approved_reimbursement, dept_manager_id
     ):
@@ -67,6 +74,7 @@ class TestDeptApprovalAPI(IntegrationTest):
         assert result is not None
         assert result["code"] == 400
 
+    @allure.title("获取部门审批列表")
     def test_get_dept_approvals(self, api_client, dept_approved_reimbursement):
         """测试获取部门审批列表"""
         demo_project.dept_approval.set_token(api_client.token)
@@ -75,6 +83,7 @@ class TestDeptApprovalAPI(IntegrationTest):
         assert result is not None
         assert result["code"] == 200
 
+    @allure.title("根据报销申请ID获取部门审批")
     def test_get_dept_approvals_by_reimbursement(
             self, api_client, dept_approved_reimbursement
     ):
@@ -90,12 +99,15 @@ class TestDeptApprovalAPI(IntegrationTest):
         assert result["code"] == 200
 
 
+@allure.feature("部门审批")
+@allure.story("部门审批Builder")
 class TestDeptApprovalBuilder(UnitTest):
     """
     部门审批Builder测试类
     测试数据工厂功能
     """
 
+    @allure.title("Builder创建部门审批")
     def test_builder_create(self, dept_approval_builder, pending_reimbursement):
         """测试Builder创建部门审批"""
         approval = dept_approval_builder.create(
@@ -108,6 +120,7 @@ class TestDeptApprovalBuilder(UnitTest):
         assert approval.id is not None
         assert approval.status == "approved"
 
+    @allure.title("Builder快捷通过方法")
     def test_builder_approve(self, dept_approval_builder, pending_reimbursement):
         """测试Builder快捷通过方法"""
         approval = dept_approval_builder.approve(pending_reimbursement["id"])
@@ -115,6 +128,7 @@ class TestDeptApprovalBuilder(UnitTest):
         assert approval is not None
         assert approval.status == "approved"
 
+    @allure.title("Builder快捷拒绝方法")
     def test_builder_reject(self, dept_approval_builder, pending_reimbursement):
         """测试Builder快捷拒绝方法"""
         approval = dept_approval_builder.reject(
@@ -124,6 +138,7 @@ class TestDeptApprovalBuilder(UnitTest):
         assert approval is not None
         assert approval.status == "rejected"
 
+    @allure.title("Builder根据报销申请获取审批")
     def test_builder_get_by_reimbursement(
             self, dept_approval_builder, dept_approved_reimbursement
     ):
@@ -134,11 +149,13 @@ class TestDeptApprovalBuilder(UnitTest):
         assert approval is not None
         assert approval.reimbursement_id == reimbursement_id
 
+    @allure.title("Builder检查是否可以创建")
     def test_builder_can_create(self, dept_approval_builder, pending_reimbursement):
         """测试Builder检查是否可以创建"""
         can_create = dept_approval_builder.can_create(pending_reimbursement["id"])
         assert can_create is True
 
+    @allure.title("Builder检查已处理申请无法创建")
     def test_builder_cannot_create_processed(
             self, dept_approval_builder, dept_approved_reimbursement
     ):

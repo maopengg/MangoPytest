@@ -4,10 +4,14 @@
 # @Time   : 2026-03-31
 # @Author : 毛鹏
 
+import allure
+
 from auto_tests.demo_project.api_manager import demo_project
 from core.base.layering_base import UnitTest, IntegrationTest
 
 
+@allure.feature("财务审批")
+@allure.story("财务审批API")
 class TestFinanceApprovalAPI(IntegrationTest):
     """
     财务审批API测试类 - B级模块测试
@@ -15,6 +19,7 @@ class TestFinanceApprovalAPI(IntegrationTest):
     依赖C级：DeptApproval（部门审批必须通过）
     """
 
+    @allure.title("创建财务审批 - 正常通过")
     def test_create_finance_approval(self, api_client, dept_approved_reimbursement, finance_manager_id):
         """测试创建财务审批 - 依赖C级部门审批"""
         reimbursement_id = dept_approved_reimbursement["reimbursement"]["id"]
@@ -33,6 +38,7 @@ class TestFinanceApprovalAPI(IntegrationTest):
         assert result["code"] == 200
         assert result["data"]["status"] == "approved"
 
+    @allure.title("创建财务审批 - 部门审批不存在")
     def test_create_finance_approval_without_dept_approval(self, api_client, pending_reimbursement, finance_manager_id):
         """测试创建财务审批 - 部门审批不存在"""
         demo_project.finance_approval.set_token(api_client.token)
@@ -47,6 +53,7 @@ class TestFinanceApprovalAPI(IntegrationTest):
         assert result is not None
         assert result["code"] == 404
 
+    @allure.title("创建财务审批 - 部门审批未通过")
     def test_create_finance_approval_dept_rejected(self, api_client, dept_rejected_reimbursement, finance_manager_id):
         """测试创建财务审批 - 部门审批未通过"""
         reimbursement_id = dept_rejected_reimbursement["reimbursement"]["id"]
@@ -64,6 +71,7 @@ class TestFinanceApprovalAPI(IntegrationTest):
         assert result is not None
         assert result["code"] == 400
 
+    @allure.title("获取财务审批列表")
     def test_get_finance_approvals(self, api_client, finance_approved_reimbursement):
         """测试获取财务审批列表"""
         demo_project.finance_approval.set_token(api_client.token)
@@ -72,6 +80,7 @@ class TestFinanceApprovalAPI(IntegrationTest):
         assert result is not None
         assert result["code"] == 200
 
+    @allure.title("根据报销申请ID获取财务审批")
     def test_get_finance_approvals_by_reimbursement(self, api_client, finance_approved_reimbursement):
         """测试根据报销申请ID获取财务审批"""
         reimbursement_id = finance_approved_reimbursement["reimbursement"]["id"]
@@ -83,12 +92,15 @@ class TestFinanceApprovalAPI(IntegrationTest):
         assert result["code"] == 200
 
 
+@allure.feature("财务审批")
+@allure.story("财务审批Builder")
 class TestFinanceApprovalBuilder(UnitTest):
     """
     财务审批Builder测试类
     测试数据工厂功能
     """
 
+    @allure.title("Builder创建财务审批")
     def test_builder_create(self, finance_approval_builder, dept_approved_reimbursement):
         """测试Builder创建财务审批"""
         approval = finance_approval_builder.create(
@@ -102,6 +114,7 @@ class TestFinanceApprovalBuilder(UnitTest):
         assert approval.id is not None
         assert approval.status == "approved"
 
+    @allure.title("Builder快捷通过方法")
     def test_builder_approve(self, finance_approval_builder, dept_approved_reimbursement):
         """测试Builder快捷通过方法"""
         approval = finance_approval_builder.approve(
@@ -112,6 +125,7 @@ class TestFinanceApprovalBuilder(UnitTest):
         assert approval is not None
         assert approval.status == "approved"
 
+    @allure.title("Builder快捷拒绝方法")
     def test_builder_reject(self, finance_approval_builder, dept_approved_reimbursement):
         """测试Builder快捷拒绝方法"""
         approval = finance_approval_builder.reject(
@@ -123,6 +137,7 @@ class TestFinanceApprovalBuilder(UnitTest):
         assert approval is not None
         assert approval.status == "rejected"
 
+    @allure.title("Builder根据报销申请获取审批")
     def test_builder_get_by_reimbursement(self, finance_approval_builder, finance_approved_reimbursement):
         """测试Builder根据报销申请获取审批"""
         reimbursement_id = finance_approved_reimbursement["reimbursement"]["id"]

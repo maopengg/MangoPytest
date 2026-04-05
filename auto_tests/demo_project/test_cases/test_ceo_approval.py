@@ -4,10 +4,14 @@
 # @Time   : 2026-03-31
 # @Author : 毛鹏
 
+import allure
+
 from auto_tests.demo_project.api_manager import demo_project
 from core.base.layering_base import UnitTest, IntegrationTest
 
 
+@allure.feature("总经理审批")
+@allure.story("总经理审批API")
 class TestCEOApprovalAPI(IntegrationTest):
     """
     总经理审批API测试类 - A级模块测试
@@ -15,6 +19,7 @@ class TestCEOApprovalAPI(IntegrationTest):
     依赖B级：FinanceApproval（财务审批必须通过）
     """
 
+    @allure.title("创建总经理审批 - 正常通过")
     def test_create_ceo_approval(
             self, api_client, finance_approved_reimbursement, ceo_id
     ):
@@ -35,6 +40,7 @@ class TestCEOApprovalAPI(IntegrationTest):
         assert result["code"] == 200
         assert result["data"]["status"] == "approved"
 
+    @allure.title("创建总经理审批 - 财务审批不存在")
     def test_create_ceo_approval_without_finance_approval(
             self, api_client, dept_approved_reimbursement, ceo_id
     ):
@@ -51,6 +57,7 @@ class TestCEOApprovalAPI(IntegrationTest):
         assert result is not None
         assert result["code"] == 404
 
+    @allure.title("创建总经理审批 - 财务审批未通过")
     def test_create_ceo_approval_finance_rejected(
             self, api_client, finance_rejected_reimbursement, ceo_id
     ):
@@ -70,6 +77,7 @@ class TestCEOApprovalAPI(IntegrationTest):
         assert result is not None
         assert result["code"] == 400
 
+    @allure.title("获取总经理审批列表")
     def test_get_ceo_approvals(self, api_client, fully_approved_reimbursement):
         """测试获取总经理审批列表"""
         # 使用全局token设置
@@ -80,6 +88,7 @@ class TestCEOApprovalAPI(IntegrationTest):
         assert result is not None
         assert result["code"] == 200
 
+    @allure.title("根据报销申请ID获取总经理审批")
     def test_get_ceo_approvals_by_reimbursement(
             self, api_client, fully_approved_reimbursement
     ):
@@ -97,12 +106,15 @@ class TestCEOApprovalAPI(IntegrationTest):
         assert result["code"] == 200
 
 
+@allure.feature("总经理审批")
+@allure.story("总经理审批Builder")
 class TestCEOApprovalBuilder(UnitTest):
     """
     总经理审批Builder测试类
     测试数据工厂功能
     """
 
+    @allure.title("Builder创建总经理审批")
     def test_builder_create(self, ceo_approval_builder, finance_approved_reimbursement):
         """测试Builder创建总经理审批"""
         approval = ceo_approval_builder.create(
@@ -118,6 +130,7 @@ class TestCEOApprovalBuilder(UnitTest):
         assert approval.id is not None
         assert approval.status == "approved"
 
+    @allure.title("Builder快捷通过方法")
     def test_builder_approve(
             self, ceo_approval_builder, finance_approved_reimbursement
     ):
@@ -130,6 +143,7 @@ class TestCEOApprovalBuilder(UnitTest):
         assert approval is not None
         assert approval.status == "approved"
 
+    @allure.title("Builder快捷拒绝方法")
     def test_builder_reject(self, ceo_approval_builder, finance_approved_reimbursement):
         """测试Builder快捷拒绝方法"""
         approval = ceo_approval_builder.reject(
@@ -141,6 +155,7 @@ class TestCEOApprovalBuilder(UnitTest):
         assert approval is not None
         assert approval.status == "rejected"
 
+    @allure.title("Builder根据报销申请获取审批")
     def test_builder_get_by_reimbursement(
             self, ceo_approval_builder, fully_approved_reimbursement
     ):
@@ -151,6 +166,7 @@ class TestCEOApprovalBuilder(UnitTest):
         assert approval is not None
         assert approval.reimbursement_id == reimbursement_id
 
+    @allure.title("Builder获取完整审批流程")
     def test_builder_get_workflow(
             self, ceo_approval_builder, fully_approved_reimbursement
     ):
