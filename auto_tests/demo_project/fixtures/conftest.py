@@ -155,6 +155,24 @@ from auto_tests.demo_project.fixtures.infra.db import (
     clean_db_state,
 )
 
+# ========== Pydantic 新架构 fixtures ==========
+from auto_tests.demo_project.fixtures.pydantic_fixtures import (
+    # L3 Entity fixtures
+    user_entity_pydantic,
+    admin_entity_pydantic,
+    product_entity_pydantic,
+    order_entity_pydantic,
+    # L2 Builder fixtures
+    auth_builder_pydantic,
+    auth_builder_pydantic_with_token,
+    product_builder_pydantic,
+    order_builder_pydantic,
+    # 组合 fixtures
+    created_user_pydantic,
+    created_product_pydantic,
+    created_order_pydantic,
+)
+
 # ========== 场景fixtures ==========
 from auto_tests.demo_project.fixtures.scenarios.scenario_fixtures import (
     login_scenario,
@@ -531,4 +549,19 @@ __all__ = [
     "pending_at_finance",
     "pending_at_ceo",
     "multi_level_workflows",
+    # Pydantic 新架构 fixtures
+    # L3 Entity fixtures
+    "user_entity_pydantic",
+    "admin_entity_pydantic",
+    "product_entity_pydantic",
+    "order_entity_pydantic",
+    # L2 Builder fixtures
+    "auth_builder_pydantic",
+    "auth_builder_pydantic_with_token",
+    "product_builder_pydantic",
+    "order_builder_pydantic",
+    # 组合 fixtures
+    "created_user_pydantic",
+    "created_product_pydantic",
+    "created_order_pydantic",
 ]

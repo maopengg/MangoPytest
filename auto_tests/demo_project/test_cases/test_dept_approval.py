@@ -21,12 +21,16 @@ class TestDeptApprovalAPI(IntegrationTest):
 
     @allure.title("创建部门审批 - 正常通过")
     def test_create_dept_approval(
-            self, api_client, pending_reimbursement, dept_manager_id
+        self, authenticated_client, pending_reimbursement, dept_manager_id
     ):
         """测试创建部门审批 - 依赖D级报销申请"""
-        reimbursement_id = pending_reimbursement["id"]
+        reimbursement_id = (
+            pending_reimbursement.id
+            if hasattr(pending_reimbursement, "id")
+            else pending_reimbursement["id"]
+        )
 
-        demo_project.dept_approval.set_token(api_client.token)
+        demo_project.dept_approval.set_token(authenticated_client.token)
         result = demo_project.dept_approval.create_dept_approval(
             reimbursement_id=reimbursement_id,
             approver_id=dept_manager_id,
@@ -40,12 +44,12 @@ class TestDeptApprovalAPI(IntegrationTest):
 
     @allure.title("创建部门审批 - 报销申请不存在")
     def test_create_dept_approval_without_reimbursement(
-            self, api_client, dept_manager_id
+        self, api_client, dept_manager_id
     ):
         """测试创建部门审批 - 报销申请不存在"""
         # 使用全局token设置
         if hasattr(api_client, "token") and api_client.token:
-            demo_project.auth.set_token(api_client.token)
+            demo_project.dept_approval.set_token(api_client.token)
         result = demo_project.dept_approval.create_dept_approval(
             reimbursement_id=99999,
             approver_id=dept_manager_id,
@@ -58,10 +62,13 @@ class TestDeptApprovalAPI(IntegrationTest):
 
     @allure.title("创建部门审批 - 报销申请已处理")
     def test_create_dept_approval_already_processed(
-            self, api_client, dept_approved_reimbursement, dept_manager_id
+        self, api_client, dept_approved_reimbursement, dept_manager_id
     ):
         """测试创建部门审批 - 报销申请已处理"""
-        reimbursement_id = dept_approved_reimbursement["reimbursement"]["id"]
+        if hasattr(dept_approved_reimbursement, "id"):
+            reimbursement_id = dept_approved_reimbursement.id
+        else:
+            reimbursement_id = dept_approved_reimbursement["reimbursement"]["id"]
 
         demo_project.dept_approval.set_token(api_client.token)
         result = demo_project.dept_approval.create_dept_approval(
@@ -85,10 +92,13 @@ class TestDeptApprovalAPI(IntegrationTest):
 
     @allure.title("根据报销申请ID获取部门审批")
     def test_get_dept_approvals_by_reimbursement(
-            self, api_client, dept_approved_reimbursement
+        self, api_client, dept_approved_reimbursement
     ):
         """测试根据报销申请ID获取部门审批"""
-        reimbursement_id = dept_approved_reimbursement["reimbursement"]["id"]
+        if hasattr(dept_approved_reimbursement, "id"):
+            reimbursement_id = dept_approved_reimbursement.id
+        else:
+            reimbursement_id = dept_approved_reimbursement["reimbursement"]["id"]
 
         demo_project.dept_approval.set_token(api_client.token)
         result = demo_project.dept_approval.get_dept_approval_by_id(
@@ -140,7 +150,7 @@ class TestDeptApprovalBuilder(UnitTest):
 
     @allure.title("Builder根据报销申请获取审批")
     def test_builder_get_by_reimbursement(
-            self, dept_approval_builder, dept_approved_reimbursement
+        self, dept_approval_builder, dept_approved_reimbursement
     ):
         """测试Builder根据报销申请获取审批"""
         reimbursement_id = dept_approved_reimbursement["reimbursement"]["id"]
@@ -157,7 +167,7 @@ class TestDeptApprovalBuilder(UnitTest):
 
     @allure.title("Builder检查已处理申请无法创建")
     def test_builder_cannot_create_processed(
-            self, dept_approval_builder, dept_approved_reimbursement
+        self, dept_approval_builder, dept_approved_reimbursement
     ):
         """测试Builder检查已处理申请无法创建"""
         reimbursement_id = dept_approved_reimbursement["reimbursement"]["id"]

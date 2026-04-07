@@ -23,9 +23,9 @@ class FileBuilder(BaseBuilder):
 
     def __init__(self, token: str = None, factory=None):
         super().__init__(token=token, factory=factory)
-        # 设置token到API模块
+        # 设置token到API模块 - 使用全局token
         if token:
-            demo_project.file.set_token(token)
+            demo_project.set_token(token)
         self._created = []
 
     def build(self, **kwargs) -> str:
@@ -63,13 +63,14 @@ class FileBuilder(BaseBuilder):
         temp_dir = tempfile.gettempdir()
         file_path = os.path.join(temp_dir, filename)
 
-        with open(file_path, 'w', encoding='utf-8') as f:
+        with open(file_path, "w", encoding="utf-8") as f:
             f.write(content)
 
         return file_path
 
-    def upload(self, file_path: str = None, content: str = None,
-               filename: str = None) -> Dict[str, Any]:
+    def upload(
+        self, file_path: str = None, content: str = None, filename: str = None
+    ) -> Dict[str, Any]:
         """
         上传文件
         @param file_path: 文件路径（如果提供则直接使用）
@@ -80,6 +81,10 @@ class FileBuilder(BaseBuilder):
         # 如果没有提供文件路径，创建临时文件
         if file_path is None:
             file_path = self.build_temp_file(content, filename)
+
+        # 确保设置了 token - 使用全局token
+        if self.token:
+            demo_project.set_token(self.token)
 
         # 调用API上传文件
         result = demo_project.file.upload_file(file_path)
@@ -119,7 +124,9 @@ class FileBuilder(BaseBuilder):
                 results.append(result)
         return results
 
-    def create_temp_file(self, content: str = None, filename: str = None) -> Dict[str, Any]:
+    def create_temp_file(
+        self, content: str = None, filename: str = None
+    ) -> Dict[str, Any]:
         """
         创建临时文件并返回文件信息
         @param content: 文件内容

@@ -22,6 +22,8 @@
 
 from core.base import BaseEntity
 from core.enums.demo_enum import EntityStatus
+
+# 原有实体（兼容旧代码）
 from .budget_entity import BudgetEntity
 from .ceo_approval import CEOApprovalEntity
 from .dept_approval import DeptApprovalEntity
@@ -31,11 +33,16 @@ from .payment_entity import PaymentEntity
 from .reimbursement import ReimbursementEntity
 from .user import UserEntity
 
+# Pydantic 新架构实体（L3 实体层）
+from .user_pydantic import UserEntity as UserEntityPydantic
+from .product_pydantic import ProductEntity
+from .order_pydantic import OrderEntity
+
 __all__ = [
     # 基类
     "BaseEntity",
     "EntityStatus",
-    # 实体类
+    # 原有实体类（兼容旧代码）
     "UserEntity",
     "ReimbursementEntity",
     "DeptApprovalEntity",
@@ -44,4 +51,8 @@ __all__ = [
     "OrgEntity",
     "BudgetEntity",
     "PaymentEntity",
+    # Pydantic 新架构实体（L3 实体层）
+    "UserEntityPydantic",
+    "ProductEntity",
+    "OrderEntity",
 ]

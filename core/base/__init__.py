@@ -26,6 +26,10 @@ from .base_entity import BaseEntity
 from .base_strategy import BaseStrategy
 from .strategy_result import StrategyResult
 
+# Pydantic 新架构基类
+from .pydantic_base import PydanticEntity
+from .pydantic_builder import PydanticBuilder
+
 # Builder相关
 from .builder_context import BuilderContext
 
@@ -54,6 +58,9 @@ from .data_builder_base import BaseDataBuilder
 __all__ = [
     # 实体基类
     "BaseEntity",
+    # Pydantic 新架构基类
+    "PydanticEntity",
+    "PydanticBuilder",
     # 策略相关
     "StrategyResult",
     "BaseStrategy",

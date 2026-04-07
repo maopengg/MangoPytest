@@ -90,8 +90,9 @@ class BaseBuilder(ABC, Generic[T]):
         if strategy:
             self.context.strategy = strategy
         elif self.context.strategy is None:
-            # 使用默认的 API 策略（延迟导入避免循环）
-            self.context.strategy = _get_default_strategy()
+            # 使用默认的 API 策略（延迟导入避免循环），并传入token
+            from auto_tests.demo_project.data_factory.strategies import APIStrategy
+            self.context.strategy = APIStrategy(token=token)
 
         # 父Builder（依赖注入）
         self._parent_builders = parent_builders or {}

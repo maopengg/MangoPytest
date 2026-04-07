@@ -21,12 +21,12 @@ class UserBuilder(BaseBuilder[UserEntity]):
     """
 
     def __init__(
-            self,
-            token: str = None,
-            context=None,
-            strategy=None,
-            parent_builders=None,
-            factory=None,
+        self,
+        token: str = None,
+        context=None,
+        strategy=None,
+        parent_builders=None,
+        factory=None,
     ):
         super().__init__(
             token=token,
@@ -35,17 +35,17 @@ class UserBuilder(BaseBuilder[UserEntity]):
             parent_builders=parent_builders,
             factory=factory,
         )
-        # 设置token到API模块
+        # 设置token到API模块 - 使用全局token
         if token:
-            demo_project.user.set_token(token)
+            demo_project.set_token(token)
 
     def build(
-            self,
-            username: str = None,
-            email: str = None,
-            full_name: str = None,
-            password: str = None,
-            role: str = "user",
+        self,
+        username: str = None,
+        email: str = None,
+        full_name: str = None,
+        password: str = None,
+        role: str = "user",
     ) -> UserEntity:
         """
         构造用户实体（不调用API）
@@ -154,6 +154,9 @@ class UserBuilder(BaseBuilder[UserEntity]):
 
         @return: 用户实体列表
         """
+        # 确保设置了 token - 使用全局token
+        if self.token:
+            demo_project.set_token(self.token)
         result = demo_project.user.get_users()
 
         if result.get("code") == 200:

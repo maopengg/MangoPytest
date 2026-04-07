@@ -1,48 +1,52 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
 # @Description: 构造器实现层
-# @Time   : 2026-03-31
+# @Time   : 2026-04-06
 # @Author : 毛鹏
-
 """
 构造器实现层
 
 职责：
-1. 构造实体数据
-2. 调用API创建/更新/删除数据
-3. 管理实体生命周期
-4. 自动清理创建的数据
-5. 【新增】智能依赖解决
-6. 【新增】快捷方法支持
+1. 接收 L3 Entity
+2. 调用 entity.to_api_payload() 获取 Dict
+3. 调用 L1 API 创建/更新/删除数据
+4. 更新 Entity 的响应字段
+5. 记录创建的 ID，支持 cleanup() 清理
 
 使用示例：
-    # 从具体模块导入 Builder
-    from auto_tests.demo_project.data_factory.builders.user.user_builder import UserBuilder
-    from auto_tests.demo_project.data_factory.builders.reimbursement.reimbursement_builder import ReimbursementBuilder
-
-    # 基础用法
-    builder = UserBuilder()
-    entity = builder.create(username="test", email="test@example.com")
-
-    # 【新增】智能依赖解决 - 自动创建所有依赖
-    from auto_tests.demo_project.data_factory.builders.payment.payment_builder import PaymentBuilder
-    payment_builder = PaymentBuilder()
-    payment = payment_builder.create(amount=5000)  # 自动创建报销单→预算→组织→用户
-
-    # 【新增】快捷方法
-    payment = payment_builder.create_paid(amount=5000)  # 创建并付款
-
+    # 新架构 - 使用 Pydantic Entity
+    from auto_tests.demo_project.data_factory.entities import UserEntityPydantic
+    from auto_tests.demo_project.data_factory.builders.auth.auth_builder_pydantic import AuthBuilder
+    
+    # L3: 创建 Entity
+    user = UserEntityPydantic.with_credentials("testuser", "password123")
+    
+    # L2: 使用 Builder 创建
+    builder = AuthBuilder()
+    created = builder.create_entity(user)  # 或 builder.login(user)
+    
     # 清理
     builder.cleanup()
 """
 
-# 只导出基类和枚举，具体 Builder 请从各自模块导入
-from core.base import BaseBuilder, BuilderContext
+# 基类和上下文
+from core.base import BaseBuilder, BuilderContext, PydanticBuilder, PydanticEntity
 from core.enums.demo_enum import DependencyLevel
+
+# Pydantic 新架构 Builder（L2 构造器层）
+from .auth.auth_builder_pydantic import AuthBuilder as AuthBuilderPydantic
+from .product.product_builder_pydantic import ProductBuilder as ProductBuilderPydantic
+from .order.order_builder_pydantic import OrderBuilder as OrderBuilderPydantic
 
 __all__ = [
     # 基类和上下文
     "BaseBuilder",
     "BuilderContext",
     "DependencyLevel",
+    "PydanticBuilder",
+    "PydanticEntity",
+    # Pydantic 新架构 Builder（L2 构造器层）
+    "AuthBuilderPydantic",
+    "ProductBuilderPydantic",
+    "OrderBuilderPydantic",
 ]

@@ -1,3 +1,6 @@
+---
+alwaysApply: false
+---
 # mango_pytest - AI 开发注意事项
 
 

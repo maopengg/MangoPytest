@@ -39,8 +39,10 @@ class DemoProjectBaseAPI:
     @classmethod
     def _auth_interceptor(cls, method: str, url: str, headers: dict, data: any):
         """请求拦截器 - 自动添加认证 token"""
-        if cls._token:
-            headers["Authorization"] = f"Bearer {cls._token}"
+        # 优先使用基类的全局 token，如果没有则使用子类的 token
+        token = DemoProjectBaseAPI._token or cls._token
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
         return method, url, headers, data
 
     @classmethod

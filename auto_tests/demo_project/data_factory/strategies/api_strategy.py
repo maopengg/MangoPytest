@@ -67,10 +67,8 @@ class APIStrategy(BaseStrategy[T]):
 
     def _set_token_to_apis(self, token: str):
         """设置token到所有API模块"""
-        for module_name in dir(demo_project):
-            module = getattr(demo_project, module_name)
-            if hasattr(module, "set_token"):
-                module.set_token(token)
+        # 设置全局token到DemoProjectAPI实例
+        demo_project.set_token(token)
 
     def _get_api_module(self, entity_type: Type[T]):
         """根据实体类型获取对应的API模块"""
