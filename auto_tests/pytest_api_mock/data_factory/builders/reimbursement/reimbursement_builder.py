@@ -12,7 +12,7 @@ from ..budget.budget_builder import BudgetBuilder
 from ..user.user_builder import UserBuilder
 from ...entities.reimbursement import ReimbursementEntity
 from ...registry import register_builder
-from ....api_manager import demo_project
+from ....api_manager import pytest_api_mock
 
 
 @register_builder("reimbursement")
@@ -39,7 +39,7 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
         reimb = builder.create_approved(user_id=1, amount=1000)
         
         # 使用Mock策略（单元测试）
-        from auto_tests.demo_project.data_factory.strategies import MockStrategy
+        from auto_tests.pytest_api_mock.data_factory.strategies import MockStrategy
         context = BuilderContext(strategy=MockStrategy())
         builder = ReimbursementBuilder(context=context)
         reimb = builder.create(user_id=1, amount=1000)  # 不调用真实API
@@ -280,7 +280,7 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
         @param reimbursement_id: 报销申请ID
         @return: 是否提交成功
         """
-        result = demo_project.reimbursement.submit_reimbursement(reimbursement_id)
+        result = pytest_api_mock.reimbursement.submit_reimbursement(reimbursement_id)
         return result.get("code") == 200
 
     def approve(self, reimbursement_id: int, approver_id: int = None) -> bool:
@@ -291,7 +291,7 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
         @param approver_id: 审批人ID
         @return: 是否审批成功
         """
-        result = demo_project.reimbursement.approve_reimbursement(
+        result = pytest_api_mock.reimbursement.approve_reimbursement(
             reimbursement_id,
             approver_id=approver_id
         )
@@ -306,7 +306,7 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
         @param approver_id: 审批人ID
         @return: 是否拒绝成功
         """
-        result = demo_project.reimbursement.reject_reimbursement(
+        result = pytest_api_mock.reimbursement.reject_reimbursement(
             reimbursement_id,
             reject_reason=reject_reason,
             approver_id=approver_id
@@ -366,7 +366,7 @@ class ReimbursementBuilder(BaseBuilder[ReimbursementEntity]):
         @return: 报销申请实体列表
         """
         # 使用API模块获取（兼容旧代码）
-        result = demo_project.reimbursement.get_reimbursements()
+        result = pytest_api_mock.reimbursement.get_reimbursements()
 
         if result.get("code") == 200:
             data_list = result["data"]

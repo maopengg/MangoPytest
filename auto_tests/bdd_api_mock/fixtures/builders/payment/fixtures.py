@@ -17,7 +17,7 @@ from typing import Generator
 
 import pytest
 
-from auto_tests.pytest_api_mock.data_factory.builders.payment import PaymentBuilder
+from auto_tests.bdd_api_mock.data_factory.builders.payment import PaymentBuilder
 from core.base import BuilderContext
 
 

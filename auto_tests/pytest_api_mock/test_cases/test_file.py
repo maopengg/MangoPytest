@@ -7,7 +7,7 @@ import os
 
 import allure
 
-from auto_tests.demo_project.data_factory.builders.file import FileBuilder
+from auto_tests.pytest_api_mock.data_factory.builders.file import FileBuilder
 from core.base.layering_base import UnitTest
 
 

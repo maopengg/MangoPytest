@@ -7,7 +7,7 @@
 import allure
 import pytest
 
-from auto_tests.api_mango_mock.abstract.login.login import LoginAPI
+from auto_tests.api_mock.abstract.login.login import LoginAPI
 from core.models.api_model import ApiDataModel
 from core.api.case_tool import CaseTool
 from core.decorators.api import case_data
@@ -25,4 +25,4 @@ class TestLogin(LoginAPI, CaseTool):
 
 
 if __name__ == '__main__':
-    pytest.main([r'D:\code\MangoPytest\auto_test\api_mango_mock\test_case\test_login\test_login.py::TestLogin'])
+    pytest.main([r'D:\code\MangoPytest\auto_test\api_mock\test_case\test_login\test_login.py::TestLogin'])

@@ -15,8 +15,8 @@
 
 使用示例：
     # 新架构 - 使用 Pydantic Entity
-    from auto_tests.pytest_api_mock.data_factory.entities import UserEntityPydantic
-    from auto_tests.pytest_api_mock.data_factory.builders.auth.auth_builder_pydantic import AuthBuilder
+    from auto_tests.bdd_api_mock.data_factory.entities import UserEntityPydantic
+    from auto_tests.bdd_api_mock.data_factory.builders.auth.auth_builder_pydantic import AuthBuilder
     
     # L3: 创建 Entity
     user = UserEntityPydantic.with_credentials("testuser", "password123")

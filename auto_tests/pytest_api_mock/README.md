@@ -1,4 +1,4 @@
-# MangoPytest Demo Project - 数据工厂与自动化测试框架演示
+# MangoPytest pytest_api_mock - 数据工厂与自动化测试框架演示
 
 ## 项目概述
 
@@ -107,7 +107,7 @@ class OrderEntity(BaseModel):
 class OrderBuilder:
     def create_order(self, entity: OrderEntity) -> OrderEntity:
         payload = entity.to_api_payload()
-        result = demo_project.order.create_order(payload)
+        result = pytest_api_mock.order.create_order(payload)
         # 更新 entity 的响应字段（order_id, status 等）
         entity.order_id = result["data"]["order_id"]
         entity.status = result["data"]["status"]
@@ -138,7 +138,6 @@ class OrderAPI:
 | **配置管理 (Config)**         | -      | 100% | 100% | 环境自适应已实现，通过 `settings.py` 自动检测环境                                        |
 | **Fixture 分层**            | -      | 100% | 100% | entities/, builders/, scenarios/ 分层结构已实现并广泛使用                                |
 | **@case_data 装饰器**       | -      | 100% | 0% | 场景变体自动展开已实现，但**测试用例中尚未使用**                                         |
-| **core/ 框架层**             | -      | 100% | 100% | API、Models、Utils 跨项目复用组件已实现                                                  |
 
 **总体完成度：约 85%**（代码实现 100%，测试用例覆盖 70%）
 
@@ -150,10 +149,8 @@ class OrderAPI:
 
 | 功能 | 实现位置 | 缺少使用示例的测试文件 |
 |-----|---------|---------------------|
-| **状态机 (StateMachine)** | `core/base/state_machine.py`<br>`data_factory/state_machine/` | 所有测试文件 |
 | **血缘追踪 (Lineage)** | `data_factory/lineage/` | 除 `test_approval_workflow.py` 外 |
 | **@case_data 装饰器** | `test_cases/decorators.py` | 所有测试文件 |
-| **变体矩阵 (VariantMatrix)** | `core/reporting/enhancers/matrix.py` | 除 `test_approval_workflow.py` 外 |
 
 ### 已充分使用的功能
 
@@ -172,9 +169,9 @@ class OrderAPI:
 ## 目录结构
 
 ```
-auto_test/demo_project/
+auto_test/pytest_api_mock/
 ├── api_manager/          # 【L1: 接口层】API 管理层 - 统一接口封装与协议处理
-│   ├── __init__.py       # 统一出口 demo_project
+│   ├── __init__.py       # 统一出口 pytest_api_mock
 │   ├── auth.py           # 认证相关 API（Token管理、签名生成）
 │   ├── user.py           # 用户管理 API
 │   ├── product.py        # 产品管理 API
@@ -186,23 +183,6 @@ auto_test/demo_project/
 │   ├── file.py           # 文件上传 API
 │   ├── data.py           # 数据提交 API
 │   └── system.py         # 系统信息 API
-│
-├── core/                 # 【框架层】跨项目复用
-│   ├── __init__.py
-│   ├── api/              # 统一 API 客户端
-│   │   ├── __init__.py
-│   │   ├── client.py     # APIClient - HTTP 请求封装
-│   │   ├── auth.py       # AuthManager - 认证管理
-│   │   └── exceptions.py # API 异常类
-│   ├── models/           # 共享数据模型
-│   │   ├── __init__.py
-│   │   ├── base.py       # BaseModel - 基础模型
-│   │   ├── entity.py     # BaseEntity - 实体基类
-│   │   └── result.py     # Result - 结果模型
-│   └── utils/            # 通用工具
-│       ├── __init__.py
-│       ├── decorators.py # retry, timer, validate 装饰器
-│       └── helpers.py    # generate_id, merge_dicts 等辅助函数
 │
 ├── data_factory/         # 数据工厂层 - 测试数据构建
 │   ├── entities/         # 【L3: 实体层】Pydantic 数据模型 + 业务逻辑
@@ -321,16 +301,16 @@ auto_test/demo_project/
 **使用示例**：
 
 ```python
-from auto_tests.demo_project.api_manager import demo_project
+from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
 
 # 设置认证 token
-demo_project.auth.set_token("your_token")
+pytest_api_mock.auth.set_token("your_token")
 
 # 调用用户 API - L1 只接收 Dict
-result = demo_project.user.get_all_users()
+result = pytest_api_mock.user.get_all_users()
 
 # 调用订单 API - L1 只接收 Dict
-result = demo_project.order.create_order({
+result = pytest_api_mock.order.create_order({
     "product_id": 1,
     "quantity": 2,
     "user_id": 1
@@ -350,7 +330,7 @@ result = demo_project.order.create_order({
 - 工厂方法（`with_product()`, `default()` 等）
 
 ```python
-from auto_tests.demo_project.data_factory.entities import OrderEntity
+from auto_tests.pytest_api_mock.data_factory.entities import OrderEntity
 
 # 创建 L3 Entity
 order = OrderEntity.with_product(product_id=1001, quantity=2)
@@ -375,8 +355,8 @@ payload = order.to_api_payload()
 - 记录创建的 ID，支持 `cleanup()` 自动清理
 
 ```python
-from auto_tests.demo_project.data_factory.builders import OrderBuilder
-from auto_tests.demo_project.data_factory.entities import OrderEntity
+from auto_tests.pytest_api_mock.data_factory.builders import OrderBuilder
+from auto_tests.pytest_api_mock.data_factory.entities import OrderEntity
 
 # 创建 L2 Builder
 builder = OrderBuilder(token="your_token")
@@ -402,7 +382,7 @@ print(created_order.status)     # pending_payment
 - 业务编排 - 状态机驱动流程
 
 ```python
-from auto_tests.demo_project.data_factory.scenarios import CreateOrderScenario
+from auto_tests.pytest_api_mock.data_factory.scenarios import CreateOrderScenario
 
 # 执行 L4 Scenario
 scenario = CreateOrderScenario()
@@ -419,7 +399,7 @@ if result.success:
 #### 3.1 基础设施 Fixtures
 
 ```python
-from auto_tests.demo_project.fixtures.infra import (
+from auto_tests.pytest_api_mock.fixtures.infra import (
     api_client,      # API 客户端
     test_token,      # 测试 token
     test_context,    # 测试上下文
@@ -429,7 +409,7 @@ from auto_tests.demo_project.fixtures.infra import (
 #### 3.2 实体 Fixtures（L3）
 
 ```python
-from auto_tests.demo_project.fixtures.entities import (
+from auto_tests.pytest_api_mock.fixtures.entities import (
     admin_user,      # 管理员用户
     locked_user,     # 已锁定用户
     employee_user,   # 员工用户
@@ -441,7 +421,7 @@ from auto_tests.demo_project.fixtures.entities import (
 #### 3.3 构造器 Fixtures（L2）
 
 ```python
-from auto_tests.demo_project.fixtures.builders import (
+from auto_tests.pytest_api_mock.fixtures.builders import (
     # D模块（基础层）
     org_builder,     # 组织构造器
     user_builder,    # 用户构造器
@@ -459,7 +439,7 @@ from auto_tests.demo_project.fixtures.builders import (
 #### 3.4 场景 Fixtures（L4）
 
 ```python
-from auto_tests.demo_project.fixtures.scenarios import (
+from auto_tests.pytest_api_mock.fixtures.scenarios import (
     full_approval_scenario,   # 完整审批流场景
     full_approval_result,     # 完整审批流结果
 )
@@ -470,8 +450,8 @@ from auto_tests.demo_project.fixtures.scenarios import (
 场景变体自动展开为多个测试用例：
 
 ```python
-from auto_tests.demo_project.test_cases.decorators import case_data
-from auto_tests.demo_project.data_factory.scenarios import LoginScenario
+from auto_tests.pytest_api_mock.test_cases.decorators import case_data
+from auto_tests.pytest_api_mock.data_factory.scenarios import LoginScenario
 
 # 单变体测试
 @case_data(scenario=LoginScenario.variant(actor="admin", credential="correct"))
@@ -485,23 +465,6 @@ def test_login_all_combinations(self, test_context):
     result = test_context.get("result")
     expected = result["expected"]
     assert result["success"] == expected["success"]
-```
-
-### 5. core/ 框架层
-
-跨项目复用的核心组件：
-
-```python
-from auto_tests.demo_project.core import APIClient, BaseEntity, Result
-from auto_tests.demo_project.core.api import AuthManager
-from auto_tests.demo_project.core.utils import retry, timer, generate_id
-
-# API 客户端
-client = APIClient(base_url="https://api.example.com")
-
-# 认证管理
-auth = AuthManager(client)
-token = auth.login("username", "password")
 ```
 
 ---
@@ -554,10 +517,10 @@ class TestOrderIntegration(UnitTest):
         created = builder.create_order(order)
         
         # 2. 查询订单（直接调用 L1）
-        queried = demo_project.order.get_order(created.order_id)
+        queried = pytest_api_mock.order.get_order(created.order_id)
         
         # 3. 取消订单
-        cancelled = demo_project.order.cancel_order(created.order_id)
+        cancelled = pytest_api_mock.order.cancel_order(created.order_id)
         
         assert cancelled["code"] == 200
 ```
@@ -616,16 +579,16 @@ vim config/dev.py
 
 ```bash
 # 运行所有测试
-pytest auto_tests/demo_project/test_cases/
+pytest auto_tests/pytest_api_mock/test_cases/
 
 # 运行特定模块
-pytest auto_tests/demo_project/test_cases/test_order.py
+pytest auto_tests/pytest_api_mock/test_cases/test_order.py
 
 # 运行特定测试
-pytest auto_tests/demo_project/test_cases/test_order.py::TestCreateOrder::test_create_order_success
+pytest auto_tests/pytest_api_mock/test_cases/test_order.py::TestCreateOrder::test_create_order_success
 
 # 生成 Allure 报告
-pytest auto_tests/demo_project/test_cases/ --alluredir=./allure-results
+pytest auto_tests/pytest_api_mock/test_cases/ --alluredir=./allure-results
 allure serve ./allure-results
 ```
 
@@ -654,7 +617,7 @@ def test_wrong(self, api_client):
 class OrderBuilder:
     def create_order(self, entity: OrderEntity):
         payload = entity.to_api_payload()  # L3 提供
-        return demo_project.order.create_order(payload)
+        return pytest_api_mock.order.create_order(payload)
 
 # ❌ 错误：在 L2 中重复定义字段
 class OrderBuilder:
@@ -663,7 +626,7 @@ class OrderBuilder:
             "product_id": product_id,
             "quantity": quantity,
         }
-        return demo_project.order.create_order(payload)
+        return pytest_api_mock.order.create_order(payload)
 ```
 
 ### 3. 使用 Fixture 自动清理

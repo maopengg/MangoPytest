@@ -20,10 +20,10 @@
 import allure
 import pytest
 
-from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
-from auto_tests.pytest_api_mock.data_factory.context import Context
-from auto_tests.pytest_api_mock.data_factory.entities import UserEntity, ReimbursementEntity, OrgEntity, BudgetEntity
-from auto_tests.pytest_api_mock.data_factory.scenarios import FullApprovalScenario, RejectionWorkflowScenario
+from auto_tests.bdd_api_mock.api_manager import bdd_api_mock
+from auto_tests.bdd_api_mock.data_factory.context import Context
+from auto_tests.bdd_api_mock.data_factory.entities import UserEntity, ReimbursementEntity, OrgEntity, BudgetEntity
+from auto_tests.bdd_api_mock.data_factory.scenarios import FullApprovalScenario, RejectionWorkflowScenario
 from core.base.layering_base import IntegrationTest, E2ETest
 from core.models import VariantMatrix, Dimension
 
@@ -258,8 +258,8 @@ class TestApprovalDependencyValidation(IntegrationTest):
     ):
         """测试不能跳过部门审批直接进行财务审批"""
         # 尝试直接进行财务审批（没有部门审批）
-        pytest_api_mock.finance_approval.set_token(authenticated_client.token)
-        result = pytest_api_mock.finance_approval.create_finance_approval(
+        bdd_api_mock.finance_approval.set_token(authenticated_client.token)
+        result = bdd_api_mock.finance_approval.create_finance_approval(
             reimbursement_id=pending_reimbursement["id"],
             dept_approval_id=99999,  # 不存在的部门审批
             approver_id=finance_manager_id,
@@ -274,8 +274,8 @@ class TestApprovalDependencyValidation(IntegrationTest):
     ):
         """测试不能跳过财务审批直接进行总经理审批"""
         # 尝试直接进行总经理审批（没有财务审批）
-        pytest_api_mock.ceo_approval.set_token(authenticated_client.token)
-        result = pytest_api_mock.ceo_approval.create_ceo_approval(
+        bdd_api_mock.ceo_approval.set_token(authenticated_client.token)
+        result = bdd_api_mock.ceo_approval.create_ceo_approval(
             reimbursement_id=dept_approved_reimbursement["reimbursement"]["id"],
             finance_approval_id=99999,  # 不存在的财务审批
             approver_id=ceo_id,
@@ -291,8 +291,8 @@ class TestApprovalDependencyValidation(IntegrationTest):
         """测试部门拒绝后不能进行财务审批"""
         dept_approval_id = dept_rejected_reimbursement["dept_approval"]["id"]
 
-        pytest_api_mock.finance_approval.set_token(authenticated_client.token)
-        result = pytest_api_mock.finance_approval.create_finance_approval(
+        bdd_api_mock.finance_approval.set_token(authenticated_client.token)
+        result = bdd_api_mock.finance_approval.create_finance_approval(
             reimbursement_id=dept_rejected_reimbursement["reimbursement"]["id"],
             dept_approval_id=dept_approval_id,
             approver_id=finance_manager_id,
@@ -308,8 +308,8 @@ class TestApprovalDependencyValidation(IntegrationTest):
         """测试财务拒绝后不能进行总经理审批"""
         finance_approval_id = finance_rejected_reimbursement["finance_approval"]["id"]
 
-        pytest_api_mock.ceo_approval.set_token(authenticated_client.token)
-        result = pytest_api_mock.ceo_approval.create_ceo_approval(
+        bdd_api_mock.ceo_approval.set_token(authenticated_client.token)
+        result = bdd_api_mock.ceo_approval.create_ceo_approval(
             reimbursement_id=finance_rejected_reimbursement["reimbursement"]["id"],
             finance_approval_id=finance_approval_id,
             approver_id=ceo_id,

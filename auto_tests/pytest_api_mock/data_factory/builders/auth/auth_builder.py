@@ -6,7 +6,7 @@
 import uuid
 from typing import Dict, Any, Optional
 
-from auto_tests.demo_project.api_manager import demo_project
+from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
 from ...registry import register_builder
 
 
@@ -63,7 +63,7 @@ class AuthBuilder:
         login_data = self.build_login_data(username, password)
 
         # 直接传递明文密码，由 API 层进行加密
-        result = demo_project.auth.api_login(
+        result = pytest_api_mock.auth.api_login(
             username=login_data["username"], password=login_data["password"]
         )
 
@@ -94,7 +94,7 @@ class AuthBuilder:
         register_data = self.build_register_data(username, email, full_name, password, role)
 
         # 直接传递明文密码，由 API 层进行加密
-        result = demo_project.auth.api_register(
+        result = pytest_api_mock.auth.api_register(
             username=register_data["username"],
             email=register_data["email"],
             full_name=register_data["full_name"],

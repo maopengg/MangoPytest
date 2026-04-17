@@ -19,7 +19,7 @@ L2 构造器层，职责：
     class OrderBuilder(PydanticBuilder[OrderEntity]):
         def create_order(self, entity: OrderEntity) -> OrderEntity:
             payload = entity.to_api_payload()  # L3 提供
-            result = demo_project.order.create_order(payload)  # L1
+            result = pytest_api_mock.order.create_order(payload)  # L1
             entity.update_from_response(result["data"])  # 更新响应字段
             self._track_entity(entity)  # 追踪用于清理
             return entity
@@ -62,10 +62,10 @@ class PydanticBuilder(ABC, Generic[T]):
     def _set_api_token(self, token: str) -> None:
         """设置 API token"""
         # 延迟导入避免循环导入
-        from auto_tests.demo_project.api_manager import demo_project
+        from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
 
         # 设置全局 token（所有模块共享）
-        demo_project.set_token(token)
+        pytest_api_mock.set_token(token)
 
     def _track_entity(self, entity: T) -> None:
         """

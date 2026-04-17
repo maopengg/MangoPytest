@@ -6,7 +6,7 @@
 
 import allure
 
-from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
+from auto_tests.bdd_api_mock.api_manager import bdd_api_mock
 from core.base.layering_base import UnitTest, IntegrationTest
 
 
@@ -25,8 +25,8 @@ class TestFinanceApprovalAPI(IntegrationTest):
         reimbursement_id = dept_approved_reimbursement["reimbursement"]["id"]
         dept_approval_id = dept_approved_reimbursement["dept_approval"]["id"]
 
-        pytest_api_mock.finance_approval.set_token(api_client.token)
-        result = pytest_api_mock.finance_approval.create_finance_approval(
+        bdd_api_mock.finance_approval.set_token(api_client.token)
+        result = bdd_api_mock.finance_approval.create_finance_approval(
             reimbursement_id=reimbursement_id,
             dept_approval_id=dept_approval_id,
             approver_id=finance_manager_id,
@@ -41,8 +41,8 @@ class TestFinanceApprovalAPI(IntegrationTest):
     @allure.title("创建财务审批 - 部门审批不存在")
     def test_create_finance_approval_without_dept_approval(self, api_client, pending_reimbursement, finance_manager_id):
         """测试创建财务审批 - 部门审批不存在"""
-        pytest_api_mock.finance_approval.set_token(api_client.token)
-        result = pytest_api_mock.finance_approval.create_finance_approval(
+        bdd_api_mock.finance_approval.set_token(api_client.token)
+        result = bdd_api_mock.finance_approval.create_finance_approval(
             reimbursement_id=pending_reimbursement["id"],
             dept_approval_id=99999,
             approver_id=finance_manager_id,
@@ -59,8 +59,8 @@ class TestFinanceApprovalAPI(IntegrationTest):
         reimbursement_id = dept_rejected_reimbursement["reimbursement"]["id"]
         dept_approval_id = dept_rejected_reimbursement["dept_approval"]["id"]
 
-        pytest_api_mock.finance_approval.set_token(api_client.token)
-        result = pytest_api_mock.finance_approval.create_finance_approval(
+        bdd_api_mock.finance_approval.set_token(api_client.token)
+        result = bdd_api_mock.finance_approval.create_finance_approval(
             reimbursement_id=reimbursement_id,
             dept_approval_id=dept_approval_id,
             approver_id=finance_manager_id,
@@ -74,8 +74,8 @@ class TestFinanceApprovalAPI(IntegrationTest):
     @allure.title("获取财务审批列表")
     def test_get_finance_approvals(self, api_client, finance_approved_reimbursement):
         """测试获取财务审批列表"""
-        pytest_api_mock.finance_approval.set_token(api_client.token)
-        result = pytest_api_mock.finance_approval.get_finance_approvals()
+        bdd_api_mock.finance_approval.set_token(api_client.token)
+        result = bdd_api_mock.finance_approval.get_finance_approvals()
 
         assert result is not None
         assert result["code"] == 200
@@ -85,8 +85,8 @@ class TestFinanceApprovalAPI(IntegrationTest):
         """测试根据报销申请ID获取财务审批"""
         reimbursement_id = finance_approved_reimbursement["reimbursement"]["id"]
 
-        pytest_api_mock.finance_approval.set_token(api_client.token)
-        result = pytest_api_mock.finance_approval.get_finance_approvals()
+        bdd_api_mock.finance_approval.set_token(api_client.token)
+        result = bdd_api_mock.finance_approval.get_finance_approvals()
 
         assert result is not None
         assert result["code"] == 200

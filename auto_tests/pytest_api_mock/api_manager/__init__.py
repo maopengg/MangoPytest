@@ -5,7 +5,7 @@
 # @Author : 毛鹏
 
 # 统一的API出口
-from auto_tests.demo_project.config import load_settings
+from auto_tests.pytest_api_mock.config import load_settings
 from .auth import AuthAPI
 from .base import DemoProjectBaseAPI
 from .ceo_approval import CEOApprovalAPI
@@ -25,14 +25,14 @@ from .user import UserAPI
 class DemoProjectAPI:
     """
     统一的API出口类
-    使用方式: demo_project.auth.api_login(data)
+    使用方式: pytest_api_mock.auth.api_login(data)
 
     配置host：
-        demo_project.set_host("http://localhost:8003")
-        demo_project.sync_host_from_env("pre")
+        pytest_api_mock.set_host("http://localhost:8003")
+        pytest_api_mock.sync_host_from_env("pre")
 
     配置token：
-        demo_project.set_token("your_token_here")
+        pytest_api_mock.set_token("your_token_here")
     """
 
     def __init__(self):
@@ -69,7 +69,7 @@ class DemoProjectAPI:
         从环境配置同步host
         @param env: 环境名称 (dev/test/pre/prod)
         """
-        from auto_tests.demo_project.config import sync_host_from_env
+        from auto_tests.pytest_api_mock.config import sync_host_from_env
         host = sync_host_from_env(env)
         self.set_host(host)
 
@@ -172,4 +172,4 @@ class DemoProjectAPI:
 
 
 # 统一的API出口实例
-demo_project = DemoProjectAPI()
+pytest_api_mock = DemoProjectAPI()

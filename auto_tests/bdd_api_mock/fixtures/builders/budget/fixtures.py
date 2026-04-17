@@ -16,10 +16,10 @@ from typing import Generator
 
 import pytest
 
-from auto_tests.pytest_api_mock.data_factory.builders.budget import BudgetBuilder
-from auto_tests.pytest_api_mock.data_factory.builders.org import OrgBuilder
+from auto_tests.bdd_api_mock.data_factory.builders.budget import BudgetBuilder
+from auto_tests.bdd_api_mock.data_factory.builders.org import OrgBuilder
 from core.base import BuilderContext
-from auto_tests.pytest_api_mock.data_factory.strategies import MockStrategy
+from auto_tests.bdd_api_mock.data_factory.strategies import MockStrategy
 
 
 @pytest.fixture

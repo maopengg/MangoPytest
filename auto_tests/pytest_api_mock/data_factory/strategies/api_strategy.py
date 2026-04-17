@@ -6,7 +6,7 @@
 from typing import Type, Optional, Dict, Any, TypeVar
 
 from core.base import BaseEntity, BaseStrategy, StrategyResult
-from ...api_manager import demo_project
+from ...api_manager import pytest_api_mock
 
 T = TypeVar("T", bound=BaseEntity)
 
@@ -68,7 +68,7 @@ class APIStrategy(BaseStrategy[T]):
     def _set_token_to_apis(self, token: str):
         """设置token到所有API模块"""
         # 设置全局token到DemoProjectAPI实例
-        demo_project.set_token(token)
+        pytest_api_mock.set_token(token)
 
     def _get_api_module(self, entity_type: Type[T]):
         """根据实体类型获取对应的API模块"""
@@ -79,7 +79,7 @@ class APIStrategy(BaseStrategy[T]):
             raise ValueError(f"未找到实体 {entity_name} 的API映射配置")
 
         module_name, _ = mapping
-        return getattr(demo_project, module_name)
+        return getattr(pytest_api_mock, module_name)
 
     def create(self, entity_type: Type[T], **kwargs) -> StrategyResult:
         """

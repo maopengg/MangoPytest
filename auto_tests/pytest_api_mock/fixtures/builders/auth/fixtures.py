@@ -7,7 +7,7 @@ from typing import Generator, Dict, Any
 
 import pytest
 
-from auto_tests.demo_project.data_factory.builders.auth import AuthBuilder
+from auto_tests.pytest_api_mock.data_factory.builders.auth import AuthBuilder
 
 
 @pytest.fixture(scope="session")

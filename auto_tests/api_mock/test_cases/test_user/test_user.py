@@ -7,7 +7,7 @@
 import allure
 import pytest
 
-from auto_tests.api_mango_mock.abstract.user.user import UserAPI
+from auto_tests.api_mock.abstract.user.user import UserAPI
 from core.models.api_model import ApiDataModel
 from core.api.case_tool import CaseTool
 from core.decorators.api import case_data

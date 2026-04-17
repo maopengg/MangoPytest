@@ -9,7 +9,7 @@ from ..entities.ceo_approval import CEOApprovalEntity
 from ..entities.dept_approval import DeptApprovalEntity
 from ..entities.finance_approval import FinanceApprovalEntity
 from ..entities.reimbursement import ReimbursementEntity
-from ...api_manager import pytest_api_mock
+from ...api_manager import bdd_api_mock
 
 
 class CreateReimbursementScenario(BaseScenario):
@@ -22,10 +22,10 @@ class CreateReimbursementScenario(BaseScenario):
     def _set_token(self):
         """设置token到API模块"""
         if self.token:
-            pytest_api_mock.reimbursement.set_token(self.token)
-            pytest_api_mock.dept_approval.set_token(self.token)
-            pytest_api_mock.finance_approval.set_token(self.token)
-            pytest_api_mock.ceo_approval.set_token(self.token)
+            bdd_api_mock.reimbursement.set_token(self.token)
+            bdd_api_mock.dept_approval.set_token(self.token)
+            bdd_api_mock.finance_approval.set_token(self.token)
+            bdd_api_mock.ceo_approval.set_token(self.token)
 
     def execute(self, user_id: int, amount: float, reason: str) -> ScenarioResult:
         """
@@ -49,7 +49,7 @@ class CreateReimbursementScenario(BaseScenario):
             return result
 
         # 调用API - 直接使用参数
-        response = pytest_api_mock.reimbursement.create_reimbursement(
+        response = bdd_api_mock.reimbursement.create_reimbursement(
             user_id=user_id, amount=amount, reason=reason
         )
 
@@ -76,10 +76,10 @@ class FullApprovalWorkflowScenario(BaseScenario):
     def _set_token(self):
         """设置token到API模块"""
         if self.token:
-            pytest_api_mock.reimbursement.set_token(self.token)
-            pytest_api_mock.dept_approval.set_token(self.token)
-            pytest_api_mock.finance_approval.set_token(self.token)
-            pytest_api_mock.ceo_approval.set_token(self.token)
+            bdd_api_mock.reimbursement.set_token(self.token)
+            bdd_api_mock.dept_approval.set_token(self.token)
+            bdd_api_mock.finance_approval.set_token(self.token)
+            bdd_api_mock.ceo_approval.set_token(self.token)
 
     def execute(
             self,
@@ -119,7 +119,7 @@ class FullApprovalWorkflowScenario(BaseScenario):
         result.add_entity("reimbursement", reimbursement)
 
         # C级：部门审批
-        dept_response = pytest_api_mock.dept_approval.create_dept_approval(
+        dept_response = bdd_api_mock.dept_approval.create_dept_approval(
             reimbursement_id=reimbursement.id,
             approver_id=approvers["dept_id"],
             status="approved",
@@ -136,7 +136,7 @@ class FullApprovalWorkflowScenario(BaseScenario):
             return result
 
         # B级：财务审批
-        finance_response = pytest_api_mock.finance_approval.create_finance_approval(
+        finance_response = bdd_api_mock.finance_approval.create_finance_approval(
             reimbursement_id=reimbursement.id,
             dept_approval_id=dept_entity.id,
             approver_id=approvers["finance_id"],
@@ -154,7 +154,7 @@ class FullApprovalWorkflowScenario(BaseScenario):
             return result
 
         # A级：总经理审批
-        ceo_response = pytest_api_mock.ceo_approval.create_ceo_approval(
+        ceo_response = bdd_api_mock.ceo_approval.create_ceo_approval(
             reimbursement_id=reimbursement.id,
             finance_approval_id=finance_entity.id,
             approver_id=approvers["ceo_id"],
@@ -172,7 +172,7 @@ class FullApprovalWorkflowScenario(BaseScenario):
             return result
 
         # 重新获取报销申请的最新状态
-        reimbursement_response = pytest_api_mock.reimbursement.get_reimbursement_by_id(
+        reimbursement_response = bdd_api_mock.reimbursement.get_reimbursement_by_id(
             reimbursement.id
         )
         if reimbursement_response.get("code") == 200:
@@ -203,10 +203,10 @@ class RejectionWorkflowScenario(BaseScenario):
     def _set_token(self):
         """设置token到API模块"""
         if self.token:
-            pytest_api_mock.reimbursement.set_token(self.token)
-            pytest_api_mock.dept_approval.set_token(self.token)
-            pytest_api_mock.finance_approval.set_token(self.token)
-            pytest_api_mock.ceo_approval.set_token(self.token)
+            bdd_api_mock.reimbursement.set_token(self.token)
+            bdd_api_mock.dept_approval.set_token(self.token)
+            bdd_api_mock.finance_approval.set_token(self.token)
+            bdd_api_mock.ceo_approval.set_token(self.token)
 
     def execute(
             self,
@@ -246,7 +246,7 @@ class RejectionWorkflowScenario(BaseScenario):
 
         if reject_at == "dept":
             # C级拒绝
-            dept_response = pytest_api_mock.dept_approval.create_dept_approval(
+            dept_response = bdd_api_mock.dept_approval.create_dept_approval(
                 reimbursement_id=reimbursement.id,
                 approver_id=3,
                 status="rejected",
@@ -260,7 +260,7 @@ class RejectionWorkflowScenario(BaseScenario):
 
         elif reject_at == "finance":
             # C级通过
-            dept_response = pytest_api_mock.dept_approval.create_dept_approval(
+            dept_response = bdd_api_mock.dept_approval.create_dept_approval(
                 reimbursement_id=reimbursement.id,
                 approver_id=3,
                 status="approved",
@@ -276,7 +276,7 @@ class RejectionWorkflowScenario(BaseScenario):
                 return result
 
             # B级拒绝
-            finance_response = pytest_api_mock.finance_approval.create_finance_approval(
+            finance_response = bdd_api_mock.finance_approval.create_finance_approval(
                 reimbursement_id=reimbursement.id,
                 dept_approval_id=dept_entity.id,
                 approver_id=4,
@@ -291,7 +291,7 @@ class RejectionWorkflowScenario(BaseScenario):
 
         elif reject_at == "ceo":
             # C级通过
-            dept_response = pytest_api_mock.dept_approval.create_dept_approval(
+            dept_response = bdd_api_mock.dept_approval.create_dept_approval(
                 reimbursement_id=reimbursement.id,
                 approver_id=3,
                 status="approved",
@@ -307,7 +307,7 @@ class RejectionWorkflowScenario(BaseScenario):
                 return result
 
             # B级通过
-            finance_response = pytest_api_mock.finance_approval.create_finance_approval(
+            finance_response = bdd_api_mock.finance_approval.create_finance_approval(
                 reimbursement_id=reimbursement.id,
                 dept_approval_id=dept_entity.id,
                 approver_id=4,
@@ -324,7 +324,7 @@ class RejectionWorkflowScenario(BaseScenario):
                 return result
 
             # A级拒绝
-            ceo_response = pytest_api_mock.ceo_approval.create_ceo_approval(
+            ceo_response = bdd_api_mock.ceo_approval.create_ceo_approval(
                 reimbursement_id=reimbursement.id,
                 finance_approval_id=finance_entity.id,
                 approver_id=5,

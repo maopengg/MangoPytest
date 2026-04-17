@@ -16,7 +16,7 @@
 6. 【新增】预期结果验证
 
 使用示例：
-from auto_tests.pytest_api_mock.data_factory.scenarios import FullApprovalScenario
+from auto_tests.bdd_api_mock.data_factory.scenarios import FullApprovalScenario
 
     # 基础用法
     scenario = FullApprovalScenario(token="xxx")
@@ -27,7 +27,7 @@ from auto_tests.pytest_api_mock.data_factory.scenarios import FullApprovalScenar
         print(f"审批流程完成，报销ID: {reimbursement.id}")
 
 变体矩阵示例：
-    from auto_tests.pytest_api_mock.data_factory.scenarios import VariantMatrix, Dimension, Variant
+    from auto_tests.bdd_api_mock.data_factory.scenarios import VariantMatrix, Dimension, Variant
 
     matrix = VariantMatrix([
         Dimension("amount", [

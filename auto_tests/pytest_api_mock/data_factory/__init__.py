@@ -15,13 +15,13 @@
 
 使用示例：
     # 方式1：使用Builder
-    from auto_tests.demo_project.data_factory.builders import ReimbursementBuilder
+    from auto_tests.pytest_api_mock.data_factory.builders import ReimbursementBuilder
     
     builder = ReimbursementBuilder()
     entity = builder.create(user_id=1, amount=100.00)
     
     # 方式2：使用Scenario
-    from auto_tests.demo_project.data_factory.scenarios import FullApprovalWorkflowScenario
+    from auto_tests.pytest_api_mock.data_factory.scenarios import FullApprovalWorkflowScenario
     
     scenario = FullApprovalWorkflowScenario()
     result = scenario.execute(user_id=1, amount=1000.00)

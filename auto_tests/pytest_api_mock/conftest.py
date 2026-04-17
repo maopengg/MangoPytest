@@ -4,5 +4,5 @@
 # @Time   : 2026-03-31
 # @Author : 毛鹏
 
-from auto_tests.demo_project.fixtures.conftest import *
+from auto_tests.pytest_api_mock.fixtures.conftest import *
 from core.reporting import *

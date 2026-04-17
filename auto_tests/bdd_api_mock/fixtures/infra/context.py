@@ -33,8 +33,8 @@ from typing import Dict, Any, List, Optional, Type, Callable
 
 import pytest
 
-from auto_tests.pytest_api_mock.data_factory import BaseEntity
-from auto_tests.pytest_api_mock.data_factory.context import Context
+from auto_tests.bdd_api_mock.data_factory import BaseEntity
+from auto_tests.bdd_api_mock.data_factory.context import Context
 
 
 @dataclass

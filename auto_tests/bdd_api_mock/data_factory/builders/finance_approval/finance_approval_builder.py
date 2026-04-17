@@ -8,7 +8,7 @@ from typing import Optional, List
 from core.base import BaseBuilder
 from ...entities.finance_approval import FinanceApprovalEntity
 from ...registry import register_builder
-from ....api_manager import pytest_api_mock
+from ....api_manager import bdd_api_mock
 
 
 @register_builder("finance_approval")
@@ -68,9 +68,9 @@ class FinanceApprovalBuilder(BaseBuilder[FinanceApprovalEntity]):
 
         # 设置token到API模块
         if self.token:
-            pytest_api_mock.finance_approval.set_token(self.token)
+            bdd_api_mock.finance_approval.set_token(self.token)
 
-        result = pytest_api_mock.finance_approval.create_finance_approval(
+        result = bdd_api_mock.finance_approval.create_finance_approval(
             reimbursement_id=entity.reimbursement_id,
             dept_approval_id=entity.dept_approval_id,
             approver_id=entity.approver_id,
@@ -95,9 +95,9 @@ class FinanceApprovalBuilder(BaseBuilder[FinanceApprovalEntity]):
         """
         # 设置token到API模块
         if self.token:
-            pytest_api_mock.finance_approval.set_token(self.token)
+            bdd_api_mock.finance_approval.set_token(self.token)
 
-        result = pytest_api_mock.finance_approval.get_finance_approval_by_id(approval_id)
+        result = bdd_api_mock.finance_approval.get_finance_approval_by_id(approval_id)
 
         if result.get("code") == 200:
             data = result["data"]
@@ -114,9 +114,9 @@ class FinanceApprovalBuilder(BaseBuilder[FinanceApprovalEntity]):
         """
         # 设置token到API模块
         if self.token:
-            pytest_api_mock.finance_approval.set_token(self.token)
+            bdd_api_mock.finance_approval.set_token(self.token)
 
-        result = pytest_api_mock.finance_approval.update_finance_approval(
+        result = bdd_api_mock.finance_approval.update_finance_approval(
             approval_id=entity.id, **entity.to_api_payload()
         )
 
@@ -135,9 +135,9 @@ class FinanceApprovalBuilder(BaseBuilder[FinanceApprovalEntity]):
         """
         # 设置token到API模块
         if self.token:
-            pytest_api_mock.finance_approval.set_token(self.token)
+            bdd_api_mock.finance_approval.set_token(self.token)
 
-        result = pytest_api_mock.finance_approval.delete_finance_approval(entity.id)
+        result = bdd_api_mock.finance_approval.delete_finance_approval(entity.id)
 
         if result.get("code") == 200:
             entity.mark_as_deleted()
@@ -153,9 +153,9 @@ class FinanceApprovalBuilder(BaseBuilder[FinanceApprovalEntity]):
         """
         # 设置token到API模块
         if self.token:
-            pytest_api_mock.finance_approval.set_token(self.token)
+            bdd_api_mock.finance_approval.set_token(self.token)
 
-        result = pytest_api_mock.finance_approval.get_finance_approvals()
+        result = bdd_api_mock.finance_approval.get_finance_approvals()
 
         if result.get("code") == 200:
             data_list = result["data"]

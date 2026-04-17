@@ -6,7 +6,7 @@
 
 import allure
 
-from auto_tests.demo_project.api_manager import demo_project
+from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
 from core.base.layering_base import UnitTest, IntegrationTest
 
 
@@ -27,8 +27,8 @@ class TestCEOApprovalAPI(IntegrationTest):
         reimbursement_id = finance_approved_reimbursement["reimbursement"]["id"]
         finance_approval_id = finance_approved_reimbursement["finance_approval"]["id"]
 
-        demo_project.ceo_approval.set_token(api_client.token)
-        result = demo_project.ceo_approval.create_ceo_approval(
+        pytest_api_mock.ceo_approval.set_token(api_client.token)
+        result = pytest_api_mock.ceo_approval.create_ceo_approval(
             reimbursement_id=reimbursement_id,
             finance_approval_id=finance_approval_id,
             approver_id=ceo_id,
@@ -45,8 +45,8 @@ class TestCEOApprovalAPI(IntegrationTest):
             self, api_client, dept_approved_reimbursement, ceo_id
     ):
         """测试创建总经理审批 - 财务审批不存在"""
-        demo_project.ceo_approval.set_token(api_client.token)
-        result = demo_project.ceo_approval.create_ceo_approval(
+        pytest_api_mock.ceo_approval.set_token(api_client.token)
+        result = pytest_api_mock.ceo_approval.create_ceo_approval(
             reimbursement_id=dept_approved_reimbursement["reimbursement"]["id"],
             finance_approval_id=99999,
             approver_id=ceo_id,
@@ -65,8 +65,8 @@ class TestCEOApprovalAPI(IntegrationTest):
         reimbursement_id = finance_rejected_reimbursement["reimbursement"]["id"]
         finance_approval_id = finance_rejected_reimbursement["finance_approval"]["id"]
 
-        demo_project.ceo_approval.set_token(api_client.token)
-        result = demo_project.ceo_approval.create_ceo_approval(
+        pytest_api_mock.ceo_approval.set_token(api_client.token)
+        result = pytest_api_mock.ceo_approval.create_ceo_approval(
             reimbursement_id=reimbursement_id,
             finance_approval_id=finance_approval_id,
             approver_id=ceo_id,
@@ -82,8 +82,8 @@ class TestCEOApprovalAPI(IntegrationTest):
         """测试获取总经理审批列表"""
         # 使用全局token设置
         if hasattr(api_client, "token") and api_client.token:
-            demo_project.auth.set_token(api_client.token)
-        result = demo_project.ceo_approval.get_ceo_approvals()
+            pytest_api_mock.auth.set_token(api_client.token)
+        result = pytest_api_mock.ceo_approval.get_ceo_approvals()
 
         assert result is not None
         assert result["code"] == 200
@@ -97,8 +97,8 @@ class TestCEOApprovalAPI(IntegrationTest):
 
         # 使用全局token设置
         if hasattr(api_client, "token") and api_client.token:
-            demo_project.auth.set_token(api_client.token)
-        result = demo_project.ceo_approval.get_ceo_approval_by_id(
+            pytest_api_mock.auth.set_token(api_client.token)
+        result = pytest_api_mock.ceo_approval.get_ceo_approval_by_id(
             approval_id=reimbursement_id
         )
 

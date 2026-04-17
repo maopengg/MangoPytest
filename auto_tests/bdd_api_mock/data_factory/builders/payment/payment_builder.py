@@ -262,8 +262,8 @@ class PaymentBuilder(BaseBuilder[PaymentEntity]):
         """
         # 使用API模块执行付款
         try:
-            from ....api_manager import pytest_api_mock
-            result = pytest_api_mock.payment.pay_payment(payment_id, pay_method=pay_method)
+            from ....api_manager import bdd_api_mock
+            result = bdd_api_mock.payment.pay_payment(payment_id, pay_method=pay_method)
             return result.get("code") == 200
         except:
             # 模拟付款成功
@@ -370,8 +370,8 @@ class PaymentBuilder(BaseBuilder[PaymentEntity]):
         """
         # 使用API模块获取
         try:
-            from ....api_manager import pytest_api_mock
-            result = pytest_api_mock.payment.get_payments()
+            from ....api_manager import bdd_api_mock
+            result = bdd_api_mock.payment.get_payments()
 
             if result.get("code") == 200:
                 data_list = result["data"]

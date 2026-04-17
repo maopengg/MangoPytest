@@ -13,7 +13,7 @@
 - MockStrategy: 本地内存对象（单元测试）
 
 使用示例：
-    from auto_tests.demo_project.data_factory.strategies import APIStrategy, DBStrategy
+    from auto_tests.pytest_api_mock.data_factory.strategies import APIStrategy, DBStrategy
     
     # API策略（默认）
     strategy = APIStrategy(api_client)

@@ -6,7 +6,7 @@
 import uuid
 from typing import Dict, Any, List
 
-from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
+from auto_tests.bdd_api_mock.api_manager import bdd_api_mock
 from core.base import BaseBuilder
 from ...registry import register_builder
 
@@ -22,7 +22,7 @@ class ProductBuilder(BaseBuilder):
         super().__init__(token=token, factory=factory)
         # 设置token到API模块
         if token:
-            pytest_api_mock.product.set_token(token)
+            bdd_api_mock.product.set_token(token)
         self._created = []
 
     def build(self, name: str = None, price: float = None,
@@ -46,7 +46,7 @@ class ProductBuilder(BaseBuilder):
         """
         product_data = self.build(name, price, description, stock)
 
-        result = pytest_api_mock.product.create_product(
+        result = bdd_api_mock.product.create_product(
             name=product_data["name"],
             price=product_data["price"],
             description=product_data["description"],
@@ -85,7 +85,7 @@ class ProductBuilder(BaseBuilder):
         获取所有产品
         @return: 产品列表
         """
-        result = pytest_api_mock.product.get_all_products()
+        result = bdd_api_mock.product.get_all_products()
         if result.get("code") == 200:
             return result["data"]
         return []
@@ -96,7 +96,7 @@ class ProductBuilder(BaseBuilder):
         @param product_id: 产品ID
         @return: 产品数据
         """
-        result = pytest_api_mock.product.get_product_by_id(product_id)
+        result = bdd_api_mock.product.get_product_by_id(product_id)
         if result.get("code") == 200:
             return result["data"]
         return None
@@ -108,7 +108,7 @@ class ProductBuilder(BaseBuilder):
         @param product_data: 产品数据
         @return: 更新后的产品数据
         """
-        result = pytest_api_mock.product.update_product_info(
+        result = bdd_api_mock.product.update_product_info(
             product_id=product_id,
             **product_data
         )
@@ -122,7 +122,7 @@ class ProductBuilder(BaseBuilder):
         @param product_id: 产品ID
         @return: 是否删除成功
         """
-        result = pytest_api_mock.product.delete_product(product_id)
+        result = bdd_api_mock.product.delete_product(product_id)
         if result.get("code") == 200:
             return True
         return False

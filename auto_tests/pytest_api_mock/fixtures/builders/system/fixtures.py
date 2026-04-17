@@ -7,7 +7,7 @@ from typing import Generator, Dict, Any
 
 import pytest
 
-from auto_tests.demo_project.data_factory.builders.system import SystemBuilder
+from auto_tests.pytest_api_mock.data_factory.builders.system import SystemBuilder
 
 
 @pytest.fixture(scope="session")

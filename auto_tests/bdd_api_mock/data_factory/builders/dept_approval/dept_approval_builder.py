@@ -8,7 +8,7 @@ from typing import Optional, List
 from core.base import BaseBuilder
 from ...entities.dept_approval import DeptApprovalEntity
 from ...registry import register_builder
-from ....api_manager import pytest_api_mock
+from ....api_manager import bdd_api_mock
 
 
 @register_builder("dept_approval")
@@ -67,9 +67,9 @@ class DeptApprovalBuilder(BaseBuilder[DeptApprovalEntity]):
 
         # 设置token到API模块
         if self.token:
-            pytest_api_mock.dept_approval.set_token(self.token)
+            bdd_api_mock.dept_approval.set_token(self.token)
 
-        result = pytest_api_mock.dept_approval.create_dept_approval(
+        result = bdd_api_mock.dept_approval.create_dept_approval(
             reimbursement_id=entity.reimbursement_id,
             approver_id=entity.approver_id,
             status=entity.status,
@@ -100,9 +100,9 @@ class DeptApprovalBuilder(BaseBuilder[DeptApprovalEntity]):
         """
         # 设置token到API模块
         if self.token:
-            pytest_api_mock.dept_approval.set_token(self.token)
+            bdd_api_mock.dept_approval.set_token(self.token)
 
-        result = pytest_api_mock.dept_approval.get_dept_approval_by_id(approval_id)
+        result = bdd_api_mock.dept_approval.get_dept_approval_by_id(approval_id)
 
         if result.get("code") == 200:
             data = result["data"]
@@ -119,9 +119,9 @@ class DeptApprovalBuilder(BaseBuilder[DeptApprovalEntity]):
         """
         # 设置token到API模块
         if self.token:
-            pytest_api_mock.dept_approval.set_token(self.token)
+            bdd_api_mock.dept_approval.set_token(self.token)
 
-        result = pytest_api_mock.dept_approval.update_dept_approval(
+        result = bdd_api_mock.dept_approval.update_dept_approval(
             approval_id=entity.id, **entity.to_api_payload()
         )
 
@@ -140,9 +140,9 @@ class DeptApprovalBuilder(BaseBuilder[DeptApprovalEntity]):
         """
         # 设置token到API模块
         if self.token:
-            pytest_api_mock.dept_approval.set_token(self.token)
+            bdd_api_mock.dept_approval.set_token(self.token)
 
-        result = pytest_api_mock.dept_approval.delete_dept_approval(entity.id)
+        result = bdd_api_mock.dept_approval.delete_dept_approval(entity.id)
 
         if result.get("code") == 200:
             entity.mark_as_deleted()
@@ -158,9 +158,9 @@ class DeptApprovalBuilder(BaseBuilder[DeptApprovalEntity]):
         """
         # 设置token到API模块
         if self.token:
-            pytest_api_mock.dept_approval.set_token(self.token)
+            bdd_api_mock.dept_approval.set_token(self.token)
 
-        result = pytest_api_mock.dept_approval.get_dept_approvals()
+        result = bdd_api_mock.dept_approval.get_dept_approvals()
 
         if result.get("code") == 200:
             data_list = result["data"]

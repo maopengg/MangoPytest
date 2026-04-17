@@ -20,8 +20,8 @@ from typing import Generator, Dict, Any
 
 import pytest
 
-from auto_tests.pytest_api_mock.data_factory.builders.reimbursement import ReimbursementBuilder
-from auto_tests.pytest_api_mock.data_factory.entities import ReimbursementEntity
+from auto_tests.bdd_api_mock.data_factory.builders.reimbursement import ReimbursementBuilder
+from auto_tests.bdd_api_mock.data_factory.entities import ReimbursementEntity
 from core.base import BuilderContext
 
 
@@ -114,8 +114,8 @@ def employee_user(test_token):
     
     返回一个普通员工用户
     """
-    from auto_tests.pytest_api_mock.data_factory.builders.auth import AuthBuilder
-    from auto_tests.pytest_api_mock.data_factory.entities import UserEntity
+    from auto_tests.bdd_api_mock.data_factory.builders.auth import AuthBuilder
+    from auto_tests.bdd_api_mock.data_factory.entities import UserEntity
     
     auth_builder = AuthBuilder(token=test_token)
     user = auth_builder.register(role="employee")

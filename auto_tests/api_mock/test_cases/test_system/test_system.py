@@ -7,8 +7,8 @@
 import allure
 import pytest
 
-from auto_tests.api_mango_mock.abstract.login.login import LoginAPI
-from auto_tests.api_mango_mock.abstract.system.system import SystemAPI
+from auto_tests.api_mock.abstract.login.login import LoginAPI
+from auto_tests.api_mock.abstract.system.system import SystemAPI
 from core.models.api_model import ApiDataModel
 from core.api.case_tool import CaseTool
 from core.decorators.api import case_data

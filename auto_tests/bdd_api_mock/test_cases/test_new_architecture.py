@@ -5,10 +5,10 @@
 # @Author : 毛鹏
 import allure
 
-from auto_tests.pytest_api_mock.data_factory.builders.reimbursement import ReimbursementBuilder
-from auto_tests.pytest_api_mock.data_factory.builders.user import UserBuilder
-from auto_tests.pytest_api_mock.data_factory.entities import UserEntity, ReimbursementEntity
-from auto_tests.pytest_api_mock.data_factory.scenarios import (
+from auto_tests.bdd_api_mock.data_factory.builders.reimbursement import ReimbursementBuilder
+from auto_tests.bdd_api_mock.data_factory.builders.user import UserBuilder
+from auto_tests.bdd_api_mock.data_factory.entities import UserEntity, ReimbursementEntity
+from auto_tests.bdd_api_mock.data_factory.scenarios import (
     LoginScenario,
     RegisterAndLoginScenario,
     FullApprovalWorkflowScenario,

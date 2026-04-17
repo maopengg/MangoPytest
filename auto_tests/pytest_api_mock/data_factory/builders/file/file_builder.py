@@ -9,7 +9,7 @@ import tempfile
 import uuid
 from typing import Dict, Any, Optional
 
-from auto_tests.demo_project.api_manager import demo_project
+from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
 from core.base import BaseBuilder
 from ...registry import register_builder
 
@@ -25,7 +25,7 @@ class FileBuilder(BaseBuilder):
         super().__init__(token=token, factory=factory)
         # 设置token到API模块 - 使用全局token
         if token:
-            demo_project.set_token(token)
+            pytest_api_mock.set_token(token)
         self._created = []
 
     def build(self, **kwargs) -> str:
@@ -84,10 +84,10 @@ class FileBuilder(BaseBuilder):
 
         # 确保设置了 token - 使用全局token
         if self.token:
-            demo_project.set_token(self.token)
+            pytest_api_mock.set_token(self.token)
 
         # 调用API上传文件
-        result = demo_project.file.upload_file(file_path)
+        result = pytest_api_mock.file.upload_file(file_path)
 
         if result.get("code") == 200:
             uploaded = result.get("data")

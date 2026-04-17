@@ -4,7 +4,7 @@
 # @Time   : 2023-08-07 11:12
 # @Author : 毛鹏
 
-# 导出 demo_project 专用模型（方便使用方导入）
+# 导出 pytest_api_mock 专用模型（方便使用方导入）
 from core.models.demo_model import (
     # 配置相关
     BaseConfig, DevConfig, TestConfig, PreConfig, ProdConfig, CIConfig,

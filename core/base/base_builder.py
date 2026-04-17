@@ -24,7 +24,7 @@ T = TypeVar("T", bound=BaseEntity)
 
 def _get_default_strategy():
     """延迟导入默认策略，避免循环导入"""
-    from auto_tests.demo_project.data_factory.strategies import APIStrategy
+    from auto_tests.pytest_api_mock.data_factory.strategies import APIStrategy
 
     return APIStrategy()
 
@@ -91,7 +91,7 @@ class BaseBuilder(ABC, Generic[T]):
             self.context.strategy = strategy
         elif self.context.strategy is None:
             # 使用默认的 API 策略（延迟导入避免循环），并传入token
-            from auto_tests.demo_project.data_factory.strategies import APIStrategy
+            from auto_tests.pytest_api_mock.data_factory.strategies import APIStrategy
             self.context.strategy = APIStrategy(token=token)
 
         # 父Builder（依赖注入）

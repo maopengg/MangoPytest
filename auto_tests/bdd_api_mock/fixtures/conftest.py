@@ -12,7 +12,7 @@ fixtures注册中心 - 新架构
 
 使用示例：
     # test_example.py
-    from auto_tests.pytest_api_mock.fixtures.conftest import *
+    from auto_tests.bdd_api_mock.fixtures.conftest import *
 
     def test_with_user(test_user):
         assert test_user.id is not None
@@ -32,23 +32,23 @@ from typing import Dict, Any, List, Optional, Type, Callable
 
 import pytest
 
-from auto_tests.pytest_api_mock.data_factory import BaseEntity
+from auto_tests.bdd_api_mock.data_factory import BaseEntity
 
 # ========== 认证模块fixtures ==========
-from auto_tests.pytest_api_mock.fixtures.builders.auth import (
+from auto_tests.bdd_api_mock.fixtures.builders.auth import (
     auth_builder,
     test_token,
     registered_user,
 )
 
 # ========== 预算模块fixtures ==========
-from auto_tests.pytest_api_mock.fixtures.builders.budget import (
+from auto_tests.bdd_api_mock.fixtures.builders.budget import (
     org_builder,
     budget_builder,
 )
 
 # ========== 总经理审批模块fixtures ==========
-from auto_tests.pytest_api_mock.fixtures.builders.ceo_approval import (
+from auto_tests.bdd_api_mock.fixtures.builders.ceo_approval import (
     ceo_approval_builder,
     fully_approved_reimbursement,
     ceo_rejected_reimbursement,
@@ -58,7 +58,7 @@ from auto_tests.pytest_api_mock.fixtures.builders.ceo_approval import (
 )
 
 # ========== 数据模块fixtures ==========
-from auto_tests.pytest_api_mock.fixtures.builders.data import (
+from auto_tests.bdd_api_mock.fixtures.builders.data import (
     data_builder,
     test_data,
     data_list,
@@ -66,7 +66,7 @@ from auto_tests.pytest_api_mock.fixtures.builders.data import (
 )
 
 # ========== 部门审批模块fixtures ==========
-from auto_tests.pytest_api_mock.fixtures.builders.dept_approval import (
+from auto_tests.bdd_api_mock.fixtures.builders.dept_approval import (
     dept_approval_builder,
     dept_approved_reimbursement,
     dept_rejected_reimbursement,
@@ -74,7 +74,7 @@ from auto_tests.pytest_api_mock.fixtures.builders.dept_approval import (
 )
 
 # ========== 文件模块fixtures ==========
-from auto_tests.pytest_api_mock.fixtures.builders.file import (
+from auto_tests.bdd_api_mock.fixtures.builders.file import (
     file_builder,
     uploaded_file,
     file_list,
@@ -82,7 +82,7 @@ from auto_tests.pytest_api_mock.fixtures.builders.file import (
 )
 
 # ========== 财务审批模块fixtures ==========
-from auto_tests.pytest_api_mock.fixtures.builders.finance_approval import (
+from auto_tests.bdd_api_mock.fixtures.builders.finance_approval import (
     finance_approval_builder,
     finance_approved_reimbursement,
     finance_rejected_reimbursement,
@@ -90,7 +90,7 @@ from auto_tests.pytest_api_mock.fixtures.builders.finance_approval import (
 )
 
 # ========== 订单模块fixtures ==========
-from auto_tests.pytest_api_mock.fixtures.builders.order import (
+from auto_tests.bdd_api_mock.fixtures.builders.order import (
     order_builder,
     test_order,
     order_list,
@@ -99,13 +99,13 @@ from auto_tests.pytest_api_mock.fixtures.builders.order import (
 )
 
 # ========== 付款模块fixtures ==========
-from auto_tests.pytest_api_mock.fixtures.builders.payment import (
+from auto_tests.bdd_api_mock.fixtures.builders.payment import (
     payment_builder,
     paid_payment,
 )
 
 # ========== 产品模块fixtures ==========
-from auto_tests.pytest_api_mock.fixtures.builders.product import (
+from auto_tests.bdd_api_mock.fixtures.builders.product import (
     product_builder,
     test_product,
     product_list,
@@ -113,7 +113,7 @@ from auto_tests.pytest_api_mock.fixtures.builders.product import (
 )
 
 # ========== 报销申请模块fixtures ==========
-from auto_tests.pytest_api_mock.fixtures.builders.reimbursement import (
+from auto_tests.bdd_api_mock.fixtures.builders.reimbursement import (
     reimb_builder,
     approved_reimbursement,
     pending_reimbursement,
@@ -125,7 +125,7 @@ from auto_tests.pytest_api_mock.fixtures.builders.reimbursement import (
 reimbursement_builder = reimb_builder
 
 # ========== 系统模块fixtures ==========
-from auto_tests.pytest_api_mock.fixtures.builders.system import (
+from auto_tests.bdd_api_mock.fixtures.builders.system import (
     system_builder,
     system_status,
     system_config,
@@ -134,7 +134,7 @@ from auto_tests.pytest_api_mock.fixtures.builders.system import (
 )
 
 # ========== 用户模块fixtures ==========
-from auto_tests.pytest_api_mock.fixtures.builders.user import (
+from auto_tests.bdd_api_mock.fixtures.builders.user import (
     user_builder,
     test_user,
     admin_user,
@@ -144,19 +144,19 @@ from auto_tests.pytest_api_mock.fixtures.builders.user import (
 )
 
 # ========== 基础设施fixtures ==========
-from auto_tests.pytest_api_mock.fixtures.infra.client import (
+from auto_tests.bdd_api_mock.fixtures.infra.client import (
     api_client,
     authenticated_client,
     api_client_with_cleanup,
 )
-from auto_tests.pytest_api_mock.fixtures.infra.db import (
+from auto_tests.bdd_api_mock.fixtures.infra.db import (
     db_session,
     db_transaction,
     clean_db_state,
 )
 
 # ========== Pydantic 新架构 fixtures ==========
-from auto_tests.pytest_api_mock.fixtures.pydantic_fixtures import (
+from auto_tests.bdd_api_mock.fixtures.pydantic_fixtures import (
     # L3 Entity fixtures
     user_entity_pydantic,
     admin_entity_pydantic,
@@ -174,12 +174,12 @@ from auto_tests.pytest_api_mock.fixtures.pydantic_fixtures import (
 )
 
 # ========== 场景fixtures ==========
-from auto_tests.pytest_api_mock.fixtures.scenarios.scenario_fixtures import (
+from auto_tests.bdd_api_mock.fixtures.scenarios.scenario_fixtures import (
     login_scenario,
     register_and_login_scenario,
     logged_in_token,
 )
-from auto_tests.pytest_api_mock.fixtures.scenarios.approval_scenario_fixtures import (
+from auto_tests.bdd_api_mock.fixtures.scenarios.approval_scenario_fixtures import (
     create_reimbursement_scenario,
     full_approval_scenario,
     rejection_scenario,

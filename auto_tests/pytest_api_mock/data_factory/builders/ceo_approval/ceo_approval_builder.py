@@ -8,7 +8,7 @@ from typing import Optional, List
 from core.base import BaseBuilder
 from ...entities.ceo_approval import CEOApprovalEntity
 from ...registry import register_builder
-from ....api_manager import demo_project
+from ....api_manager import pytest_api_mock
 
 
 @register_builder("ceo_approval")
@@ -70,9 +70,9 @@ class CEOApprovalBuilder(BaseBuilder[CEOApprovalEntity]):
 
         # 设置token到API模块
         if self.token:
-            demo_project.ceo_approval.set_token(self.token)
+            pytest_api_mock.ceo_approval.set_token(self.token)
 
-        result = demo_project.ceo_approval.create_ceo_approval(
+        result = pytest_api_mock.ceo_approval.create_ceo_approval(
             reimbursement_id=entity.reimbursement_id,
             finance_approval_id=entity.finance_approval_id,
             approver_id=entity.approver_id,
@@ -97,9 +97,9 @@ class CEOApprovalBuilder(BaseBuilder[CEOApprovalEntity]):
         """
         # 设置token到API模块
         if self.token:
-            demo_project.ceo_approval.set_token(self.token)
+            pytest_api_mock.ceo_approval.set_token(self.token)
 
-        result = demo_project.ceo_approval.get_ceo_approval_by_id(approval_id)
+        result = pytest_api_mock.ceo_approval.get_ceo_approval_by_id(approval_id)
 
         if result.get("code") == 200:
             data = result["data"]
@@ -116,9 +116,9 @@ class CEOApprovalBuilder(BaseBuilder[CEOApprovalEntity]):
         """
         # 设置token到API模块
         if self.token:
-            demo_project.ceo_approval.set_token(self.token)
+            pytest_api_mock.ceo_approval.set_token(self.token)
 
-        result = demo_project.ceo_approval.update_ceo_approval(
+        result = pytest_api_mock.ceo_approval.update_ceo_approval(
             approval_id=entity.id, **entity.to_api_payload()
         )
 
@@ -137,9 +137,9 @@ class CEOApprovalBuilder(BaseBuilder[CEOApprovalEntity]):
         """
         # 设置token到API模块
         if self.token:
-            demo_project.ceo_approval.set_token(self.token)
+            pytest_api_mock.ceo_approval.set_token(self.token)
 
-        result = demo_project.ceo_approval.delete_ceo_approval(entity.id)
+        result = pytest_api_mock.ceo_approval.delete_ceo_approval(entity.id)
 
         if result.get("code") == 200:
             entity.mark_as_deleted()
@@ -155,9 +155,9 @@ class CEOApprovalBuilder(BaseBuilder[CEOApprovalEntity]):
         """
         # 设置token到API模块
         if self.token:
-            demo_project.ceo_approval.set_token(self.token)
+            pytest_api_mock.ceo_approval.set_token(self.token)
 
-        result = demo_project.ceo_approval.get_ceo_approvals()
+        result = pytest_api_mock.ceo_approval.get_ceo_approvals()
 
         if result.get("code") == 200:
             data_list = result["data"]
@@ -249,7 +249,7 @@ class CEOApprovalBuilder(BaseBuilder[CEOApprovalEntity]):
         from ...entities.reimbursement import ReimbursementEntity
 
         # 获取报销申请
-        reimbursement_result = demo_project.reimbursement.get_reimbursement_by_id(
+        reimbursement_result = pytest_api_mock.reimbursement.get_reimbursement_by_id(
             reimbursement_id
         )
         if reimbursement_result.get("code") != 200:
@@ -282,7 +282,7 @@ class CEOApprovalBuilder(BaseBuilder[CEOApprovalEntity]):
     ) -> list:
         """根据报销申请ID获取所有相关审批"""
         if approval_type == "dept":
-            result = demo_project.dept_approval.get_dept_approvals()
+            result = pytest_api_mock.dept_approval.get_dept_approvals()
             if result.get("code") == 200:
                 from ...entities.dept_approval import DeptApprovalEntity
 
@@ -291,7 +291,7 @@ class CEOApprovalBuilder(BaseBuilder[CEOApprovalEntity]):
                 ]
                 return [a for a in approvals if a.reimbursement_id == reimbursement_id]
         elif approval_type == "finance":
-            result = demo_project.finance_approval.get_finance_approvals()
+            result = pytest_api_mock.finance_approval.get_finance_approvals()
             if result.get("code") == 200:
                 from ...entities.finance_approval import FinanceApprovalEntity
 
@@ -300,7 +300,7 @@ class CEOApprovalBuilder(BaseBuilder[CEOApprovalEntity]):
                 ]
                 return [a for a in approvals if a.reimbursement_id == reimbursement_id]
         elif approval_type == "ceo":
-            result = demo_project.ceo_approval.get_ceo_approvals()
+            result = pytest_api_mock.ceo_approval.get_ceo_approvals()
             if result.get("code") == 200:
                 approvals = [
                     self._entity_class.from_api_response(d) for d in result["data"]

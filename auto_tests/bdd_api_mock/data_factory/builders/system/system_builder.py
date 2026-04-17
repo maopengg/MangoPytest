@@ -5,7 +5,7 @@
 # @Author : 毛鹏
 from typing import Dict, Any, Optional
 
-from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
+from auto_tests.bdd_api_mock.api_manager import bdd_api_mock
 from core.base import BaseBuilder
 from ...registry import register_builder
 
@@ -21,7 +21,7 @@ class SystemBuilder(BaseBuilder):
         super().__init__(token=token, factory=factory)
         # 设置token到API模块 - 使用全局token
         if token:
-            pytest_api_mock.set_token(token)
+            bdd_api_mock.set_token(token)
 
     def build(self, **kwargs) -> Dict[str, Any]:
         """
@@ -44,7 +44,7 @@ class SystemBuilder(BaseBuilder):
         健康检查
         @return: 健康状态
         """
-        result = pytest_api_mock.system.health_check()
+        result = bdd_api_mock.system.health_check()
         if result.get("code") == 200:
             return result.get("data")
         return None
@@ -54,7 +54,7 @@ class SystemBuilder(BaseBuilder):
         获取服务器信息
         @return: 服务器信息
         """
-        result = pytest_api_mock.system.get_server_info()
+        result = bdd_api_mock.system.get_server_info()
         if result.get("code") == 200:
             return result.get("data")
         return None

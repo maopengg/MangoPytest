@@ -7,7 +7,7 @@ from typing import Any, Generator
 
 import pytest
 
-from auto_tests.pytest_api_mock.data_factory.builders.ceo_approval import CEOApprovalBuilder
+from auto_tests.bdd_api_mock.data_factory.builders.ceo_approval import CEOApprovalBuilder
 
 
 @pytest.fixture

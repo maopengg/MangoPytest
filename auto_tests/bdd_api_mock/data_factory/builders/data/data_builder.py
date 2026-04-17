@@ -6,7 +6,7 @@
 import uuid
 from typing import Dict, Any
 
-from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
+from auto_tests.bdd_api_mock.api_manager import bdd_api_mock
 from ...registry import register_builder
 
 
@@ -39,8 +39,8 @@ class DataBuilder:
         """
         data = self.build(name, value)
 
-        pytest_api_mock.data.set_token(self.token)
-        result = pytest_api_mock.data.submit_data(**data)
+        bdd_api_mock.data.set_token(self.token)
+        result = bdd_api_mock.data.submit_data(**data)
         if result.get("code") == 200:
             created_data = result.get("data")
             if created_data:

@@ -14,7 +14,7 @@
 - 智能工厂方法
 
 使用示例：
-    from auto_tests.pytest_api_mock.data_factory.state_machine import StateMachine, State
+    from auto_tests.bdd_api_mock.data_factory.state_machine import StateMachine, State
 
     # 定义状态机
     class UserStateMachine(StateMachine):

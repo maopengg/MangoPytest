@@ -117,7 +117,7 @@ raise ApiError(*ERROR_MSG_0400, "请求超时")
 - `ui_model.py` - UI 相关模型
 - `tools_model.py` - 工具相关模型
 - `other_model.py` - 其他模型
-- `demo_model.py` - demo_project 专用模型（待拆分）
+- `demo_model.py` - pytest_api_mock 专用模型（待拆分）
 
 **导出规则**:
 ```python
@@ -138,7 +138,7 @@ from core.models. import ApiDataModel, RequestModel, ResponseModel
 - `api_enum.py` - API 相关枚举 (MethodEnum, ClientEnum, IsSchemaEnum)
 - `ui_enum.py` - UI 相关枚举
 - `tools_enum.py` - 工具相关枚举
-- `demo_enum.py` - demo_project 专用枚举（待拆分）
+- `demo_enum.py` - pytest_api_mock 专用枚举（待拆分）
 
 **导出规则**:
 ```python
@@ -250,7 +250,7 @@ from core.models.api_model import ApiDataModel
 
 **业务代码应该**:
 - ✅ 使用现有的基类、装饰器、模型、枚举、异常
-- ✅ 在 `auto_tests/demo_project/` 中实现业务逻辑
+- ✅ 在 `auto_tests/pytest_api_mock/` 中实现业务逻辑
 - ✅ 通过继承和组合使用现有组件
 
 **业务代码不应该**:
@@ -286,7 +286,7 @@ ERROR_MSG_0401 = (401, 'API 认证失败：{}')
 ## 总结
 
 1. **核心模块** (`core/`) 只存放**全局通用**的组件
-2. **业务代码** (`auto_tests/demo_project/`) 只使用现有组件，不创建新组件
+2. **业务代码** (`auto_tests/pytest_api_mock/`) 只使用现有组件，不创建新组件
 3. **统一导入** 从模块的 `__init__.py` 导入，不从具体文件导入
 4. **异常处理** 使用现有的 7 个异常类 + `core/exceptions/error_msg.py` 中的错误消息
 5. **新增功能** 先检查是否可以使用现有组件，确实需要再创建

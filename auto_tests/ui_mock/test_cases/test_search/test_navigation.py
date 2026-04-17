@@ -6,9 +6,9 @@
 
 import allure
 
-from auto_tests.ui_mango_mock import base_data_model
-from auto_tests.ui_mango_mock.abstract.home_page import HomePage
-from auto_tests.ui_mango_mock.abstract.navigation_page import NavigationPage
+from auto_tests.ui_mock import base_data_model
+from auto_tests.ui_mock.abstract.home_page import HomePage
+from auto_tests.ui_mock.abstract.navigation_page import NavigationPage
 from core.models.ui_model import UiDataModel
 from core.decorators.ui import case_data
 from core.utils.obtain_test_data  import ObtainTestData

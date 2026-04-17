@@ -5,7 +5,7 @@
 # @Author : 毛鹏
 import pytest
 
-from auto_tests.pytest_api_mock.data_factory.scenarios import (
+from auto_tests.bdd_api_mock.data_factory.scenarios import (
     FullApprovalWorkflowScenario,
     RejectionWorkflowScenario,
     CreateReimbursementScenario,
@@ -231,7 +231,7 @@ class ApprovalScenarios:
     ) -> dict:
         """创建待部门审批状态的工作流"""
         import uuid
-        from auto_tests.pytest_api_mock.data_factory.scenarios import (
+        from auto_tests.bdd_api_mock.data_factory.scenarios import (
             CreateReimbursementScenario,
         )
 
@@ -257,16 +257,16 @@ class ApprovalScenarios:
     ) -> dict:
         """创建待财务审批状态的工作流"""
         import uuid
-        from auto_tests.pytest_api_mock.data_factory.scenarios import (
+        from auto_tests.bdd_api_mock.data_factory.scenarios import (
             CreateReimbursementScenario,
         )
-        from auto_tests.pytest_api_mock.data_factory.entities.reimbursement import (
+        from auto_tests.bdd_api_mock.data_factory.entities.reimbursement import (
             ReimbursementEntity,
         )
-        from auto_tests.pytest_api_mock.data_factory.entities.dept_approval import (
+        from auto_tests.bdd_api_mock.data_factory.entities.dept_approval import (
             DeptApprovalEntity,
         )
-        from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
+        from auto_tests.bdd_api_mock.api_manager import bdd_api_mock
 
         reason = reason or f"待财务审批测试 - {uuid.uuid4().hex[:6]}"
 
@@ -283,11 +283,11 @@ class ApprovalScenarios:
 
         # 设置token
         if self._full_approval.token:
-            pytest_api_mock.dept_approval.set_token(self._full_approval.token)
-            pytest_api_mock.reimbursement.set_token(self._full_approval.token)
+            bdd_api_mock.dept_approval.set_token(self._full_approval.token)
+            bdd_api_mock.reimbursement.set_token(self._full_approval.token)
 
         # 创建部门审批
-        dept_response = pytest_api_mock.dept_approval.create_dept_approval(
+        dept_response = bdd_api_mock.dept_approval.create_dept_approval(
             reimbursement_id=reimbursement.id,
             approver_id=3,
             status="approved",
@@ -303,7 +303,7 @@ class ApprovalScenarios:
         dept_entity = DeptApprovalEntity.from_api_response(dept_response["data"])
 
         # 重新获取报销申请状态
-        reimbursement_response = pytest_api_mock.reimbursement.get_reimbursement_by_id(
+        reimbursement_response = bdd_api_mock.reimbursement.get_reimbursement_by_id(
             reimbursement.id
         )
         if reimbursement_response.get("code") == 200:
@@ -322,19 +322,19 @@ class ApprovalScenarios:
     ) -> dict:
         """创建待CEO审批状态的工作流"""
         import uuid
-        from auto_tests.pytest_api_mock.data_factory.scenarios import (
+        from auto_tests.bdd_api_mock.data_factory.scenarios import (
             CreateReimbursementScenario,
         )
-        from auto_tests.pytest_api_mock.data_factory.entities.reimbursement import (
+        from auto_tests.bdd_api_mock.data_factory.entities.reimbursement import (
             ReimbursementEntity,
         )
-        from auto_tests.pytest_api_mock.data_factory.entities.dept_approval import (
+        from auto_tests.bdd_api_mock.data_factory.entities.dept_approval import (
             DeptApprovalEntity,
         )
-        from auto_tests.pytest_api_mock.data_factory.entities.finance_approval import (
+        from auto_tests.bdd_api_mock.data_factory.entities.finance_approval import (
             FinanceApprovalEntity,
         )
-        from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
+        from auto_tests.bdd_api_mock.api_manager import bdd_api_mock
 
         reason = reason or f"待CEO审批测试 - {uuid.uuid4().hex[:6]}"
 
@@ -351,12 +351,12 @@ class ApprovalScenarios:
 
         # 设置token
         if self._full_approval.token:
-            pytest_api_mock.dept_approval.set_token(self._full_approval.token)
-            pytest_api_mock.finance_approval.set_token(self._full_approval.token)
-            pytest_api_mock.reimbursement.set_token(self._full_approval.token)
+            bdd_api_mock.dept_approval.set_token(self._full_approval.token)
+            bdd_api_mock.finance_approval.set_token(self._full_approval.token)
+            bdd_api_mock.reimbursement.set_token(self._full_approval.token)
 
         # 创建部门审批
-        dept_response = pytest_api_mock.dept_approval.create_dept_approval(
+        dept_response = bdd_api_mock.dept_approval.create_dept_approval(
             reimbursement_id=reimbursement.id,
             approver_id=3,
             status="approved",
@@ -372,7 +372,7 @@ class ApprovalScenarios:
         dept_entity = DeptApprovalEntity.from_api_response(dept_response["data"])
 
         # 创建财务审批
-        finance_response = pytest_api_mock.finance_approval.create_finance_approval(
+        finance_response = bdd_api_mock.finance_approval.create_finance_approval(
             reimbursement_id=reimbursement.id,
             dept_approval_id=dept_entity.id,
             approver_id=4,
@@ -391,7 +391,7 @@ class ApprovalScenarios:
         )
 
         # 重新获取报销申请状态
-        reimbursement_response = pytest_api_mock.reimbursement.get_reimbursement_by_id(
+        reimbursement_response = bdd_api_mock.reimbursement.get_reimbursement_by_id(
             reimbursement.id
         )
         if reimbursement_response.get("code") == 200:

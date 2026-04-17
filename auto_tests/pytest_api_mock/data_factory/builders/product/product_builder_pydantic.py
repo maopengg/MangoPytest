@@ -11,8 +11,8 @@
 
 from typing import Any, Dict, List, Optional
 
-from auto_tests.demo_project.api_manager import demo_project
-from auto_tests.demo_project.data_factory.entities.product_pydantic import ProductEntity
+from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
+from auto_tests.pytest_api_mock.data_factory.entities.product_pydantic import ProductEntity
 from core.base import PydanticBuilder
 
 
@@ -50,7 +50,7 @@ class ProductBuilder(PydanticBuilder[ProductEntity]):
         @return: 创建后的 ProductEntity（包含 id 等响应字段）
         """
         payload = entity.to_api_payload()  # L3 提供
-        result = demo_project.product.create_product(**payload)
+        result = pytest_api_mock.product.create_product(**payload)
         
         if result.get("code") == 200:
             # 更新 entity 的响应字段
@@ -67,7 +67,7 @@ class ProductBuilder(PydanticBuilder[ProductEntity]):
         @param product_id: 产品 ID
         @return: ProductEntity 或 None
         """
-        result = demo_project.product.get_product(product_id)
+        result = pytest_api_mock.product.get_product(product_id)
         
         if result.get("code") == 200:
             return ProductEntity.from_response(result["data"])
@@ -80,7 +80,7 @@ class ProductBuilder(PydanticBuilder[ProductEntity]):
         
         @return: ProductEntity 列表
         """
-        result = demo_project.product.get_products()
+        result = pytest_api_mock.product.get_products()
         
         if result.get("code") == 200:
             return [ProductEntity.from_response(data) for data in result.get("data", [])]
@@ -98,7 +98,7 @@ class ProductBuilder(PydanticBuilder[ProductEntity]):
             raise ValueError("Entity must have id to update")
         
         payload = entity.to_api_payload()
-        result = demo_project.product.update_product(entity.id, **payload)
+        result = pytest_api_mock.product.update_product(entity.id, **payload)
         
         if result.get("code") == 200:
             entity.update_from_response(result["data"])
@@ -113,4 +113,4 @@ class ProductBuilder(PydanticBuilder[ProductEntity]):
         @param entity: 要删除的产品实体
         """
         if entity.id:
-            demo_project.product.delete_product(entity.id)
+            pytest_api_mock.product.delete_product(entity.id)

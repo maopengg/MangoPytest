@@ -14,7 +14,7 @@
 4. 维护实体间关系
 
 使用示例：
-    from auto_tests.demo_project.data_factory.entities import UserEntity
+    from auto_tests.pytest_api_mock.data_factory.entities import UserEntity
     
     user = UserEntity(id=1, username="test", email="test@example.com")
     user.validate()  # 验证数据有效性

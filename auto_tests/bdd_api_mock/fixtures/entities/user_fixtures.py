@@ -21,7 +21,7 @@ User Entity Fixtures 模块
 
 import pytest
 
-from auto_tests.pytest_api_mock.data_factory.entities import UserEntity
+from auto_tests.bdd_api_mock.data_factory.entities import UserEntity
 
 
 @pytest.fixture

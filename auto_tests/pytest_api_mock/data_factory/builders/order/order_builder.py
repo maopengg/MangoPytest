@@ -5,7 +5,7 @@
 # @Author : 毛鹏
 from typing import Dict, Any, List
 
-from auto_tests.demo_project.api_manager import demo_project
+from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
 from core.base import BaseBuilder
 from ...registry import register_builder
 
@@ -21,7 +21,7 @@ class OrderBuilder(BaseBuilder):
         super().__init__(token=token, factory=factory)
         # 设置token到API模块
         if token:
-            demo_project.order.set_token(token)
+            pytest_api_mock.order.set_token(token)
         self._created = []
 
     def build(self, product_id: int = None, quantity: int = None,
@@ -44,7 +44,7 @@ class OrderBuilder(BaseBuilder):
         """
         order_data = self.build(product_id, quantity, user_id)
 
-        result = demo_project.order.create_order(
+        result = pytest_api_mock.order.create_order(
             product_id=order_data["product_id"],
             quantity=order_data["quantity"],
             user_id=order_data["user_id"]
@@ -98,7 +98,7 @@ class OrderBuilder(BaseBuilder):
         获取所有订单
         @return: 订单列表
         """
-        result = demo_project.order.get_all_orders()
+        result = pytest_api_mock.order.get_all_orders()
         if result.get("code") == 200:
             return result["data"]
         return []
@@ -109,7 +109,7 @@ class OrderBuilder(BaseBuilder):
         @param order_id: 订单ID
         @return: 订单数据
         """
-        result = demo_project.order.get_order_by_id(order_id)
+        result = pytest_api_mock.order.get_order_by_id(order_id)
         if result.get("code") == 200:
             return result["data"]
         return None
@@ -121,7 +121,7 @@ class OrderBuilder(BaseBuilder):
         @param order_data: 订单数据
         @return: 更新后的订单数据
         """
-        result = demo_project.order.update_order_info(
+        result = pytest_api_mock.order.update_order_info(
             order_id=order_id,
             **order_data
         )
@@ -135,7 +135,7 @@ class OrderBuilder(BaseBuilder):
         @param order_id: 订单ID
         @return: 是否删除成功
         """
-        result = demo_project.order.delete_order(order_id)
+        result = pytest_api_mock.order.delete_order(order_id)
         if result.get("code") == 200:
             return True
         return False

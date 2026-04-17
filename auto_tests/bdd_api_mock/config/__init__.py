@@ -8,7 +8,7 @@
 配置中心
 
 使用方式:
-    from auto_tests.pytest_api_mock.config import settings
+    from auto_tests.bdd_api_mock.config import settings
 
     # 当前环境
     env = settings.ENV.value

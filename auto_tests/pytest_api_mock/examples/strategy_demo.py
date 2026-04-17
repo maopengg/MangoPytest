@@ -17,16 +17,16 @@ import sys
 
 sys.path.insert(0, r"d:\code\MangoPytest")
 
-from auto_tests.demo_project.data_factory.strategies import (
+from auto_tests.pytest_api_mock.data_factory.strategies import (
     APIStrategy,
     MockStrategy,
     DBStrategy,
 )
-from auto_tests.demo_project.data_factory.builders import (
+from auto_tests.pytest_api_mock.data_factory.builders import (
     BuilderContext,
     ReimbursementBuilder,
 )
-from auto_tests.demo_project.data_factory.entities import ReimbursementEntity
+from auto_tests.pytest_api_mock.data_factory.entities import ReimbursementEntity
 
 
 def demo_api_strategy():

@@ -16,7 +16,7 @@ import uuid
 import allure
 import pytest
 
-from auto_tests.pytest_api_mock.data_factory.entities import UserEntity
+from auto_tests.bdd_api_mock.data_factory.entities import UserEntity
 from core.base.layering_base import UnitTest, IntegrationTest
 
 
@@ -37,7 +37,7 @@ class TestGetUsers(UnitTest):
     @allure.title("获取所有用户 - 使用Fixture")
     def test_get_all_users_with_fixture(self, test_token):
         """测试获取所有用户列表 - 使用test_token fixture"""
-        from auto_tests.pytest_api_mock.data_factory.builders.user import UserBuilder
+        from auto_tests.bdd_api_mock.data_factory.builders.user import UserBuilder
 
         user_builder = UserBuilder(token=test_token)
         users = user_builder.get_all()
@@ -56,7 +56,7 @@ class TestGetUsers(UnitTest):
     @allure.title("根据ID获取用户 - 使用test_user fixture")
     def test_get_user_by_id_with_fixture(self, test_user, test_token):
         """测试根据ID获取用户 - 使用test_user fixture"""
-        from auto_tests.pytest_api_mock.data_factory.builders.user import UserBuilder
+        from auto_tests.bdd_api_mock.data_factory.builders.user import UserBuilder
 
         user_builder = UserBuilder(token=test_token)
         user = user_builder.get_by_id(_get_attr(test_user, "id"))
@@ -68,7 +68,7 @@ class TestGetUsers(UnitTest):
     @allure.title("获取不存在的用户")
     def test_get_nonexistent_user(self, test_token):
         """测试获取不存在的用户"""
-        from auto_tests.pytest_api_mock.data_factory.builders.user import UserBuilder
+        from auto_tests.bdd_api_mock.data_factory.builders.user import UserBuilder
 
         user_builder = UserBuilder(token=test_token)
         user = user_builder.get_by_id(99999)
@@ -86,7 +86,7 @@ class TestGetUsers(UnitTest):
         """测试获取不同角色的用户"""
         user = request.getfixturevalue(user_fixture)
 
-        from auto_tests.pytest_api_mock.data_factory.builders.user import UserBuilder
+        from auto_tests.bdd_api_mock.data_factory.builders.user import UserBuilder
         user_builder = UserBuilder(token=test_token)
 
         fetched_user = user_builder.get_by_id(_get_attr(user, "id"))
@@ -102,7 +102,7 @@ class TestCreateUser(UnitTest):
     @allure.title("正常创建用户 - 使用test_context")
     def test_create_user_success(self, test_token, test_context):
         """测试正常创建用户 - 使用context追踪"""
-        from auto_tests.pytest_api_mock.data_factory.builders.auth import AuthBuilder
+        from auto_tests.bdd_api_mock.data_factory.builders.auth import AuthBuilder
 
         auth_builder = AuthBuilder(token=test_token)
 
@@ -116,7 +116,7 @@ class TestCreateUser(UnitTest):
         test_context.set("created_user", user)
 
         # 验证可以获取
-        from auto_tests.pytest_api_mock.data_factory.builders.user import UserBuilder
+        from auto_tests.bdd_api_mock.data_factory.builders.user import UserBuilder
         user_builder = UserBuilder(token=test_token)
         fetched = user_builder.get_by_id(_get_attr(user, "id"))
 
@@ -126,11 +126,11 @@ class TestCreateUser(UnitTest):
     @allure.title("创建指定用户名的用户")
     def test_create_user_with_username(self, test_token, test_context):
         """测试创建指定用户名的用户"""
-        from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
+        from auto_tests.bdd_api_mock.api_manager import bdd_api_mock
 
         username = f"newuser_{uuid.uuid4().hex[:8]}"
 
-        result = pytest_api_mock.auth.api_register(
+        result = bdd_api_mock.auth.api_register(
             username=username,
             email=f"{username}@example.com",
             full_name="New Test User",
@@ -156,7 +156,7 @@ class TestCreateUser(UnitTest):
     ])
     def test_create_user_variants(self, test_token, test_context, user_data):
         """参数化测试创建不同角色的用户"""
-        from auto_tests.pytest_api_mock.data_factory.builders.auth import AuthBuilder
+        from auto_tests.bdd_api_mock.data_factory.builders.auth import AuthBuilder
 
         auth_builder = AuthBuilder(token=test_token)
         user = auth_builder.register()
@@ -175,8 +175,8 @@ class TestUpdateUser(UnitTest):
     @allure.title("正常更新用户信息 - 使用Entity")
     def test_update_user_success(self, test_token, test_context):
         """测试正常更新用户信息 - 使用UserEntity"""
-        from auto_tests.pytest_api_mock.data_factory.builders.auth import AuthBuilder
-        from auto_tests.pytest_api_mock.data_factory.builders.user import UserBuilder
+        from auto_tests.bdd_api_mock.data_factory.builders.auth import AuthBuilder
+        from auto_tests.bdd_api_mock.data_factory.builders.user import UserBuilder
 
         # 先创建一个新用户
         auth_builder = AuthBuilder(token=test_token)
@@ -204,9 +204,9 @@ class TestUpdateUser(UnitTest):
     @allure.title("更新用户邮箱")
     def test_update_user_email(self, test_token, test_context):
         """测试更新用户邮箱"""
-        from auto_tests.pytest_api_mock.data_factory.builders.auth import AuthBuilder
-        from auto_tests.pytest_api_mock.data_factory.builders.user import UserBuilder
-        from auto_tests.pytest_api_mock.data_factory.entities import UserEntity
+        from auto_tests.bdd_api_mock.data_factory.builders.auth import AuthBuilder
+        from auto_tests.bdd_api_mock.data_factory.builders.user import UserBuilder
+        from auto_tests.bdd_api_mock.data_factory.entities import UserEntity
 
         auth_builder = AuthBuilder(token=test_token)
         user = auth_builder.register()
@@ -231,8 +231,8 @@ class TestUpdateUser(UnitTest):
     @allure.title("更新不存在的用户")
     def test_update_nonexistent_user(self, test_token):
         """测试更新不存在的用户"""
-        from auto_tests.pytest_api_mock.data_factory.builders.user import UserBuilder
-        from auto_tests.pytest_api_mock.data_factory.entities import UserEntity
+        from auto_tests.bdd_api_mock.data_factory.builders.user import UserBuilder
+        from auto_tests.bdd_api_mock.data_factory.entities import UserEntity
 
         user_builder = UserBuilder(token=test_token)
 
@@ -256,8 +256,8 @@ class TestDeleteUser(UnitTest):
     @allure.title("正常删除用户 - 使用test_context")
     def test_delete_user_success(self, test_token, test_context):
         """测试正常删除用户 - 软删除验证"""
-        from auto_tests.pytest_api_mock.data_factory.builders.auth import AuthBuilder
-        from auto_tests.pytest_api_mock.data_factory.builders.user import UserBuilder
+        from auto_tests.bdd_api_mock.data_factory.builders.auth import AuthBuilder
+        from auto_tests.bdd_api_mock.data_factory.builders.user import UserBuilder
 
         # 先创建一个新用户
         auth_builder = AuthBuilder(token=test_token)
@@ -280,7 +280,7 @@ class TestDeleteUser(UnitTest):
     @allure.title("删除不存在的用户")
     def test_delete_nonexistent_user(self, test_token):
         """测试删除不存在的用户"""
-        from auto_tests.pytest_api_mock.data_factory.builders.user import UserBuilder
+        from auto_tests.bdd_api_mock.data_factory.builders.user import UserBuilder
 
         user_builder = UserBuilder(token=test_token)
         result = user_builder.delete(user_id=99999)
@@ -290,8 +290,8 @@ class TestDeleteUser(UnitTest):
     @allure.title("批量删除用户")
     def test_delete_multiple_users(self, test_token, test_context):
         """测试批量删除用户"""
-        from auto_tests.pytest_api_mock.data_factory.builders.auth import AuthBuilder
-        from auto_tests.pytest_api_mock.data_factory.builders.user import UserBuilder
+        from auto_tests.bdd_api_mock.data_factory.builders.auth import AuthBuilder
+        from auto_tests.bdd_api_mock.data_factory.builders.user import UserBuilder
 
         auth_builder = AuthBuilder(token=test_token)
         user_builder = UserBuilder(token=test_token)
@@ -344,7 +344,7 @@ class TestUserRoleManagement(IntegrationTest):
     @allure.title("使用不同角色用户访问")
     def test_access_with_different_roles(self, test_token):
         """测试使用不同角色用户访问资源"""
-        from auto_tests.pytest_api_mock.data_factory.builders.user import UserBuilder
+        from auto_tests.bdd_api_mock.data_factory.builders.user import UserBuilder
 
         user_builder = UserBuilder(token=test_token)
 
@@ -371,8 +371,8 @@ class TestUserStatusManagement(UnitTest):
     @allure.title("验证活跃用户")
     def test_active_user(self, test_token, test_context):
         """测试活跃用户 - 通过数据库查询验证状态"""
-        from auto_tests.pytest_api_mock.data_factory.builders.auth import AuthBuilder
-        from auto_tests.pytest_api_mock.data_factory.builders.user import UserBuilder
+        from auto_tests.bdd_api_mock.data_factory.builders.auth import AuthBuilder
+        from auto_tests.bdd_api_mock.data_factory.builders.user import UserBuilder
 
         auth_builder = AuthBuilder(token=test_token)
         user = auth_builder.register()

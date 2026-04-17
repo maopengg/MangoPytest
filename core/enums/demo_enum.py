@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description: demo_project 项目专用枚举
+# @Description: pytest_api_mock 项目专用枚举
 # @Time   : 2026-04-04
 # @Author : 毛鹏
 from enum import Enum, auto

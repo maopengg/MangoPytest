@@ -11,8 +11,8 @@
 
 from typing import Any, Dict, Optional
 
-from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
-from auto_tests.pytest_api_mock.data_factory.entities.user_pydantic import UserEntity
+from auto_tests.bdd_api_mock.api_manager import bdd_api_mock
+from auto_tests.bdd_api_mock.data_factory.entities.user_pydantic import UserEntity
 from core.base import PydanticBuilder
 
 
@@ -51,7 +51,7 @@ class AuthBuilder(PydanticBuilder[UserEntity]):
         @return: token 或 None
         """
         payload = entity.to_login_payload()  # L3 提供
-        result = pytest_api_mock.auth.api_login(
+        result = bdd_api_mock.auth.api_login(
             username=payload["username"], password=payload["password"]
         )
 
@@ -75,7 +75,7 @@ class AuthBuilder(PydanticBuilder[UserEntity]):
         @return: 注册后的 UserEntity（包含 id 等响应字段）
         """
         payload = entity.to_api_payload()  # L3 提供
-        result = pytest_api_mock.auth.api_register(**payload)
+        result = bdd_api_mock.auth.api_register(**payload)
 
         if result.get("code") == 200:
             # 更新 entity 的响应字段（映射 user_id -> id）
@@ -109,5 +109,5 @@ class AuthBuilder(PydanticBuilder[UserEntity]):
         if entity.id:
             # 确保设置了 token
             if self.token:
-                pytest_api_mock.auth.set_token(self.token)
-            pytest_api_mock.user.delete_user(entity.id)
+                bdd_api_mock.auth.set_token(self.token)
+            bdd_api_mock.user.delete_user(entity.id)

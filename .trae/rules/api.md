@@ -85,7 +85,7 @@ class OrderEntity(BaseModel):
 class OrderBuilder:
     def create_order(self, entity: OrderEntity) -> OrderEntity:
         payload = entity.to_api_payload()
-        result = demo_project.order.create_order(payload)
+        result = pytest_api_mock.order.create_order(payload)
         return entity
 
 # L1: 只接收 Dict，不关心 Entity

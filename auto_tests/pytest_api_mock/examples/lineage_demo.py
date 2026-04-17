@@ -23,7 +23,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 # 获取当前文件所在目录
 current_dir = os.path.dirname(os.path.abspath(__file__))
 # 计算 lineage 目录路径 - 使用绝对路径
-# 当前目录是 examples，需要向上两级到 demo_project，然后进入 data_factory/lineage
+# 当前目录是 examples，需要向上两级到 pytest_api_mock，然后进入 data_factory/lineage
 lineage_dir = os.path.abspath(os.path.join(current_dir, '..', 'data_factory', 'lineage'))
 
 # 将 lineage 目录添加到 Python 路径

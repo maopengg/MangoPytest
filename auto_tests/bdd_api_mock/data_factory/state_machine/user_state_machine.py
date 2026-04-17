@@ -16,7 +16,7 @@
     inactive → active: 用户重新激活
 
 使用示例：
-    from auto_tests.pytest_api_mock.data_factory.state_machine import UserStateMachine
+    from auto_tests.bdd_api_mock.data_factory.state_machine import UserStateMachine
     
     # 创建用户（初始状态为 active）
     user = UserEntity(username="test", password="123456")

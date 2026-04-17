@@ -19,18 +19,18 @@ Pydantic 新架构 Fixtures
 
 import pytest
 
-from auto_tests.pytest_api_mock.data_factory.entities import (
+from auto_tests.bdd_api_mock.data_factory.entities import (
     UserEntityPydantic,
     ProductEntity,
     OrderEntity,
 )
-from auto_tests.pytest_api_mock.data_factory.builders.auth.auth_builder_pydantic import (
+from auto_tests.bdd_api_mock.data_factory.builders.auth.auth_builder_pydantic import (
     AuthBuilder,
 )
-from auto_tests.pytest_api_mock.data_factory.builders.product.product_builder_pydantic import (
+from auto_tests.bdd_api_mock.data_factory.builders.product.product_builder_pydantic import (
     ProductBuilder,
 )
-from auto_tests.pytest_api_mock.data_factory.builders.order.order_builder_pydantic import (
+from auto_tests.bdd_api_mock.data_factory.builders.order.order_builder_pydantic import (
     OrderBuilder,
 )
 

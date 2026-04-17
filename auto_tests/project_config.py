@@ -13,13 +13,13 @@ class ProjectEnum(BaseEnum):
     MOCK_UI = 'MockUI服务'
     BAIDU = '百度'
     SQL = 'sql'
-    DEMO_PROJECT = 'demo_project'
+    PYTEST_API_MOCK = 'pytest_api_mock'
 
 
 auto_test_project_config = [
-    {'type': AutoTestTypeEnum.API, 'project_name': ProjectEnum.MOCK_API, 'dir_name': 'api_mango_mock'},
-    {'type': AutoTestTypeEnum.API, 'project_name': ProjectEnum.DEMO_PROJECT, 'dir_name': 'demo_project'},
-    {'type': AutoTestTypeEnum.UI, 'project_name': ProjectEnum.MOCK_UI, 'dir_name': 'ui_mango_mock'},
+    {'type': AutoTestTypeEnum.API, 'project_name': ProjectEnum.MOCK_API, 'dir_name': 'api_mock'},
+    {'type': AutoTestTypeEnum.API, 'project_name': ProjectEnum.PYTEST_API_MOCK, 'dir_name': 'pytest_api_mock'},
+    {'type': AutoTestTypeEnum.UI, 'project_name': ProjectEnum.MOCK_UI, 'dir_name': 'ui_mock'},
     {'type': AutoTestTypeEnum.UI, 'project_name': ProjectEnum.BAIDU, 'dir_name': 'ui_baidu'},
     {'type': AutoTestTypeEnum.OTHER, 'project_name': ProjectEnum.SQL, 'dir_name': 'sql_auto'},
 ]

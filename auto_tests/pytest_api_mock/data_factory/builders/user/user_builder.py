@@ -9,7 +9,7 @@ from typing import Optional, List
 from core.base import BaseBuilder
 from ...entities.user import UserEntity
 from ...registry import register_builder
-from ....api_manager import demo_project
+from ....api_manager import pytest_api_mock
 
 
 @register_builder("user")
@@ -37,7 +37,7 @@ class UserBuilder(BaseBuilder[UserEntity]):
         )
         # 设置token到API模块 - 使用全局token
         if token:
-            demo_project.set_token(token)
+            pytest_api_mock.set_token(token)
 
     def build(
         self,
@@ -80,7 +80,7 @@ class UserBuilder(BaseBuilder[UserEntity]):
         if not entity.validate():
             return None
 
-        result = demo_project.auth.api_register(
+        result = pytest_api_mock.auth.api_register(
             username=entity.username,
             email=entity.email,
             full_name=entity.full_name,
@@ -102,7 +102,7 @@ class UserBuilder(BaseBuilder[UserEntity]):
         @param user_id: 用户ID
         @return: 用户实体
         """
-        result = demo_project.user.get_user_by_id(user_id)
+        result = pytest_api_mock.user.get_user_by_id(user_id)
 
         if result.get("code") == 200:
             data = result["data"]
@@ -117,7 +117,7 @@ class UserBuilder(BaseBuilder[UserEntity]):
         @param entity: 实体实例
         @return: 更新后的实体
         """
-        result = demo_project.user.update_user(
+        result = pytest_api_mock.user.update_user(
             user_id=entity.id, **entity.to_api_payload()
         )
 
@@ -139,7 +139,7 @@ class UserBuilder(BaseBuilder[UserEntity]):
         if delete_id is None:
             return False
 
-        result = demo_project.user.delete_user(delete_id)
+        result = pytest_api_mock.user.delete_user(delete_id)
 
         if result.get("code") == 200:
             if entity:
@@ -156,8 +156,8 @@ class UserBuilder(BaseBuilder[UserEntity]):
         """
         # 确保设置了 token - 使用全局token
         if self.token:
-            demo_project.set_token(self.token)
-        result = demo_project.user.get_users()
+            pytest_api_mock.set_token(self.token)
+        result = pytest_api_mock.user.get_users()
 
         if result.get("code") == 200:
             data_list = result["data"]

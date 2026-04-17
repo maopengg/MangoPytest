@@ -34,7 +34,7 @@ class BaseEnum(Enum):
         return {v: k for k, v in cls.obj().items()}
 
 
-# 导出 demo_project 专用枚举（方便使用方导入）
+# 导出 pytest_api_mock 专用枚举（方便使用方导入）
 from core.enums.demo_enum import (
     # 配置相关
     CreateStrategy,
@@ -53,7 +53,7 @@ from core.enums.demo_enum import (
 
 __all__ = [
     'BaseEnum',
-    # demo_project 枚举
+    # pytest_api_mock 枚举
     'CreateStrategy', 'Environment',
     'EntityStatus', 'CreateStrategyAuto', 'DependencyLevel',
     'LineageNodeType', 'LineageRelation', 'ImpactLevel',

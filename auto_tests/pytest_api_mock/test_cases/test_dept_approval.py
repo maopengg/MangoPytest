@@ -6,7 +6,7 @@
 
 import allure
 
-from auto_tests.demo_project.api_manager import demo_project
+from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
 from core.base.layering_base import UnitTest, IntegrationTest
 
 
@@ -30,8 +30,8 @@ class TestDeptApprovalAPI(IntegrationTest):
             else pending_reimbursement["id"]
         )
 
-        demo_project.dept_approval.set_token(authenticated_client.token)
-        result = demo_project.dept_approval.create_dept_approval(
+        pytest_api_mock.dept_approval.set_token(authenticated_client.token)
+        result = pytest_api_mock.dept_approval.create_dept_approval(
             reimbursement_id=reimbursement_id,
             approver_id=dept_manager_id,
             status="approved",
@@ -49,8 +49,8 @@ class TestDeptApprovalAPI(IntegrationTest):
         """测试创建部门审批 - 报销申请不存在"""
         # 使用全局token设置
         if hasattr(api_client, "token") and api_client.token:
-            demo_project.dept_approval.set_token(api_client.token)
-        result = demo_project.dept_approval.create_dept_approval(
+            pytest_api_mock.dept_approval.set_token(api_client.token)
+        result = pytest_api_mock.dept_approval.create_dept_approval(
             reimbursement_id=99999,
             approver_id=dept_manager_id,
             status="approved",
@@ -70,8 +70,8 @@ class TestDeptApprovalAPI(IntegrationTest):
         else:
             reimbursement_id = dept_approved_reimbursement["reimbursement"]["id"]
 
-        demo_project.dept_approval.set_token(api_client.token)
-        result = demo_project.dept_approval.create_dept_approval(
+        pytest_api_mock.dept_approval.set_token(api_client.token)
+        result = pytest_api_mock.dept_approval.create_dept_approval(
             reimbursement_id=reimbursement_id,
             approver_id=dept_manager_id,
             status="approved",
@@ -84,8 +84,8 @@ class TestDeptApprovalAPI(IntegrationTest):
     @allure.title("获取部门审批列表")
     def test_get_dept_approvals(self, api_client, dept_approved_reimbursement):
         """测试获取部门审批列表"""
-        demo_project.dept_approval.set_token(api_client.token)
-        result = demo_project.dept_approval.get_dept_approvals()
+        pytest_api_mock.dept_approval.set_token(api_client.token)
+        result = pytest_api_mock.dept_approval.get_dept_approvals()
 
         assert result is not None
         assert result["code"] == 200
@@ -100,8 +100,8 @@ class TestDeptApprovalAPI(IntegrationTest):
         else:
             reimbursement_id = dept_approved_reimbursement["reimbursement"]["id"]
 
-        demo_project.dept_approval.set_token(api_client.token)
-        result = demo_project.dept_approval.get_dept_approval_by_id(
+        pytest_api_mock.dept_approval.set_token(api_client.token)
+        result = pytest_api_mock.dept_approval.get_dept_approval_by_id(
             approval_id=reimbursement_id
         )
 

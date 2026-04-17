@@ -7,7 +7,7 @@ from typing import Any, Generator
 
 import pytest
 
-from auto_tests.demo_project.data_factory.builders.finance_approval import FinanceApprovalBuilder
+from auto_tests.pytest_api_mock.data_factory.builders.finance_approval import FinanceApprovalBuilder
 
 
 @pytest.fixture

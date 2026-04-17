@@ -7,7 +7,7 @@
 认证模块测试用例 - 使用新五层架构：
 - L3: Pydantic Entity (UserEntityPydantic)
 - L2: Pydantic Builder (AuthBuilderPydantic)
-- L1: API Manager (pytest_api_mock.auth)
+- L1: API Manager (bdd_api_mock.auth)
 - L5: 测试用例层 (TestAuthLogin)
 
 测试分层：
@@ -19,9 +19,9 @@
 import allure
 import pytest
 
-from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
-from auto_tests.pytest_api_mock.data_factory.entities import UserEntityPydantic
-from auto_tests.pytest_api_mock.data_factory.builders.auth.auth_builder_pydantic import (
+from auto_tests.bdd_api_mock.api_manager import bdd_api_mock
+from auto_tests.bdd_api_mock.data_factory.entities import UserEntityPydantic
+from auto_tests.bdd_api_mock.data_factory.builders.auth.auth_builder_pydantic import (
     AuthBuilder,
 )
 from core.base.layering_base import UnitTest

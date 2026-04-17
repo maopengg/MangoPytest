@@ -5,7 +5,7 @@
 # @Author : 毛鹏
 import pytest
 
-from auto_tests.pytest_api_mock.data_factory.scenarios import (
+from auto_tests.bdd_api_mock.data_factory.scenarios import (
     LoginScenario,
     RegisterAndLoginScenario,
 )

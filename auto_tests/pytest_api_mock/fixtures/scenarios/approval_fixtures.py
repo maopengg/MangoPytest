@@ -21,8 +21,8 @@ from typing import Generator
 
 import pytest
 
-from auto_tests.demo_project.data_factory.scenarios import FullApprovalScenario
-from auto_tests.demo_project.data_factory.scenarios.base_scenario import ScenarioResult
+from auto_tests.pytest_api_mock.data_factory.scenarios import FullApprovalScenario
+from auto_tests.pytest_api_mock.data_factory.scenarios.base_scenario import ScenarioResult
 
 
 @pytest.fixture

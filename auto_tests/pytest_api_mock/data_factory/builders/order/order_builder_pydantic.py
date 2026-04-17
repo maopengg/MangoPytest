@@ -11,8 +11,8 @@
 
 from typing import Any, Dict, List, Optional
 
-from auto_tests.demo_project.api_manager import demo_project
-from auto_tests.demo_project.data_factory.entities.order_pydantic import OrderEntity
+from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
+from auto_tests.pytest_api_mock.data_factory.entities.order_pydantic import OrderEntity
 from core.base import PydanticBuilder
 
 
@@ -50,7 +50,7 @@ class OrderBuilder(PydanticBuilder[OrderEntity]):
         @return: 创建后的 OrderEntity（包含 id 等响应字段）
         """
         payload = entity.to_api_payload()  # L3 提供
-        result = demo_project.order.create_order(**payload)
+        result = pytest_api_mock.order.create_order(**payload)
         
         if result.get("code") == 200:
             # 更新 entity 的响应字段
@@ -67,7 +67,7 @@ class OrderBuilder(PydanticBuilder[OrderEntity]):
         @param order_id: 订单 ID
         @return: OrderEntity 或 None
         """
-        result = demo_project.order.get_order(order_id)
+        result = pytest_api_mock.order.get_order(order_id)
         
         if result.get("code") == 200:
             return OrderEntity.from_response(result["data"])
@@ -81,7 +81,7 @@ class OrderBuilder(PydanticBuilder[OrderEntity]):
         @param user_id: 用户 ID
         @return: OrderEntity 列表
         """
-        result = demo_project.order.get_orders_by_user(user_id)
+        result = pytest_api_mock.order.get_orders_by_user(user_id)
         
         if result.get("code") == 200:
             return [OrderEntity.from_response(data) for data in result.get("data", [])]
@@ -98,7 +98,7 @@ class OrderBuilder(PydanticBuilder[OrderEntity]):
         if entity.id is None:
             raise ValueError("Entity must have id to pay")
         
-        result = demo_project.order.pay_order(entity.id)
+        result = pytest_api_mock.order.pay_order(entity.id)
         
         if result.get("code") == 200:
             entity.update_from_response(result["data"])
@@ -116,7 +116,7 @@ class OrderBuilder(PydanticBuilder[OrderEntity]):
         if entity.id is None:
             raise ValueError("Entity must have id to cancel")
         
-        result = demo_project.order.cancel_order(entity.id)
+        result = pytest_api_mock.order.cancel_order(entity.id)
         
         if result.get("code") == 200:
             entity.update_from_response(result["data"])
@@ -131,4 +131,4 @@ class OrderBuilder(PydanticBuilder[OrderEntity]):
         @param entity: 要删除的订单实体
         """
         if entity.id:
-            demo_project.order.delete_order(entity.id)
+            pytest_api_mock.order.delete_order(entity.id)

@@ -7,7 +7,7 @@ import hashlib
 import uuid
 from typing import Dict, Any, List, Optional
 
-from auto_tests.demo_project.api_manager import demo_project
+from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
 from core.models.api_model import ApiDataModel, RequestModel
 
 
@@ -50,7 +50,7 @@ class DataFactory:
             method="POST",
             json_data={"username": username, "password": password}
         )
-        result = demo_project.auth.api_login(data)
+        result = pytest_api_mock.auth.api_login(data)
         if result.response and result.response.json().get("code") == 200:
             self.token = result.response.json()["data"]["token"]
             return self.token
@@ -79,7 +79,7 @@ class DataFactory:
             json_data=user_data
         )
 
-        result = demo_project.auth.api_register(api_data)
+        result = pytest_api_mock.auth.api_register(api_data)
         if result.response and result.response.json().get("code") == 200:
             created_user = result.response.json()["data"]
             self.created_data['users'].append(created_user)
@@ -100,7 +100,7 @@ class DataFactory:
             headers={"X-Token": self.token}
         )
 
-        result = demo_project.user.get_all_users(api_data)
+        result = pytest_api_mock.user.get_all_users(api_data)
         if result.response:
             return result.response.json().get("data")
         return None
@@ -120,7 +120,7 @@ class DataFactory:
             headers={"X-Token": self.token}
         )
 
-        result = demo_project.user.update_user_info(api_data)
+        result = pytest_api_mock.user.update_user_info(api_data)
         if result.response:
             return result.response.json().get("data")
         return None
@@ -138,7 +138,7 @@ class DataFactory:
             headers={"X-Token": self.token}
         )
 
-        result = demo_project.user.delete_user(api_data)
+        result = pytest_api_mock.user.delete_user(api_data)
         if result.response and result.response.json().get("code") == 200:
             # 从记录中移除
             self.created_data['users'] = [
@@ -170,7 +170,7 @@ class DataFactory:
             headers={"X-Token": self.token}
         )
 
-        result = demo_project.product.create_product(api_data)
+        result = pytest_api_mock.product.create_product(api_data)
         if result.response and result.response.json().get("code") == 200:
             created_product = result.response.json()["data"]
             self.created_data['products'].append(created_product)
@@ -191,7 +191,7 @@ class DataFactory:
             headers={"X-Token": self.token}
         )
 
-        result = demo_project.product.get_all_products(api_data)
+        result = pytest_api_mock.product.get_all_products(api_data)
         if result.response:
             return result.response.json().get("data")
         return None
@@ -211,7 +211,7 @@ class DataFactory:
             headers={"X-Token": self.token}
         )
 
-        result = demo_project.product.update_product_info(api_data)
+        result = pytest_api_mock.product.update_product_info(api_data)
         if result.response:
             return result.response.json().get("data")
         return None
@@ -229,7 +229,7 @@ class DataFactory:
             headers={"X-Token": self.token}
         )
 
-        result = demo_project.product.delete_product(api_data)
+        result = pytest_api_mock.product.delete_product(api_data)
         if result.response and result.response.json().get("code") == 200:
             self.created_data['products'] = [
                 p for p in self.created_data['products']
@@ -259,7 +259,7 @@ class DataFactory:
             headers={"X-Token": self.token}
         )
 
-        result = demo_project.order.create_order(api_data)
+        result = pytest_api_mock.order.create_order(api_data)
         if result.response and result.response.json().get("code") == 200:
             created_order = result.response.json()["data"]
             self.created_data['orders'].append(created_order)
@@ -278,14 +278,14 @@ class DataFactory:
                 method="GET",
                 headers={"X-Token": self.token}
             )
-            result = demo_project.order.get_order_by_id(api_data)
+            result = pytest_api_mock.order.get_order_by_id(api_data)
         else:
             api_data = self._create_api_data(
                 url="/orders",
                 method="GET",
                 headers={"X-Token": self.token}
             )
-            result = demo_project.order.get_all_orders(api_data)
+            result = pytest_api_mock.order.get_all_orders(api_data)
 
         if result.response:
             return result.response.json().get("data")
@@ -306,7 +306,7 @@ class DataFactory:
             headers={"X-Token": self.token}
         )
 
-        result = demo_project.order.update_order_info(api_data)
+        result = pytest_api_mock.order.update_order_info(api_data)
         if result.response:
             return result.response.json().get("data")
         return None
@@ -324,7 +324,7 @@ class DataFactory:
             headers={"X-Token": self.token}
         )
 
-        result = demo_project.order.delete_order(api_data)
+        result = pytest_api_mock.order.delete_order(api_data)
         if result.response and result.response.json().get("code") == 200:
             self.created_data['orders'] = [
                 o for o in self.created_data['orders']
@@ -347,7 +347,7 @@ class DataFactory:
             headers={"X-Token": self.token}
         )
 
-        result = demo_project.data.submit_data(api_data)
+        result = pytest_api_mock.data.submit_data(api_data)
         if result.response:
             data_result = result.response.json()
             if data_result.get("code") == 200:
@@ -366,7 +366,7 @@ class DataFactory:
             headers={"X-Token": self.token}
         )
 
-        result = demo_project.system.health_check(api_data)
+        result = pytest_api_mock.system.health_check(api_data)
         if result.response:
             return result.response.json().get("data")
         return None
@@ -382,7 +382,7 @@ class DataFactory:
             headers={"X-Token": self.token}
         )
 
-        result = demo_project.system.get_server_info(api_data)
+        result = pytest_api_mock.system.get_server_info(api_data)
         if result.response:
             return result.response.json().get("data")
         return None

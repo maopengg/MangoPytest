@@ -138,7 +138,6 @@ class OrderAPI:
 | **配置管理 (Config)**         | -      | 100% | 100% | 环境自适应已实现，通过 `settings.py` 自动检测环境                                        |
 | **Fixture 分层**            | -      | 100% | 100% | entities/, builders/, scenarios/ 分层结构已实现并广泛使用                                |
 | **@case_data 装饰器**       | -      | 100% | 0% | 场景变体自动展开已实现，但**测试用例中尚未使用**                                         |
-| **core/ 框架层**             | -      | 100% | 100% | API、Models、Utils 跨项目复用组件已实现                                                  |
 
 **总体完成度：约 85%**（代码实现 100%，测试用例覆盖 70%）
 
@@ -150,10 +149,8 @@ class OrderAPI:
 
 | 功能 | 实现位置 | 缺少使用示例的测试文件 |
 |-----|---------|---------------------|
-| **状态机 (StateMachine)** | `core/base/state_machine.py`<br>`data_factory/state_machine/` | 所有测试文件 |
 | **血缘追踪 (Lineage)** | `data_factory/lineage/` | 除 `test_approval_workflow.py` 外 |
 | **@case_data 装饰器** | `test_cases/decorators.py` | 所有测试文件 |
-| **变体矩阵 (VariantMatrix)** | `core/reporting/enhancers/matrix.py` | 除 `test_approval_workflow.py` 外 |
 
 ### 已充分使用的功能
 
@@ -186,23 +183,6 @@ auto_test/pytest_api_mock/
 │   ├── file.py           # 文件上传 API
 │   ├── data.py           # 数据提交 API
 │   └── system.py         # 系统信息 API
-│
-├── core/                 # 【框架层】跨项目复用
-│   ├── __init__.py
-│   ├── api/              # 统一 API 客户端
-│   │   ├── __init__.py
-│   │   ├── client.py     # APIClient - HTTP 请求封装
-│   │   ├── auth.py       # AuthManager - 认证管理
-│   │   └── exceptions.py # API 异常类
-│   ├── models/           # 共享数据模型
-│   │   ├── __init__.py
-│   │   ├── base.py       # BaseModel - 基础模型
-│   │   ├── entity.py     # BaseEntity - 实体基类
-│   │   └── result.py     # Result - 结果模型
-│   └── utils/            # 通用工具
-│       ├── __init__.py
-│       ├── decorators.py # retry, timer, validate 装饰器
-│       └── helpers.py    # generate_id, merge_dicts 等辅助函数
 │
 ├── data_factory/         # 数据工厂层 - 测试数据构建
 │   ├── entities/         # 【L3: 实体层】Pydantic 数据模型 + 业务逻辑
@@ -485,23 +465,6 @@ def test_login_all_combinations(self, test_context):
     result = test_context.get("result")
     expected = result["expected"]
     assert result["success"] == expected["success"]
-```
-
-### 5. core/ 框架层
-
-跨项目复用的核心组件：
-
-```python
-from auto_tests.pytest_api_mock.core import APIClient, BaseEntity, Result
-from auto_tests.pytest_api_mock.core.api import AuthManager
-from auto_tests.pytest_api_mock.core.utils import retry, timer, generate_id
-
-# API 客户端
-client = APIClient(base_url="https://api.example.com")
-
-# 认证管理
-auth = AuthManager(client)
-token = auth.login("username", "password")
 ```
 
 ---
