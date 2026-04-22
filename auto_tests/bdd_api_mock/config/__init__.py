@@ -1,77 +1,33 @@
 # -*- coding: utf-8 -*-
-# @Project: 芒果测试平台
-# @Description: 配置中心 - 统一配置入口
-# @Time   : 2026-03-31
-# @Author : 毛鹏
-
 """
-配置中心
+bdd_api_mock 配置管理模块
 
-使用方式:
+统一管理所有配置，包括 API、数据库、SQLAlchemy 等
+
+使用示例：
     from auto_tests.bdd_api_mock.config import settings
 
-    # 当前环境
-    env = settings.ENV.value
+    # 获取配置
+    url = settings.BASE_URL
+    db_url = settings.DB_URL
 
-    # API host
-    host = settings.HOST
-
-切换环境:
-    通过环境变量 ENV 来切换配置:
-    set ENV=dev   # 开发环境
-    set ENV=test  # 测试环境
-    set ENV=pre   # 预发布环境
-    set ENV=prod  # 生产环境
+    # 获取数据库会话
+    session = settings.SessionLocal()
+    try:
+        # 执行数据库操作
+        pass
+    finally:
+        session.close()
 """
 
-import os
-from typing import Optional
+from core.base import BaseConfig
+from .settings import MockAPISettings, settings, engine, SessionLocal, Base
 
-from .settings import BaseConfig, Settings, settings as global_settings
-
-# 环境映射
-ENV_MAP = {
-    "dev": "dev",
-    "development": "dev",
-    "test": "test",
-    "testing": "test",
-    "pre": "pre",
-    "staging": "pre",
-    "prod": "prod",
-    "production": "prod",
-}
-
-
-def get_current_env() -> str:
-    """
-    获取当前环境
-    优先从环境变量获取，默认为 test
-    """
-    env = os.environ.get("ENV", "test").lower()
-    return ENV_MAP.get(env, "test")
-
-
-def load_settings(env: Optional[str] = None) -> BaseConfig:
-    """
-    加载指定环境配置
-
-    @param env: 环境名称，不传则自动获取
-    @return: 当前环境配置对象
-    """
-    if env:
-        os.environ["ENV"] = env
-        global_settings.reload()
-    return global_settings.config
-
-
-# 对外统一暴露 Settings 实例（兼容历史用法）
-settings: Settings = global_settings
-
-# 便捷导出
 __all__ = [
-    "settings",
-    "Settings",
-    "BaseConfig",
-    "load_settings",
-    "get_current_env",
+    "BaseConfig",  # 从 core.base 导出
+    "MockAPISettings",  # 本项目配置类
+    "settings",  # 默认配置实例
+    "engine",  # SQLAlchemy 引擎
+    "SessionLocal",  # 会话工厂
+    "Base",  # 声明基类
 ]

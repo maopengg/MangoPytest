@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
-# @Project: 芒果测试平台
-# @Description: BDD Features 模块
-# @Time   : 2026-04-17
-# @Author : 毛鹏
 """
-BDD Features 模块
-
-此模块包含所有BDD测试的feature文件和步骤定义
+Features - BDD Feature 文件
+按业务域分包：
+- auth: 认证模块
+- user: 用户管理
+- product: 产品管理
+- order: 订单管理
+- data: 数据提交
+- file: 文件管理
+- reimbursement: 报销申请
+- approval: 审批流程
+- system: 系统管理
 """
