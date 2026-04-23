@@ -1,0 +1,3 @@
+.venv\Scripts\pytest auto_tests\bdd_api_mock --alluredir=./allure-results --clean-alluredir
+allure generate ./allure-results -o ./allure-report --clean
+allure open ./allure-report
