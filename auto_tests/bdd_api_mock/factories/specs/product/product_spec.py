@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-产品 Spec - factory_boy
+产品 Spec - pytest-factoryboy
 使用 AUTO_ 前缀，便于自动清理
 """
 
 import factory
-import random
+from pytest_factoryboy import register
 from datetime import datetime
 from decimal import Decimal
 
@@ -14,6 +14,7 @@ from auto_tests.bdd_api_mock.factories.utils import auto_product_name
 from auto_tests.bdd_api_mock.entities.product.product_entity import ProductEntity
 
 
+@register
 class ProductSpec(BaseFactory):
     """产品 Spec"""
 
@@ -23,10 +24,12 @@ class ProductSpec(BaseFactory):
     # 基本字段 - 使用 AUTO_ 前缀
     name = factory.LazyFunction(auto_product_name)
     price = factory.LazyFunction(
-        lambda: Decimal(str(random.uniform(10, 10000))).quantize(Decimal("0.01"))
+        lambda: Decimal(str(__import__("random").uniform(10, 10000))).quantize(
+            Decimal("0.01")
+        )
     )
     description = factory.LazyAttribute(lambda o: f"这是 {o.name} 的描述")
-    stock = factory.LazyFunction(lambda: random.randint(0, 1000))
+    stock = factory.LazyFunction(lambda: __import__("random").randint(0, 1000))
     category = factory.Iterator(
         ["electronics", "accessories", "audio", "storage", "office"]
     )

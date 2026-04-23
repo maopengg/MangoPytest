@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-API调用日志 Spec - factory_boy
+API调用日志 Spec - pytest-factoryboy
 """
 
 import factory
+from pytest_factoryboy import register
 from datetime import datetime
 
 from auto_tests.bdd_api_mock.factories import BaseFactory
 from auto_tests.bdd_api_mock.entities.system.api_log_entity import APILogEntity
 
 
+@register
 class APILogSpec(BaseFactory):
     """API调用日志工厂"""
 
@@ -18,12 +20,14 @@ class APILogSpec(BaseFactory):
 
     request_id = factory.Sequence(lambda n: f"req_{n:08d}")
     method = factory.Iterator(["GET", "POST", "PUT", "DELETE"])
-    path = factory.Iterator([
-        "/api/v1/users",
-        "/api/v1/products",
-        "/api/v1/orders",
-        "/api/v1/reimbursements",
-    ])
+    path = factory.Iterator(
+        [
+            "/api/v1/users",
+            "/api/v1/products",
+            "/api/v1/orders",
+            "/api/v1/reimbursements",
+        ]
+    )
     query_params = None
     request_body = None
     response_body = None

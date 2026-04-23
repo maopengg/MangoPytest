@@ -2,54 +2,51 @@
 
 ## 项目概述
 
-本项目是一个基于 **pytest-bdd** 的 BDD（行为驱动开发）API 自动化测试框架，针对 Mango Mock API 服务进行测试。使用 **Gherkin** 语法编写测试用例，让业务人员、测试人员和开发人员使用统一的语言描述业务场景。
+本项目是一个基于 **pytest-bdd** 和 **pytest-factoryboy** 的 BDD（行为驱动开发）API 自动化测试框架，针对 Mango Mock API 服务进行测试。使用 **Gherkin** 语法编写测试用例，让业务人员、测试人员和开发人员使用统一的语言描述业务场景。
 
 **核心特性**：
 
 - **BDD 中文语法**：使用 Gherkin 中文编写，业务可读可写
-- **数据工厂**：factory_boy 自动创建关联实体，无需手动处理依赖
+- **pytest-factoryboy**：自动注册 fixtures，简化测试数据创建
 - **数据库直连**：SQLAlchemy 直接操作数据库，快速准备测试数据
 - **占位符变量**：`${entity.id}` 语法实现步骤间数据传递
 - **自动清理**：Repository 模式自动清理测试数据
+- **模块化步骤**：按功能分类的 steps 模块，便于维护
 
 ---
 
 ## 架构设计
 
-### 架构图
+### 五层架构
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│  Feature 文件（Gherkin 语法）                              │
-│  ├── 中文描述业务场景                                      │
-│  ├── 假如存在"实体" - 准备测试数据                         │
-│  ├── 当 GET/POST "接口" - 调用 API                        │
-│  └── 那么 response code should be 200 - 验证结果          │
-├─────────────────────────────────────────────────────────┤
-│  Steps 步骤定义层                                          │
-│  ├── data_steps.py - 数据准备步骤（使用 factory_boy）      │
-│  ├── api_steps.py - API 调用步骤                          │
-│  ├── assertion_steps.py - 断言验证步骤                     │
-│  └── auth_steps.py - 认证相关步骤                          │
-├─────────────────────────────────────────────────────────┤
-│  Specs 数据工厂层（factory_boy）                           │
-│  ├── 自动创建关联实体（SubFactory）                        │
-│  ├── 派生字段计算（LazyAttribute）                         │
-│  └── 默认值 + 覆盖机制                                     │
-├─────────────────────────────────────────────────────────┤
-│  Entities 实体层（SQLAlchemy）                             │
-│  ├── ORM 映射数据库表                                      │
-│  ├── 关联关系定义（relationship）                          │
-│  └── to_api_payload() 序列化方法                           │
-├─────────────────────────────────────────────────────────┤
-│  Repository 数据访问层                                     │
-│  ├── 按业务域分包（auth/user/product/order/...）           │
-│  ├── CODE_FIELD 映射清理字段                               │
-│  └── delete_by_pattern() 批量清理                          │
-├─────────────────────────────────────────────────────────┤
-│  Hooks 钩子层                                              │
-│  └── cleanup_hooks.py - 测试后自动清理数据                 │
-└─────────────────────────────────────────────────────────┘
+L5: Feature 文件（Gherkin 语法）
+    ├── 中文描述业务场景
+    ├── 假如存在"实体" - 准备测试数据
+    ├── 当 GET/POST "接口" - 调用 API
+    └── 那么 响应状态码应该为 200 - 验证结果
+    ↓
+L4: Steps 步骤定义层（按功能分类）
+    ├── common/    - 通用 fixtures (api_response, created_entity)
+    ├── api/       - API 调用步骤 (GET, POST, PUT, DELETE)
+    ├── auth/      - 认证相关步骤 (登录、权限)
+    ├── data/      - 数据准备步骤 (factory_boy 创建实体)
+    └── assertions/ - 断言验证步骤 (状态码、数据字段)
+    ↓
+L3: Factories 数据工厂层（pytest-factoryboy）
+    ├── 自动注册为 pytest fixtures
+    ├── 自动创建关联实体（SubFactory）
+    └── 派生字段计算（LazyAttribute）
+    ↓
+L2: Entities 实体层（SQLAlchemy）
+    ├── ORM 映射数据库表
+    ├── 关联关系定义（relationship）
+    └── to_api_payload() 序列化方法
+    ↓
+L1: Repositories 数据访问层
+    ├── 按业务域分包（auth/user/product/order/...）
+    ├── CODE_FIELD 映射清理字段
+    └── delete_by_pattern() 批量清理
 ```
 
 ### 数据流向
@@ -59,7 +56,7 @@ Feature 文件（Gherkin）
     ↓ 解析
 Steps 步骤定义
     ↓ 调用
-Specs 数据工厂（factory_boy）
+Factories（pytest-factoryboy）
     ↓ 创建
 Entities（SQLAlchemy）
     ↓ 持久化
@@ -87,14 +84,26 @@ auto_tests/bdd_api_mock/
 │   ├── approval/           # 审批流程模块
 │   └── system/             # 系统管理模块
 │
-├── steps/                  # 步骤定义层
-│   ├── __init__.py
-│   ├── data_steps.py       # 数据准备步骤
-│   ├── api_steps.py        # API 调用步骤
-│   ├── assertion_steps.py  # 断言验证步骤
-│   └── auth_steps.py       # 认证相关步骤
+├── steps/                  # 步骤定义层（按功能分类）
+│   ├── __init__.py         # 导出所有步骤
+│   ├── common/             # 通用 fixtures
+│   │   └── __init__.py     # api_response, created_entity
+│   ├── api/                # API 请求步骤
+│   │   ├── __init__.py
+│   │   ├── base.py         # GET, POST, PUT, DELETE
+│   │   └── entity.py       # 带实体 ID 的请求
+│   ├── auth/               # 认证步骤
+│   │   ├── __init__.py
+│   │   └── login.py        # 登录相关步骤
+│   ├── data/               # 数据准备步骤
+│   │   ├── __init__.py
+│   │   └── factory.py      # factory_boy 创建实体
+│   └── assertions/         # 断言步骤
+│       ├── __init__.py
+│       ├── response.py     # 状态码、消息断言
+│       └── data.py         # 数据字段、列表、数据库断言
 │
-├── factories/              # 数据工厂层
+├── factories/              # 数据工厂层（pytest-factoryboy）
 │   ├── __init__.py         # BaseFactory 基类
 │   └── specs/              # factory_boy Spec 定义
 │       ├── user/
@@ -132,14 +141,13 @@ auto_tests/bdd_api_mock/
 │   ├── __init__.py
 │   └── cleanup_hooks.py    # 数据清理钩子
 │
-├── db/                     # 数据库配置
-│   ├── __init__.py
-│   └── base.py             # SQLAlchemy Base 和 Session
-│
 ├── config/                 # 配置管理
-│   └── settings.py
+│   ├── __init__.py
+│   └── settings.py         # MockAPISettings 配置类
 │
-└── conftest.py             # pytest 全局配置
+├── api_client.py           # APIClient HTTP 客户端
+├── conftest.py             # pytest 全局配置
+└── README.md               # 本文档
 ```
 
 ---
@@ -174,70 +182,123 @@ auto_tests/bdd_api_mock/
     而且 响应数据应该是列表
 ```
 
-### 2. Steps（步骤定义层）
+### 2. Steps（步骤定义层 - 模块化分类）
 
-**职责**：将 Gherkin 步骤映射到 Python 代码。
+**职责**：将 Gherkin 步骤映射到 Python 代码，按功能分类管理。
 
-#### 2.1 data_steps.py - 数据准备
+#### 2.1 common/ - 通用 Fixtures
 
 ```python
-@given(parsers.parse('存在"{entity_name}":'), target_fixture="created_entity")
-def create_entity_step(entity_name: str, docstring):
-    """创建实体步骤"""
-    factory_class = ENTITY_FACTORY_MAP.get(entity_name)
-    overrides = json.loads(docstring) if docstring else {}
-    entity = factory_class(**overrides)
-    return entity
+# steps/common/__init__.py
+import pytest
+
+@pytest.fixture
+def api_response():
+    """API 响应 fixture"""
+    return {}
+
+@pytest.fixture
+def created_entity():
+    """当前创建的实体 fixture"""
+    return {}
 ```
 
-#### 2.2 api_steps.py - API 调用
+#### 2.2 api/ - API 调用步骤
 
 ```python
-@when(parsers.re(r'GET "(?P<path>[^"]+)"'), target_fixture="api_response")
-def api_get_step(path: str, api_client: APIClient, created_entity=None):
+# steps/api/base.py
+@when(parsers.re(r'GET\s+"(?P<path>[^"]+)"'))
+def api_get_step(path: str, mock_api_client, api_response):
     """GET 请求步骤"""
-    return api_client.get(path, created_entity)
+    result = mock_api_client.get(path)
+    api_response.clear()
+    api_response.update(result)
+
+# steps/api/entity.py
+@when(parsers.re(r'使用(?P<entity_name>\w+)ID\s+GET\s+"(?P<path>[^"]+)"'))
+def api_get_with_entity_step(
+    entity_name: str, path: str, mock_api_client, created_entity, api_response
+):
+    """使用实体ID的 GET 请求步骤"""
+    entity = _get_entity_from_fixture(created_entity)
+    result = mock_api_client.get(path, created_entity=entity)
+    api_response.clear()
+    api_response.update(result)
 ```
 
-#### 2.3 assertion_steps.py - 断言验证
+#### 2.3 data/ - 数据准备步骤
 
 ```python
-@then(parsers.parse('响应状态码应该为 {expected_code:d}'))
-def response_code_should_be_cn(expected_code: int, api_response: Dict[str, Any]):
-    """验证响应状态码"""
-    actual_code = api_response.get("code", 0)
-    assert actual_code == expected_code
+# steps/data/factory.py
+@given(parsers.parse('存在"{entity_name}"'))
+def create_entity_step_simple(entity_name: str, created_entity: Dict):
+    """创建实体步骤（无参数）"""
+    factory_class = ENTITY_FACTORY_MAP.get(entity_name)
+    entity = factory_class()
+    _entity_cache[entity_name] = entity
+    created_entity.clear()
+    created_entity.update({
+        "entity": entity,
+        "id": getattr(entity, "id", None),
+        "entity_name": entity_name,
+    })
 ```
 
-### 3. Specs（数据工厂层 - factory_boy）
+#### 2.4 assertions/ - 断言验证步骤
 
-**职责**：使用 factory_boy 自动创建实体，处理关联关系。
+```python
+# steps/assertions/response.py
+@then(parsers.parse("响应状态码应该为 {expected_code:d}"))
+def response_code_should_be_cn(expected_code: int, api_response: Dict[str, Any]):
+    """验证响应状态码（中文）"""
+    actual_code = api_response.get("code", api_response.get("status_code", 0))
+    assert actual_code == expected_code
+
+# steps/assertions/data.py
+@then(parsers.parse('响应数据应该包含字段 "{field}"'))
+def response_data_should_contain_field_cn(field: str, api_response: Dict[str, Any]):
+    """验证响应数据包含字段（中文）"""
+    data = api_response.get("data", {})
+    assert field in data
+```
+
+### 3. Factories（数据工厂层 - pytest-factoryboy）
+
+**职责**：使用 pytest-factoryboy 自动注册 fixtures，处理关联关系。
 
 **核心特性**：
+- `@register` 装饰器自动注册为 pytest fixture
 - `SubFactory` 自动创建关联实体
 - `LazyAttribute` 计算派生字段
-- `Trait` 定义特定状态
 
 **示例**：
 
 ```python
+# factories/specs/order/order_spec.py
+from pytest_factoryboy import register
+from auto_tests.bdd_api_mock.factories import BaseFactory
+from auto_tests.bdd_api_mock.entities.order import OrderEntity
+from auto_tests.bdd_api_mock.factories.specs.user import user_spec
+from auto_tests.bdd_api_mock.factories.specs.product import product_spec
+
+
+@register
 class OrderSpec(BaseFactory):
     """订单 Spec"""
     class Meta:
         model = OrderEntity
-        exclude = ("_user", "_product")
 
     # 关联实体 - 自动创建
-    _user = factory.SubFactory(UserSpec)
-    _product = factory.SubFactory(ProductSpec)
+    user = factory.SubFactory(user_spec)
+    product = factory.SubFactory(product_spec)
 
     # 外键字段
-    user_id = factory.SelfAttribute("_user.id")
-    product_id = factory.SelfAttribute("_product.id")
-
-    # Trait: 已支付
-    class Params:
-        paid = factory.Trait(status="paid")
+    user_id = factory.SelfAttribute("user.id")
+    product_id = factory.SelfAttribute("product.id")
+    quantity = factory.Faker("random_int", min=1, max=10)
+    total_amount = factory.LazyAttribute(
+        lambda o: o.quantity * o.product.price if o.product else 0
+    )
 ```
 
 ### 4. Entities（实体层 - SQLAlchemy）
@@ -247,6 +308,11 @@ class OrderSpec(BaseFactory):
 **示例**：
 
 ```python
+# entities/user/user_entity.py
+from sqlalchemy import Column, Integer, String
+from auto_tests.bdd_api_mock.config import Base
+
+
 class UserEntity(Base):
     """用户实体"""
     __tablename__ = "users"
@@ -254,24 +320,23 @@ class UserEntity(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(50), nullable=False, unique=True)
     email = Column(String(100), nullable=False)
-    # ...
-
-    def to_api_payload(self) -> Dict[str, Any]:
-        """序列化为 API 请求参数"""
-        return {
-            "username": self.username,
-            "email": self.email,
-            # ...
-        }
+    password = Column(String(255), nullable=False)
+    role = Column(String(20), default="user")
+    status = Column(String(20), default="active")
 ```
 
-### 5. Repository（数据访问层）
+### 5. Repositories（数据访问层）
 
 **职责**：封装数据访问，支持自动清理。
 
 **示例**：
 
 ```python
+# repos/user/user_repo.py
+from auto_tests.bdd_api_mock.repos.base import BaseRepository
+from auto_tests.bdd_api_mock.entities.user import UserEntity
+
+
 class UserRepo(BaseRepository[UserEntity]):
     """用户 Repository"""
     model = UserEntity
@@ -288,14 +353,24 @@ class UserRepo(BaseRepository[UserEntity]):
 **职责**：测试生命周期管理，自动清理数据。
 
 ```python
-@pytest.fixture(autouse=True)
-def cleanup_test_data(db_session: Session):
-    """自动清理测试数据"""
-    yield
-    # 测试结束后清理所有以 AUTO- 开头的数据
-    repos = [UserRepo(db_session), ProductRepo(db_session), ...]
-    for repo in repos:
-        repo.delete_by_pattern("AUTO-%")
+# hooks/cleanup_hooks.py
+class TestDataCleaner:
+    """测试数据清理器"""
+
+    def __init__(self, session: Session):
+        self.session = session
+        self.repos = [
+            UserRepo(session),
+            ProductRepo(session),
+            OrderRepo(session),
+            # ...
+        ]
+
+    def clear_all(self):
+        """清理所有 AUTO_ 开头的测试数据"""
+        for repo in self.repos:
+            if hasattr(repo, 'CODE_FIELD') and repo.CODE_FIELD:
+                repo.delete_by_pattern("AUTO_%")
 ```
 
 ---
@@ -315,7 +390,7 @@ def cleanup_test_data(db_session: Session):
 ### 1. 安装依赖
 
 ```bash
-pip install pytest pytest-bdd factory_boy sqlalchemy pymysql requests
+pip install pytest pytest-bdd pytest-factoryboy factory_boy sqlalchemy pymysql requests
 ```
 
 ### 2. 配置环境
@@ -323,8 +398,18 @@ pip install pytest pytest-bdd factory_boy sqlalchemy pymysql requests
 编辑 `config/settings.py`：
 
 ```python
-BASE_URL = "http://localhost:8000"
-DB_URL = "mysql+pymysql://root:mP123456&@mangotestingplatform-db-1:3306/mango_mock?charset=utf8mb4"
+class MockAPISettings(BaseConfig):
+    """Mock API 测试配置"""
+
+    # API 基础 URL
+    BASE_URL: str = "http://43.142.161.61:8003"
+
+    # 数据库配置
+    DB_HOST: str = "43.142.161.61"
+    DB_PORT: int = 3306
+    DB_USER: str = "root"
+    DB_PASSWORD: str = "mP123456&"
+    DB_NAME: str = "mango_mock"
 ```
 
 ### 3. 运行测试
@@ -355,33 +440,51 @@ pytest auto_tests/bdd_api_mock/ -m integration
 
 ```gherkin
 # ✅ 正确：使用 ${entity.id} 引用之前创建的实体
-假如存在"用户"
+假如 存在"用户"
 当 使用用户ID GET "/users?id=${user.id}"
 
 # ❌ 错误：硬编码 ID
 当 GET "/users?id=123"
 ```
 
-### 2. 使用 Spec 创建数据
+### 2. 使用 Factory 创建数据
 
 ```python
-# ✅ 正确：使用 Spec 自动创建关联实体
-order = OrderSpec()  # 自动创建用户和产品
+# ✅ 正确：使用 Factory 自动创建关联实体
+# 在 feature 文件中
+假如 存在"订单"  # 自动创建用户和产品
 
 # ❌ 错误：手动创建所有关联实体
-user = UserSpec()
-product = ProductSpec()
-order = OrderSpec(user_id=user.id, product_id=product.id)
+假如 存在"用户"
+而且 存在"产品"
+当 POST "/orders":
+  """
+  {"user_id": ${user.id}, "product_id": ${product.id}}
+  """
 ```
 
 ### 3. 使用 Trait 定义特定状态
 
 ```python
-# 创建已支付的订单
-order = OrderSpec(paid=True)
+# 在 Spec 中定义 Trait
+class OrderSpec(BaseFactory):
+    class Params:
+        paid = factory.Trait(status="paid", paid_at=factory.Faker("date_time"))
 
-# 创建部门经理审批通过的报销
-reimbursement = ReimbursementSpec(dept_approved=True)
+# 在测试中使用（通过步骤定义）
+假如 存在"已支付订单"  # 使用 Trait 创建特定状态
+```
+
+### 4. 模块化的步骤定义
+
+```python
+# ✅ 正确：按功能分类步骤
+# steps/api/base.py - 基础 HTTP 请求
+# steps/api/entity.py - 带实体 ID 的请求
+# steps/auth/login.py - 登录相关
+# steps/data/factory.py - 数据创建
+# steps/assertions/response.py - 响应断言
+# steps/assertions/data.py - 数据断言
 ```
 
 ---
@@ -396,11 +499,11 @@ reimbursement = ReimbursementSpec(dept_approved=True)
 | **user** | GET/POST/PUT/DELETE /users | CRUD 操作 |
 | **product** | GET/POST/PUT/DELETE /products | CRUD 操作 |
 | **order** | GET/POST/PUT/DELETE /orders | CRUD 操作 |
-| **data** | GET/POST /data | 数据提交 |
-| **file** | GET/POST /files | 文件管理 |
+| **data** | POST /api/data | 数据提交 |
+| **file** | GET /info | 服务器信息 |
 | **reimbursement** | GET/POST/PUT/DELETE /reimbursements | 报销申请 |
-| **approval** | POST /approvals/dept/finance/ceo | 三级审批 |
-| **system** | GET /system/health/logs | 系统状态 |
+| **approval** | GET/POST /dept-approvals, /finance-approvals, /ceo-approvals | 三级审批 |
+| **system** | GET /health, /info | 系统状态 |
 
 ---
 
@@ -425,5 +528,16 @@ reimbursement = ReimbursementSpec(dept_approved=True)
 ## 参考
 
 - [pytest-bdd 文档](https://pytest-bdd.readthedocs.io/)
+- [pytest-factoryboy 文档](https://pytest-factoryboy.readthedocs.io/)
 - [factory_boy 文档](https://factoryboy.readthedocs.io/)
 - [SQLAlchemy 文档](https://docs.sqlalchemy.org/)
+
+---
+
+## 项目特点
+
+1. **模块化 Steps**：按功能分类（api/auth/data/assertions），便于维护
+2. **pytest-factoryboy**：自动注册 fixtures，简化测试数据创建
+3. **自动清理**：每个测试前自动清理 AUTO_ 开头的测试数据
+4. **占位符支持**：`${entity.id}` 语法实现步骤间数据传递
+5. **中文 Gherkin**：业务人员可读的测试用例

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-用户 Spec - factory_boy
+用户 Spec - pytest-factoryboy
 使用 AUTO_ 前缀，便于自动清理
 """
 
 import factory
-import hashlib
+from pytest_factoryboy import register
 from datetime import datetime
 
 from auto_tests.bdd_api_mock.factories import BaseFactory
@@ -13,6 +13,7 @@ from auto_tests.bdd_api_mock.factories.utils import auto_username
 from auto_tests.bdd_api_mock.entities.user.user_entity import UserEntity
 
 
+@register
 class UserSpec(BaseFactory):
     """用户 Spec"""
 
@@ -24,7 +25,7 @@ class UserSpec(BaseFactory):
     email = factory.LazyAttribute(lambda o: f"{o.username.lower()}@example.com")
     full_name = factory.LazyAttribute(lambda o: f"用户 {o.username}")
     password = factory.LazyFunction(
-        lambda: hashlib.md5("password123".encode()).hexdigest()
+        lambda: __import__("hashlib").md5("password123".encode()).hexdigest()
     )
     role = "user"
     status = "active"

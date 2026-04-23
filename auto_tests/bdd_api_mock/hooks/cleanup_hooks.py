@@ -26,6 +26,7 @@ class TestDataCleaner:
 
         try:
             # 按照依赖关系顺序清理（先子表后父表）
+            # 注意：orders 表有外键依赖 products 和 users，需要先清理
             cleanup_order = [
                 # 1. 审批相关（子表）
                 (
@@ -40,21 +41,26 @@ class TestDataCleaner:
                     "ceo_approvals",
                     "DELETE FROM ceo_approvals WHERE approver_id IN (SELECT id FROM users WHERE username LIKE 'AUTO_%')",
                 ),
-                # 2. 业务表
+                # 2. 业务表 - 先清理有外键依赖的子表
                 (
                     "reimbursements",
                     "DELETE FROM reimbursements WHERE user_id IN (SELECT id FROM users WHERE username LIKE 'AUTO_%')",
                 ),
-                ("orders", "DELETE FROM orders WHERE order_no LIKE 'AUTO_%'"),
+                # orders 表依赖 products 和 users，先清理 orders
+                (
+                    "orders",
+                    "DELETE FROM orders WHERE product_id IN (SELECT id FROM products WHERE name LIKE 'AUTO_%') OR user_id IN (SELECT id FROM users WHERE username LIKE 'AUTO_%')",
+                ),
                 (
                     "data_submissions",
                     "DELETE FROM data_submissions WHERE name LIKE 'AUTO_%'",
                 ),
                 ("files", "DELETE FROM files WHERE filename LIKE 'AUTO_%'"),
-                ("products", "DELETE FROM products WHERE name LIKE 'AUTO_%'"),
                 # 3. 系统表
                 ("api_logs", "DELETE FROM api_logs WHERE id > 0"),  # 清理所有日志
-                # 4. 用户表（最后清理，保留 testuser）
+                # 4. 业务表 - 后清理父表
+                ("products", "DELETE FROM products WHERE name LIKE 'AUTO_%'"),
+                # 5. 用户表（最后清理，保留 testuser）
                 ("users", "DELETE FROM users WHERE username LIKE 'AUTO_%'"),
             ]
 

@@ -1,21 +1,24 @@
 # -*- coding: utf-8 -*-
 """
-报销申请 Spec - factory_boy
+报销申请 Spec - pytest-factoryboy
 """
 
 import factory
-import uuid
-import random
+from pytest_factoryboy import register
 from datetime import datetime
 from decimal import Decimal
 
 from auto_tests.bdd_api_mock.factories import BaseFactory
 from auto_tests.bdd_api_mock.factories.specs.user.user_spec import UserSpec
-from auto_tests.bdd_api_mock.entities.reimbursement.reimbursement_entity import ReimbursementEntity
+from auto_tests.bdd_api_mock.entities.reimbursement.reimbursement_entity import (
+    ReimbursementEntity,
+)
 
 
+@register
 class ReimbursementSpec(BaseFactory):
     """报销申请 Spec"""
+
     class Meta:
         model = ReimbursementEntity
         exclude = ("_user",)
@@ -27,8 +30,14 @@ class ReimbursementSpec(BaseFactory):
     user_id = factory.SelfAttribute("_user.id")
 
     # 基本字段
-    reimb_no = factory.LazyFunction(lambda: f"RMB{datetime.now().strftime('%Y%m%d%H%M%S')}{str(uuid.uuid4())[:4].upper()}")
-    amount = factory.LazyFunction(lambda: Decimal(str(random.uniform(100, 10000))).quantize(Decimal("0.01")))
+    reimb_no = factory.LazyFunction(
+        lambda: f"RMB{datetime.now().strftime('%Y%m%d%H%M%S')}{__import__('uuid').uuid4().hex[:4].upper()}"
+    )
+    amount = factory.LazyFunction(
+        lambda: Decimal(str(__import__("random").uniform(100, 10000))).quantize(
+            Decimal("0.01")
+        )
+    )
     reason = factory.LazyAttribute(lambda o: f"报销原因 - {o.reimb_no}")
     category = factory.Iterator(["general", "travel", "meal", "office", "equipment"])
     attachments = None

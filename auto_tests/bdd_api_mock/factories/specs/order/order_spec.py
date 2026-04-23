@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-订单 Spec - factory_boy
+订单 Spec - pytest-factoryboy
 使用 AUTO_ 前缀，便于自动清理
 """
 
 import factory
+from pytest_factoryboy import register
 from datetime import datetime
 from decimal import Decimal
 
@@ -15,6 +16,7 @@ from auto_tests.bdd_api_mock.factories.utils import auto_order_no
 from auto_tests.bdd_api_mock.entities.order.order_entity import OrderEntity
 
 
+@register
 class OrderSpec(BaseFactory):
     """订单 Spec"""
 

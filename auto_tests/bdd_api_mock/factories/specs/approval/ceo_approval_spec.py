@@ -1,20 +1,26 @@
 # -*- coding: utf-8 -*-
 """
-总经理审批 Spec - factory_boy
+总经理审批 Spec - pytest-factoryboy
 """
 
 import factory
-import uuid
+from pytest_factoryboy import register
 from datetime import datetime
 
 from auto_tests.bdd_api_mock.factories import BaseFactory
 from auto_tests.bdd_api_mock.factories.specs.user.user_spec import UserSpec
-from auto_tests.bdd_api_mock.factories.specs.approval.finance_approval_spec import FinanceApprovalSpec
-from auto_tests.bdd_api_mock.entities.approval.ceo_approval_entity import CEOApprovalEntity
+from auto_tests.bdd_api_mock.factories.specs.approval.finance_approval_spec import (
+    FinanceApprovalSpec,
+)
+from auto_tests.bdd_api_mock.entities.approval.ceo_approval_entity import (
+    CEOApprovalEntity,
+)
 
 
+@register
 class CEOApprovalSpec(BaseFactory):
     """总经理审批 Spec"""
+
     class Meta:
         model = CEOApprovalEntity
         exclude = ("_finance_approval", "_approver")
@@ -29,7 +35,9 @@ class CEOApprovalSpec(BaseFactory):
     approver_id = factory.SelfAttribute("_approver.id")
 
     # 基本字段
-    approval_no = factory.LazyFunction(lambda: f"CA{datetime.now().strftime('%Y%m%d%H%M%S')}{str(uuid.uuid4())[:4].upper()}")
+    approval_no = factory.LazyFunction(
+        lambda: f"CA{datetime.now().strftime('%Y%m%d%H%M%S')}{__import__('uuid').uuid4().hex[:4].upper()}"
+    )
     status = "approved"
     comment = factory.LazyAttribute(lambda o: f"总经理审批意见 - {o.approval_no}")
     approved_at = factory.LazyFunction(datetime.now)

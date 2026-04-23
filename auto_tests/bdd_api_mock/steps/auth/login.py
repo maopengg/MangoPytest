@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-认证相关步骤
+登录相关步骤
+
+提供用户登录、权限验证等步骤定义
 """
 
 import hashlib
@@ -8,10 +10,7 @@ from typing import Dict, Any
 
 from pytest_bdd import given, when, then, parsers
 
-from auto_tests.bdd_api_mock.steps.api_steps import APIClient
-
-
-# ==================== 登录步骤 ====================
+from auto_tests.bdd_api_mock.api_client import APIClient
 
 
 @given(parsers.parse('用户"{username}"已登录'), target_fixture="logged_in_user")
@@ -67,11 +66,8 @@ def ceo_logged_in_step():
     return user_logged_in_step("ceo")
 
 
-# ==================== 登录 When 步骤 ====================
-
-
 @when(
-    parsers.parse('用户使用用户名"{username}"和密码"{password}"登录'),
+    parsers.re(r'用户使用用户名"(?P<username>[^"]+)"和密码"(?P<password>[^"]+)"登录'),
     target_fixture="login_response",
 )
 def user_login_step(username: str, password: str):
@@ -87,9 +83,6 @@ def user_login_step(username: str, password: str):
     response = client.post("/auth/login", {"username": username, "password": password})
 
     return response
-
-
-# ==================== 登录 Then 步骤 ====================
 
 
 @then(parsers.parse("登录应该成功"))
