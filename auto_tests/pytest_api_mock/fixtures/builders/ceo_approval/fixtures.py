@@ -3,11 +3,15 @@
 # @Description: 总经理审批模块fixtures (A级)
 # @Time   : 2026-03-31
 # @Author : 毛鹏
+import uuid
 from typing import Any, Generator
 
 import pytest
 
+from auto_tests.pytest_api_mock.data_factory.builders.auth import AuthBuilder
 from auto_tests.pytest_api_mock.data_factory.builders.ceo_approval import CEOApprovalBuilder
+from auto_tests.pytest_api_mock.data_factory.builders.user import UserBuilder
+from auto_tests.pytest_api_mock.data_factory.entities import UserEntity
 
 
 @pytest.fixture
@@ -43,11 +47,62 @@ def _entity_to_dict(entity):
 
 
 @pytest.fixture
+def ceo_user_fixture(authenticated_client) -> Generator[UserEntity, None, None]:
+    """
+    CEO用户 Fixture
+    通过数据工厂创建真实的CEO用户
+    """
+    auth_builder = AuthBuilder(token=authenticated_client.token)
+    
+    # 使用随机后缀避免用户名冲突
+    suffix = uuid.uuid4().hex[:6]
+    
+    # 创建真实用户
+    user_data = auth_builder.register(
+        username=f"ceo_{suffix}",
+        email=f"ceo_{suffix}@example.com",
+        full_name="CEO",
+        password="ceo123",
+        role="ceo"
+    )
+    
+    # 转换为 UserEntity
+    user = UserEntity(
+        id=user_data.get("id"),
+        username=user_data.get("username"),
+        email=user_data.get("email"),
+        full_name=user_data.get("full_name"),
+        password="ceo123",
+        role=user_data.get("role", "user"),
+        status="active",
+    )
+    
+    yield user
+    
+    # 清理：删除创建的用户
+    if user.id:
+        user_builder = UserBuilder(token=authenticated_client.token)
+        user_builder.delete(user_id=user.id)
+
+
+@pytest.fixture
+def ceo_id(ceo_user_fixture) -> int:
+    """
+    CEO用户ID Fixture
+    返回通过数据工厂创建的CEO用户ID
+    """
+    return ceo_user_fixture.id
+
+
+@pytest.fixture
 def fully_approved_reimbursement(
         reimbursement_builder,
         dept_approval_builder,
         finance_approval_builder,
         ceo_approval_builder,
+        dept_manager_id,
+        finance_manager_id,
+        ceo_id,
 ) -> dict:
     """
     完全审批通过的报销申请Fixture
@@ -64,15 +119,17 @@ def fully_approved_reimbursement(
     )
 
     # C级：部门审批通过
-    dept_approval = dept_approval_builder.approve(reimbursement.id)
+    dept_approval = dept_approval_builder.approve(reimbursement.id, approver_id=dept_manager_id)
 
     # B级：财务审批通过
     finance_approval = finance_approval_builder.approve(
-        reimbursement.id, dept_approval.id
+        reimbursement.id, dept_approval.id, approver_id=finance_manager_id
     )
 
     # A级：总经理审批通过
-    ceo_approval = ceo_approval_builder.approve(reimbursement.id, finance_approval.id)
+    ceo_approval = ceo_approval_builder.approve(
+        reimbursement.id, finance_approval.id, approver_id=ceo_id
+    )
 
     return {
         "reimbursement": _entity_to_dict(reimbursement),
@@ -89,6 +146,9 @@ def ceo_rejected_reimbursement(
         dept_approval_builder,
         finance_approval_builder,
         ceo_approval_builder,
+        dept_manager_id,
+        finance_manager_id,
+        ceo_id,
 ) -> dict:
     """
     被总经理拒绝的报销申请Fixture
@@ -100,16 +160,16 @@ def ceo_rejected_reimbursement(
     )
 
     # C级：部门审批通过
-    dept_approval = dept_approval_builder.approve(reimbursement.id)
+    dept_approval = dept_approval_builder.approve(reimbursement.id, approver_id=dept_manager_id)
 
     # B级：财务审批通过
     finance_approval = finance_approval_builder.approve(
-        reimbursement.id, dept_approval.id
+        reimbursement.id, dept_approval.id, approver_id=finance_manager_id
     )
 
     # A级：总经理审批拒绝
     ceo_approval = ceo_approval_builder.reject(
-        reimbursement.id, finance_approval.id, comment="金额过大，不予批准"
+        reimbursement.id, finance_approval.id, approver_id=ceo_id, comment="金额过大，不予批准"
     )
 
     return {
@@ -122,19 +182,14 @@ def ceo_rejected_reimbursement(
 
 
 @pytest.fixture
-def ceo_id() -> int:
-    """
-    CEO用户ID Fixture
-    """
-    return 5
-
-
-@pytest.fixture
 def ceo_approved_reimbursement(
         reimbursement_builder,
         dept_approval_builder,
         finance_approval_builder,
         ceo_approval_builder,
+        dept_manager_id,
+        finance_manager_id,
+        ceo_id,
 ) -> dict:
     """
     CEO审批通过的报销申请Fixture（别名：fully_approved_reimbursement）
@@ -151,15 +206,17 @@ def ceo_approved_reimbursement(
     )
 
     # C级：部门审批通过
-    dept_approval = dept_approval_builder.approve(reimbursement.id)
+    dept_approval = dept_approval_builder.approve(reimbursement.id, approver_id=dept_manager_id)
 
     # B级：财务审批通过
     finance_approval = finance_approval_builder.approve(
-        reimbursement.id, dept_approval.id
+        reimbursement.id, dept_approval.id, approver_id=finance_manager_id
     )
 
     # A级：总经理审批通过
-    ceo_approval = ceo_approval_builder.approve(reimbursement.id, finance_approval.id)
+    ceo_approval = ceo_approval_builder.approve(
+        reimbursement.id, finance_approval.id, approver_id=ceo_id
+    )
 
     return {
         "reimbursement": _entity_to_dict(reimbursement),

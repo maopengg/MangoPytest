@@ -3,11 +3,15 @@
 # @Description: 财务审批模块fixtures (B级)
 # @Time   : 2026-03-31
 # @Author : 毛鹏
+import uuid
 from typing import Any, Generator
 
 import pytest
 
+from auto_tests.pytest_api_mock.data_factory.builders.auth import AuthBuilder
 from auto_tests.pytest_api_mock.data_factory.builders.finance_approval import FinanceApprovalBuilder
+from auto_tests.pytest_api_mock.data_factory.builders.user import UserBuilder
+from auto_tests.pytest_api_mock.data_factory.entities import UserEntity
 
 
 @pytest.fixture
@@ -43,8 +47,57 @@ def _entity_to_dict(entity):
 
 
 @pytest.fixture
+def finance_manager_user(authenticated_client) -> Generator[UserEntity, None, None]:
+    """
+    财务经理用户 Fixture
+    通过数据工厂创建真实的财务经理用户
+    """
+    auth_builder = AuthBuilder(token=authenticated_client.token)
+    
+    # 使用随机后缀避免用户名冲突
+    suffix = uuid.uuid4().hex[:6]
+    
+    # 创建真实用户
+    user_data = auth_builder.register(
+        username=f"finance_mgr_{suffix}",
+        email=f"finance_mgr_{suffix}@example.com",
+        full_name="Finance Manager",
+        password="finance123",
+        role="finance_manager"
+    )
+    
+    # 转换为 UserEntity
+    user = UserEntity(
+        id=user_data.get("id"),
+        username=user_data.get("username"),
+        email=user_data.get("email"),
+        full_name=user_data.get("full_name"),
+        password="finance123",
+        role=user_data.get("role", "user"),
+        status="active",
+    )
+    
+    yield user
+    
+    # 清理：删除创建的用户
+    if user.id:
+        user_builder = UserBuilder(token=authenticated_client.token)
+        user_builder.delete(user_id=user.id)
+
+
+@pytest.fixture
+def finance_manager_id(finance_manager_user) -> int:
+    """
+    财务经理用户ID Fixture
+    返回通过数据工厂创建的财务经理用户ID
+    """
+    return finance_manager_user.id
+
+
+@pytest.fixture
 def finance_approved_reimbursement(
-        reimbursement_builder, dept_approval_builder, finance_approval_builder
+        reimbursement_builder, dept_approval_builder, finance_approval_builder,
+        dept_manager_id, finance_manager_id
 ) -> dict:
     """
     财务审批通过的报销申请Fixture
@@ -61,10 +114,12 @@ def finance_approved_reimbursement(
     )
 
     # C级：部门审批通过
-    dept_approval = dept_approval_builder.approve(reimbursement.id)
+    dept_approval = dept_approval_builder.approve(reimbursement.id, approver_id=dept_manager_id)
 
     # B级：财务审批通过
-    finance_approval = finance_approval_builder.approve(reimbursement.id, dept_approval.id)
+    finance_approval = finance_approval_builder.approve(
+        reimbursement.id, dept_approval.id, approver_id=finance_manager_id
+    )
 
     return {
         "reimbursement": _entity_to_dict(reimbursement),
@@ -76,7 +131,8 @@ def finance_approved_reimbursement(
 
 @pytest.fixture
 def finance_rejected_reimbursement(
-        reimbursement_builder, dept_approval_builder, finance_approval_builder
+        reimbursement_builder, dept_approval_builder, finance_approval_builder,
+        dept_manager_id, finance_manager_id
 ) -> dict:
     """
     被财务拒绝的报销申请Fixture
@@ -88,11 +144,11 @@ def finance_rejected_reimbursement(
     )
 
     # C级：部门审批通过
-    dept_approval = dept_approval_builder.approve(reimbursement.id)
+    dept_approval = dept_approval_builder.approve(reimbursement.id, approver_id=dept_manager_id)
 
     # B级：财务审批拒绝
     finance_approval = finance_approval_builder.reject(
-        reimbursement.id, dept_approval.id, comment="发票不符合规定"
+        reimbursement.id, dept_approval.id, approver_id=finance_manager_id, comment="发票不符合规定"
     )
 
     return {
@@ -101,11 +157,3 @@ def finance_rejected_reimbursement(
         "finance_approval": _entity_to_dict(finance_approval),
         "status": "finance_rejected",
     }
-
-
-@pytest.fixture
-def finance_manager_id() -> int:
-    """
-    财务经理用户ID Fixture
-    """
-    return 4

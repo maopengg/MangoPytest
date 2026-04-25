@@ -49,18 +49,46 @@ def api_get_with_table_params_step(
 
 
 @when(parsers.re(r'POST\s+"(?P<path>[^"]+)"\s*:'))
-def api_post_step(path: str, docstring, mock_api_client, api_response):
-    """POST 请求步骤"""
-    body = json.loads(docstring) if docstring else {}
+def api_post_step(path: str, docstring, mock_api_client, api_response, created_entity):
+    """POST 请求步骤
+
+    支持在请求体中使用 ${entity.id} 占位符，会从 created_entity 中替换
+    """
+    import re
+
+    # 如果有创建的实体，先替换占位符，再解析 JSON
+    if docstring:
+        if created_entity and "entity" in created_entity:
+            entity = created_entity["entity"]
+            # 替换 ${product.id}, ${user.id} 等占位符
+            docstring = re.sub(r'\$\{(\w+)\.id\}', str(entity.id), docstring)
+        body = json.loads(docstring)
+    else:
+        body = {}
+
     result = mock_api_client.post(path, body)
     api_response.clear()
     api_response.update(result)
 
 
 @when(parsers.re(r'PUT\s+"(?P<path>[^"]+)"\s*:'))
-def api_put_step(path: str, docstring, mock_api_client, api_response):
-    """PUT 请求步骤"""
-    body = json.loads(docstring) if docstring else {}
+def api_put_step(path: str, docstring, mock_api_client, api_response, created_entity):
+    """PUT 请求步骤
+
+    支持在请求体中使用 ${entity.id} 占位符，会从 created_entity 中替换
+    """
+    import re
+
+    # 如果有创建的实体，先替换占位符，再解析 JSON
+    if docstring:
+        if created_entity and "entity" in created_entity:
+            entity = created_entity["entity"]
+            # 替换 ${product.id}, ${user.id} 等占位符
+            docstring = re.sub(r'\$\{(\w+)\.id\}', str(entity.id), docstring)
+        body = json.loads(docstring)
+    else:
+        body = {}
+
     result = mock_api_client.put(path, body)
     api_response.clear()
     api_response.update(result)

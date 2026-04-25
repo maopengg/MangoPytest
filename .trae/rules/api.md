@@ -1,5 +1,5 @@
 ---
-alwaysApply: true
+alwaysApply: false
 ---
 # API 开发规范
 ## 必须使用项目已有的虚拟环境的python解释器，不能使用系统默认的python解释器，默认使用项目根目录下的.venv虚拟环境

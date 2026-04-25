@@ -53,6 +53,7 @@ from auto_tests.pytest_api_mock.fixtures.builders.ceo_approval import (
     fully_approved_reimbursement,
     ceo_rejected_reimbursement,
     ceo_id,
+    ceo_user_fixture,
     ceo_approved_reimbursement,
     workflow_data,
 )
@@ -496,6 +497,7 @@ __all__ = [
     "fully_approved_reimbursement",
     "ceo_rejected_reimbursement",
     "ceo_id",
+    "ceo_user_fixture",
     "ceo_approved_reimbursement",
     "workflow_data",
     # 产品模块

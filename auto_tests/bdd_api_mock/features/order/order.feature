@@ -17,11 +17,10 @@
       @smoke @integration @positive
       场景: 创建新订单
       假如 存在"产品"
-      而且 存在"用户"
       当 POST "/orders":
       """
       {
-        "product_id": 1,
+        "product_id": ${product.id},
         "user_id": 1,
         "quantity": 2
       }
@@ -49,5 +48,5 @@
         "status": "paid"
       }
       """
-那么 响应状态码应该为 200
-而且 响应数据 "status" 应该为 "paid"
+      那么 响应状态码应该为 200
+      而且 响应数据 "status" 应该为 "paid"

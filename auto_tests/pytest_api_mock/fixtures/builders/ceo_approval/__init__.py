@@ -9,6 +9,7 @@ from .fixtures import (
     fully_approved_reimbursement,
     ceo_rejected_reimbursement,
     ceo_id,
+    ceo_user_fixture,
     ceo_approved_reimbursement,
     workflow_data,
 )
@@ -18,6 +19,7 @@ __all__ = [
     "fully_approved_reimbursement",
     "ceo_rejected_reimbursement",
     "ceo_id",
+    "ceo_user_fixture",
     "ceo_approved_reimbursement",
     "workflow_data",
 ]

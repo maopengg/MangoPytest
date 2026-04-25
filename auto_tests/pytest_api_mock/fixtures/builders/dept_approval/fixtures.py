@@ -3,11 +3,15 @@
 # @Description: 部门审批模块fixtures (C级)
 # @Time   : 2026-03-31
 # @Author : 毛鹏
+import uuid
 from typing import Any, Generator
 
 import pytest
 
+from auto_tests.pytest_api_mock.data_factory.builders.auth import AuthBuilder
 from auto_tests.pytest_api_mock.data_factory.builders.dept_approval import DeptApprovalBuilder
+from auto_tests.pytest_api_mock.data_factory.builders.user import UserBuilder
+from auto_tests.pytest_api_mock.data_factory.entities import UserEntity
 
 
 @pytest.fixture
@@ -40,7 +44,55 @@ def _entity_to_dict(entity):
 
 
 @pytest.fixture
-def dept_approved_reimbursement(reimbursement_builder, dept_approval_builder) -> dict:
+def dept_manager_user(authenticated_client) -> Generator[UserEntity, None, None]:
+    """
+    部门经理用户 Fixture
+    通过数据工厂创建真实的部门经理用户
+    """
+    auth_builder = AuthBuilder(token=authenticated_client.token)
+    
+    # 使用随机后缀避免用户名冲突
+    suffix = uuid.uuid4().hex[:6]
+    
+    # 创建真实用户
+    user_data = auth_builder.register(
+        username=f"dept_mgr_{suffix}",
+        email=f"dept_mgr_{suffix}@example.com",
+        full_name="Department Manager",
+        password="dept123",
+        role="dept_manager"
+    )
+    
+    # 转换为 UserEntity
+    user = UserEntity(
+        id=user_data.get("id"),
+        username=user_data.get("username"),
+        email=user_data.get("email"),
+        full_name=user_data.get("full_name"),
+        password="dept123",
+        role=user_data.get("role", "user"),
+        status="active",
+    )
+    
+    yield user
+    
+    # 清理：删除创建的用户
+    if user.id:
+        user_builder = UserBuilder(token=authenticated_client.token)
+        user_builder.delete(user_id=user.id)
+
+
+@pytest.fixture
+def dept_manager_id(dept_manager_user) -> int:
+    """
+    部门经理用户ID Fixture
+    返回通过数据工厂创建的部门经理用户ID
+    """
+    return dept_manager_user.id
+
+
+@pytest.fixture
+def dept_approved_reimbursement(reimbursement_builder, dept_approval_builder, dept_manager_id) -> dict:
     """
     部门审批通过的报销申请Fixture
     提供D级+C级完整数据（部门已审批通过）
@@ -56,7 +108,7 @@ def dept_approved_reimbursement(reimbursement_builder, dept_approval_builder) ->
     )
 
     # C级：部门审批通过
-    dept_approval = dept_approval_builder.approve(reimbursement.id)
+    dept_approval = dept_approval_builder.approve(reimbursement.id, approver_id=dept_manager_id)
 
     return {
         "reimbursement": _entity_to_dict(reimbursement),
@@ -66,7 +118,7 @@ def dept_approved_reimbursement(reimbursement_builder, dept_approval_builder) ->
 
 
 @pytest.fixture
-def dept_rejected_reimbursement(reimbursement_builder, dept_approval_builder) -> dict:
+def dept_rejected_reimbursement(reimbursement_builder, dept_approval_builder, dept_manager_id) -> dict:
     """
     被部门拒绝的报销申请Fixture
     提供D级+C级(拒绝)完整数据
@@ -78,7 +130,7 @@ def dept_rejected_reimbursement(reimbursement_builder, dept_approval_builder) ->
 
     # C级：部门审批拒绝
     dept_approval = dept_approval_builder.reject(
-        reimbursement.id, comment="金额超出部门预算"
+        reimbursement.id, approver_id=dept_manager_id, comment="金额超出部门预算"
     )
 
     return {
@@ -86,11 +138,3 @@ def dept_rejected_reimbursement(reimbursement_builder, dept_approval_builder) ->
         "dept_approval": _entity_to_dict(dept_approval),
         "status": "dept_rejected",
     }
-
-
-@pytest.fixture
-def dept_manager_id() -> int:
-    """
-    部门经理用户ID Fixture
-    """
-    return 3

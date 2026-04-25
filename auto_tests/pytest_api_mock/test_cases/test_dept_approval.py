@@ -118,10 +118,13 @@ class TestDeptApprovalBuilder(UnitTest):
     """
 
     @allure.title("Builder创建部门审批")
-    def test_builder_create(self, dept_approval_builder, pending_reimbursement):
+    def test_builder_create(
+        self, dept_approval_builder, pending_reimbursement, dept_manager_id
+    ):
         """测试Builder创建部门审批"""
         approval = dept_approval_builder.create(
             reimbursement_id=pending_reimbursement["id"],
+            approver_id=dept_manager_id,
             status="approved",
             comment="测试审批",
         )
@@ -131,18 +134,26 @@ class TestDeptApprovalBuilder(UnitTest):
         assert approval.status == "approved"
 
     @allure.title("Builder快捷通过方法")
-    def test_builder_approve(self, dept_approval_builder, pending_reimbursement):
+    def test_builder_approve(
+        self, dept_approval_builder, pending_reimbursement, dept_manager_id
+    ):
         """测试Builder快捷通过方法"""
-        approval = dept_approval_builder.approve(pending_reimbursement["id"])
+        approval = dept_approval_builder.approve(
+            pending_reimbursement["id"], approver_id=dept_manager_id
+        )
 
         assert approval is not None
         assert approval.status == "approved"
 
     @allure.title("Builder快捷拒绝方法")
-    def test_builder_reject(self, dept_approval_builder, pending_reimbursement):
+    def test_builder_reject(
+        self, dept_approval_builder, pending_reimbursement, dept_manager_id
+    ):
         """测试Builder快捷拒绝方法"""
         approval = dept_approval_builder.reject(
-            pending_reimbursement["id"], comment="不符合规定"
+            pending_reimbursement["id"],
+            approver_id=dept_manager_id,
+            comment="不符合规定",
         )
 
         assert approval is not None

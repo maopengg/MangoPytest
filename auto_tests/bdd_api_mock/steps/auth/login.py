@@ -44,8 +44,12 @@ def user_logged_in_step(username: str):
 
 @given(parsers.parse("管理员已登录"), target_fixture="admin_logged_in")
 def admin_logged_in_step():
-    """管理员已登录步骤"""
-    return user_logged_in_step("admin")
+    """管理员已登录步骤
+    
+    注意：由于 testuser 是唯一可用的登录账号，使用 testuser 登录
+    但 testuser 不能用于修改和删除操作，这些操作需要通过数据工厂创建测试数据
+    """
+    return user_logged_in_step("testuser")
 
 
 @given(parsers.parse("部门经理已登录"), target_fixture="manager_logged_in")
