@@ -1,32 +1,34 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description: 
+# @Description: 系统管理API - 不依赖Excel装饰器
 # @Time   : 2026-01-18 13:58
 # @Author : 毛鹏
 
-from auto_tests.api_mock import base_data
-from core.models.api_model import ApiDataModel
-from core.api.request_tool import RequestTool
-from core.decorators import request_data
+from typing import Dict, Any, Optional
+
+from core.api.client import APIClient
 
 
-class SystemAPI(RequestTool):
-    base_data = base_data
+class SystemAPI:
+    """系统管理API类 - 直接调用API，不依赖Excel"""
 
-    @request_data(19)
-    def health_check(self, data: ApiDataModel) -> ApiDataModel:
+    def __init__(self, base_url: str = "http://43.142.161.61:8003", headers: Dict = None):
+        self.client = APIClient(base_url=base_url)
+        if headers:
+            self.client.headers = headers
+
+    def health_check(self) -> Dict[str, Any]:
         """
         健康检查接口
-        @param data: ApiDataModel
-        @return: ApiDataModel
+        @return: 响应数据字典
         """
-        return self.http(data)
+        response = self.client.get("/health")
+        return response.data
 
-    @request_data(20)
-    def get_server_info(self, data: ApiDataModel) -> ApiDataModel:
+    def get_server_info(self) -> Dict[str, Any]:
         """
         获取服务器信息接口
-        @param data: ApiDataModel
-        @return: ApiDataModel
+        @return: 响应数据字典
         """
-        return self.http(data)
+        response = self.client.get("/info")
+        return response.data

@@ -1,32 +1,11 @@
-from urllib.parse import urljoin
+# -*- coding: utf-8 -*-
+# @Project: 芒果测试平台
+# @Description: API Mock 测试模块 - 不依赖Excel配置
+# @Time   : 2026-01-18
+# @Author : 毛鹏
 
-import requests
-
-from auto_tests.project_config import ProjectEnum
-from core.enums.tools_enum import AutoTestTypeEnum
-from core.models.tools_model import BaseDataModel
-from core.utils import log, InitBaseData
-
+# 默认用户信息
 user_info: dict = {"username": "testuser", "password": "482c811da5d5b4bc6d497ffa98491e38"}
 
-
-def data_init():
-    """
-    登录接口，获取通用token
-    """
-    test_data: BaseDataModel = InitBaseData.main(
-        ProjectEnum.MOCK_API.value,
-        AutoTestTypeEnum.API
-    )
-    login_url = f'auth/login'
-    response = requests.request(url=urljoin(test_data.test_object.host, login_url),
-                                method="POST",
-                                json=user_info,
-                                proxies={'http': None, 'https': None})
-    test_data.headers['X-Token'] = response.json()['data']['token']
-    test_data.headers['Content-Type'] = 'application/json'
-    log.info(f'{ProjectEnum.MOCK_API.value}的API在自动化基础信息设置完成！')
-    return test_data
-
-
-base_data = data_init()
+# Mock API 基础URL
+BASE_URL: str = "http://43.142.161.61:8003"

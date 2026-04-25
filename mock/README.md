@@ -22,7 +22,6 @@
         -H "Content-Type: application/json" \
         -d '{"username": "testuser", "password": "482c811da5d5b4bc6d497ffa98491e38"}'
    ```
-
 2. 从响应中提取token值:
    ```json
    {
@@ -35,7 +34,6 @@
      }
    }
    ```
-
 3. 在后续请求中添加X-Token头:
    ```bash
    curl -X GET http://localhost:8003/users \
@@ -44,14 +42,14 @@
 
 如果未提供有效的token，接口将返回401 Unauthorized错误。
 
----
+***
 
 ### 认证相关
 
 #### 1. `POST /auth/login` - 用户登录
 
 - **请求头**: `Content-Type: application/json`
-- **请求体**:
+- **请求体**: 不允许使用这个账号进行修改，删除等操作，这是固定给登陆用户使用的账号
   ```json
   {
     "username": "testuser",
@@ -99,7 +97,7 @@
   }
   ```
 
----
+***
 
 ### 用户管理
 
@@ -179,7 +177,7 @@
   }
   ```
 
----
+***
 
 ### 产品管理
 
@@ -270,7 +268,7 @@
   }
   ```
 
----
+***
 
 ### 订单管理
 
@@ -382,7 +380,7 @@
   }
   ```
 
----
+***
 
 ### 报销申请管理 (D级模块)
 
@@ -424,7 +422,7 @@
 
 - **请求头**: `X-Token: {token}`
 - **查询参数**:
-    - `status` (可选): 状态筛选 (pending, dept_approved, finance_approved, ceo_approved, rejected)
+  - `status` (可选): 状态筛选 (pending, dept\_approved, finance\_approved, ceo\_approved, rejected)
 - **响应示例**:
   ```json
   {
@@ -482,7 +480,7 @@
   }
   ```
 
----
+***
 
 ### 部门审批管理 (C级模块)
 
@@ -518,7 +516,7 @@
 
 - **请求头**: `X-Token: {token}`
 - **查询参数**:
-    - `reimbursement_id` (可选): 按报销申请ID筛选
+  - `reimbursement_id` (可选): 按报销申请ID筛选
 - **响应示例**:
   ```json
   {
@@ -536,7 +534,7 @@
   }
   ```
 
----
+***
 
 ### 财务审批管理 (B级模块)
 
@@ -574,7 +572,7 @@
 
 - **请求头**: `X-Token: {token}`
 - **查询参数**:
-    - `reimbursement_id` (可选): 按报销申请ID筛选
+  - `reimbursement_id` (可选): 按报销申请ID筛选
 - **响应示例**:
   ```json
   {
@@ -593,7 +591,7 @@
   }
   ```
 
----
+***
 
 ### 总经理审批管理 (A级模块)
 
@@ -631,7 +629,7 @@
 
 - **请求头**: `X-Token: {token}`
 - **查询参数**:
-    - `reimbursement_id` (可选): 按报销申请ID筛选
+  - `reimbursement_id` (可选): 按报销申请ID筛选
 - **响应示例**:
   ```json
   {
@@ -650,7 +648,7 @@
   }
   ```
 
----
+***
 
 ### 审批工作流
 
@@ -689,7 +687,7 @@
   }
   ```
 
----
+***
 
 ### 其他功能
 
@@ -777,7 +775,7 @@
   }
   ```
 
----
+***
 
 ## 快速开始
 
@@ -791,7 +789,7 @@ docker build -t mango-mock .
 docker run -p 8003:8003 mango-mock
 ```
 
-服务将在 http://localhost:8003 上运行。
+服务将在 <http://localhost:8003> 上运行。
 
 ### 本地运行
 
@@ -803,14 +801,14 @@ pip install -r requirements.txt
 uvicorn service.mock_api:app --host 0.0.0.0 --port 8003
 ```
 
-服务将在 http://localhost:8003 上运行。
+服务将在 <http://localhost:8003> 上运行。
 
 ## API文档
 
 启动服务后，可以通过以下地址访问自动生成的API文档：
 
-- Swagger UI: http://localhost:8003/docs
-- ReDoc: http://localhost:8003/redoc
+- Swagger UI: <http://localhost:8003/docs>
+- ReDoc: <http://localhost:8003/redoc>
 
 ## 测试账号
 

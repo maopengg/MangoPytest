@@ -1,50 +1,66 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description: 
+# @Description: 用户管理API - 不依赖Excel装饰器
 # @Time   : 2026-01-18 13:56
 # @Author : 毛鹏
 
-from auto_tests.api_mock import base_data
-from core.models.api_model import ApiDataModel
-from core.api.request_tool import RequestTool
-from core.decorators import request_data
+from typing import Dict, Any, Optional
+
+from core.api.client import APIClient
 
 
-class UserAPI(RequestTool):
-    base_data = base_data
+class UserAPI:
+    """用户管理API类 - 直接调用API，不依赖Excel"""
 
-    @request_data(3)
-    def get_all_users(self, data: ApiDataModel) -> ApiDataModel:
+    def __init__(self, base_url: str = "http://43.142.161.61:8003", headers: Dict = None):
+        self.client = APIClient(base_url=base_url)
+        if headers:
+            self.client.headers = headers
+
+    def get_all_users(self) -> Dict[str, Any]:
         """
         获取所有用户接口
-        @param data: ApiDataModel
-        @return: ApiDataModel
+        @return: 响应数据字典
         """
-        return self.http(data)
+        response = self.client.get("/users")
+        return response.data
 
-    @request_data(4)
-    def get_user_by_id(self, data: ApiDataModel) -> ApiDataModel:
+    def get_user_by_id(self, user_id: int) -> Dict[str, Any]:
         """
         根据ID获取用户接口
-        @param data: ApiDataModel
-        @return: ApiDataModel
+        @param user_id: 用户ID
+        @return: 响应数据字典
         """
-        return self.http(data)
+        response = self.client.get("/users", params={"id": user_id})
+        return response.data
 
-    @request_data(5)
-    def update_user_info(self, data: ApiDataModel) -> ApiDataModel:
+    def update_user_info(self, user_id: int, username: str, email: str, 
+                         full_name: str, role: str, password: str) -> Dict[str, Any]:
         """
         更新用户信息接口
-        @param data: ApiDataModel
-        @return: ApiDataModel
+        @param user_id: 用户ID
+        @param username: 用户名
+        @param email: 邮箱
+        @param full_name: 全名
+        @param role: 角色
+        @param password: 密码
+        @return: 响应数据字典
         """
-        return self.http(data)
+        update_data = {
+            "username": username,
+            "email": email,
+            "full_name": full_name,
+            "role": role,
+            "password": password
+        }
+        response = self.client.put(f"/users/{user_id}", json=update_data)
+        return response.data
 
-    @request_data(6)
-    def delete_user(self, data: ApiDataModel) -> ApiDataModel:
+    def delete_user(self, user_id: int) -> Dict[str, Any]:
         """
         删除用户接口
-        @param data: ApiDataModel
-        @return: ApiDataModel
+        @param user_id: 用户ID
+        @return: 响应数据字典
         """
-        return self.http(data)
+        response = self.client.delete(f"/users/{user_id}")
+        return response.data
