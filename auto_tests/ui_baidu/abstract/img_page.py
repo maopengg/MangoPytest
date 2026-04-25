@@ -6,28 +6,27 @@
 
 from urllib.parse import urljoin
 
-from mangoautomation.uidrives import BaseData
+from mangoautomation.uidrive import BaseData
 
 from auto_tests.project_config import ProjectEnum
-from core.models.tools_model import BaseDataModel
+from auto_tests.ui_baidu.config import settings
 from core.ui import WebBaseObject
 from core.utils.obtain_test_data  import ObtainTestData
 
 
-class HomePage(WebBaseObject):
+class ImgPage(WebBaseObject):
     """
-    百度首页
+    百度图片页面
     """
 
     def __init__(self,
                  base_data: BaseData,
-                 base_data_model: BaseDataModel,
                  test_data: ObtainTestData):
         project_name = ProjectEnum.BAIDU.value
-        module_name = '首页'
-        page_name = '首页'
+        module_name = '图片'
+        page_name = '图片页面'
         super().__init__(project_name, module_name, page_name, base_data, test_data)
-        self.url = urljoin(base_data.test_object.host, '')
+        self.url = settings.BASE_URL
 
     def goto(self):
         self.w_goto(self.url)

@@ -8,7 +8,7 @@ from urllib.parse import urljoin
 from mangoautomation.uidrive import BaseData
 
 from auto_tests.project_config import ProjectEnum
-from core.models.tools_model import BaseDataModel
+from auto_tests.ui_mock.config import settings
 from core.ui import WebBaseObject
 from core.utils.obtain_test_data  import ObtainTestData
 
@@ -20,16 +20,14 @@ class BatchPage(WebBaseObject):
 
     def __init__(self,
                  base_data: BaseData,
-                 base_data_model: BaseDataModel,
                  test_data: ObtainTestData):
         project_name = ProjectEnum.MOCK_UI.value
         module_name = '批量操作'
         page_name = '批量操作'
-        self.base_data_model = base_data_model
         self.base_data = base_data
         self.test_data = test_data
         super().__init__(project_name, module_name, page_name, self.base_data, test_data)
-        self.url = urljoin(base_data_model.test_object.host, '')
+        self.url = settings.BASE_URL
 
     def goto(self):
         self.base_data.page.goto(self.url, timeout=30000)

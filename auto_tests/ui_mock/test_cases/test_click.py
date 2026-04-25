@@ -6,7 +6,6 @@
 
 import allure
 
-from auto_tests.ui_mock import base_data_model
 from auto_tests.ui_mock.abstract.click_page import ClickPage
 from auto_tests.ui_mock.abstract.home_page import HomePage
 from core.utils.obtain_test_data import ObtainTestData
@@ -14,15 +13,14 @@ from core.utils.obtain_test_data import ObtainTestData
 
 @allure.epic('演示-UI自动化-WEB项目-MockUI服务')
 class TestClick:
-    base_data_model = base_data_model
     test_data: ObtainTestData = ObtainTestData()
 
     @allure.title('演示-元素点击操作')
     def test_01(self, base_data):
         """ID: 3 - 演示-元素点击操作"""
-        home_page = HomePage(base_data, self.base_data_model, self.test_data)
+        home_page = HomePage(base_data, self.test_data)
         home_page.goto()
-        click_page = ClickPage(base_data, self.base_data_model, self.test_data)
+        click_page = ClickPage(base_data, self.test_data)
 
         # 测试双击
         result = click_page.test_double_click()

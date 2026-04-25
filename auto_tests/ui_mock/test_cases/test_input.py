@@ -6,7 +6,6 @@
 
 import allure
 
-from auto_tests.ui_mock import base_data_model
 from auto_tests.ui_mock.abstract.home_page import HomePage
 from auto_tests.ui_mock.abstract.input_page import InputPage
 from core.utils.obtain_test_data import ObtainTestData
@@ -14,7 +13,6 @@ from core.utils.obtain_test_data import ObtainTestData
 
 @allure.epic('演示-UI自动化-WEB项目-MockUI服务')
 class TestInput:
-    base_data_model = base_data_model
     test_data: ObtainTestData = ObtainTestData()
 
     @allure.title('演示-不同类型的输入测试')
@@ -22,9 +20,9 @@ class TestInput:
         """ID: 7 - 演示-不同类型的输入测试"""
         data = {"value": "输入框测试"}
         self.test_data.set_cache('菜单名称', data.get('value'))
-        home_page = HomePage(base_data, self.base_data_model, self.test_data)
+        home_page = HomePage(base_data, self.test_data)
         home_page.goto()
         home_page.switch_menu()
-        input_page = InputPage(base_data, self.base_data_model, self.test_data)
+        input_page = InputPage(base_data, self.test_data)
         result = input_page.test_input_types(data.get('value'))
         assert result is not None

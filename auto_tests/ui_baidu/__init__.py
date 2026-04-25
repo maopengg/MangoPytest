@@ -4,24 +4,3 @@
 # @Time   : 2024-03-28 15:19
 # @Author : 毛鹏
 
-from auto_tests.project_config import ProjectEnum
-from core.enums.tools_enum import AutoTestTypeEnum
-from core.models.tools_model import BaseDataModel
-from core.utils import log, InitBaseData
-
-
-def data_init() -> BaseDataModel:
-    """
-    项目数据初始化0
-    :return:
-    """
-    data_model: BaseDataModel = InitBaseData.main(
-        ProjectEnum.BAIDU.value,
-        AutoTestTypeEnum.UI
-    )
-
-    log.info(f'{ProjectEnum.BAIDU.value}的UI在自动化基础信息设置完成！')
-    return data_model
-
-
-base_data_model: BaseDataModel = data_init()

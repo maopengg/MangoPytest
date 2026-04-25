@@ -75,17 +75,3 @@ class TestObjectModel(BaseModel):
     db_password: str | None = None
     db_database: str | None = None
 
-
-class BaseDataModel(BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-
-    test_environment: EnvironmentEnum
-    test_data: ObtainTestData = ObtainTestData()
-
-    test_object: TestObjectModel
-    project: ProjectModel
-    mysql_config_model: MysqlConingModel | None = None
-    mysql_connect: MysqlConnect | None = None
-    headers: dict = {}
-
-    cache_data: dict = {}

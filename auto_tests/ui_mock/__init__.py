@@ -3,25 +3,3 @@
 # @Description: 
 # @Time   : 2026-03-03 14:07
 # @Author : 毛鹏
-
-from auto_tests.project_config import ProjectEnum
-from core.enums.tools_enum import AutoTestTypeEnum
-from core.models.tools_model import BaseDataModel
-from core.utils import log, InitBaseData
-
-
-def data_init() -> BaseDataModel:
-    """
-    项目数据初始化
-    :return:
-    """
-    data_model: BaseDataModel = InitBaseData.main(
-        ProjectEnum.MOCK_UI.value,
-        AutoTestTypeEnum.UI
-    )
-
-    log.info(f'{ProjectEnum.MOCK_UI.value}的UI自动化基础信息设置完成！')
-    return data_model
-
-
-base_data_model: BaseDataModel = data_init()
