@@ -7,17 +7,6 @@
 from core.enums import BaseEnum
 
 
-class SourcesTypeEnum(BaseEnum):
-    """通知枚举"""
-    SQL = 0
-    DOCUMENT = 1
-    EXCEL = 2
-
-    @classmethod
-    def obj(cls):
-        return {0: "SQL", 1: "飞书文档", 2: "excel"}
-
-
 class ClientNameEnum(BaseEnum):
     """
     端名称

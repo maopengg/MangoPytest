@@ -40,23 +40,12 @@ class TestMetrics(BaseModel):
     time: float
 
 
-class SheetModel(BaseModel):
-    id: str
-    title: str
 
 
-class SurfaceConfigModel(BaseModel):
-    id: str
-    sheet: list[SheetModel]
 
 
 class SurfaceModel(BaseModel):
-    api_info_id: str
-    api_test_case_id: str
-    project: SurfaceConfigModel
     ui_element_id: str
-    ui_test_case_id: str
-    other_test_case_id: str
 
 
 class FeiShuModel(BaseModel):

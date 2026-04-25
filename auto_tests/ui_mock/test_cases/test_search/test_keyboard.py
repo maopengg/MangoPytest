@@ -9,9 +9,7 @@ import allure
 from auto_tests.ui_mock import base_data_model
 from auto_tests.ui_mock.abstract.home_page import HomePage
 from auto_tests.ui_mock.abstract.keyboard_page import KeyboardPage
-from core.models.ui_model import UiDataModel
-from core.decorators.ui import case_data
-from core.utils.obtain_test_data  import ObtainTestData
+from core.utils.obtain_test_data import ObtainTestData
 
 
 @allure.epic('演示-UI自动化-WEB项目-MockUI服务')
@@ -19,10 +17,11 @@ class TestKeyboard:
     base_data_model = base_data_model
     test_data: ObtainTestData = ObtainTestData()
 
-    @case_data([10])
-    def test_01(self, base_data, data: UiDataModel):
-        """测试键盘输入"""
-        self.test_data.set_cache('菜单名称', data.test_case.data.get('value'))
+    @allure.title('演示-键盘输入')
+    def test_01(self, base_data):
+        """ID: 10 - 演示-键盘输入"""
+        data = {"value": "键盘操作测试"}
+        self.test_data.set_cache('菜单名称', data.get('value'))
         home_page = HomePage(base_data, self.base_data_model, self.test_data)
         home_page.goto()
         home_page.switch_menu()

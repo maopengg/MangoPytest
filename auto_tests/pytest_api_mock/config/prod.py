@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description: 生产环境配置
-# @Time   : 2026-03-31
+# @Description: Pytest API Mock 生产环境配置
+# @Time   : 2026-04-25
 # @Author : 毛鹏
 
 from .settings import ProdConfig

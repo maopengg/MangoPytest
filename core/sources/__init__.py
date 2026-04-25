@@ -6,74 +6,13 @@
 import numpy as np
 from pandas.core.frame import DataFrame
 
-from core.enums.tools_enum import SourcesTypeEnum
 from core.exceptions import *
-from core.settings.settings import SOURCES_TYPE
-from core.sources.excel.excel_data import ExcelData
 from core.sources.feishu.document_data import DocumentData
-from core.sources.sql.sql_data import SqlData
 
 
 class SourcesData:
-    project: DataFrame = None
-    notice_config: DataFrame = None
-    test_object: DataFrame = None
-    api_info: DataFrame = None
-    api_test_case: DataFrame = None
-    ui_test_case: DataFrame = None
     ui_element: DataFrame = None
-    other_test_case: DataFrame = None
-    try:
-        if SOURCES_TYPE == SourcesTypeEnum.SQL:
-            r = SqlData()
-        elif SOURCES_TYPE == SourcesTypeEnum.EXCEL:
-            r = ExcelData()
-        else:
-            r = DocumentData()
-    except AssertionError:
-        raise ToolsError(*ERROR_MSG_0347)
-
-    @classmethod
-    def get_test_object(cls, is_dict=True, **kwargs):
-        if cls.test_object is None:
-            cls.test_object = cls.r.test_object().replace({np.nan: None})
-        return cls.get(cls.test_object, is_dict, **kwargs)
-
-    @classmethod
-    def get_project(cls, is_dict=True, **kwargs):
-        if cls.project is None:
-            cls.project = cls.r.project().replace({np.nan: None})
-        return cls.get(cls.project, is_dict, **kwargs)
-
-    @classmethod
-    def get_notice_config(cls, is_dict=True, **kwargs):
-        if cls.notice_config is None:
-            cls.notice_config = cls.r.notice_config().replace({np.nan: None})
-        return cls.get(cls.notice_config, is_dict, **kwargs)
-
-    @classmethod
-    def get_api_info(cls, is_dict=True, **kwargs):
-        if cls.api_info is None:
-            cls.api_info = cls.r.api_info().replace({np.nan: None})
-        return cls.get(cls.api_info, is_dict, **kwargs)
-
-    @classmethod
-    def get_api_test_case(cls, is_dict=True, **kwargs):
-        if cls.api_test_case is None:
-            cls.api_test_case = cls.r.api_test_case().replace({np.nan: None})
-        return cls.get(cls.api_test_case, is_dict, **kwargs)
-
-    @classmethod
-    def get_ui_test_case(cls, is_dict=True, **kwargs):
-        if cls.ui_test_case is None:
-            cls.ui_test_case = cls.r.ui_test_case().replace({np.nan: None})
-        return cls.get(cls.ui_test_case, is_dict, **kwargs)
-
-    @classmethod
-    def get_other_test_case(cls, is_dict=True, **kwargs):
-        if cls.other_test_case is None:
-            cls.other_test_case = cls.r.other_test_case().replace({np.nan: None})
-        return cls.get(cls.other_test_case, is_dict, **kwargs)
+    r = DocumentData()
 
     @classmethod
     def get_ui_element(cls, is_dict=True, **kwargs):
@@ -114,5 +53,5 @@ class SourcesData:
 
 
 if __name__ == "__main__":
-    api_info_dict = SourcesData.get_api_info(id=1)
+    api_info_dict = SourcesData.get_ui_element(id=1)
     print(api_info_dict)

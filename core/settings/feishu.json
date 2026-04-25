@@ -2,27 +2,6 @@
   "app_id": "cli_a680e4c8c5be100c",
   "app_secret": "uKEDeCAamlviajfBrxXjBhiSKnxONf6x",
   "surface": {
-    "api_info_id": "LntEsBf88h8KDXtjmKNcHgwSnoc",
-    "api_test_case_id": "XLcrsEVLkhdDQvtWaJQc4uennvb",
-    "ui_element_id": "ZQfZsC7IShpkGytZLoKc1gbXnPS",
-    "ui_test_case_id": "XKB6sKVOoh3hYxtRjikct7chnsd",
-    "other_test_case_id": "GekMsmIKKhxJgitRnvIcSi3pnKf",
-    "project": {
-      "id": "StFhs7b34h410ktn4FBc9qJsn8e",
-      "sheet": [
-        {
-          "id": "8d41b9",
-          "title": "项目信息"
-        },
-        {
-          "id": "RwlKtG",
-          "title": "测试环境"
-        },
-        {
-          "id": "58AgAa",
-          "title": "通知配置"
-        }
-      ]
-    }
+    "ui_element_id": "ZQfZsC7IShpkGytZLoKc1gbXnPS"
   }
 }
