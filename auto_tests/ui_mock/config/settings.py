@@ -59,7 +59,7 @@ class DevConfig(MockUIConfig):
     """
 
     ENV: str = "dev"
-    BASE_URL: str = Field(default="http://localhost:8080", description="开发环境地址")
+    BASE_URL: str = Field(default="http://localhost:8003", description="开发环境地址")
 
     # 开发环境使用有头模式便于调试
     HEADLESS: bool = Field(default=False, description="开发环境无头模式")
@@ -76,7 +76,7 @@ class ProdConfig(MockUIConfig):
     """
 
     ENV: str = "prod"
-    BASE_URL: str = Field(default="http://43.142.161.61:8080", description="生产环境地址")
+    BASE_URL: str = Field(default="http://43.142.161.61:8003", description="生产环境地址")
 
     # 生产环境配置
     HEADLESS: bool = Field(default=True, description="生产环境无头模式")
