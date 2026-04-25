@@ -8,6 +8,8 @@ pytest 全局配置 - BDD API Mock 测试
 import pytest
 import logging
 import hashlib
+import os
+import tempfile
 
 # 配置日志
 logging.basicConfig(
@@ -122,32 +124,23 @@ def created_entity():
 # ========== 数据清理钩子 ==========
 
 
-@pytest.fixture(scope="function", autouse=True)
-def auto_cleanup_test_data(db_session):
-    """自动清理自动化测试数据
-
-    每个测试函数执行前清理 AUTO_ 开头的数据
-    """
-    from auto_tests.bdd_api_mock.hooks.cleanup_hooks import TestDataCleaner
-
-    cleaner = TestDataCleaner(db_session)
-
-    # 测试前清理
-    logger.info(">>> [HOOK] 测试前清理 AUTO_ 测试数据...")
+def _cleanup_test_data():
+    """执行数据清理的内部函数"""
     try:
-        cleaner.clear_all()
+        from auto_tests.bdd_api_mock.config import SessionLocal
+        from auto_tests.bdd_api_mock.hooks.cleanup_hooks import TestDataCleaner
+
+        session = SessionLocal()
+        try:
+            cleaner = TestDataCleaner(session)
+            cleaner.clear_all()
+        finally:
+            session.close()
     except Exception as e:
         logger.warning(f">>> [HOOK] 数据清理失败: {e}")
 
-    yield
 
-    # 测试后清理（可选）
-    # logger.info(">>> [HOOK] 测试后清理 AUTO_ 测试数据...")
-    # cleaner.clear_all()
-
-
-# ========== pytest 钩子 ==========
-
+# ========== 多进程支持：会话级别清理 ==========
 
 def pytest_configure(config):
     """pytest 配置钩子"""
@@ -155,3 +148,68 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "positive: 正向测试")
     config.addinivalue_line("markers", "negative: 负向测试")
     config.addinivalue_line("markers", "integration: 集成测试")
+
+
+def _is_first_worker():
+    """检查当前进程是否是第一个工作进程
+    
+    使用文件锁实现，只有第一个获取锁的进程返回 True
+    """
+    lock_file = os.path.join(tempfile.gettempdir(), 'bdd_api_mock_cleanup.lock')
+    try:
+        # 如果锁文件存在且被占用，说明已经有进程执行过清理
+        if os.path.exists(lock_file):
+            # 尝试读取锁文件中的进程ID
+            try:
+                with open(lock_file, 'r') as f:
+                    content = f.read().strip()
+                    if content:
+                        return False  # 已经有进程执行过
+            except:
+                pass
+        
+        # 写入当前进程标识
+        with open(lock_file, 'w') as f:
+            f.write(str(os.getpid()))
+        return True
+    except Exception as e:
+        logger.warning(f">>> 检查锁文件失败: {e}")
+        return False
+
+
+def pytest_sessionstart(session):
+    """测试会话开始时执行
+    
+    在多进程模式下，只有第一个工作进程执行清理
+    """
+    worker_id = os.environ.get('PYTEST_XDIST_WORKER')
+    
+    if worker_id:
+        # 工作进程：只有第一个工作进程执行清理
+        if worker_id == 'gw0':  # xdist 的第一个工作进程
+            logger.info(f">>> [Worker {worker_id}] 第一个工作进程，执行数据清理...")
+            _cleanup_test_data()
+        else:
+            logger.info(f">>> [Worker {worker_id}] 非首个工作进程，跳过清理")
+    else:
+        # 主进程（非多进程模式）
+        logger.info(">>> [Main] 测试会话开始，执行数据清理...")
+        _cleanup_test_data()
+
+
+def pytest_sessionfinish(session, exitstatus):
+    """测试会话结束时执行
+    
+    清理锁文件
+    """
+    worker_id = os.environ.get('PYTEST_XDIST_WORKER')
+    
+    # 只有主进程或第一个工作进程清理锁文件
+    if not worker_id or worker_id == 'gw0':
+        lock_file = os.path.join(tempfile.gettempdir(), 'bdd_api_mock_cleanup.lock')
+        try:
+            if os.path.exists(lock_file):
+                os.remove(lock_file)
+                logger.info(">>> 清理锁文件")
+        except Exception as e:
+            logger.warning(f">>> 清理锁文件失败: {e}")

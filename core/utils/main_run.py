@@ -17,6 +17,26 @@ from core.utils.zip_files import zip_files
 from core.utils import log
 
 
+def cleanup_bdd_test_data():
+    """清理 BDD API Mock 测试数据
+    
+    在测试执行前清理所有 AUTO_ 开头的测试数据
+    """
+    try:
+        from auto_tests.bdd_api_mock.config import SessionLocal
+        from auto_tests.bdd_api_mock.hooks.cleanup_hooks import TestDataCleaner
+        
+        log.info(">>> [MainRun] 执行前清理 BDD API Mock 测试数据...")
+        session = SessionLocal()
+        try:
+            cleaner = TestDataCleaner(session)
+            cleaner.clear_all()
+        finally:
+            session.close()
+    except Exception as e:
+        log.warning(f">>> [MainRun] 数据清理失败: {e}")
+
+
 class MainRun:
 
     def __init__(self, test_project: list[dict], pytest_command: list):
@@ -32,6 +52,10 @@ class MainRun:
                 if i.get(
                         "project_name"
                 ) == case_run_model.project and case_run_model.type == i.get("type"):
+                    # 如果是 BDD API Mock 项目，先清理数据
+                    if case_run_model.project == "BDD_API_MOCK":
+                        cleanup_bdd_test_data()
+                    
                     if (
                             rf'{project_dir.root_path()}\auto_tests\{i.get("dir_name")}\test_cases'
                             in os.listdir()
