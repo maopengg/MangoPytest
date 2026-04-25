@@ -6,7 +6,7 @@
 from datetime import datetime
 from typing import Any, Dict, Optional
 
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime, Index
+from sqlalchemy import Column, Integer, String, Text, DateTime, Index
 from sqlalchemy.orm import relationship
 
 from auto_tests.bdd_api_mock.config import Base
@@ -17,7 +17,8 @@ class ApprovalLogEntity(Base):
     __tablename__ = "approval_logs"
 
     id = Column(Integer, primary_key=True, autoincrement=True, comment="日志ID")
-    reimbursement_id = Column(Integer, ForeignKey("reimbursements.id"), nullable=False, comment="报销申请ID")
+    # 数据库层面弱关联（无外键约束），只在 ORM 层面建立关系
+    reimbursement_id = Column(Integer, nullable=False, comment="报销申请ID")
     step = Column(Integer, nullable=False, comment="审批步骤(1-4)")
     step_name = Column(String(50), nullable=False, comment="步骤名称")
     action = Column(String(50), nullable=False, comment="操作类型")
@@ -28,7 +29,7 @@ class ApprovalLogEntity(Base):
     new_status = Column(String(50), comment="新状态")
     created_at = Column(DateTime, default=datetime.now, comment="创建时间")
 
-    # 关联关系
+    # 关联关系 - ORM 层面关联，数据库无外键约束
     reimbursement = relationship("ReimbursementEntity", back_populates="approval_logs")
 
     # 索引

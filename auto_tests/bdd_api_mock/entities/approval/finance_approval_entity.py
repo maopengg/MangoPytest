@@ -6,7 +6,7 @@
 from datetime import datetime
 from typing import Any, Dict, Optional
 
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, Enum, Boolean, DateTime, Index
+from sqlalchemy import Column, Integer, String, Text, Enum, Boolean, DateTime, Index
 from sqlalchemy.orm import relationship
 
 from auto_tests.bdd_api_mock.config import Base
@@ -18,9 +18,10 @@ class FinanceApprovalEntity(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True, comment="审批ID")
     approval_no = Column(String(50), nullable=False, unique=True, comment="审批单号")
-    reimbursement_id = Column(Integer, ForeignKey("reimbursements.id"), nullable=False, comment="报销申请ID")
-    dept_approval_id = Column(Integer, ForeignKey("dept_approvals.id"), nullable=False, comment="部门审批ID")
-    approver_id = Column(Integer, ForeignKey("users.id"), nullable=False, comment="审批人ID")
+    # 数据库层面弱关联（无外键约束），只在 ORM 层面建立关系
+    reimbursement_id = Column(Integer, nullable=False, comment="报销申请ID")
+    dept_approval_id = Column(Integer, nullable=False, comment="部门审批ID")
+    approver_id = Column(Integer, nullable=False, comment="审批人ID")
     status = Column(
         Enum("approved", "rejected"),
         nullable=False,
@@ -31,10 +32,16 @@ class FinanceApprovalEntity(Base):
     approved_at = Column(DateTime, default=None, comment="审批时间")
     created_at = Column(DateTime, default=datetime.now, comment="创建时间")
 
-    # 关联关系
+    # 关联关系 - ORM 级联删除：删除财务审批时自动删除关联的总经理审批
+    # 注意：数据库层面保持弱关联（无外键约束），级联只在 ORM 层面生效
     reimbursement = relationship("ReimbursementEntity", back_populates="finance_approvals")
     dept_approval = relationship("DeptApprovalEntity", back_populates="finance_approvals")
-    ceo_approvals = relationship("CEOApprovalEntity", back_populates="finance_approval")
+    ceo_approvals = relationship(
+        "CEOApprovalEntity",
+        back_populates="finance_approval",
+        cascade="all, delete-orphan",
+        passive_deletes=True
+    )
 
     # 索引
     __table_args__ = (

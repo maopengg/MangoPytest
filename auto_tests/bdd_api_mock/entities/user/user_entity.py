@@ -40,9 +40,20 @@ class UserEntity(Base):
         comment="更新时间",
     )
 
-    # 关联关系
-    orders = relationship("OrderEntity", back_populates="user")
-    reimbursements = relationship("ReimbursementEntity", back_populates="user")
+    # 关联关系 - ORM 级联删除：删除用户时自动删除关联的订单和报销
+    # 注意：数据库层面保持弱关联（无外键约束），级联只在 ORM 层面生效
+    orders = relationship(
+        "OrderEntity",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        passive_deletes=True
+    )
+    reimbursements = relationship(
+        "ReimbursementEntity",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        passive_deletes=True
+    )
 
     # 索引
     __table_args__ = (

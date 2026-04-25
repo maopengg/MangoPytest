@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Any, Dict, Optional, List
 from decimal import Decimal
 
-from sqlalchemy import Column, Integer, String, Numeric, Text, ForeignKey, Enum, DateTime, Index
+from sqlalchemy import Column, Integer, String, Numeric, Text, Enum, DateTime, Index
 from sqlalchemy.orm import relationship
 
 from auto_tests.bdd_api_mock.config import Base
@@ -19,7 +19,8 @@ class ReimbursementEntity(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True, comment="报销ID")
     reimb_no = Column(String(50), nullable=False, unique=True, comment="报销单号")
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, comment="申请人ID")
+    # 数据库层面弱关联（无外键约束），只在 ORM 层面建立关系
+    user_id = Column(Integer, nullable=False, comment="申请人ID")
     amount = Column(Numeric(12, 2), nullable=False, comment="报销金额")
     reason = Column(Text, nullable=False, comment="报销原因")
     category = Column(String(50), default="general", comment="报销类别")
@@ -49,12 +50,33 @@ class ReimbursementEntity(Base):
         comment="更新时间",
     )
 
-    # 关联关系
+    # 关联关系 - ORM 级联删除：删除报销时自动删除关联的审批和日志
+    # 注意：数据库层面保持弱关联（无外键约束），级联只在 ORM 层面生效
     user = relationship("UserEntity", back_populates="reimbursements")
-    dept_approvals = relationship("DeptApprovalEntity", back_populates="reimbursement")
-    finance_approvals = relationship("FinanceApprovalEntity", back_populates="reimbursement")
-    ceo_approvals = relationship("CEOApprovalEntity", back_populates="reimbursement")
-    approval_logs = relationship("ApprovalLogEntity", back_populates="reimbursement")
+    dept_approvals = relationship(
+        "DeptApprovalEntity",
+        back_populates="reimbursement",
+        cascade="all, delete-orphan",
+        passive_deletes=True
+    )
+    finance_approvals = relationship(
+        "FinanceApprovalEntity",
+        back_populates="reimbursement",
+        cascade="all, delete-orphan",
+        passive_deletes=True
+    )
+    ceo_approvals = relationship(
+        "CEOApprovalEntity",
+        back_populates="reimbursement",
+        cascade="all, delete-orphan",
+        passive_deletes=True
+    )
+    approval_logs = relationship(
+        "ApprovalLogEntity",
+        back_populates="reimbursement",
+        cascade="all, delete-orphan",
+        passive_deletes=True
+    )
 
     # 索引
     __table_args__ = (

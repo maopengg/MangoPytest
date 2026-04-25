@@ -6,7 +6,7 @@
 from datetime import datetime
 from typing import Any, Dict, Optional
 
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, Enum, DateTime, Index
+from sqlalchemy import Column, Integer, String, Text, Enum, DateTime, Index
 from sqlalchemy.orm import relationship
 
 from auto_tests.bdd_api_mock.config import Base
@@ -18,9 +18,10 @@ class CEOApprovalEntity(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True, comment="审批ID")
     approval_no = Column(String(50), nullable=False, unique=True, comment="审批单号")
-    reimbursement_id = Column(Integer, ForeignKey("reimbursements.id"), nullable=False, comment="报销申请ID")
-    finance_approval_id = Column(Integer, ForeignKey("finance_approvals.id"), nullable=False, comment="财务审批ID")
-    approver_id = Column(Integer, ForeignKey("users.id"), nullable=False, comment="审批人ID")
+    # 数据库层面弱关联（无外键约束），只在 ORM 层面建立关系
+    reimbursement_id = Column(Integer, nullable=False, comment="报销申请ID")
+    finance_approval_id = Column(Integer, nullable=False, comment="财务审批ID")
+    approver_id = Column(Integer, nullable=False, comment="审批人ID")
     status = Column(
         Enum("approved", "rejected"),
         nullable=False,
@@ -30,7 +31,7 @@ class CEOApprovalEntity(Base):
     approved_at = Column(DateTime, default=None, comment="审批时间")
     created_at = Column(DateTime, default=datetime.now, comment="创建时间")
 
-    # 关联关系
+    # 关联关系 - ORM 层面关联，数据库无外键约束
     reimbursement = relationship("ReimbursementEntity", back_populates="ceo_approvals")
     finance_approval = relationship("FinanceApprovalEntity", back_populates="ceo_approvals")
 

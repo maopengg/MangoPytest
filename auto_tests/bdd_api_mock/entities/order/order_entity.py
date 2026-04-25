@@ -19,8 +19,9 @@ class OrderEntity(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True, comment="订单ID")
     order_no = Column(String(50), nullable=False, unique=True, comment="订单编号")
-    product_id = Column(Integer, ForeignKey("products.id"), nullable=False, comment="产品ID")
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, comment="用户ID")
+    # 数据库层面弱关联（无外键约束），只在 ORM 层面建立关系
+    product_id = Column(Integer, nullable=False, comment="产品ID")
+    user_id = Column(Integer, nullable=False, comment="用户ID")
     quantity = Column(Integer, nullable=False, comment="数量")
     unit_price = Column(Numeric(10, 2), nullable=False, comment="单价")
     total_amount = Column(Numeric(10, 2), nullable=False, comment="总金额")
@@ -38,7 +39,7 @@ class OrderEntity(Base):
         comment="更新时间",
     )
 
-    # 关联关系
+    # 关联关系 - ORM 层面关联，数据库无外键约束
     product = relationship("ProductEntity", back_populates="orders")
     user = relationship("UserEntity", back_populates="orders")
 
