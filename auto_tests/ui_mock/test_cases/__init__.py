@@ -3,3 +3,4 @@
 # @Description: 
 # @Time   : 2024-02-20 11:03
 # @Author : 毛鹏
+from auto_tests.ui_mock.fixtures.conftest import *

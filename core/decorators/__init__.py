@@ -18,20 +18,11 @@
 
 # API测试装饰器
 from .api import (
-    case_data as api_case_data,
     request_data,
     timer,
     log_decorator,
     CleanupContext,
     api_allure_logger,
-)
-# 其他测试装饰器
-from .other import (
-    case_data as other_case_data,
-)
-# UI测试装饰器
-from .ui import (
-    case_data as ui_case_data,
 )
 # 工具装饰器（从 core.utils.decorators 迁移）
 from .utils import (
@@ -47,23 +38,14 @@ from .utils import (
     cache_result,
 )
 
-# 便捷别名
-api_case_data = api_case_data
-ui_case_data = ui_case_data
-other_case_data = other_case_data
 
 __all__ = [
     # API测试装饰器
-    'api_case_data',
     'request_data',
     'timer',
     'log_decorator',
     'CleanupContext',
     'api_allure_logger',
-    # UI测试装饰器
-    'ui_case_data',
-    # 其他测试装饰器
-    'other_case_data',
     # 工具装饰器
     'retry',
     'singleton',
