@@ -9,7 +9,7 @@ import allure
 from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
 from core.base.layering_base import UnitTest, IntegrationTest
 
-
+@allure.epic('演示-pytest_api_mock')
 @allure.feature("总经理审批")
 @allure.story("总经理审批API")
 class TestCEOApprovalAPI(IntegrationTest):

@@ -85,16 +85,16 @@ _config_mapping = {
 def get_config(env: str = None) -> Union[DevConfig, TestConfig, PreConfig, ProdConfig]:
     """
     根据环境获取对应的配置实例
-    
+
     Args:
         env: 环境名称 (dev/test/pre/prod)，如果为None则从环境变量或 project_config.py 读取
-        
+
     Returns:
         对应环境的配置实例
-        
+
     Raises:
         ValueError: 如果环境未设置且无法从 project_config.py 读取
-        
+
     Example:
         >>> config = get_config("dev")
         >>> print(config.BASE_URL)
@@ -104,6 +104,26 @@ def get_config(env: str = None) -> Union[DevConfig, TestConfig, PreConfig, ProdC
         # 优先从环境变量读取
         env = os.getenv("ENV")
         if not env:
+            # 尝试从 TEST_ENV 读取（main_run.py 设置的环境变量）
+            test_env_json = os.getenv("TEST_ENV")
+            if test_env_json:
+                try:
+                    import json
+                    test_env_list = json.loads(test_env_json)
+                    for item in test_env_list:
+                        if item.get("project") == "BDD_API_MOCK":
+                            env_enum = item.get("test_environment")
+                            env_map = {
+                                "DEV": "dev",
+                                "TEST": "test",
+                                "PRE": "pre",
+                                "PRO": "prod",
+                            }
+                            env = env_map.get(env_enum, "")
+                            break
+                except Exception:
+                    pass
+        if not env:
             # 尝试从 project_config.py 读取
             env = _get_default_env()
             if not env:
@@ -112,7 +132,7 @@ def get_config(env: str = None) -> Union[DevConfig, TestConfig, PreConfig, ProdC
                     "1. 设置环境变量：export ENV=dev 或 set ENV=dev\n"
                     "2. 在 project_config.py 中配置 PROJECT_ENVIRONMENT"
                 )
-    
+
     config_class = _config_mapping.get(env.lower(), DevConfig)
     return config_class()
 

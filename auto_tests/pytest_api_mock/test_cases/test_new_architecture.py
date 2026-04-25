@@ -15,7 +15,7 @@ from auto_tests.pytest_api_mock.data_factory.scenarios import (
 )
 from core.base.layering_base import UnitTest, IntegrationTest, E2ETest
 
-
+@allure.epic('演示-pytest_api_mock')
 @allure.feature("新架构演示")
 @allure.story("Entity使用")
 class TestEntityUsage(UnitTest):

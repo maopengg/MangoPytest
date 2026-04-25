@@ -26,6 +26,7 @@ from auto_tests.pytest_api_mock.data_factory.builders.auth.auth_builder_pydantic
 )
 from core.base.layering_base import UnitTest
 
+@allure.epic('演示-pytest_api_mock')
 
 @allure.feature("认证模块")
 @allure.story("用户登录")

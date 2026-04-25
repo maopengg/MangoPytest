@@ -16,7 +16,7 @@ import pytest
 
 from core.base.layering_base import UnitTest, IntegrationTest
 
-
+@allure.epic('演示-pytest_api_mock')
 @allure.feature("订单管理")
 @allure.story("创建订单")
 class TestCreateOrder(UnitTest):

@@ -28,7 +28,7 @@ def _get_attr(obj, attr, default=None):
         return obj.get(attr, default)
     return default
 
-
+@allure.epic('演示-pytest_api_mock')
 @allure.feature("用户管理")
 @allure.story("获取用户")
 class TestGetUsers(UnitTest):

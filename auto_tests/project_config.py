@@ -25,9 +25,9 @@ class ProjectEnum(BaseEnum):
 # 可选值: EnvironmentEnum.DEV / TEST / PRE / PRO
 
 PROJECT_ENVIRONMENT = {
-    ProjectEnum.MOCK_API: EnvironmentEnum.PRO,          # MockAPI服务 - 测试环境
-    ProjectEnum.PYTEST_API_MOCK: EnvironmentEnum.DEV,  # pytest_api_mock - 开发环境
-    ProjectEnum.BDD_API_MOCK: EnvironmentEnum.DEV,     # bdd_api_mock - 开发环境
+    ProjectEnum.MOCK_API: EnvironmentEnum.PRO,          # MockAPI服务 - 生产环境
+    ProjectEnum.PYTEST_API_MOCK: EnvironmentEnum.PRO,  # pytest_api_mock - 生产环境
+    ProjectEnum.BDD_API_MOCK: EnvironmentEnum.PRO,     # bdd_api_mock - 生产环境
     ProjectEnum.MOCK_UI: EnvironmentEnum.PRO,          # MockUI服务 - 生产环境
     ProjectEnum.BAIDU: EnvironmentEnum.PRO,            # 百度 - 生产环境
     ProjectEnum.SQL: EnvironmentEnum.PRO,              # SQL - 生产环境

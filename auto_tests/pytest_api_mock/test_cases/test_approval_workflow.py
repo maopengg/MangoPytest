@@ -29,7 +29,7 @@ from core.models import VariantMatrix, Dimension
 
 
 
-
+@allure.epic('演示-pytest_api_mock')
 @allure.feature("审批流")
 @allure.story("完整审批流程")
 class TestFullApprovalWorkflow(E2ETest):

@@ -8,7 +8,7 @@ import allure
 from auto_tests.pytest_api_mock.data_factory.builders.system import SystemBuilder
 from core.base.layering_base import UnitTest, IntegrationTest
 
-
+@allure.epic('演示-pytest_api_mock')
 @allure.feature("系统管理")
 @allure.story("健康检查")
 class TestHealthCheck(UnitTest):

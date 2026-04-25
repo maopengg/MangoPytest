@@ -27,8 +27,6 @@ class PytestAutoTestError(Exception):
         from core.utils import log
         if error:
             log.error(f'报错提示：{self.msg}， 报错内容：{error}')
-        else:
-            log.error(f'{self.msg}')
 
     def __str__(self):
         return f"[{self.code}] {self.msg}"

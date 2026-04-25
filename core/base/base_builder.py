@@ -233,19 +233,13 @@ class BaseBuilder(ABC, Generic[T]):
         # 清理本Builder创建的数据
         if hasattr(self, "_created_entities"):
             for entity in reversed(self._created_entities):
-                try:
-                    self._delete_entity(entity)
-                except Exception as e:
-                    print(f"清理失败: {e}")
+                self._delete_entity(entity)
             self._created_entities.clear()
 
         # 级联清理依赖（如果启用）
         if self.context.cascade_cleanup:
             for dep_builder in self._dep_builders.values():
-                try:
-                    dep_builder.cleanup()
-                except Exception as e:
-                    print(f"依赖清理失败: {e}")
+                dep_builder.cleanup()
 
     def _delete_entity(self, entity: BaseEntity):
         """

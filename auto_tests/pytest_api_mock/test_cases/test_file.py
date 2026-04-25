@@ -10,7 +10,7 @@ import allure
 from auto_tests.pytest_api_mock.data_factory.builders.file import FileBuilder
 from core.base.layering_base import UnitTest
 
-
+@allure.epic('演示-pytest_api_mock')
 @allure.feature("文件管理")
 @allure.story("文件上传")
 class TestUploadFile(UnitTest):

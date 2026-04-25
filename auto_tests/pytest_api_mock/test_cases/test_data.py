@@ -8,7 +8,7 @@ import allure
 from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
 from core.base.layering_base import UnitTest
 
-
+@allure.epic('演示-pytest_api_mock')
 @allure.feature("数据管理")
 @allure.story("数据提交")
 class TestSubmitData(UnitTest):
