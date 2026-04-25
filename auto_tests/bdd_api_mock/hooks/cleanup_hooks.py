@@ -5,10 +5,8 @@
 每次测试执行前清理 AUTO_ 开头的测试数据，保证测试隔离性
 """
 
-import logging
 from sqlalchemy import text
-
-logger = logging.getLogger(__name__)
+from core.utils import log
 
 
 class TestDataCleaner:
@@ -22,7 +20,7 @@ class TestDataCleaner:
 
     def clear_all(self) -> None:
         """清理所有 AUTO_ 开头的测试数据"""
-        logger.info(">>> 开始清理 AUTO_ 测试数据...")
+        log.info(">>> 开始清理 AUTO_ 测试数据...")
 
         try:
             # 按照依赖关系顺序清理（先子表后父表）
@@ -70,15 +68,15 @@ class TestDataCleaner:
                     result = self.db_session.execute(text(sql))
                     count = result.rowcount
                     if count > 0:
-                        logger.info(f"    - {table_name}: {count} 条")
+                        log.info(f"    - {table_name}: {count} 条")
                     total += count
                 except Exception as e:
-                    logger.warning(f"    - {table_name}: 清理失败 - {e}")
+                    log.warning(f"    - {table_name}: 清理失败 - {e}")
 
             self.db_session.commit()
-            logger.info(f">>> 清理完成，共删除 {total} 条记录")
+            log.info(f">>> 清理完成，共删除 {total} 条记录")
 
         except Exception as e:
             self.db_session.rollback()
-            logger.error(f">>> 清理过程出错: {e}")
+            log.error(f">>> 清理过程出错: {e}")
             # 不抛出异常，让测试继续

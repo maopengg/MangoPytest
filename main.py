@@ -46,12 +46,12 @@ pytest_command = [
 ]
 
 test_project = [
-    # {'project': ProjectEnum.MOCK_API, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.API},
-    # {'project': ProjectEnum.PYTEST_API_MOCK, 'test_environment': EnvironmentEnum.DEV, 'type': AutoTestTypeEnum.API},
-    {'project': ProjectEnum.BDD_API_MOCK, 'test_environment': EnvironmentEnum.DEV, 'type': AutoTestTypeEnum.API},
-    # {'project': ProjectEnum.MOCK_UI, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.UI},
-    # {'project': ProjectEnum.SQL, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.OTHER},
-    # {'project': ProjectEnum.BAIDU, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.UI},
+    {'project': ProjectEnum.MOCK_API, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.API},
+    {'project': ProjectEnum.PYTEST_API_MOCK, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.API},
+    {'project': ProjectEnum.BDD_API_MOCK, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.API},
+    {'project': ProjectEnum.MOCK_UI, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.UI},
+    {'project': ProjectEnum.SQL, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.OTHER},
+    {'project': ProjectEnum.BAIDU, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.UI},
 ]
 
 MainRun(test_project=test_project, pytest_command=pytest_command)

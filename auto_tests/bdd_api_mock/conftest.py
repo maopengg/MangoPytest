@@ -6,16 +6,11 @@ pytest 全局配置 - BDD API Mock 测试
 """
 
 import pytest
-import logging
 import hashlib
 import os
 import tempfile
 
-# 配置日志
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
-logger = logging.getLogger(__name__)
+from core.utils import log
 
 # ========== pytest-factoryboy 注册所有 Factories ==========
 # 导入所有 spec 模块，@register 装饰器会自动注册 fixture
@@ -73,7 +68,7 @@ def mock_api_client(mock_api_settings):
     settings = mock_api_settings
     api = APIClient(base_url=settings.BASE_URL)
 
-    logger.info(f">>> 正在认证: {settings.BASE_URL}")
+    log.info(f">>> 正在认证: {settings.BASE_URL}")
 
     # 使用 testuser 登录
     password_md5 = hashlib.md5("password123".encode()).hexdigest()
@@ -82,12 +77,12 @@ def mock_api_client(mock_api_settings):
     )
 
     if response.get("code") != 200:
-        logger.error(f">>> 认证失败: {response.get('message')}")
+        log.error(f">>> 认证失败: {response.get('message')}")
         raise RuntimeError(f"Failed to authenticate: {response.get('message')}")
 
     token = response["data"]["token"]
     api.set_token(token)
-    logger.info(">>> 认证成功")
+    log.info(">>> 认证成功")
 
     yield api
 
@@ -137,7 +132,7 @@ def _cleanup_test_data():
         finally:
             session.close()
     except Exception as e:
-        logger.warning(f">>> [HOOK] 数据清理失败: {e}")
+        log.warning(f">>> [HOOK] 数据清理失败: {e}")
 
 
 # ========== 多进程支持：会话级别清理 ==========
@@ -173,7 +168,7 @@ def _is_first_worker():
             f.write(str(os.getpid()))
         return True
     except Exception as e:
-        logger.warning(f">>> 检查锁文件失败: {e}")
+        log.warning(f">>> 检查锁文件失败: {e}")
         return False
 
 
@@ -187,13 +182,13 @@ def pytest_sessionstart(session):
     if worker_id:
         # 工作进程：只有第一个工作进程执行清理
         if worker_id == 'gw0':  # xdist 的第一个工作进程
-            logger.info(f">>> [Worker {worker_id}] 第一个工作进程，执行数据清理...")
+            log.info(f">>> [Worker {worker_id}] 第一个工作进程，执行数据清理...")
             _cleanup_test_data()
         else:
-            logger.info(f">>> [Worker {worker_id}] 非首个工作进程，跳过清理")
+            log.info(f">>> [Worker {worker_id}] 非首个工作进程，跳过清理")
     else:
         # 主进程（非多进程模式）
-        logger.info(">>> [Main] 测试会话开始，执行数据清理...")
+        log.info(">>> [Main] 测试会话开始，执行数据清理...")
         _cleanup_test_data()
 
 
@@ -210,6 +205,6 @@ def pytest_sessionfinish(session, exitstatus):
         try:
             if os.path.exists(lock_file):
                 os.remove(lock_file)
-                logger.info(">>> 清理锁文件")
+                log.info(">>> 清理锁文件")
         except Exception as e:
-            logger.warning(f">>> 清理锁文件失败: {e}")
+            log.warning(f">>> 清理锁文件失败: {e}")
