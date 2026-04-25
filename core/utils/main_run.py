@@ -41,7 +41,7 @@ class MainRun:
                         )
                     else:
                         self.pytest_command.append(
-                            fr'{project_dir.root_path()}\auto_tests\{i.get("dir_name")}\test_cases'
+                            fr'{project_dir.root_path()}\auto_tests\{i.get("dir_name")}\features'
                         )
                     # self.pytest_command.append(
                     #     fr'{project_dir.root_path()}\auto_tests\pytest_api_mock\test_cases\test_approval_workflow.py'

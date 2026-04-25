@@ -20,7 +20,7 @@ from contextlib import contextmanager
 
 # MySQL 配置
 MYSQL_CONFIG = {
-    "host": "mangotestingplatform-db-1",
+    "host": "43.142.161.61",
     "port": 3306,
     "user": "root",
     "password": "mP123456&",
@@ -42,14 +42,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# 静态文件目录
-import os
-
-static_dir = os.path.join(os.path.dirname(__file__), "static")
-if not os.path.exists(static_dir):
-    os.makedirs(static_dir)
-app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 
 # ========================
