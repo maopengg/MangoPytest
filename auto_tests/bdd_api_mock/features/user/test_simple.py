@@ -3,7 +3,16 @@
 简单调试测试
 """
 
+import pytest
+import allure
 from pytest_bdd import scenarios, given, when, then, parsers
+
+# Allure 分组配置 - 三级结构：Epic > Feature > Story
+pytestmark = [
+    allure.epic("BDD API Mock 测试"),
+    allure.feature("用户管理"),
+    allure.story("用户CRUD操作-简单调试"),
+]
 
 # 加载 feature 文件
 scenarios("user.feature")
