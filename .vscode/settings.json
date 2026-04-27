@@ -1,47 +1,38 @@
 {
-    // Python 解释器配置
-    "python.defaultInterpreterPath": "D:\\code\\MangoPytest\\.venv\\Scripts\\python.exe",
-    "python.terminal.activateEnvironment": true,
-    // 代码分析路径
-    "python.analysis.extraPaths": [
-        "${workspaceFolder}"
-    ],
-    // 自动补全和导入建议
-    "python.autoComplete.extraPaths": [
-        "${workspaceFolder}"
-    ],
-    // 环境变量配置
-    "terminal.integrated.env.windows": {
-        "PYTHONPATH": "${workspaceFolder}"
-    },
-    // 测试框架配置
-    "python.testing.pytestEnabled": true,
-    "python.testing.unittestEnabled": false,
-    "python.testing.pytestArgs": [
-        "auto_test",
-        "-v",
-        "--tb=short"
-    ],
-    // 代码格式化
-    "python.formatting.provider": "autopep8",
-    "python.formatting.autopep8Args": [
-        "--max-line-length=120"
-    ],
-    // 代码检查
-    "python.linting.enabled": true,
-    "python.linting.pylintEnabled": false,
-    "python.linting.flake8Enabled": true,
-    "python.linting.flake8Args": [
-        "--max-line-length=120",
-        "--ignore=E203,W503"
-    ],
-    // 编辑器设置
-    "editor.formatOnSave": true,
-    "editor.codeActionsOnSave": {
-        "source.organizeImports": "explicit"
-    },
-    // 文件关联
-    "files.associations": {
-        "*.py": "python"
-    }
+  "python.defaultInterpreterPath": "D:\\code\\MangoPytest\\.venv\\Scripts\\python.exe",
+  "python.terminal.activateEnvironment": true,
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}"
+  ],
+  "python.autoComplete.extraPaths": [
+    "${workspaceFolder}"
+  ],
+  "terminal.integrated.env.windows": {
+    "PYTHONPATH": "${workspaceFolder}"
+  },
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestArgs": [
+    "auto_tests",
+    "-v",
+    "--tb=short"
+  ],
+  "python.formatting.provider": "autopep8",
+  "python.formatting.autopep8Args": [
+    "--max-line-length=120"
+  ],
+  "python.linting.enabled": true,
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Enabled": true,
+  "python.linting.flake8Args": [
+    "--max-line-length=120",
+    "--ignore=E203,W503"
+  ],
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
+  "files.associations": {
+    "*.py": "python"
+  }
 }
