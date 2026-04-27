@@ -16,19 +16,20 @@ from core.utils import log
 
 # ========== pytest-factoryboy 注册所有 Factories ==========
 # 导入所有 spec 模块，@register 装饰器会自动注册 fixture
-from auto_tests.bdd_api_mock.factories.specs.user import user_spec
-from auto_tests.bdd_api_mock.factories.specs.auth import auth_spec
-from auto_tests.bdd_api_mock.factories.specs.product import product_spec
-from auto_tests.bdd_api_mock.factories.specs.order import order_spec
-from auto_tests.bdd_api_mock.factories.specs.reimbursement import reimbursement_spec
-from auto_tests.bdd_api_mock.factories.specs.approval import (
+# 从 data_factory 导入（数据工厂统一入口）
+from auto_tests.bdd_api_mock.data_factory.specs.user import user_spec
+from auto_tests.bdd_api_mock.data_factory.specs.auth import auth_spec
+from auto_tests.bdd_api_mock.data_factory.specs.product import product_spec
+from auto_tests.bdd_api_mock.data_factory.specs.order import order_spec
+from auto_tests.bdd_api_mock.data_factory.specs.reimbursement import reimbursement_spec
+from auto_tests.bdd_api_mock.data_factory.specs.approval import (
     dept_approval_spec,
     finance_approval_spec,
     ceo_approval_spec,
 )
-from auto_tests.bdd_api_mock.factories.specs.data import data_spec
-from auto_tests.bdd_api_mock.factories.specs.file import file_spec
-from auto_tests.bdd_api_mock.factories.specs.system import health_spec, api_log_spec
+from auto_tests.bdd_api_mock.data_factory.specs.data import data_spec
+from auto_tests.bdd_api_mock.data_factory.specs.file import file_spec
+from auto_tests.bdd_api_mock.data_factory.specs.system import health_spec, api_log_spec
 
 # ========== 导入步骤定义 ==========
 # 使用 pytest_plugins 确保步骤定义在测试收集时加载

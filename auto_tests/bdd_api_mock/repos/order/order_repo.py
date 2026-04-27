@@ -8,7 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from auto_tests.bdd_api_mock.repos.base import BaseRepository
-from auto_tests.bdd_api_mock.entities.order.order_entity import OrderEntity
+from auto_tests.bdd_api_mock.data_factory.entities.order.order_entity import OrderEntity
 
 
 class OrderRepo(BaseRepository[OrderEntity]):

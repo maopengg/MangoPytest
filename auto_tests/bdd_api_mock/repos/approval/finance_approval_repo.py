@@ -8,7 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from auto_tests.bdd_api_mock.repos.base import BaseRepository
-from auto_tests.bdd_api_mock.entities.approval.finance_approval_entity import FinanceApprovalEntity
+from auto_tests.bdd_api_mock.data_factory.entities.approval.finance_approval_entity import FinanceApprovalEntity
 
 
 class FinanceApprovalRepo(BaseRepository[FinanceApprovalEntity]):

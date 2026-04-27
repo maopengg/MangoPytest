@@ -10,7 +10,7 @@ from typing import Any, Dict
 
 from pytest_bdd import given, parsers
 
-from auto_tests.bdd_api_mock.factories.specs import ENTITY_FACTORY_MAP
+from auto_tests.bdd_api_mock.data_factory.specs import ENTITY_FACTORY_MAP
 
 
 # 实体缓存，用于步骤间共享实体

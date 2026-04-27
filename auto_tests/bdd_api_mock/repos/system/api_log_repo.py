@@ -8,7 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from auto_tests.bdd_api_mock.repos.base import BaseRepository
-from auto_tests.bdd_api_mock.entities.system.api_log_entity import APILogEntity
+from auto_tests.bdd_api_mock.data_factory.entities.system.api_log_entity import APILogEntity
 
 
 class APILogRepo(BaseRepository[APILogEntity]):

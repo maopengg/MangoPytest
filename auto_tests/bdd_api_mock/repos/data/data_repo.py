@@ -8,7 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from auto_tests.bdd_api_mock.repos.base import BaseRepository
-from auto_tests.bdd_api_mock.entities.data.data_entity import DataSubmissionEntity
+from auto_tests.bdd_api_mock.data_factory.entities.data.data_entity import DataSubmissionEntity
 
 
 class DataSubmissionRepo(BaseRepository[DataSubmissionEntity]):

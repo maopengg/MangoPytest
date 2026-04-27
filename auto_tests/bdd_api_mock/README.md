@@ -33,20 +33,21 @@ L4: Steps 步骤定义层（按功能分类）
     ├── data/      - 数据准备步骤 (factory_boy 创建实体)
     └── assertions/ - 断言验证步骤 (状态码、数据字段)
     ↓
-L3: Factories 数据工厂层（pytest-factoryboy）
-    ├── 自动注册为 pytest fixtures
-    ├── 自动创建关联实体（SubFactory）
-    └── 派生字段计算（LazyAttribute）
+L3: Data Factory 数据工厂层（统一入口）
+    ├── entities/  - SQLAlchemy ORM 实体定义
+    ├── factories/ - BaseFactory 基类
+    └── specs/     - pytest-factoryboy Spec 定义
+        ├── 自动注册为 pytest fixtures
+        ├── 自动创建关联实体（SubFactory）
+        └── 派生字段计算（LazyAttribute）
     ↓
-L2: Entities 实体层（SQLAlchemy）
-    ├── ORM 映射数据库表
-    ├── 关联关系定义（relationship）
-    └── to_api_payload() 序列化方法
-    ↓
-L1: Repositories 数据访问层
+L2: Repositories 数据访问层
     ├── 按业务域分包（auth/user/product/order/...）
     ├── CODE_FIELD 映射清理字段
     └── delete_by_pattern() 批量清理
+    ↓
+L1: 数据库（MySQL）
+    └── 数据持久化
 ```
 
 ### 数据流向
@@ -56,13 +57,16 @@ Feature 文件（Gherkin）
     ↓ 解析
 Steps 步骤定义
     ↓ 调用
-Factories（pytest-factoryboy）
-    ↓ 创建
-Entities（SQLAlchemy）
-    ↓ 持久化
-数据库（MySQL）
-    ↓ API 调用
-后端服务（Mock API）
+Data Factory（统一入口）
+    ├── entities/ - SQLAlchemy ORM 实体
+    ├── factories/ - BaseFactory 基类
+    └── specs/ - pytest-factoryboy Spec 定义
+        ↓ 创建
+    Entities（SQLAlchemy）
+        ↓ 持久化
+    数据库（MySQL）
+        ↓ API 调用
+    后端服务（Mock API）
 ```
 
 ---
@@ -103,27 +107,32 @@ auto_tests/bdd_api_mock/
 │       ├── response.py     # 状态码、消息断言
 │       └── data.py         # 数据字段、列表、数据库断言
 │
-├── factories/              # 数据工厂层（pytest-factoryboy）
-│   ├── __init__.py         # BaseFactory 基类
-│   └── specs/              # factory_boy Spec 定义
+├── data_factory/           # 数据工厂层（统一入口）
+│   ├── __init__.py         # 统一导出所有实体和 Specs
+│   ├── entities/           # SQLAlchemy ORM 实体层
+│   │   ├── __init__.py
+│   │   ├── user/
+│   │   ├── product/
+│   │   ├── order/
+│   │   ├── data/
+│   │   ├── file/
+│   │   ├── reimbursement/
+│   │   ├── approval/
+│   │   ├── system/
+│   │   └── auth/
+│   ├── factories/          # Factory 基类
+│   │   └── __init__.py     # BaseFactory 基类
+│   └── specs/              # pytest-factoryboy Spec 定义
+│       ├── __init__.py     # ENTITY_FACTORY_MAP 映射
 │       ├── user/
 │       ├── product/
 │       ├── order/
 │       ├── data/
 │       ├── file/
 │       ├── reimbursement/
-│       └── approval/
-│
-├── entities/               # SQLAlchemy 实体层
-│   ├── __init__.py
-│   ├── user/
-│   ├── product/
-│   ├── order/
-│   ├── data/
-│   ├── file/
-│   ├── reimbursement/
-│   ├── approval/
-│   └── system/
+│       ├── approval/
+│       ├── system/
+│       └── auth/
 │
 ├── repos/                  # Repository 数据访问层
 │   ├── __init__.py
@@ -262,42 +271,56 @@ def response_data_should_contain_field_cn(field: str, api_response: Dict[str, An
     assert field in data
 ```
 
-### 3. Factories（数据工厂层 - pytest-factoryboy）
+### 3. Data Factory（数据工厂层 - 统一入口）
 
-**职责**：使用 pytest-factoryboy 自动注册 fixtures，处理关联关系。
+**职责**：整合 entities、factories 和 specs，提供统一的数据准备入口。
+
+**结构**：
+- `entities/` - SQLAlchemy ORM 实体定义
+- `factories/` - BaseFactory 基类
+- `specs/` - pytest-factoryboy Spec 定义
 
 **核心特性**：
 - `@register` 装饰器自动注册为 pytest fixture
 - `SubFactory` 自动创建关联实体
 - `LazyAttribute` 计算派生字段
+- 使用 `mangotools.data_processor` 生成测试数据
 
 **示例**：
 
 ```python
-# factories/specs/order/order_spec.py
+# data_factory/specs/order/order_spec.py
 from pytest_factoryboy import register
-from auto_tests.bdd_api_mock.factories import BaseFactory
-from auto_tests.bdd_api_mock.entities.order import OrderEntity
-from auto_tests.bdd_api_mock.factories.specs.user import user_spec
-from auto_tests.bdd_api_mock.factories.specs.product import product_spec
+from core.base.baseFactory import BaseFactory
+from auto_tests.bdd_api_mock.data_factory.entities.order import OrderEntity
+from auto_tests.bdd_api_mock.data_factory.specs.user import UserSpec
+from auto_tests.bdd_api_mock.data_factory.specs.product import ProductSpec
+from mangotools.data_processor import DataProcessor
 
+_data_processor = DataProcessor()
 
 @register
 class OrderSpec(BaseFactory):
     """订单 Spec"""
     class Meta:
         model = OrderEntity
+        exclude = ("_user", "_product")
 
     # 关联实体 - 自动创建
-    user = factory.SubFactory(user_spec)
-    product = factory.SubFactory(product_spec)
+    _user = factory.SubFactory(UserSpec)
+    _product = factory.SubFactory(ProductSpec)
 
     # 外键字段
-    user_id = factory.SelfAttribute("user.id")
-    product_id = factory.SelfAttribute("product.id")
-    quantity = factory.Faker("random_int", min=1, max=10)
+    user_id = factory.SelfAttribute("_user.id")
+    product_id = factory.SelfAttribute("_product.id")
+    
+    # 使用 data_processor 生成唯一订单号
+    order_no = factory.LazyFunction(
+        lambda: f"AUTO_ORDER_{_data_processor.str_uuid_no_dash()[:8]}"
+    )
+    quantity = 1
     total_amount = factory.LazyAttribute(
-        lambda o: o.quantity * o.product.price if o.product else 0
+        lambda o: o.unit_price * o.quantity if o.unit_price else 0
     )
 ```
 
@@ -305,10 +328,12 @@ class OrderSpec(BaseFactory):
 
 **职责**：ORM 映射数据库表，定义关联关系。
 
+**位置**：`data_factory/entities/`
+
 **示例**：
 
 ```python
-# entities/user/user_entity.py
+# data_factory/entities/user/user_entity.py
 from sqlalchemy import Column, Integer, String
 from auto_tests.bdd_api_mock.config import Base
 

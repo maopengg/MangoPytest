@@ -7,7 +7,7 @@ from typing import Optional, List
 from sqlalchemy import select
 
 from auto_tests.bdd_api_mock.repos.base import BaseRepository
-from auto_tests.bdd_api_mock.entities.auth import AuthEntity
+from auto_tests.bdd_api_mock.data_factory.entities.auth import AuthEntity
 
 
 class AuthRepo(BaseRepository[AuthEntity]):

@@ -8,7 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from auto_tests.bdd_api_mock.repos.base import BaseRepository
-from auto_tests.bdd_api_mock.entities.product.product_entity import ProductEntity
+from auto_tests.bdd_api_mock.data_factory.entities.product.product_entity import ProductEntity
 
 
 class ProductRepo(BaseRepository[ProductEntity]):

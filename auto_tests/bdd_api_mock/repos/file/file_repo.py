@@ -8,7 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from auto_tests.bdd_api_mock.repos.base import BaseRepository
-from auto_tests.bdd_api_mock.entities.file.file_entity import FileEntity
+from auto_tests.bdd_api_mock.data_factory.entities.file.file_entity import FileEntity
 
 
 class FileRepo(BaseRepository[FileEntity]):

@@ -7,7 +7,7 @@ from typing import Optional, List
 from sqlalchemy import select
 
 from auto_tests.bdd_api_mock.repos.base import BaseRepository
-from auto_tests.bdd_api_mock.entities.system import HealthEntity
+from auto_tests.bdd_api_mock.data_factory.entities.system import HealthEntity
 
 
 class HealthRepo(BaseRepository[HealthEntity]):
