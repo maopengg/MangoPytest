@@ -20,7 +20,6 @@ class BaseFactory(SQLAlchemyModelFactory):
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
         """延迟获取数据库会话，避免模块级别依赖项目配置"""
-        from factory.alchemy import SQLAlchemyOptions
         if cls._meta.sqlalchemy_session is None:
             from auto_tests.bdd_api_mock.config import settings
             cls._meta.sqlalchemy_session = settings.SessionLocal()
