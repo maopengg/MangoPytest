@@ -48,7 +48,9 @@
       "Bash(curl -s --connect-timeout 5 http://43.142.161.61:8080)",
       "Bash(sed -i 's|default=\"http://localhost:8080\"|default=\"http://localhost:8003\"|g' settings.py)",
       "Bash(sed -i 's|default=\"http://43.142.161.61:8080\"|default=\"http://43.142.161.61:8003\"|g' settings.py)",
-      "Bash(ENV=prod .venv/Scripts/python -m pytest auto_tests/pytest_ui_mock/test_cases/test_click.py -v --no-header -p no:warnings)"
+      "Bash(ENV=prod .venv/Scripts/python -m pytest auto_tests/pytest_ui_mock/test_cases/test_click.py -v --no-header -p no:warnings)",
+      "Bash(ENV=prod .venv/Scripts/python -m pytest auto_tests/bdd_ui_mock/test_cases/ -v --no-header -p no:warnings -x)",
+      "Bash(ENV=prod .venv/Scripts/python -m pytest auto_tests/bdd_ui_mock/test_cases/ -v --no-header -p no:warnings)"
     ]
   }
 }

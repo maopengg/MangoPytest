@@ -16,6 +16,7 @@ def user_enter_alert_page(logged_in_user, page_context):
         home = HomePage(logged_in_user["base_data"], logged_in_user["base_data"].test_data)
         home.goto()
         page_context["首页"] = home
+    home.test_data.set_cache('菜单名称', '弹窗测试')
     home.switch_menu()
     alert_page = AlertPage(logged_in_user["base_data"], logged_in_user["base_data"].test_data)
     page_context["弹窗"] = alert_page

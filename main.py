@@ -4,7 +4,7 @@
 # @Time   : 2024-02-19 10:07
 # @Author : 毛鹏
 from core.enums.tools_enum import EnvironmentEnum
-from auto_tests.qfei_contract_api import PROJECT_NAME
+from auto_tests.bdd_api_mock import PROJECT_NAME
 from core.utils.main_run import MainRun
 
 MainRun(
