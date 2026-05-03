@@ -40,7 +40,15 @@
       "Bash(curl -sk -X POST https://dev-contract.qtech.cn/configuration/saas/decision_table/page -H 'Content-Type: application/json' -H 'X-Requested-With: XMLHttpRequest' -H 'Cookie: zs_session=__TRACKED_VAR__; i18next=zh-CN' -H 'csrf-token: t4w80cnn1rok' -d '{\"page_index\":1,\"page_size\":10,\"status\":\"0\",\"source\":1,\"group_code\":\"approve_matrix\"}')",
       "Bash(curl -sk -X POST https://dev-contract.qtech.cn/configuration/saas/decision_table/page -H 'Content-Type: application/json' -H 'Accept: application/json, text/plain, */*' -H 'Accept-Language: zh-CN,zh;q=0.9' -H 'User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/131.0.0.0 Safari/537.36' -H 'Referer: https://dev-contract.qtech.cn/' -H 'Origin: https://dev-contract.qtech.cn' -H 'Cookie: zs_session=__TRACKED_VAR__; clm_csrf_token=1hrgij2j1qaeo; i18next=zh-CN' -d '{\"page_index\":1,\"page_size\":10,\"status\":\"0\",\"source\":1,\"group_code\":\"approve_matrix\"}')",
       "Bash(curl -sk -D - -X POST https://dev-contract.qtech.cn/configuration/saas/decision_table/page -H 'Content-Type: application/json' -H 'token: __TRACKED_VAR__' -d '{\"page_index\":1,\"page_size\":10,\"status\":\"0\",\"source\":1,\"group_code\":\"approve_matrix\"}')",
-      "Read(//d/code/mango_tools/mangotools/notice/**)"
+      "Read(//d/code/mango_tools/mangotools/notice/**)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(\"D:/code/MangoPytest/.venv/Scripts/python.exe\" --version)",
+      "Bash(ENV=prod .venv/Scripts/python -m pytest auto_tests/pytest_ui_mock/test_cases/test_click.py -v --no-header -p no:warnings -s)",
+      "Bash(curl -s --connect-timeout 5 http://43.142.161.61:8003)",
+      "Bash(curl -s --connect-timeout 5 http://43.142.161.61:8080)",
+      "Bash(sed -i 's|default=\"http://localhost:8080\"|default=\"http://localhost:8003\"|g' settings.py)",
+      "Bash(sed -i 's|default=\"http://43.142.161.61:8080\"|default=\"http://43.142.161.61:8003\"|g' settings.py)",
+      "Bash(ENV=prod .venv/Scripts/python -m pytest auto_tests/pytest_ui_mock/test_cases/test_click.py -v --no-header -p no:warnings)"
     ]
   }
 }

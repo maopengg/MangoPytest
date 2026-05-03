@@ -50,27 +50,27 @@ from .settings import (
 )
 
 
-def _get_default_env() -> str:
-    """
-    获取默认环境
-    
-    从 project_config.py 读取 BDD_API_MOCK 项目的环境配置
-    如果失败则返回空字符串
-    """
-    try:
-        from auto_tests.project_config import get_project_environment, ProjectEnum
-        from core.enums.tools_enum import EnvironmentEnum
-        
-        env_enum = get_project_environment(ProjectEnum.BDD_API_MOCK)
-        env_map = {
-            EnvironmentEnum.DEV: 'dev',
-            EnvironmentEnum.TEST: 'test',
-            EnvironmentEnum.PRE: 'pre',
-            EnvironmentEnum.PRO: 'prod',
-        }
-        return env_map.get(env_enum, '')
-    except Exception:
-        return ''
+def _resolve_env() -> str:
+    """环境优先级: ENV 环境变量 > TEST_ENV > DEFAULT_ENV"""
+    env = os.getenv("ENV")
+    if env:
+        return env.lower()
+    test_env_json = os.getenv("TEST_ENV")
+    if test_env_json:
+        try:
+            import json
+            test_env_list = json.loads(test_env_json)
+            for item in test_env_list:
+                if item.get("project") == "bdd_api_mock":
+                    env_enum = item.get("test_environment")
+                    env_map = {"DEV": "dev", "TEST": "test", "PRE": "pre", "PRO": "prod"}
+                    env = env_map.get(env_enum, "")
+                    if env:
+                        return env
+        except Exception:
+            pass
+    from auto_tests.bdd_api_mock import DEFAULT_ENV
+    return DEFAULT_ENV.name.lower()
 
 
 # 配置类映射
@@ -87,13 +87,10 @@ def get_config(env: str = None) -> Union[DevConfig, TestConfig, PreConfig, ProdC
     根据环境获取对应的配置实例
 
     Args:
-        env: 环境名称 (dev/test/pre/prod)，如果为None则从环境变量或 project_config.py 读取
+        env: 环境名称 (dev/test/pre/prod)，如果为None则从环境变量或 DEFAULT_ENV 读取
 
     Returns:
         对应环境的配置实例
-
-    Raises:
-        ValueError: 如果环境未设置且无法从 project_config.py 读取
 
     Example:
         >>> config = get_config("dev")
@@ -101,43 +98,13 @@ def get_config(env: str = None) -> Union[DevConfig, TestConfig, PreConfig, ProdC
         http://localhost:8003
     """
     if env is None:
-        # 优先从环境变量读取
-        env = os.getenv("ENV")
-        if not env:
-            # 尝试从 TEST_ENV 读取（main_run.py 设置的环境变量）
-            test_env_json = os.getenv("TEST_ENV")
-            if test_env_json:
-                try:
-                    import json
-                    test_env_list = json.loads(test_env_json)
-                    for item in test_env_list:
-                        if item.get("project") == "BDD_API_MOCK":
-                            env_enum = item.get("test_environment")
-                            env_map = {
-                                "DEV": "dev",
-                                "TEST": "test",
-                                "PRE": "pre",
-                                "PRO": "prod",
-                            }
-                            env = env_map.get(env_enum, "")
-                            break
-                except Exception:
-                    pass
-        if not env:
-            # 尝试从 project_config.py 读取
-            env = _get_default_env()
-            if not env:
-                raise ValueError(
-                    "未设置测试环境。请通过以下方式之一设置：\n"
-                    "1. 设置环境变量：export ENV=dev 或 set ENV=dev\n"
-                    "2. 在 project_config.py 中配置 PROJECT_ENVIRONMENT"
-                )
+        env = _resolve_env()
 
     config_class = _config_mapping.get(env.lower(), DevConfig)
     return config_class()
 
 
-# 全局配置实例（根据环境变量或 project_config.py 自动加载）
+# 全局配置实例（根据环境变量或 DEFAULT_ENV 自动加载）
 settings = get_config()
 
 # 导出常用对象（保持向后兼容）

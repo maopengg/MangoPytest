@@ -32,6 +32,18 @@ API Mock 自动化测试模块
         from auto_tests.api_mock import settings  # 现在加载的是 dev 环境配置
 """
 
+from core.enums.tools_enum import AutoTestTypeEnum, EnvironmentEnum
+
+PROJECT_NAME = "api_mock"
+PROJECT_TYPE = AutoTestTypeEnum.API
+DEFAULT_ENV = EnvironmentEnum.PRO
+PROJECT_DISPLAY_NAME = "MockAPI服务"
+
+NOTICE_CHANNEL = "email"
+NOTICE_EMAIL_SEND_LIST = ["729164035@qq.com"]
+NOTICE_WECHAT_WEBHOOK = ""
+NOTICE_FEISHU_WEBHOOK = ""
+
 # 导入配置系统（同时提供向后兼容的 BASE_URL 和 user_info）
 from .config import (
     ApiMockConfig,
@@ -51,6 +63,11 @@ user_info: dict = {
 }
 
 __all__ = [
+    # 项目配置常量
+    "PROJECT_NAME",
+    "PROJECT_TYPE",
+    "DEFAULT_ENV",
+    "PROJECT_DISPLAY_NAME",
     # 向后兼容的导出
     "user_info",
     "BASE_URL",

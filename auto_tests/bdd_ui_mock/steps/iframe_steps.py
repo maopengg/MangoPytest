@@ -1,0 +1,33 @@
+# -*- coding: utf-8 -*-
+# @Project: 芒果测试平台
+# @Description: iframe BDD 步骤定义
+# @Time   : 2026-05-03
+# @Author : 毛鹏
+from pytest_bdd import when, then
+
+from auto_tests.bdd_ui_mock.page_object.home_page import HomePage
+from auto_tests.bdd_ui_mock.page_object.iframe_page import IframePage
+
+
+@when("用户进入 iframe 页面")
+def user_enter_iframe_page(logged_in_user, page_context):
+    home = page_context.get("首页")
+    if not home:
+        home = HomePage(logged_in_user["base_data"], logged_in_user["base_data"].test_data)
+        home.goto()
+        page_context["首页"] = home
+    home.switch_menu()
+    iframe_page = IframePage(logged_in_user["base_data"], logged_in_user["base_data"].test_data)
+    page_context["iframe"] = iframe_page
+
+
+@when("用户操作 iframe 中元素")
+def user_operate_iframe_element(logged_in_user, page_context, test_data_context):
+    iframe_page = page_context["iframe"]
+    result = iframe_page.test_iframe_element()
+    test_data_context["iframe结果"] = result
+
+
+@then("iframe 操作应该成功")
+def verify_iframe_success(test_data_context):
+    assert test_data_context.get("iframe结果") is not None, "iframe 操作失败"
