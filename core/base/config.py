@@ -5,8 +5,7 @@
 所有子项目的配置类都应该继承此类
 """
 
-from typing import Optional
-from pydantic import Field
+from pydantic import Field, ConfigDict
 from pydantic_settings import BaseSettings
 
 
@@ -26,6 +25,13 @@ class BaseConfig(BaseSettings):
             BASE_URL: str = "http://my-api.com"
             DB_NAME: str = "my_db"
     """
+
+    # Pydantic V2 配置
+    model_config = ConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="allow",
+    )
 
     # 环境标识
     ENV: str = Field(default="test", description="环境标识")
@@ -58,8 +64,3 @@ class BaseConfig(BaseSettings):
             f"@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
             f"?charset=utf8mb4"
         )
-
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        extra = "allow"

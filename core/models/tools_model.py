@@ -9,7 +9,6 @@ from mangotools.database import MysqlConnect
 from mangotools.models import MysqlConingModel
 from pydantic import BaseModel, ConfigDict
 
-from auto_tests.project_config import ProjectEnum
 from core.enums.tools_enum import AutoTestTypeEnum, EnvironmentEnum
 from core.utils.obtain_test_data import ObtainTestData
 
@@ -20,13 +19,9 @@ warnings.filterwarnings(
 
 
 class CaseRunModel(BaseModel):
-    project: ProjectEnum
-    type: AutoTestTypeEnum
+    project: str
     test_environment: EnvironmentEnum
 
-
-class CaseRunListModel(BaseModel):
-    case_run: list[CaseRunModel]
 
 
 class TestMetrics(BaseModel):

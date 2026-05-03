@@ -11,7 +11,7 @@ from pathlib import Path
 class ProjectDir:
 
     def __init__(self):
-        self.folder_list = ['logs', 'report', 'reports', 'download', 'screenshot']
+        self.folder_list = ['logs', 'download', 'screenshot']
         self._root_path = self.init_project_path()
         self.init_folder()
 

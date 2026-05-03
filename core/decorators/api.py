@@ -6,20 +6,17 @@
 import functools
 import json
 import time
-from typing import Union, List, Callable
+from typing import Callable
 from urllib.parse import urljoin
 
 import allure
-import pytest
 from genson import SchemaBuilder
 from requests.models import Response
 
 from core.enums.api_enum import MethodEnum, IsSchemaEnum
-from core.exceptions import PytestAutoTestError, ERROR_MSG_0350
 from core.models.api_model import (
     ApiDataModel,
     ResponseModel,
-    ApiTestCaseModel,
     RequestModel,
     ApiInfoModel,
     APIResponse,
@@ -51,94 +48,6 @@ class CleanupContext:
             {"type": entity_type, "id": entity_id, "builder": builder}
         )
 
-
-# decorators/case_data.py
-
-
-
-def request_data(api_info_id):
-    def decorator(func):
-
-        def wrapper(self, data: ApiDataModel) -> ApiDataModel:
-            log.debug(f"开始查询接口数据，ID：{api_info_id}")
-            api_info_model = ApiInfoModel.get_obj(
-                SourcesData.get_api_info(id=api_info_id)
-            )
-            log.debug(f"查询到接口的数据，接口ID：{api_info_model.model_dump_json()}")
-            data.request = RequestModel(
-                url=urljoin(self.base_data.test_object.host, api_info_model.url),
-                method=MethodEnum.get_value(api_info_model.method),
-                headers=(
-                    api_info_model.headers
-                    if api_info_model.headers
-                    else self.base_data.headers
-                ),
-                params=data.test_case.params,
-                data=data.test_case.data,
-                json=(
-                    data.test_case.json
-                    if data.test_case.json is not None
-                    else api_info_model.json
-                ),
-                file=data.test_case.file,
-            )
-            if (
-                api_info_model.is_schema == IsSchemaEnum.open
-                and api_info_model.ass_schema
-                and data.test_case.ass_schema is None
-            ):
-                data.test_case.ass_schema = api_info_model.ass_schema
-            log.debug(f"默认准备好的请求，数据：{data.request.model_dump_json()}")
-            res_args = func(self, data)
-            allure.attach(str(data.request.url), "URL", allure.attachment_type.TEXT)
-            allure.attach(
-                str(data.request.method), "请求方法", allure.attachment_type.TEXT
-            )
-            allure.attach(
-                json.dumps(data.request.headers, ensure_ascii=False),
-                "请求头",
-                allure.attachment_type.JSON,
-            )
-            if data.request.params:
-                allure.attach(
-                    json.dumps(data.request.params, ensure_ascii=False),
-                    "参数",
-                    allure.attachment_type.TEXT,
-                )
-            if data.request.data:
-                allure.attach(
-                    json.dumps(data.request.data, ensure_ascii=False),
-                    "表单",
-                    allure.attachment_type.JSON,
-                )
-            if data.request.json:
-                allure.attach(
-                    json.dumps(data.request.json, ensure_ascii=False),
-                    "JSON",
-                    allure.attachment_type.JSON,
-                )
-            if data.request.file:
-                allure.attach(
-                    str(data.request.file), "文件", allure.attachment_type.JSON
-                )
-            allure.attach(
-                str(data.response.status_code),
-                "响应状态码",
-                allure.attachment_type.TEXT,
-            )
-            allure.attach(
-                str(data.response.response_time * 1000),
-                "响应时间（毫秒）",
-                allure.attachment_type.TEXT,
-            )
-            allure.attach(
-                data.response.response_text, "响应结果", allure.attachment_type.TEXT
-            )
-            return res_args
-
-        return wrapper
-
-    return decorator
 
 
 def timer(func):
@@ -278,8 +187,6 @@ def api_allure_logger(func: Callable) -> Callable:
             log.info(_log_msg)
         else:
             log.error(_log_msg)
-
-        from allure_commons.types import AttachmentType
 
         # 使用 AllureAdapter 添加各项信息
         AllureAdapter.attach_text("请求URL", str(response.request_url))

@@ -22,7 +22,6 @@ from core.utils.project_dir import project_dir
 class DocumentData:
 
     def __init__(self):
-        print(project_dir.root_path())
         with open(
             os.path.join(project_dir.root_path(), "core", "settings", "feishu.json"),
             "r",
@@ -68,59 +67,15 @@ class DocumentData:
             url = f"{self.url}{self.config.surface.ui_element_id}/values_batch_get?ranges={i.get('sheet_id')}{self.parameter}"
             df = self.cls(url)
             element_exp_reversal = ElementExpEnum.reversal_obj()
-            df["定位方式1"] = (
-                df["定位方式1"].map(element_exp_reversal).fillna(df["定位方式1"])
-            )
-
-            try:
-                mask2 = df["定位方式2"].notna() & (df["定位方式2"] != "")
-                if mask2.values.any():  # 使用 .values 属性来获取底层 numpy 数组
-                    df.loc[mask2, "定位方式2"] = (
-                        df.loc[mask2, "定位方式2"]
-                        .map(element_exp_reversal)
-                        .fillna(df.loc[mask2, "定位方式2"])
-                    )
-            except:
-                pass  # 如果处理失败，保持原值不变
-
-            # 处理定位方式3
-            try:
-                mask3 = df["定位方式3"].notna() & (df["定位方式3"] != "")
-                if mask3.values.any():  # 使用 .values 属性来获取底层 numpy 数组
-                    df.loc[mask3, "定位方式3"] = (
-                        df.loc[mask3, "定位方式3"]
-                        .map(element_exp_reversal)
-                        .fillna(df.loc[mask3, "定位方式3"])
-                    )
-            except:
-                pass  # 如果处理失败，保持原值不变
-            df = df.rename(
-                columns={
-                    "ID": "id",
-                    "项目名称": "project_name",
-                    "模块名称": "module_name",
-                    "页面名称": "page_name",
-                    "元素名称": "ele_name",
-                    "定位方式1": "method1",
-                    "表达式1": "locator1",
-                    "下标1": "nth1",
-                    "定位方式2": "method2",
-                    "表达式2": "locator2",
-                    "下标2": "nth2",
-                    "定位方式3": "method3",
-                    "表达式3": "locator3",
-                    "下标3": "nth3",
-                    "等待": "sleep",
-                }
-            )
-            df_list.append(df)
+            for col in ["定位方式1", "定位方式2", "定位方式3"]:
+                mapped = df[col].map(element_exp_reversal)
+                df[col] = mapped.where(mapped.notna(), df[col])
+            df_list.append(df.reset_index(drop=True))
         combined_df = pd.concat(df_list, ignore_index=True)
-        duplicate_ids = combined_df[combined_df.duplicated(subset=["id"], keep=False)]
+        duplicate_ids = combined_df[combined_df.duplicated(subset=["ID"], keep=False)]
         if not duplicate_ids.empty:
             raise ToolsError(*ERROR_MSG_0351, value=("UI元素表",))
         return combined_df
-
-
 
     def cls(self, url):
         response = requests.get(
@@ -137,9 +92,4 @@ class DocumentData:
 
 
 if __name__ == "__main__":
-    print(DocumentData().api_test_case())
-    print(DocumentData().api_info())
     print(DocumentData().ui_element())
-    print(DocumentData().ui_test_case())
-    print(DocumentData().other_test_case())
-    print(DocumentData().project())

@@ -10,23 +10,16 @@ Core Utils 模块
 提供通用的工具函数和装饰器
 """
 
-from .helpers import generate_id, merge_dicts, filter_dict
 from .log import log
 from .obtain_test_data import ObtainTestData
 from .project_dir import ProjectDir
-from .project_public_methods import InitBaseData
 from .zip_files import zip_files
 
 project_dir = ProjectDir()
 
 __all__ = [
-    # 辅助函数
-    "generate_id",
-    "merge_dicts",
-    "filter_dict",
     "log",
     "ObtainTestData",
-    "InitBaseData",
     "zip_files",
     "project_dir",
 ]

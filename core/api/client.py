@@ -60,6 +60,7 @@ class APIClient:
             headers: Optional[Dict[str, str]] = None,
             pool_connections: int = 10,
             pool_maxsize: int = 10,
+            verify: bool = True,
     ):
         """
         初始化 API 客户端
@@ -69,10 +70,12 @@ class APIClient:
         @param headers: 默认请求头
         @param pool_connections: 连接池连接数
         @param pool_maxsize: 连接池最大连接数
+        @param verify: 是否验证SSL证书，默认True
         """
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
         self.headers = headers or {}
+        self.verify = verify
 
         # 请求/响应拦截器
         self._request_interceptors: List[Callable] = []
@@ -87,7 +90,7 @@ class APIClient:
             max_connections=pool_maxsize,
             max_keepalive_connections=pool_connections,
         )
-        self._client = httpx.Client(timeout=timeout, limits=limits)
+        self._client = httpx.Client(timeout=timeout, limits=limits, verify=verify, trust_env=False)
 
     def set_base_url(self, base_url: str):
         """设置基础 URL"""
@@ -177,6 +180,7 @@ class APIClient:
             files: Optional[Dict[str, Any]] = None,
             retry_count: int = 0,
             retry_delay: float = 1.0,
+            raise_on_error: bool = True,
     ) -> APIResponse:
         """
         发送 HTTP 请求
@@ -193,7 +197,10 @@ class APIClient:
         @return: API 响应
         """
         url = self._build_url(path)
-        request_headers = headers or {}
+        # 合并默认headers和传入的headers（传入的headers优先级更高）
+        request_headers = self.headers.copy()
+        if headers:
+            request_headers.update(headers)
 
         # 执行请求拦截器
         for interceptor in self._request_interceptors:
@@ -213,7 +220,7 @@ class APIClient:
                     response = interceptor(response)
 
                 # 检查响应状态
-                if response.is_error:
+                if response.is_error and raise_on_error:
                     raise ApiError(
                         response.status_code,
                         f"API 错误: {response.status_code}，数据：{str(response.data)}",

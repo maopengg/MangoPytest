@@ -3,55 +3,24 @@
 # @Description:
 # @Time   : 2024-02-19 10:07
 # @Author : 毛鹏
-from auto_tests.project_config import ProjectEnum
-from core.enums.tools_enum import EnvironmentEnum, AutoTestTypeEnum
+from core.enums.tools_enum import EnvironmentEnum
+from auto_tests.qfei_contract_api import PROJECT_NAME
 from core.utils.main_run import MainRun
 
-"""
-失败重试方式:
-1、可在命令行 –reruns=1 reruns_delay=2 失败后重运行1次，延时2s
-2、使用装饰器进行失败重运行
-@pytest.mark.flaky(reruns=1, reruns_delay=2)
-使用方式：
-命令行参数：–reruns n（重新运行次数），–reruns-delay m（等待运行秒数）
-装饰器参数：reruns=n（重新运行次数），reruns_delay=m（等待运行秒数）
-
-    --reruns: 失败重跑次数
-    --count: 重复执行次数
-    -v: 显示错误位置以及错误的详细信息
-    -s: 等价于 pytest --capture=no 可以捕获print函数的输出
-    -q: 简化输出信息
-    -m: 运行指定标签的测试用例
-    -x: 一旦错误，则停止运行
-    --maxfail: 设置最大失败次数，当超出这个阈值时，则不会在执行测试用例
-    "--reruns=3", "--reruns-delay=2"
-    -n 1: 代表使用多进程执行用例，4是进程数
-    '--dist=loadscope',  # 确保每个文件在单独的进程中运行
-    '-p no:warnings' 忽略警告
-    'ignore:Module already imported:pytest.PytestWarning' 特定警告
-    "--clean-alluredir",清空目录
-
-"""
-pytest_command = [
-    '-s',
-    '-v',
-    '-W',
-    'ignore:Module already imported:pytest.PytestWarning',
-    '--alluredir',
-    './report/tmp',
-    "--clean-alluredir",
-    '-n 3',
-    '--dist=loadscope',
-    '-p no:warnings'
-]
-
-test_project = [
-    {'project': ProjectEnum.MOCK_API, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.API},
-    {'project': ProjectEnum.PYTEST_API_MOCK, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.API},
-    {'project': ProjectEnum.BDD_API_MOCK, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.API},
-    {'project': ProjectEnum.MOCK_UI, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.UI},
-    {'project': ProjectEnum.SQL, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.OTHER},
-    {'project': ProjectEnum.BAIDU, 'test_environment': EnvironmentEnum.PRO, 'type': AutoTestTypeEnum.UI},
-]
-
-MainRun(test_project=test_project, pytest_command=pytest_command)
+MainRun(
+    project_config={
+        'project': PROJECT_NAME,
+        'test_environment': EnvironmentEnum.DEV,
+    },
+    pytest_command=[
+        '-s',                                                   # 捕获 print 输出
+        '-v',                                                   # 显示详细测试结果
+        '-W',                                                   # 过滤警告
+        'ignore:Module already imported:pytest.PytestWarning',  # 忽略重复导入警告
+        '--alluredir', './report/tmp',                          # Allure 报告输出目录
+        "--clean-alluredir",                                    # 运行前清空报告目录
+        '-n 3',                                                 # 3 进程并行
+        '--dist=loadscope',                                     # 按模块分配到进程
+        '-p no:warnings',                                       # 不显示所有警告
+    ],
+).main()

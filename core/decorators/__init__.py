@@ -18,7 +18,6 @@
 
 # API测试装饰器
 from .api import (
-    request_data,
     timer,
     log_decorator,
     CleanupContext,
