@@ -7,7 +7,7 @@ import factory
 from pytest_factoryboy import register
 from datetime import datetime, timedelta
 
-from core.base.baseFactory import BaseFactory
+from core.base.base_factory import BaseFactory
 from auto_tests.bdd_api_mock.data_factory.entities.auth import AuthEntity
 from auto_tests.bdd_api_mock.data_factory.specs.user import UserSpec
 

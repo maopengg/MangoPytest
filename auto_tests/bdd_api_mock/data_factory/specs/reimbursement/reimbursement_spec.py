@@ -8,7 +8,7 @@ from pytest_factoryboy import register
 from datetime import datetime
 from decimal import Decimal
 
-from core.base.baseFactory import BaseFactory
+from core.base.base_factory import BaseFactory
 from auto_tests.bdd_api_mock.data_factory.specs.user.user_spec import UserSpec
 from auto_tests.bdd_api_mock.data_factory.entities.reimbursement.reimbursement_entity import (
     ReimbursementEntity,

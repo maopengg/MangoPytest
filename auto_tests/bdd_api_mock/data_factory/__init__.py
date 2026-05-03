@@ -5,7 +5,7 @@ Data Factory 数据工厂层
 整合 entities、specs 和 lineage 到统一的数据工厂目录中，
 便于管理和维护测试数据准备逻辑。
 """
-from core.base.baseFactory import BaseFactory
+from core.base.base_factory import BaseFactory
 
 # 导出实体层
 from auto_tests.bdd_api_mock.data_factory.entities import (

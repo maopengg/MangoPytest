@@ -7,7 +7,7 @@ import factory
 from pytest_factoryboy import register
 from datetime import datetime
 
-from core.base.baseFactory import BaseFactory
+from core.base.base_factory import BaseFactory
 from auto_tests.bdd_api_mock.data_factory.entities.file.file_entity import FileEntity
 
 
