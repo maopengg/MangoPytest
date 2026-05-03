@@ -21,6 +21,8 @@ from .builder_context import BuilderContext
 from .pydantic_builder import PydanticBuilder
 from .base_strategy import BaseStrategy
 from .strategy_result import StrategyResult
+from .data_factory_base import DataFactoryBase
+from .repository_base import BaseRepository
 
 __all__ = [
     "BaseConfig",
@@ -31,4 +33,6 @@ __all__ = [
     "PydanticBuilder",
     "BaseStrategy",
     "StrategyResult",
+    "DataFactoryBase",
+    "BaseRepository",
 ]

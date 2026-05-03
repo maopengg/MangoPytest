@@ -40,8 +40,8 @@ class OrderEntity(Base):
     )
 
     # 关联关系 - ORM 层面关联，数据库无外键约束
-    product = relationship("ProductEntity", back_populates="orders")
-    user = relationship("UserEntity", back_populates="orders")
+    product = relationship("ProductEntity", back_populates="orders", primaryjoin="foreign(OrderEntity.product_id) == ProductEntity.id")
+    user = relationship("UserEntity", back_populates="orders", primaryjoin="foreign(OrderEntity.user_id) == UserEntity.id")
 
     # 索引
     __table_args__ = (

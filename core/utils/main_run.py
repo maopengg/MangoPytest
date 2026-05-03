@@ -59,21 +59,23 @@ class MainRun:
 
         proj = self._get_project_module()
 
-        test_cases_path = os.path.join(
-            project_dir.root_path(), "auto_tests", dir_name, "test_cases", "migrated", "contract"
-        )
-        features_path = os.path.join(
-            project_dir.root_path(), "auto_tests", dir_name, "features",
-        )
+        base = os.path.join(project_dir.root_path(), "auto_tests", dir_name)
+        candidates = [
+            os.path.join(base, "test_cases"),
+            os.path.join(base, "features"),
+        ]
 
         cmd = list(self.base_pytest_command)
-        if os.path.isdir(test_cases_path):
-            cmd.append(test_cases_path)
-        elif os.path.isdir(features_path):
-            cmd.append(features_path)
-        else:
-            log.error(f">>> 未找到测试目录: {test_cases_path} 或 {features_path}")
+        test_path = None
+        for p in candidates:
+            if os.path.isdir(p):
+                test_path = p
+                break
+
+        if not test_path:
+            log.error(f">>> 未找到测试目录, 尝试了: {candidates}")
             return
+        cmd.append(test_path)
 
         log.info(f">>> [{dir_name}] ENV={env_str}")
         log.info(f">>> [{dir_name}] pytest 命令: {cmd}")

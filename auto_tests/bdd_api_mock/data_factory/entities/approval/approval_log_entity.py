@@ -30,7 +30,7 @@ class ApprovalLogEntity(Base):
     created_at = Column(DateTime, default=datetime.now, comment="创建时间")
 
     # 关联关系 - ORM 层面关联，数据库无外键约束
-    reimbursement = relationship("ReimbursementEntity", back_populates="approval_logs")
+    reimbursement = relationship("ReimbursementEntity", back_populates="approval_logs", primaryjoin="foreign(ApprovalLogEntity.reimbursement_id) == ReimbursementEntity.id")
 
     # 索引
     __table_args__ = (

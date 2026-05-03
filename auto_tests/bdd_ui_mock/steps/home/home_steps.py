@@ -5,7 +5,7 @@
 # @Author : 毛鹏
 from pytest_bdd import given, then
 
-from auto_tests.bdd_ui_mock.page_object.home_page import HomePage
+from auto_tests.bdd_ui_mock.page_object.home import HomePage
 
 
 @given("用户访问 Mock 首页")

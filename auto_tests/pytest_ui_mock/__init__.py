@@ -7,7 +7,7 @@ from core.enums.tools_enum import AutoTestTypeEnum, EnvironmentEnum
 
 PROJECT_NAME = "pytest_ui_mock"
 PROJECT_TYPE = AutoTestTypeEnum.UI
-DEFAULT_ENV = EnvironmentEnum.PRO
+DEFAULT_ENV = EnvironmentEnum.PROD
 PROJECT_DISPLAY_NAME = "MockUI服务"
 
 NOTICE_CHANNEL = "email"

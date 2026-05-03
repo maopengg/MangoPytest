@@ -12,7 +12,7 @@ Steps 步骤定义层
 """
 
 # 导出 common fixtures
-from auto_tests.bdd_api_mock.steps.common import api_response, created_entity
+from auto_tests.bdd_api_mock.fixtures.bdd import api_response, created_entity
 
 # 导出 API 请求步骤
 from auto_tests.bdd_api_mock.steps.api import (

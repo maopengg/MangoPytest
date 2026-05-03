@@ -5,12 +5,12 @@
 # @Author : 毛鹏
 from pytest_bdd import when, then
 
-from auto_tests.bdd_ui_mock.page_object.home_page import HomePage
-from auto_tests.bdd_ui_mock.page_object.scroll_page import ScrollPage
+from auto_tests.bdd_ui_mock.page_object.home import HomePage
+from auto_tests.bdd_ui_mock.page_object.scroll import ScrollPage
 
 
 @when("用户进入页面滚动页面")
-def user_enter_scroll_page(logged_in_user, page_context):
+def user_enter_scroll(logged_in_user, page_context):
     home = page_context.get("首页")
     if not home:
         home = HomePage(logged_in_user["base_data"], logged_in_user["base_data"].test_data)
@@ -18,14 +18,14 @@ def user_enter_scroll_page(logged_in_user, page_context):
         page_context["首页"] = home
     home.test_data.set_cache('菜单名称', '滚动操作测试')
     home.switch_menu()
-    scroll_page = ScrollPage(logged_in_user["base_data"], logged_in_user["base_data"].test_data)
-    page_context["滚动"] = scroll_page
+    scroll = ScrollPage(logged_in_user["base_data"], logged_in_user["base_data"].test_data)
+    page_context["滚动"] = scroll
 
 
 @when("用户执行页面滚动操作")
 def user_perform_scroll(logged_in_user, page_context, test_data_context):
-    scroll_page = page_context["滚动"]
-    result = scroll_page.test_scroll()
+    scroll = page_context["滚动"]
+    result = scroll.test_scroll()
     test_data_context["滚动结果"] = result
 
 

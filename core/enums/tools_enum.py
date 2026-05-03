@@ -31,7 +31,7 @@ class EnvironmentEnum(BaseEnum):
     """测试环境枚举"""
     TEST = 0
     PRE = 1
-    PRO = 2
+    PROD = 2
     DEV = 3
     UAT = 4
     SIM = 5

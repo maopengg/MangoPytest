@@ -5,12 +5,12 @@
 # @Author : 毛鹏
 from pytest_bdd import when, then
 
-from auto_tests.bdd_ui_mock.page_object.home_page import HomePage
-from auto_tests.bdd_ui_mock.page_object.batch_page import BatchPage
+from auto_tests.bdd_ui_mock.page_object.home import HomePage
+from auto_tests.bdd_ui_mock.page_object.batch import BatchPage
 
 
 @when("用户进入批量操作页面")
-def user_enter_batch_page(logged_in_user, page_context):
+def user_enter_batch(logged_in_user, page_context):
     home = page_context.get("首页")
     if not home:
         home = HomePage(logged_in_user["base_data"], logged_in_user["base_data"].test_data)
@@ -18,14 +18,14 @@ def user_enter_batch_page(logged_in_user, page_context):
         page_context["首页"] = home
     home.test_data.set_cache('菜单名称', '批量操作测试')
     home.switch_menu()
-    batch_page = BatchPage(logged_in_user["base_data"], logged_in_user["base_data"].test_data)
-    page_context["批量"] = batch_page
+    batch = BatchPage(logged_in_user["base_data"], logged_in_user["base_data"].test_data)
+    page_context["批量"] = batch
 
 
 @when("用户执行批量勾选操作")
 def user_perform_batch_checkbox(logged_in_user, page_context, test_data_context):
-    batch_page = page_context["批量"]
-    result = batch_page.test_batch_checkbox()
+    batch = page_context["批量"]
+    result = batch.test_batch_checkbox()
     test_data_context["批量结果"] = result
 
 

@@ -32,8 +32,8 @@ class CEOApprovalEntity(Base):
     created_at = Column(DateTime, default=datetime.now, comment="创建时间")
 
     # 关联关系 - ORM 层面关联，数据库无外键约束
-    reimbursement = relationship("ReimbursementEntity", back_populates="ceo_approvals")
-    finance_approval = relationship("FinanceApprovalEntity", back_populates="ceo_approvals")
+    reimbursement = relationship("ReimbursementEntity", back_populates="ceo_approvals", primaryjoin="foreign(CEOApprovalEntity.reimbursement_id) == ReimbursementEntity.id")
+    finance_approval = relationship("FinanceApprovalEntity", back_populates="ceo_approvals", primaryjoin="foreign(CEOApprovalEntity.finance_approval_id) == FinanceApprovalEntity.id")
 
     # 索引
     __table_args__ = (

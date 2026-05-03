@@ -5,12 +5,12 @@
 # @Author : 毛鹏
 from pytest_bdd import when, then
 
-from auto_tests.bdd_ui_mock.page_object.home_page import HomePage
-from auto_tests.bdd_ui_mock.page_object.flash_page import FlashPage
+from auto_tests.bdd_ui_mock.page_object.home import HomePage
+from auto_tests.bdd_ui_mock.page_object.flash import FlashPage
 
 
 @when("用户进入闪现元素页面")
-def user_enter_flash_page(logged_in_user, page_context):
+def user_enter_flash(logged_in_user, page_context):
     home = page_context.get("首页")
     if not home:
         home = HomePage(logged_in_user["base_data"], logged_in_user["base_data"].test_data)
@@ -18,14 +18,14 @@ def user_enter_flash_page(logged_in_user, page_context):
         page_context["首页"] = home
     home.test_data.set_cache('菜单名称', '闪现元素测试')
     home.switch_menu()
-    flash_page = FlashPage(logged_in_user["base_data"], logged_in_user["base_data"].test_data)
-    page_context["闪现"] = flash_page
+    flash = FlashPage(logged_in_user["base_data"], logged_in_user["base_data"].test_data)
+    page_context["闪现"] = flash
 
 
 @when("用户捕获闪现元素")
 def user_capture_flash_element(logged_in_user, page_context, test_data_context):
-    flash_page = page_context["闪现"]
-    result = flash_page.test_flash_element()
+    flash = page_context["闪现"]
+    result = flash.test_flash_element()
     test_data_context["闪现结果"] = result
 
 

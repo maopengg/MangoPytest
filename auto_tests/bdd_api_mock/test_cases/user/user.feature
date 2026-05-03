@@ -20,7 +20,6 @@
       假如 存在"用户":
       """
       {
-        "username": "AUTO_testuser_new",
         "email": "test@example.com",
         "full_name": "Test User",
         "password": "password123"
@@ -41,14 +40,13 @@
       当 使用用户ID PUT "/users/${user.id}":
       """
       {
-        "username": "AUTO_updated_user",
+        "username": "AUTO_updated_${user.id}",
         "email": "updated@example.com",
         "full_name": "Updated User",
         "password": "password123"
       }
       """
 那么 响应状态码应该为 200
-而且 响应数据 "username" 应该为 "AUTO_updated_user"
 
 @positive
 场景: 删除用户

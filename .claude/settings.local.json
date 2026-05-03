@@ -50,7 +50,22 @@
       "Bash(sed -i 's|default=\"http://43.142.161.61:8080\"|default=\"http://43.142.161.61:8003\"|g' settings.py)",
       "Bash(ENV=prod .venv/Scripts/python -m pytest auto_tests/pytest_ui_mock/test_cases/test_click.py -v --no-header -p no:warnings)",
       "Bash(ENV=prod .venv/Scripts/python -m pytest auto_tests/bdd_ui_mock/test_cases/ -v --no-header -p no:warnings -x)",
-      "Bash(ENV=prod .venv/Scripts/python -m pytest auto_tests/bdd_ui_mock/test_cases/ -v --no-header -p no:warnings)"
+      "Bash(ENV=prod .venv/Scripts/python -m pytest auto_tests/bdd_ui_mock/test_cases/ -v --no-header -p no:warnings)",
+      "Bash(sed -i 's|primaryjoin=\"OrderEntity.product_id == foreign\\(ProductEntity.id\\)\"|primaryjoin=\"OrderEntity.product_id == ProductEntity.id\", viewonly=True|g' order/order_entity.py)",
+      "Bash(sed -i 's|primaryjoin=\"OrderEntity.user_id == foreign\\(UserEntity.id\\)\"|primaryjoin=\"OrderEntity.user_id == UserEntity.id\", viewonly=True|g' order/order_entity.py)",
+      "Bash(sed -i 's|primaryjoin=\"ReimbursementEntity.user_id == foreign\\(UserEntity.id\\)\"|primaryjoin=\"ReimbursementEntity.user_id == UserEntity.id\", viewonly=True|g' reimbursement/reimbursement_entity.py)",
+      "Bash(sed -i 's|primaryjoin=\"DeptApprovalEntity.reimbursement_id == foreign\\(ReimbursementEntity.id\\)\"|primaryjoin=\"DeptApprovalEntity.reimbursement_id == ReimbursementEntity.id\", viewonly=True|g' approval/dept_approval_entity.py)",
+      "Bash(sed -i 's|primaryjoin=\"FinanceApprovalEntity.reimbursement_id == foreign\\(ReimbursementEntity.id\\)\"|primaryjoin=\"FinanceApprovalEntity.reimbursement_id == ReimbursementEntity.id\", viewonly=True|g' approval/finance_approval_entity.py)",
+      "Bash(sed -i 's|product = relationship\\(\"ProductEntity\", back_populates=\"orders\"\\)|product = relationship\\(\"ProductEntity\", back_populates=\"orders\", primaryjoin=\"foreign\\(OrderEntity.product_id\\) == ProductEntity.id\"\\)|g' order/order_entity.py)",
+      "Bash(sed -i 's|user = relationship\\(\"UserEntity\", back_populates=\"orders\"\\)|user = relationship\\(\"UserEntity\", back_populates=\"orders\", primaryjoin=\"foreign\\(OrderEntity.user_id\\) == UserEntity.id\"\\)|g' order/order_entity.py)",
+      "Bash(sed -i 's|user = relationship\\(\"UserEntity\", back_populates=\"reimbursements\"\\)|user = relationship\\(\"UserEntity\", back_populates=\"reimbursements\", primaryjoin=\"foreign\\(ReimbursementEntity.user_id\\) == UserEntity.id\"\\)|g' reimbursement/reimbursement_entity.py)",
+      "Bash(sed -i 's|reimbursement = relationship\\(\"ReimbursementEntity\", back_populates=\"dept_approvals\"\\)|reimbursement = relationship\\(\"ReimbursementEntity\", back_populates=\"dept_approvals\", primaryjoin=\"foreign\\(DeptApprovalEntity.reimbursement_id\\) == ReimbursementEntity.id\"\\)|g' approval/dept_approval_entity.py)",
+      "Bash(sed -i 's|reimbursement = relationship\\(\"ReimbursementEntity\", back_populates=\"finance_approvals\"\\)|reimbursement = relationship\\(\"ReimbursementEntity\", back_populates=\"finance_approvals\", primaryjoin=\"foreign\\(FinanceApprovalEntity.reimbursement_id\\) == ReimbursementEntity.id\"\\)|g' approval/finance_approval_entity.py)",
+      "Bash(mv test_cases/migrated/* test_cases/)",
+      "Bash(rmdir test_cases/migrated)",
+      "Bash(mv steps/migrated/* steps/)",
+      "Bash(rmdir steps/migrated)",
+      "Bash(ENV=prod .venv/Scripts/python -m pytest auto_tests/bdd_ui_mock/test_cases/click/ -v --no-header -p no:warnings -s)"
     ]
   }
 }

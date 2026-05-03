@@ -7,7 +7,7 @@ from typing import Optional, List
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from auto_tests.bdd_api_mock.repos.base import BaseRepository
+from core.base import BaseRepository
 from auto_tests.bdd_api_mock.data_factory.entities.reimbursement.reimbursement_entity import ReimbursementEntity
 
 

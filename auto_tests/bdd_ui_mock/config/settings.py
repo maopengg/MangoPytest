@@ -13,6 +13,9 @@ MockUI 测试配置
 - test/pre: 使用 prod 配置
 """
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.pool import StaticPool
 from pydantic import Field
 
 from core.base.config import BaseConfig
@@ -21,6 +24,9 @@ from core.base.config import BaseConfig
 class BddUIMockConfig(BaseConfig):
     """
     MockUI 测试基础配置类
+
+    UI 测试也需要数据库来管理测试数据（创建前置数据 + 清理）。
+    数据库配置继承自 BaseConfig（DB_HOST, DB_PORT, DB_USER 等）。
     """
 
     # 项目标识
@@ -51,6 +57,41 @@ class BddUIMockConfig(BaseConfig):
     class Config:
         env_file_encoding = "utf-8"
         extra = "allow"
+
+    # SQLAlchemy（延迟初始化）
+    _engine = None
+    _SessionLocal = None
+    _Base = None
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if self.DB_HOST and self.DB_NAME:
+            try:
+                db_url = (
+                    f"mysql+pymysql://{self.DB_USER}:{self.DB_PASSWORD}"
+                    f"@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+                )
+                self._engine = create_engine(
+                    db_url, poolclass=StaticPool, pool_pre_ping=True, echo=False
+                )
+                self._SessionLocal = sessionmaker(
+                    autocommit=False, autoflush=False, bind=self._engine
+                )
+                self._Base = declarative_base()
+            except Exception:
+                pass
+
+    @property
+    def engine(self):
+        return self._engine
+
+    @property
+    def SessionLocal(self):
+        return self._SessionLocal
+
+    @property
+    def Base(self):
+        return self._Base
 
 
 class DevConfig(BddUIMockConfig):

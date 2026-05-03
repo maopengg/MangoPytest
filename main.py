@@ -10,7 +10,7 @@ from core.utils.main_run import MainRun
 MainRun(
     project_config={
         'project': PROJECT_NAME,
-        'test_environment': EnvironmentEnum.DEV,
+        'test_environment': EnvironmentEnum.PROD,
     },
     pytest_command=[
         '-s',                                                   # 捕获 print 输出

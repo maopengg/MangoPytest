@@ -125,14 +125,11 @@ class APIClient:
         )
         self._client = httpx.Client(timeout=timeout, limits=limits)
 
-        log.debug(f"APIClient 初始化完成，base_url: {self.base_url}")
-
     def set_token(self, token: str):
         """设置认证令牌"""
         self.token = token
         self.headers["Authorization"] = f"Bearer {token}"
         self.headers["X-Token"] = token
-        log.debug(f"设置认证令牌: {token[:20]}...")
 
     def add_request_interceptor(self, interceptor: Callable):
         """添加请求拦截器"""
@@ -288,7 +285,6 @@ class APIClient:
         request_headers = headers or {}
 
         self._request_count += 1
-        log.debug(f"发送 {method} 请求: {url}")
 
         last_error = None
         for attempt in range(retry_count + 1):

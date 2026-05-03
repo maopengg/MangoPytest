@@ -52,30 +52,34 @@ class ReimbursementEntity(Base):
 
     # 关联关系 - ORM 级联删除：删除报销时自动删除关联的审批和日志
     # 注意：数据库层面保持弱关联（无外键约束），级联只在 ORM 层面生效
-    user = relationship("UserEntity", back_populates="reimbursements")
+    user = relationship("UserEntity", back_populates="reimbursements", primaryjoin="foreign(ReimbursementEntity.user_id) == UserEntity.id")
     dept_approvals = relationship(
         "DeptApprovalEntity",
         back_populates="reimbursement",
+        primaryjoin="ReimbursementEntity.id == foreign(DeptApprovalEntity.reimbursement_id)",
         cascade="all, delete-orphan",
-        passive_deletes=True
+        
     )
     finance_approvals = relationship(
         "FinanceApprovalEntity",
         back_populates="reimbursement",
+        primaryjoin="ReimbursementEntity.id == foreign(FinanceApprovalEntity.reimbursement_id)",
         cascade="all, delete-orphan",
-        passive_deletes=True
+        
     )
     ceo_approvals = relationship(
         "CEOApprovalEntity",
         back_populates="reimbursement",
+        primaryjoin="ReimbursementEntity.id == foreign(CEOApprovalEntity.reimbursement_id)",
         cascade="all, delete-orphan",
-        passive_deletes=True
+        
     )
     approval_logs = relationship(
         "ApprovalLogEntity",
         back_populates="reimbursement",
+        primaryjoin="ReimbursementEntity.id == foreign(ApprovalLogEntity.reimbursement_id)",
         cascade="all, delete-orphan",
-        passive_deletes=True
+        
     )
 
     # 索引

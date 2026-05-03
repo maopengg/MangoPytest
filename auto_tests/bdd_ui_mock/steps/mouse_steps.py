@@ -5,12 +5,12 @@
 # @Author : 毛鹏
 from pytest_bdd import when, then
 
-from auto_tests.bdd_ui_mock.page_object.home_page import HomePage
-from auto_tests.bdd_ui_mock.page_object.mouse_page import MousePage
+from auto_tests.bdd_ui_mock.page_object.home import HomePage
+from auto_tests.bdd_ui_mock.page_object.mouse import MousePage
 
 
 @when("用户进入鼠标操作页面")
-def user_enter_mouse_page(logged_in_user, page_context):
+def user_enter_mouse(logged_in_user, page_context):
     home = page_context.get("首页")
     if not home:
         home = HomePage(logged_in_user["base_data"], logged_in_user["base_data"].test_data)
@@ -18,14 +18,14 @@ def user_enter_mouse_page(logged_in_user, page_context):
         page_context["首页"] = home
     home.test_data.set_cache('菜单名称', '鼠标操作测试')
     home.switch_menu()
-    mouse_page = MousePage(logged_in_user["base_data"], logged_in_user["base_data"].test_data)
-    page_context["鼠标"] = mouse_page
+    mouse = MousePage(logged_in_user["base_data"], logged_in_user["base_data"].test_data)
+    page_context["鼠标"] = mouse
 
 
 @when("用户执行鼠标悬停操作")
 def user_perform_mouse_hover(logged_in_user, page_context, test_data_context):
-    mouse_page = page_context["鼠标"]
-    result = mouse_page.test_mouse_operations()
+    mouse = page_context["鼠标"]
+    result = mouse.test_mouse_operations()
     test_data_context["鼠标结果"] = result
 
 

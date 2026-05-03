@@ -7,7 +7,7 @@ from core.enums.tools_enum import AutoTestTypeEnum, EnvironmentEnum
 
 PROJECT_NAME = "bdd_api_mock"
 PROJECT_TYPE = AutoTestTypeEnum.API
-DEFAULT_ENV = EnvironmentEnum.PRO
+DEFAULT_ENV = EnvironmentEnum.PROD
 PROJECT_DISPLAY_NAME = "bdd_api_mock"
 
 NOTICE_CHANNEL = "email"

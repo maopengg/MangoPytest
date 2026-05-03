@@ -5,12 +5,12 @@
 # @Author : 毛鹏
 from pytest_bdd import when, then
 
-from auto_tests.bdd_ui_mock.page_object.home_page import HomePage
-from auto_tests.bdd_ui_mock.page_object.keyboard_page import KeyboardPage
+from auto_tests.bdd_ui_mock.page_object.home import HomePage
+from auto_tests.bdd_ui_mock.page_object.keyboard import KeyboardPage
 
 
 @when("用户进入键盘操作页面")
-def user_enter_keyboard_page(logged_in_user, page_context):
+def user_enter_keyboard(logged_in_user, page_context):
     home = page_context.get("首页")
     if not home:
         home = HomePage(logged_in_user["base_data"], logged_in_user["base_data"].test_data)
@@ -18,14 +18,14 @@ def user_enter_keyboard_page(logged_in_user, page_context):
         page_context["首页"] = home
     home.test_data.set_cache('菜单名称', '键盘操作测试')
     home.switch_menu()
-    keyboard_page = KeyboardPage(logged_in_user["base_data"], logged_in_user["base_data"].test_data)
-    page_context["键盘"] = keyboard_page
+    keyboard = KeyboardPage(logged_in_user["base_data"], logged_in_user["base_data"].test_data)
+    page_context["键盘"] = keyboard
 
 
 @when("用户执行键盘输入操作")
 def user_perform_keyboard_input(logged_in_user, page_context, test_data_context):
-    keyboard_page = page_context["键盘"]
-    result = keyboard_page.test_keyboard_input()
+    keyboard = page_context["键盘"]
+    result = keyboard.test_keyboard_input()
     test_data_context["键盘结果"] = result
 
 

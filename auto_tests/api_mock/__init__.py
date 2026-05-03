@@ -36,7 +36,7 @@ from core.enums.tools_enum import AutoTestTypeEnum, EnvironmentEnum
 
 PROJECT_NAME = "api_mock"
 PROJECT_TYPE = AutoTestTypeEnum.API
-DEFAULT_ENV = EnvironmentEnum.PRO
+DEFAULT_ENV = EnvironmentEnum.PROD
 PROJECT_DISPLAY_NAME = "MockAPI服务"
 
 NOTICE_CHANNEL = "email"

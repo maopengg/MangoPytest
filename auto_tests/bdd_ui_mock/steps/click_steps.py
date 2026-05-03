@@ -5,53 +5,53 @@
 # @Author : 毛鹏
 from pytest_bdd import when, then
 
-from auto_tests.bdd_ui_mock.page_object.home_page import HomePage
-from auto_tests.bdd_ui_mock.page_object.click_page import ClickPage
+from auto_tests.bdd_ui_mock.page_object.home import HomePage
+from auto_tests.bdd_ui_mock.page_object.click import ClickPage
 
 
 @when("用户进入元素点击页面")
-def user_enter_click_page(logged_in_user, page_context):
+def user_enter_click(logged_in_user, page_context):
     home = page_context.get("首页")
     if not home:
         home = HomePage(logged_in_user["base_data"], logged_in_user["base_data"].test_data)
         home.goto()
         page_context["首页"] = home
-    click_page = ClickPage(logged_in_user["base_data"], logged_in_user["base_data"].test_data)
-    page_context["点击"] = click_page
+    click = ClickPage(logged_in_user["base_data"], logged_in_user["base_data"].test_data)
+    page_context["点击"] = click
 
 
 @when("用户执行双击操作")
 def user_perform_double_click(logged_in_user, page_context, test_data_context):
-    click_page = page_context["点击"]
-    result = click_page.test_double_click()
+    click = page_context["点击"]
+    result = click.test_double_click()
     test_data_context["双击结果"] = result
 
 
 @when("用户执行右键点击操作")
 def user_perform_right_click(logged_in_user, page_context, test_data_context):
-    click_page = page_context["点击"]
-    result = click_page.test_right_click()
+    click = page_context["点击"]
+    result = click.test_right_click()
     test_data_context["右键结果"] = result
 
 
 @when("用户执行强制点击操作")
 def user_perform_force_click(logged_in_user, page_context, test_data_context):
-    click_page = page_context["点击"]
-    result = click_page.test_force_click()
+    click = page_context["点击"]
+    result = click.test_force_click()
     test_data_context["强制点击结果"] = result
 
 
 @when("用户执行普通点击操作")
 def user_perform_simple_click(logged_in_user, page_context, test_data_context):
-    click_page = page_context["点击"]
-    result = click_page.test_simple_click()
+    click = page_context["点击"]
+    result = click.test_simple_click()
     test_data_context["普通点击结果"] = result
 
 
 @when("用户执行悬停操作")
 def user_perform_hover(logged_in_user, page_context, test_data_context):
-    click_page = page_context["点击"]
-    result = click_page.test_hover()
+    click = page_context["点击"]
+    result = click.test_hover()
     test_data_context["悬停结果"] = result
 
 

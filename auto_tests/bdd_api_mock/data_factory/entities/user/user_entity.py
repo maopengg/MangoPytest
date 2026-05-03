@@ -45,14 +45,16 @@ class UserEntity(Base):
     orders = relationship(
         "OrderEntity",
         back_populates="user",
+        primaryjoin="UserEntity.id == foreign(OrderEntity.user_id)",
         cascade="all, delete-orphan",
-        passive_deletes=True
+        
     )
     reimbursements = relationship(
         "ReimbursementEntity",
         back_populates="user",
+        primaryjoin="UserEntity.id == foreign(ReimbursementEntity.user_id)",
         cascade="all, delete-orphan",
-        passive_deletes=True
+        
     )
 
     # 索引

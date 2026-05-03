@@ -7,12 +7,12 @@ import os
 
 from pytest_bdd import when, then
 
-from auto_tests.bdd_ui_mock.page_object.home_page import HomePage
-from auto_tests.bdd_ui_mock.page_object.upload_page import UploadPage
+from auto_tests.bdd_ui_mock.page_object.home import HomePage
+from auto_tests.bdd_ui_mock.page_object.upload import UploadPage
 
 
 @when("用户进入文件上传页面")
-def user_enter_upload_page(logged_in_user, page_context):
+def user_enter_upload(logged_in_user, page_context):
     home = page_context.get("首页")
     if not home:
         home = HomePage(logged_in_user["base_data"], logged_in_user["base_data"].test_data)
@@ -20,18 +20,18 @@ def user_enter_upload_page(logged_in_user, page_context):
         page_context["首页"] = home
     home.test_data.set_cache('菜单名称', '文件上传测试')
     home.switch_menu()
-    upload_page = UploadPage(logged_in_user["base_data"], logged_in_user["base_data"].test_data)
-    page_context["上传"] = upload_page
+    upload = UploadPage(logged_in_user["base_data"], logged_in_user["base_data"].test_data)
+    page_context["上传"] = upload
 
 
 @when("用户上传测试文件")
 def user_upload_test_file(logged_in_user, page_context, test_data_context):
-    upload_page = page_context["上传"]
+    upload = page_context["上传"]
     file_path = os.path.join(
         os.path.dirname(os.path.dirname(__file__)),
         "upload", "测试上传文件UI.xlsx"
     )
-    result = upload_page.test_upload_file(file_path)
+    result = upload.test_upload_file(file_path)
     test_data_context["上传结果"] = result
 
 

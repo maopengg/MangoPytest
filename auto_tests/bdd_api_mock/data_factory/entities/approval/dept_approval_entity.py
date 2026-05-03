@@ -32,12 +32,13 @@ class DeptApprovalEntity(Base):
 
     # 关联关系 - ORM 级联删除：删除部门审批时自动删除关联的财务审批
     # 注意：数据库层面保持弱关联（无外键约束），级联只在 ORM 层面生效
-    reimbursement = relationship("ReimbursementEntity", back_populates="dept_approvals")
+    reimbursement = relationship("ReimbursementEntity", back_populates="dept_approvals", primaryjoin="foreign(DeptApprovalEntity.reimbursement_id) == ReimbursementEntity.id")
     finance_approvals = relationship(
         "FinanceApprovalEntity",
         back_populates="dept_approval",
+        primaryjoin="DeptApprovalEntity.id == foreign(FinanceApprovalEntity.dept_approval_id)",
         cascade="all, delete-orphan",
-        passive_deletes=True
+        
     )
 
     # 索引

@@ -41,8 +41,9 @@ class ProductEntity(Base):
     orders = relationship(
         "OrderEntity",
         back_populates="product",
+        primaryjoin="ProductEntity.id == foreign(OrderEntity.product_id)",
         cascade="all, delete-orphan",
-        passive_deletes=True
+        
     )
 
     # 索引
