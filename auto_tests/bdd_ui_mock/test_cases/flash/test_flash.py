@@ -9,4 +9,4 @@ pytestmark = [
     allure.story("闪现元素验证"),
 ]
 
-scenarios("flash.feature")
+scenarios("test_flash.feature")

@@ -9,4 +9,4 @@ pytestmark = [
     allure.story("iframe 操作验证"),
 ]
 
-scenarios("iframe.feature")
+scenarios("test_iframe.feature")

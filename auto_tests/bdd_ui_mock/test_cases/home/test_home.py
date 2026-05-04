@@ -9,4 +9,4 @@ pytestmark = [
     allure.story("首页访问"),
 ]
 
-scenarios("home.feature")
+scenarios("test_home.feature")

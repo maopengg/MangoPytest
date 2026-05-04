@@ -9,4 +9,4 @@ pytestmark = [
     allure.story("页面滚动验证"),
 ]
 
-scenarios("scroll.feature")
+scenarios("test_scroll.feature")

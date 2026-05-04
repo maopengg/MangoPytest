@@ -9,4 +9,4 @@ pytestmark = [
     allure.story("点击操作验证"),
 ]
 
-scenarios("click.feature")
+scenarios("test_click.feature")

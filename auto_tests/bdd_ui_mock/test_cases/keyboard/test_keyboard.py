@@ -9,4 +9,4 @@ pytestmark = [
     allure.story("键盘操作验证"),
 ]
 
-scenarios("keyboard.feature")
+scenarios("test_keyboard.feature")

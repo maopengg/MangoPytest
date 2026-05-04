@@ -9,4 +9,4 @@ pytestmark = [
     allure.story("批量操作验证"),
 ]
 
-scenarios("batch.feature")
+scenarios("test_batch.feature")

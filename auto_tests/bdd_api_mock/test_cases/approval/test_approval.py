@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-用户管理 BDD 测试 - 调试版本
+审批流程管理 BDD 测试
 """
 
 import pytest
@@ -10,9 +10,9 @@ from pytest_bdd import scenarios
 # Allure 分组配置 - 三级结构：Epic > Feature > Story
 pytestmark = [
     allure.epic("BDD API Mock 测试"),
-    allure.feature("用户管理"),
-    allure.story("用户CRUD操作-调试"),
+    allure.feature("审批管理"),
+    allure.story("审批流程操作"),
 ]
 
 # 加载 feature 文件
-scenarios("user.feature")
+scenarios("test_approval.feature")

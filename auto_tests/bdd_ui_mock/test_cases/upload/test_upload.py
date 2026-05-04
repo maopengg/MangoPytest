@@ -9,4 +9,4 @@ pytestmark = [
     allure.story("文件上传验证"),
 ]
 
-scenarios("upload.feature")
+scenarios("test_upload.feature")

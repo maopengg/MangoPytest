@@ -9,4 +9,4 @@ pytestmark = [
     allure.story("页面导航验证"),
 ]
 
-scenarios("navigation.feature")
+scenarios("test_navigation.feature")

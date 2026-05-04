@@ -9,4 +9,4 @@ pytestmark = [
     allure.story("鼠标操作验证"),
 ]
 
-scenarios("mouse.feature")
+scenarios("test_mouse.feature")

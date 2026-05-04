@@ -15,4 +15,4 @@ pytestmark = [
 ]
 
 # 加载 feature 文件
-scenarios("product.feature")
+scenarios("test_product.feature")
