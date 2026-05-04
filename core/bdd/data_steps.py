@@ -72,11 +72,25 @@ def create_named_entity_step(
 
     # 记录血缘追踪
     entity_id = getattr(entity, "id", "N/A")
+
+    # 提取实体数据为字典
+    entity_data = {}
+    for attr in dir(entity):
+        if not attr.startswith("_") and not callable(getattr(entity, attr)):
+            try:
+                value = getattr(entity, attr)
+                # 排除 SQLAlchemy 内部属性
+                if not hasattr(value, "__tablename__"):
+                    entity_data[attr] = value
+            except Exception:
+                pass
+
     lineage_tracker.record_creation(
         entity_type=entity_name,
         entity_id=entity_id,
         source="factory",
         metadata={"alias": alias, "factory": factory_class.__name__},
+        entity_data=entity_data,
     )
 
     log.info(f"✓ 创建成功: {entity_name} → @{alias} (id={entity_id})")

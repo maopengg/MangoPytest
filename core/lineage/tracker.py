@@ -14,25 +14,21 @@ from dataclasses import dataclass, field
 
 from .graph import DataLineageGraph
 
-# 可选的 Allure 支持
+# Allure 支持（必选）
+import allure
+from allure_commons.types import AttachmentType
+
+# 兼容不同版本的 AttachmentType
 try:
-    import allure
-    from allure_commons.types import AttachmentType
-    ALLURE_AVAILABLE = True
-    # 兼容不同版本的 AttachmentType
-    try:
-        MARKDOWN_TYPE = AttachmentType.MARKDOWN
-    except AttributeError:
-        MARKDOWN_TYPE = AttachmentType.TEXT
-except ImportError:
-    ALLURE_AVAILABLE = False
-    allure = None
-    MARKDOWN_TYPE = None
+    MARKDOWN_TYPE = AttachmentType.MARKDOWN
+except AttributeError:
+    MARKDOWN_TYPE = AttachmentType.TEXT
 
 
 @dataclass
 class LineageNode:
     """血缘节点"""
+
     node_id: str
     entity_type: str
     entity_id: Any
@@ -45,10 +41,10 @@ class LineageNode:
 class DataLineageTracker:
     """
     数据血缘追踪器
-    
+
     提供简洁的 API 来记录测试过程中的数据血缘关系，
     支持 Allure 报告集成。
-    
+
     Attributes:
         graph: 血缘图实例
         enabled: 是否启用追踪
@@ -68,18 +64,20 @@ class DataLineageTracker:
         entity_id: Any,
         source: str = "",
         metadata: Optional[Dict[str, Any]] = None,
-        parent_entity: Optional[str] = None
+        parent_entity: Optional[str] = None,
+        entity_data: Optional[Dict[str, Any]] = None,
     ) -> str:
         """
         记录数据创建
-        
+
         Args:
             entity_type: 实体类型（如 "user", "order"）
             entity_id: 实体ID
             source: 数据来源（如 "api_call", "factory"）
             metadata: 元数据（如 {"username": "test"}）
             parent_entity: 父实体 node_id（用于建立依赖关系）
-        
+            entity_data: 实体完整数据（用于 Allure 报告展示）
+
         Returns:
             str: 节点ID
         """
@@ -87,13 +85,13 @@ class DataLineageTracker:
             return ""
 
         node_id = f"{entity_type}:{entity_id}"
-        
+
         node = LineageNode(
             node_id=node_id,
             entity_type=entity_type,
             entity_id=entity_id,
             source=source or "factory",
-            metadata=metadata or {}
+            metadata=metadata or {},
         )
 
         # 如果有父实体，建立依赖关系
@@ -105,29 +103,28 @@ class DataLineageTracker:
         self.graph.add_node(node)
 
         # 记录创建历史
-        self._created_entities.append({
-            "node_id": node_id,
-            "entity_type": entity_type,
-            "entity_id": entity_id,
-            "source": source,
-            "metadata": metadata
-        })
+        self._created_entities.append(
+            {
+                "node_id": node_id,
+                "entity_type": entity_type,
+                "entity_id": entity_id,
+                "source": source,
+                "metadata": metadata,
+                "data": entity_data,
+            }
+        )
 
         # Allure 记录
-        if ALLURE_AVAILABLE:
-            self._allure_record_creation(node)
+        self._allure_record_creation(node, entity_data)
 
         return node_id
 
     def record_dependency(
-        self,
-        from_entity: str,
-        to_entity: str,
-        relation_type: str = "creates"
+        self, from_entity: str, to_entity: str, relation_type: str = "creates"
     ) -> None:
         """
         记录数据依赖关系
-        
+
         Args:
             from_entity: 源实体 node_id
             to_entity: 目标实体 node_id
@@ -145,7 +142,9 @@ class DataLineageTracker:
         """获取所有创建的实体列表"""
         return self._created_entities.copy()
 
-    def get_entity_lineage(self, entity_type: str, entity_id: Any) -> Optional[LineageNode]:
+    def get_entity_lineage(
+        self, entity_type: str, entity_id: Any
+    ) -> Optional[LineageNode]:
         """获取实体的血缘信息"""
         node_id = f"{entity_type}:{entity_id}"
         return self._node_map.get(node_id)
@@ -153,44 +152,46 @@ class DataLineageTracker:
     def get_cleanup_order(self) -> List[Dict[str, Any]]:
         """
         获取数据清理顺序（按依赖关系逆序）
-        
+
         Returns:
             List[Dict]: 按清理顺序排列的实体列表
         """
         if not self._created_entities:
             return []
-        
+
         # 使用图的拓扑排序获取清理顺序
         node_ids = [e["node_id"] for e in self._created_entities]
         cleanup_order = self.graph.get_reverse_topological_order(node_ids)
-        
+
         result = []
         for node_id in cleanup_order:
             if node_id in self._node_map:
                 node = self._node_map[node_id]
-                result.append({
-                    "entity_type": node.entity_type,
-                    "entity_id": node.entity_id,
-                    "node_id": node_id
-                })
-        
+                result.append(
+                    {
+                        "entity_type": node.entity_type,
+                        "entity_id": node.entity_id,
+                        "node_id": node_id,
+                    }
+                )
+
         return result
 
     def generate_mermaid_graph(self) -> str:
         """
         生成 Mermaid 格式的血缘图
-        
+
         Returns:
             str: Mermaid 图表代码
         """
         lines = ["graph TD"]
-        
+
         # 添加节点
         for node_id, node in self._node_map.items():
             safe_id = node_id.replace(":", "_")
             label = f"{node.entity_type}:{node.entity_id}"
             lines.append(f"    {safe_id}[{label}]")
-        
+
         # 添加边
         for node_id, node in self._node_map.items():
             safe_id = node_id.replace(":", "_")
@@ -198,38 +199,35 @@ class DataLineageTracker:
                 if dep_id in self._node_map:
                     safe_dep_id = dep_id.replace(":", "_")
                     lines.append(f"    {safe_id} --> {safe_dep_id}")
-        
+
         return "\n".join(lines)
 
     def attach_to_allure(self) -> None:
         """
         将血缘追踪结果附加到 Allure 报告
         """
-        if not ALLURE_AVAILABLE or not allure:
-            return
-
         # 1. 添加数据创建统计
         entity_count = {}
         for entity in self._created_entities:
             etype = entity["entity_type"]
             entity_count[etype] = entity_count.get(etype, 0) + 1
-        
+
         stats = "## 数据创建统计\n\n"
         for etype, count in sorted(entity_count.items()):
             stats += f"- **{etype}**: {count} 条\n"
         stats += f"\n**总计**: {len(self._created_entities)} 条数据\n"
-        
+
         allure.attach(stats, "数据血缘统计", MARKDOWN_TYPE)
 
         # 2. 添加详细列表
         details = "## 数据创建详情\n\n"
         details += "| 实体类型 | 实体ID | 来源 | 元数据 |\n"
         details += "|---------|--------|------|--------|\n"
-        
+
         for entity in self._created_entities:
             metadata_str = str(entity.get("metadata", {}))[:50]
             details += f"| {entity['entity_type']} | {entity['entity_id']} | {entity.get('source', '-')} | {metadata_str} |\n"
-        
+
         allure.attach(details, "数据创建详情", MARKDOWN_TYPE)
 
         # 3. 添加 Mermaid 血缘图
@@ -238,7 +236,7 @@ class DataLineageTracker:
             allure.attach(
                 f"## 数据血缘关系图\n\n```mermaid\n{mermaid}\n```",
                 "血缘关系图",
-                MARKDOWN_TYPE
+                MARKDOWN_TYPE,
             )
 
         # 4. 添加清理顺序
@@ -249,26 +247,44 @@ class DataLineageTracker:
                 cleanup += f"{i}. {item['entity_type']} (ID: {item['entity_id']})\n"
             allure.attach(cleanup, "数据清理顺序", MARKDOWN_TYPE)
 
-    def _allure_record_creation(self, node: LineageNode) -> None:
-        """内部方法：记录到 Allure"""
-        if not ALLURE_AVAILABLE or not allure:
-            return
-        
+    def _allure_record_creation(
+        self, node: LineageNode, entity_data: Dict[str, Any] = None
+    ) -> None:
+        """内部方法：记录到 Allure
+
+        Args:
+            node: 血缘节点
+            entity_data: 实体完整数据（可选）
+        """
+        import json
+
         # 添加步骤描述
         step_title = f"创建 {node.entity_type}: {node.entity_id}"
         with allure.step(step_title):
-            if node.metadata:
-                allure.attach(
-                    str(node.metadata),
-                    "实体数据",
-                    AttachmentType.JSON
-                )
+            # 准备附件数据
+            attach_data = {
+                "entity_type": node.entity_type,
+                "entity_id": node.entity_id,
+                "source": node.source,
+                "metadata": node.metadata,
+            }
+
+            # 如果有完整实体数据，添加到附件
+            if entity_data:
+                attach_data["data"] = entity_data
+
+            # 以 JSON 格式附加到 Allure
+            allure.attach(
+                json.dumps(attach_data, ensure_ascii=False, indent=2, default=str),
+                "实体数据",
+                AttachmentType.JSON,
+            )
 
     @contextmanager
     def track_test(self, test_name: str):
         """
         上下文管理器：追踪整个测试的数据血缘
-        
+
         使用示例:
             with tracker.track_test("test_order_workflow"):
                 # 测试代码
@@ -279,7 +295,7 @@ class DataLineageTracker:
         self._created_entities.clear()
         self._node_map.clear()
         self.graph.clear()
-        
+
         try:
             yield self
         finally:

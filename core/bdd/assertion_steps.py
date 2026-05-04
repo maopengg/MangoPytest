@@ -21,7 +21,7 @@
     }
 """
 
-from typing import Any, Dict
+from typing import Dict
 
 from pytest_bdd import then, parsers
 
