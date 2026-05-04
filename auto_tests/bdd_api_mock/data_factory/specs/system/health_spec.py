@@ -6,12 +6,12 @@
 import factory
 from pytest_factoryboy import register
 
-from core.base.base_factory import BaseFactory
+from auto_tests.bdd_api_mock.data_factory.base import BDDAPIBaseFactory
 from auto_tests.bdd_api_mock.data_factory.entities.system import HealthEntity
 
 
 @register
-class HealthSpec(BaseFactory):
+class HealthSpec(BDDAPIBaseFactory):
     """系统健康状态 Spec"""
 
     class Meta:

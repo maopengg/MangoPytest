@@ -7,12 +7,12 @@ import factory
 from pytest_factoryboy import register
 from datetime import datetime
 
-from core.base.base_factory import BaseFactory
+from auto_tests.bdd_api_mock.data_factory.base import BDDAPIBaseFactory
 from auto_tests.bdd_api_mock.data_factory.entities.system.api_log_entity import APILogEntity
 
 
 @register
-class APILogSpec(BaseFactory):
+class APILogSpec(BDDAPIBaseFactory):
     """API调用日志工厂"""
 
     class Meta:

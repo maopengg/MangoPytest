@@ -8,7 +8,7 @@ from pytest_factoryboy import register
 from datetime import datetime
 from decimal import Decimal
 
-from core.base.base_factory import BaseFactory
+from auto_tests.bdd_api_mock.data_factory.base import BDDAPIBaseFactory
 from auto_tests.bdd_api_mock.data_factory.specs.user.user_spec import UserSpec
 from auto_tests.bdd_api_mock.data_factory.entities.reimbursement.reimbursement_entity import (
     ReimbursementEntity,
@@ -16,7 +16,7 @@ from auto_tests.bdd_api_mock.data_factory.entities.reimbursement.reimbursement_e
 
 
 @register
-class ReimbursementSpec(BaseFactory):
+class ReimbursementSpec(BDDAPIBaseFactory):
     """报销申请 Spec"""
 
     class Meta:

@@ -7,7 +7,7 @@ import factory
 from pytest_factoryboy import register
 from datetime import datetime
 
-from core.base.base_factory import BaseFactory
+from auto_tests.bdd_api_mock.data_factory.base import BDDAPIBaseFactory
 from auto_tests.bdd_api_mock.data_factory.specs.user.user_spec import UserSpec
 from auto_tests.bdd_api_mock.data_factory.specs.approval.finance_approval_spec import (
     FinanceApprovalSpec,
@@ -18,7 +18,7 @@ from auto_tests.bdd_api_mock.data_factory.entities.approval.ceo_approval_entity 
 
 
 @register
-class CEOApprovalSpec(BaseFactory):
+class CEOApprovalSpec(BDDAPIBaseFactory):
     """总经理审批 Spec"""
 
     class Meta:

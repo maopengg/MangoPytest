@@ -9,7 +9,7 @@ from pytest_factoryboy import register
 from datetime import datetime
 from decimal import Decimal
 
-from core.base.base_factory import BaseFactory
+from auto_tests.bdd_api_mock.data_factory.base import BDDAPIBaseFactory
 from auto_tests.bdd_api_mock.data_factory.entities.product.product_entity import ProductEntity
 
 # 使用 mangotools.data_processor 生成测试数据
@@ -25,7 +25,7 @@ def auto_product_name():
 
 
 @register
-class ProductSpec(BaseFactory):
+class ProductSpec(BDDAPIBaseFactory):
     """产品 Spec"""
 
     class Meta:

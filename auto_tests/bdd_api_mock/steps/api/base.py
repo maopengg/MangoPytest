@@ -6,6 +6,8 @@
 """
 
 import json
+import re
+from typing import Any, Dict
 
 from pytest_bdd import when, parsers
 
@@ -30,6 +32,50 @@ ENTITY_NAME_TO_KEY = {
 def _get_entity_key(entity_name: str) -> str:
     """获取实体对应的占位符 key"""
     return ENTITY_NAME_TO_KEY.get(entity_name, entity_name.lower())
+
+
+def _build_context_from_docstring(docstring: str, created_entity: Dict) -> Dict[str, Any]:
+    """从 docstring 中提取所有占位符，并构建 context
+    
+    支持多个实体占位符，如:
+    - ${{product.id}}
+    - ${{user.id}}
+    - ${{order.id}}
+    """
+    context = {}
+    
+    if not docstring:
+        return context
+    
+    # 从 data/factory.py 导入实体缓存
+    from auto_tests.bdd_api_mock.steps.data.factory import _entity_cache
+    
+    # 查找所有 ${{entity.key}} 格式的占位符
+    pattern = r'\$\{\{(\w+)\.(\w+)\}\}'
+    matches = re.findall(pattern, docstring)
+    
+    for entity_key, attr in matches:
+        # 根据 entity_key 找到对应的中文实体名称
+        entity_name = None
+        for cn_name, key in ENTITY_NAME_TO_KEY.items():
+            if key == entity_key:
+                entity_name = cn_name
+                break
+        
+        if entity_name and entity_name in _entity_cache:
+            entity = _entity_cache[entity_name]
+            if hasattr(entity, attr):
+                context[f"{entity_key}.{attr}"] = getattr(entity, attr)
+    
+    # 同时添加当前 created_entity 中的实体（作为后备）
+    if created_entity and "entity" in created_entity:
+        entity = created_entity["entity"]
+        entity_name = created_entity.get("entity_name", "")
+        current_key = _get_entity_key(entity_name)
+        if hasattr(entity, "id"):
+            context[f"{current_key}.id"] = entity.id
+    
+    return context
 
 
 @when(parsers.re(r'GET\s+"(?P<path>[^"]+)"'))
@@ -73,15 +119,11 @@ def api_get_with_table_params_step(
 def api_post_step(path: str, docstring, api_client, api_response, created_entity):
     """POST 请求步骤
 
-    支持在请求体中使用 ${{entity.id}} 占位符，会从 created_entity 中替换
+    支持在请求体中使用 ${{entity.id}} 占位符，会从实体缓存中查找并替换
+    支持多个不同实体的占位符，如: ${{product.id}} 和 ${{user.id}}
     """
-    # 构建 context 用于占位符替换
-    context = {}
-    if created_entity and "entity" in created_entity:
-        entity = created_entity["entity"]
-        entity_name = created_entity.get("entity_name", "")
-        entity_key = _get_entity_key(entity_name)
-        context[f"{entity_key}.id"] = entity.id
+    # 构建 context 用于占位符替换（支持多个实体）
+    context = _build_context_from_docstring(docstring, created_entity)
 
     # 将 docstring 作为原始字符串传递给 client，由 client 处理占位符替换
     result = api_client.request("POST", path, json_data=docstring, context=context)
@@ -93,15 +135,11 @@ def api_post_step(path: str, docstring, api_client, api_response, created_entity
 def api_put_step(path: str, docstring, api_client, api_response, created_entity):
     """PUT 请求步骤
 
-    支持在请求体中使用 ${{entity.id}} 占位符，会从 created_entity 中替换
+    支持在请求体中使用 ${{entity.id}} 占位符，会从实体缓存中查找并替换
+    支持多个不同实体的占位符，如: ${{product.id}} 和 ${{user.id}}
     """
-    # 构建 context 用于占位符替换
-    context = {}
-    if created_entity and "entity" in created_entity:
-        entity = created_entity["entity"]
-        entity_name = created_entity.get("entity_name", "")
-        entity_key = _get_entity_key(entity_name)
-        context[f"{entity_key}.id"] = entity.id
+    # 构建 context 用于占位符替换（支持多个实体）
+    context = _build_context_from_docstring(docstring, created_entity)
 
     # 将 docstring 作为原始字符串传递给 client，由 client 处理占位符替换
     result = api_client.request("PUT", path, json_data=docstring, context=context)

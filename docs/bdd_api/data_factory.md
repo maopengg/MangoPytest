@@ -131,13 +131,45 @@ class UserEntity(Base):
 
 ### Spec（工厂）
 
+#### 多项目架构
+
+`BaseFactory` 支持多项目，每个项目需要创建自己的基类：
+
+```
+data_factory/
+├── base.py              # 项目基类（指定 settings_module）
+├── entities/
+└── specs/
+```
+
+**项目基类示例** (`data_factory/base.py`)：
+
+```python
+from core.base.base_factory import BaseFactory
+
+class BDDAPIBaseFactory(BaseFactory):
+    """BDD API Mock 项目的 Factory 基类"""
+    
+    class Meta:
+        abstract = True
+        settings_module = "auto_tests.bdd_api_mock.config"  # 指定项目配置
+```
+
+**关键点**：
+- `settings_module` 指定项目的 settings 模块路径
+- 延迟获取数据库会话，避免模块导入时创建连接
+- 支持多项目共存，各项目使用各自的数据库配置
+
+#### 具体 Spec 定义
+
 ```python
 # specs/user/user_spec.py
 import factory
 from pytest_factoryboy import register
+from auto_tests.bdd_api_mock.data_factory.base import BDDAPIBaseFactory  # 导入项目基类
 
 @register
-class UserSpec(BaseFactory):
+class UserSpec(BDDAPIBaseFactory):  # 继承项目基类
     class Meta:
         model = UserEntity
 
@@ -148,6 +180,7 @@ class UserSpec(BaseFactory):
 ```
 
 **关键点**：
+- 继承项目基类（如 `BDDAPIBaseFactory`），不要直接继承 `BaseFactory`
 - `@register` 自动注册为 pytest fixture
 - `LazyFunction` / `LazyAttribute` 每次调用计算，保证唯一值
 - 数据字段用 `AUTO_` 前缀，配合清理系统按前缀匹配删除
@@ -178,7 +211,25 @@ ENTITY_FACTORY_MAP = {
 
 ## 新增实体
 
+### 新项目首次使用
+
+如果项目还没有 `data_factory/base.py`，需要先创建：
+
+```python
+# data_factory/base.py
+from core.base.base_factory import BaseFactory
+
+class XXXBaseFactory(BaseFactory):
+    """XXX 项目的 Factory 基类"""
+    
+    class Meta:
+        abstract = True
+        settings_module = "auto_tests.xxx.config"  # 替换为实际项目配置路径
+```
+
+### 新增实体步骤
+
 1. 在 `entities/<module>/` 创建 Entity，按模板声明 `relationship`
-2. 在 `specs/<module>/` 创建 Spec，`@register` 装饰
+2. 在 `specs/<module>/` 创建 Spec，继承项目基类（如 `BDDAPIBaseFactory`），使用 `@register` 装饰
 3. 在 `conftest.py` 添加 `from ... import xxx_spec`
 4. 在 `specs/__init__.py` 的 `ENTITY_FACTORY_MAP` 添加中文名映射

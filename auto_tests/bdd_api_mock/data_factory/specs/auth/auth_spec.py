@@ -7,13 +7,13 @@ import factory
 from pytest_factoryboy import register
 from datetime import datetime, timedelta
 
-from core.base.base_factory import BaseFactory
+from auto_tests.bdd_api_mock.data_factory.base import BDDAPIBaseFactory
 from auto_tests.bdd_api_mock.data_factory.entities.auth import AuthEntity
 from auto_tests.bdd_api_mock.data_factory.specs.user import UserSpec
 
 
 @register
-class AuthSpec(BaseFactory):
+class AuthSpec(BDDAPIBaseFactory):
     """认证会话 Spec"""
 
     class Meta:
