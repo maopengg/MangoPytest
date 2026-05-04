@@ -76,6 +76,12 @@ def _discover_modules(rel_dir: str, pkg_name: str):
 del Path, CONFTEST_DIR, _discover_modules
 
 
+# ========== 血缘追踪配置 ==========
+from core.lineage import get_tracker
+
+lineage_tracker = get_tracker(enabled=True)
+
+
 # ========== 日志配置 ==========
 
 
@@ -169,3 +175,11 @@ def pytest_sessionfinish(session, exitstatus):
                         log.info(">>> 清理锁文件")
     except Exception as e:
         log.warning(f">>> 清理锁文件失败: {e}")
+
+
+def pytest_runtest_teardown(item, nextitem):
+    """每个测试用例结束时附加血缘报告到 Allure"""
+    try:
+        lineage_tracker.attach_to_allure()
+    except Exception as e:
+        log.debug(f">>> 附加血缘报告失败: {e}")

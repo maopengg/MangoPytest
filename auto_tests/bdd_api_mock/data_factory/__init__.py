@@ -44,8 +44,8 @@ from auto_tests.bdd_api_mock.data_factory.specs import (
     ENTITY_FACTORY_MAP,
 )
 
-# 导出血缘追踪
-from auto_tests.bdd_api_mock.data_factory.lineage import (
+# 导出血缘追踪（从 core 模块）
+from core.lineage import (
     DataLineageTracker,
     get_tracker,
     reset_tracker,

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-数据血缘追踪器 - BDD 版本（支持 Allure）
+数据血缘追踪器 - 核心版本（支持 Allure）
 
 提供简洁的 API 来记录测试过程中的数据血缘关系，
 并自动集成 Allure 报告，展示数据创建链路。
+适用于多项目的 BDD 测试框架。
 """
 
 from contextlib import contextmanager
@@ -18,9 +19,15 @@ try:
     import allure
     from allure_commons.types import AttachmentType
     ALLURE_AVAILABLE = True
+    # 兼容不同版本的 AttachmentType
+    try:
+        MARKDOWN_TYPE = AttachmentType.MARKDOWN
+    except AttributeError:
+        MARKDOWN_TYPE = AttachmentType.TEXT
 except ImportError:
     ALLURE_AVAILABLE = False
     allure = None
+    MARKDOWN_TYPE = None
 
 
 @dataclass
@@ -212,7 +219,7 @@ class DataLineageTracker:
             stats += f"- **{etype}**: {count} 条\n"
         stats += f"\n**总计**: {len(self._created_entities)} 条数据\n"
         
-        allure.attach(stats, "数据血缘统计", AttachmentType.MARKDOWN)
+        allure.attach(stats, "数据血缘统计", MARKDOWN_TYPE)
 
         # 2. 添加详细列表
         details = "## 数据创建详情\n\n"
@@ -223,7 +230,7 @@ class DataLineageTracker:
             metadata_str = str(entity.get("metadata", {}))[:50]
             details += f"| {entity['entity_type']} | {entity['entity_id']} | {entity.get('source', '-')} | {metadata_str} |\n"
         
-        allure.attach(details, "数据创建详情", AttachmentType.MARKDOWN)
+        allure.attach(details, "数据创建详情", MARKDOWN_TYPE)
 
         # 3. 添加 Mermaid 血缘图
         mermaid = self.generate_mermaid_graph()
@@ -231,7 +238,7 @@ class DataLineageTracker:
             allure.attach(
                 f"## 数据血缘关系图\n\n```mermaid\n{mermaid}\n```",
                 "血缘关系图",
-                AttachmentType.MARKDOWN
+                MARKDOWN_TYPE
             )
 
         # 4. 添加清理顺序
@@ -240,7 +247,7 @@ class DataLineageTracker:
             cleanup = "## 建议的数据清理顺序（按依赖逆序）\n\n"
             for i, item in enumerate(cleanup_order, 1):
                 cleanup += f"{i}. {item['entity_type']} (ID: {item['entity_id']})\n"
-            allure.attach(cleanup, "数据清理顺序", AttachmentType.MARKDOWN)
+            allure.attach(cleanup, "数据清理顺序", MARKDOWN_TYPE)
 
     def _allure_record_creation(self, node: LineageNode) -> None:
         """内部方法：记录到 Allure"""

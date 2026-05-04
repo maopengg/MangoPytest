@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-数据血缘追踪模块 - BDD 版本
+数据血缘追踪模块 - 核心版本
 
 提供测试过程中的数据血缘追踪功能，支持 Allure 报告集成。
+适用于多项目的 BDD 测试框架。
 
 主要功能：
     1. 记录数据创建 - 追踪谁创建了哪条数据
@@ -12,7 +13,7 @@
 
 使用示例：
     # 方式1：使用上下文管理器
-    from auto_tests.bdd_api_mock.data_factory.lineage import get_tracker
+    from core.lineage import get_tracker
     
     tracker = get_tracker()
     with tracker.track_test("test_order_workflow"):

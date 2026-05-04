@@ -24,7 +24,12 @@ import pytest
 from pytest_bdd import given, parsers
 
 from core.bdd.context import EntityContext
+from core.lineage import get_tracker
 from core.utils import log
+
+
+# 获取血缘追踪器实例
+lineage_tracker = get_tracker(enabled=True)
 
 
 @pytest.fixture
@@ -65,9 +70,16 @@ def create_named_entity_step(
     # 添加到上下文
     entity_context.add(alias, entity)
 
-    log.info(
-        f"✓ 创建成功: {entity_name} → @{alias} (id={getattr(entity, 'id', 'N/A')})"
+    # 记录血缘追踪
+    entity_id = getattr(entity, "id", "N/A")
+    lineage_tracker.record_creation(
+        entity_type=entity_name,
+        entity_id=entity_id,
+        source="factory",
+        metadata={"alias": alias, "factory": factory_class.__name__},
     )
+
+    log.info(f"✓ 创建成功: {entity_name} → @{alias} (id={entity_id})")
 
     return entity
 
