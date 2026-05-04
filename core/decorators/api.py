@@ -13,17 +13,14 @@ import allure
 from genson import SchemaBuilder
 from requests.models import Response
 
-from core.enums.api_enum import MethodEnum, IsSchemaEnum
-from core.models.api_model import (
+from core.models import (
     ApiDataModel,
     ResponseModel,
     RequestModel,
-    ApiInfoModel,
     APIResponse,
 )
 from core.reporting.adapter import AllureAdapter
 from core.settings.settings import PRINT_EXECUTION_RESULTS, REQUEST_TIMEOUT_FAILURE_TIME
-from core.sources import SourcesData
 from core.utils import log
 
 

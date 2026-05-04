@@ -11,11 +11,10 @@ import pandas as pd
 import requests
 from mangotools.enums import NoticeEnum
 
-from core.enums.api_enum import MethodEnum, IsSchemaEnum
-from core.enums.tools_enum import EnvironmentEnum, ClientEnum, StatusEnum
+from core.enums.tools_enum import StatusEnum
 from core.enums.ui_enum import ElementExpEnum
 from core.exceptions import ToolsError, ERROR_MSG_0351
-from core.models.tools_model import FeiShuModel
+from core.models import FeiShuModel
 from core.utils.project_dir import project_dir
 
 

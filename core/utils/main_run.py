@@ -9,8 +9,7 @@ import socket
 import pytest
 import importlib
 import json
-from core.enums.tools_enum import EnvironmentEnum
-from core.models.tools_model import CaseRunModel
+from core.models import CaseRunModel
 from core.settings.settings import IS_TEST_REPORT
 from core.utils import log
 from core.utils.notice import NoticeMain

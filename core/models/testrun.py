@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description:
+# @Description: 测试运行相关数据模型
 # @Time   : 2023-07-04 17:14
 # @Author : 毛鹏
 import warnings
 
-from mangotools.database import MysqlConnect
-from mangotools.models import MysqlConingModel
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
-from core.enums.tools_enum import AutoTestTypeEnum, EnvironmentEnum
-from core.utils.obtain_test_data import ObtainTestData
+from core.enums.tools_enum import EnvironmentEnum
 
 warnings.filterwarnings(
     "ignore",
@@ -23,7 +20,6 @@ class CaseRunModel(BaseModel):
     test_environment: EnvironmentEnum
 
 
-
 class TestMetrics(BaseModel):
     """ 用例执行数据 """
     passed: int
@@ -33,10 +29,6 @@ class TestMetrics(BaseModel):
     total: int
     pass_rate: float
     time: float
-
-
-
-
 
 
 class SurfaceModel(BaseModel):
@@ -69,4 +61,3 @@ class TestObjectModel(BaseModel):
     db_user: str | None = None
     db_password: str | None = None
     db_database: str | None = None
-

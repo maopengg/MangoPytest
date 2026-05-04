@@ -26,7 +26,7 @@ from typing import Dict, Any, Optional, Callable, List
 import httpx
 
 from core.utils import log
-from core.models.api_model import APIResponse
+from core.models import APIResponse
 from core.decorators import api_allure_logger
 from core.exceptions import ApiError
 

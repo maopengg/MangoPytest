@@ -8,7 +8,7 @@ import uuid
 from typing import Dict, Any, List, Optional
 
 from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
-from core.models.api_model import ApiDataModel, RequestModel
+from core.models import ApiDataModel, RequestModel
 
 
 class DataFactory:

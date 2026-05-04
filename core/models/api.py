@@ -67,50 +67,6 @@ def json_serialize(data: str | None, field: str | None = None):
                     raise ToolsError(*ERROR_MSG_0345, value=(data, f"parse_qs failed: {str(e2)}")) from e2
 
 
-class ApiTestCaseModel(BaseModel):
-    id: int
-    project_name: str
-    module: str
-    scene: str
-    name: str
-    params: dict | list[dict] | list | None = None
-    data: dict | list[dict] | list | None = None
-    json: dict | list[dict] | list | None = None
-    file: list[dict] | None = None
-    other_data: dict | None = None
-    ass_response_whole: dict | None = None
-    ass_response_value: str | None = None
-    ass_schema: dict | list[dict] | list | None = None
-    ass_sql: str | None = None
-    front_sql: str | None = None
-    posterior_sql: str | None = None
-    posterior_response: str | None = None
-    dump_data: str | None = None
-
-    @classmethod
-    def get_obj(cls, data: dict):
-        return cls(
-            id=data['id'],
-            project_name=data['project_name'],
-            module=data['module'],
-            scene=data['scene'],
-            name=data['name'],
-            params=json_serialize(data.get('params'), 'params'),
-            data=json_serialize(data.get('data')),
-            json=json_serialize(data.get('json')),
-            file=json_serialize(data.get('file')),
-            other_data=json_serialize(data.get('other_data')),
-            ass_response_whole=json_serialize(data.get('ass_response_whole')),
-            ass_response_value=data.get('ass_response_value'),
-            ass_sql=data.get('ass_sql'),
-            front_sql=data.get('front_sql'),
-            posterior_sql=data.get('posterior_sql'),
-            posterior_response=data.get('posterior_response'),
-            dump_data=data.get('dump_data'),
-            ass_schema=json_serialize(data.get('ass_schema'))
-        )
-
-
 class ApiInfoModel(BaseModel):
     id: int
     project_name: str
@@ -163,7 +119,6 @@ class ResponseModel(BaseModel):
 class ApiDataModel(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    test_case: ApiTestCaseModel  # 测试用例信息
     data_clean: DataClean = DataClean()  # 缓存数据
     request: RequestModel | None = None
     response: ResponseModel | None = None
