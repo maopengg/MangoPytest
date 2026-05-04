@@ -8,7 +8,7 @@ import factory
 from pytest_factoryboy import register
 from datetime import datetime
 
-from auto_tests.bdd_api_mock.data_factory.base import BDDAPIBaseFactory
+from core.base.base_factory import BaseFactory
 from auto_tests.bdd_api_mock.data_factory.entities.user.user_entity import UserEntity
 
 # 使用 mangotools.data_processor 生成测试数据
@@ -24,11 +24,14 @@ def auto_username(role: str = "USER"):
 
 
 @register
-class UserSpec(BDDAPIBaseFactory):
+class UserSpec(BaseFactory):
     """用户 Spec"""
 
     class Meta:
         model = UserEntity
+
+    # 指定项目 settings 模块路径
+    _settings_module = "auto_tests.bdd_api_mock.config"
 
     # 基本字段 - 使用 AUTO_ 前缀
     username = factory.LazyFunction(lambda: auto_username("USER"))

@@ -2,32 +2,48 @@
 """
 pytest 全局配置 - BDD API Mock 测试
 
-参照架构: qfei_contract_api/conftest.py
+使用 core.bdd 模块提供的通用 BDD 步骤
 """
 import os
 import tempfile
 import time
 import traceback
 
+import pytest
 
 from core.utils import log
 
-# ========== pytest-factory 注册所有 Factories ==========
-from auto_tests.bdd_api_mock.data_factory.specs.user import user_spec          # noqa: F401
-from auto_tests.bdd_api_mock.data_factory.specs.auth import auth_spec          # noqa: F401
-from auto_tests.bdd_api_mock.data_factory.specs.product import product_spec    # noqa: F401
-from auto_tests.bdd_api_mock.data_factory.specs.order import order_spec        # noqa: F401
-from auto_tests.bdd_api_mock.data_factory.specs.reimbursement import reimbursement_spec  # noqa: F401
-from auto_tests.bdd_api_mock.data_factory.specs.approval import (
-    dept_approval_spec,        # noqa: F401
-    finance_approval_spec,     # noqa: F401
-    ceo_approval_spec,         # noqa: F401
-)
-from auto_tests.bdd_api_mock.data_factory.specs.data import data_spec          # noqa: F401
-from auto_tests.bdd_api_mock.data_factory.specs.file import file_spec          # noqa: F401
-from auto_tests.bdd_api_mock.data_factory.specs.system import health_spec, api_log_spec  # noqa: F401
+# ========== 导入 core.bdd 通用步骤 ==========
+from core.bdd.data_steps import *
+from core.bdd.api_steps import *
+from core.bdd.assertion_steps import *
 
-# ========== 自动发现步骤定义和 fixture 模块 ==========
+# ========== 导入项目特定的步骤 ==========
+from auto_tests.bdd_api_mock.steps.auth.login import *  # noqa: F401
+
+# ========== pytest-factoryboy 注册所有 Factories ==========
+from auto_tests.bdd_api_mock.data_factory.specs.user import user_spec  # noqa: F401
+from auto_tests.bdd_api_mock.data_factory.specs.auth import auth_spec  # noqa: F401
+from auto_tests.bdd_api_mock.data_factory.specs.product import (
+    product_spec,
+)  # noqa: F401
+from auto_tests.bdd_api_mock.data_factory.specs.order import order_spec  # noqa: F401
+from auto_tests.bdd_api_mock.data_factory.specs.reimbursement import (
+    reimbursement_spec,
+)  # noqa: F401
+from auto_tests.bdd_api_mock.data_factory.specs.approval import (
+    dept_approval_spec,  # noqa: F401
+    finance_approval_spec,  # noqa: F401
+    ceo_approval_spec,  # noqa: F401
+)
+from auto_tests.bdd_api_mock.data_factory.specs.data import data_spec  # noqa: F401
+from auto_tests.bdd_api_mock.data_factory.specs.file import file_spec  # noqa: F401
+from auto_tests.bdd_api_mock.data_factory.specs.system import (
+    health_spec,
+    api_log_spec,
+)  # noqa: F401
+
+# ========== 自动发现 fixture 模块 ==========
 
 from pathlib import Path
 
@@ -36,6 +52,7 @@ CONFTEST_DIR = Path(__file__).parent
 # 核心断言步骤
 pytest_plugins = [
     "core.api.bdd_steps",
+    "auto_tests.bdd_api_mock.fixtures",  # 导入 fixtures 包
 ]
 
 
@@ -52,20 +69,20 @@ def _discover_modules(rel_dir: str, pkg_name: str):
         pytest_plugins.append(mod)
 
 
-# 自动发现步骤定义模块
-_discover_modules("steps", "auto_tests.bdd_api_mock.steps")
-
-# 自动发现 fixture 模块
-_discover_modules("fixtures", "auto_tests.bdd_api_mock.fixtures")
+# 自动发现 fixture 模块（不再自动发现 steps，使用 core.bdd 的步骤）
+# 注意：fixtures 包已通过 pytest_plugins 导入，不需要再自动发现
+# _discover_modules("fixtures", "auto_tests.bdd_api_mock.fixtures")
 
 del Path, CONFTEST_DIR, _discover_modules
 
 
 # ========== 日志配置 ==========
 
+
 def pytest_configure(config):
     """pytest 配置钩子"""
     import logging
+
     for name in ["core", "auto_tests", "mangotools"]:
         logging.getLogger(name).propagate = False
 
@@ -76,6 +93,7 @@ def pytest_configure(config):
 
 
 # ========== 数据清理钩子 ==========
+
 
 def _cleanup_test_data():
     """执行数据清理的内部函数"""
@@ -97,21 +115,21 @@ def _cleanup_test_data():
 
 def _try_acquire_cleanup_lock():
     """尝试获取清理锁"""
-    pid_file = os.path.join(tempfile.gettempdir(), 'bdd_api_mock_cleanup.pid')
+    pid_file = os.path.join(tempfile.gettempdir(), "bdd_api_mock_cleanup.pid")
 
     try:
         if os.path.exists(pid_file):
             try:
-                with open(pid_file, 'r') as f:
+                with open(pid_file, "r") as f:
                     content = f.read().strip()
                     if content:
-                        pid, timestamp = content.split(',')
+                        pid, timestamp = content.split(",")
                         if time.time() - float(timestamp) < 5:
                             return False
             except Exception:
                 pass
 
-        with open(pid_file, 'w') as f:
+        with open(pid_file, "w") as f:
             f.write(f"{os.getpid()},{time.time()}")
 
         return True
@@ -122,7 +140,7 @@ def _try_acquire_cleanup_lock():
 
 def pytest_sessionstart(session):
     """测试会话开始时清理数据"""
-    worker_id = os.environ.get('PYTEST_XDIST_WORKER')
+    worker_id = os.environ.get("PYTEST_XDIST_WORKER")
 
     if _try_acquire_cleanup_lock():
         if worker_id:
@@ -139,13 +157,13 @@ def pytest_sessionstart(session):
 
 def pytest_sessionfinish(session, exitstatus):
     """测试会话结束时清理锁文件"""
-    pid_file = os.path.join(tempfile.gettempdir(), 'bdd_api_mock_cleanup.pid')
+    pid_file = os.path.join(tempfile.gettempdir(), "bdd_api_mock_cleanup.pid")
     try:
         if os.path.exists(pid_file):
-            with open(pid_file, 'r') as f:
+            with open(pid_file, "r") as f:
                 content = f.read().strip()
                 if content:
-                    pid, _ = content.split(',')
+                    pid, _ = content.split(",")
                     if int(pid) == os.getpid():
                         os.remove(pid_file)
                         log.info(">>> 清理锁文件")

@@ -7,7 +7,7 @@ import factory
 from pytest_factoryboy import register
 from datetime import datetime
 
-from auto_tests.bdd_api_mock.data_factory.base import BDDAPIBaseFactory
+from core.base.base_factory import BaseFactory
 from auto_tests.bdd_api_mock.data_factory.specs.user.user_spec import UserSpec
 from auto_tests.bdd_api_mock.data_factory.specs.approval.dept_approval_spec import (
     DeptApprovalSpec,
@@ -18,12 +18,15 @@ from auto_tests.bdd_api_mock.data_factory.entities.approval.finance_approval_ent
 
 
 @register
-class FinanceApprovalSpec(BDDAPIBaseFactory):
+class FinanceApprovalSpec(BaseFactory):
     """财务审批 Spec"""
 
     class Meta:
         model = FinanceApprovalEntity
         exclude = ("_dept_approval", "_approver")
+
+    # 指定项目 settings 模块路径
+    _settings_module = "auto_tests.bdd_api_mock.config"
 
     # 关联实体 - 自动创建
     _dept_approval = factory.SubFactory(DeptApprovalSpec)

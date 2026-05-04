@@ -7,16 +7,19 @@ import factory
 from pytest_factoryboy import register
 from datetime import datetime
 
-from auto_tests.bdd_api_mock.data_factory.base import BDDAPIBaseFactory
+from core.base.base_factory import BaseFactory
 from auto_tests.bdd_api_mock.data_factory.entities.system.api_log_entity import APILogEntity
 
 
 @register
-class APILogSpec(BDDAPIBaseFactory):
+class APILogSpec(BaseFactory):
     """API调用日志工厂"""
 
     class Meta:
         model = APILogEntity
+
+    # 指定项目 settings 模块路径
+    _settings_module = "auto_tests.bdd_api_mock.config"
 
     request_id = factory.Sequence(lambda n: f"req_{n:08d}")
     method = factory.Iterator(["GET", "POST", "PUT", "DELETE"])

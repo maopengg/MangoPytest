@@ -6,16 +6,19 @@
 import factory
 from pytest_factoryboy import register
 
-from auto_tests.bdd_api_mock.data_factory.base import BDDAPIBaseFactory
+from core.base.base_factory import BaseFactory
 from auto_tests.bdd_api_mock.data_factory.entities.system import HealthEntity
 
 
 @register
-class HealthSpec(BDDAPIBaseFactory):
+class HealthSpec(BaseFactory):
     """系统健康状态 Spec"""
 
     class Meta:
         model = HealthEntity
+
+    # 指定项目 settings 模块路径
+    _settings_module = "auto_tests.bdd_api_mock.config"
 
     # 基础字段
     status = "healthy"

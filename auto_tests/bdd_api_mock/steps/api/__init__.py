@@ -1,34 +1,16 @@
 # -*- coding: utf-8 -*-
 """
-API 请求步骤
+API 请求步骤 - 项目特定
 
-提供 HTTP 请求相关的步骤定义
+通用 API 步骤已从 core.bdd.api_steps 导入
+本项目可以在此添加自定义 API 步骤
+
+示例:
+    @when(parsers.parse('自定义步骤'))
+    def custom_api_step(api_client, api_response):
+        # 自定义逻辑
+        pass
 """
 
-from auto_tests.bdd_api_mock.steps.api.base import (
-    api_get_step,
-    api_get_with_params_step,
-    api_get_with_table_params_step,
-    api_post_step,
-    api_put_step,
-    api_delete_step,
-)
-from auto_tests.bdd_api_mock.steps.api.entity import (
-    api_get_with_entity_step,
-    api_post_with_entity_step,
-    api_put_with_entity_step,
-    api_delete_with_entity_step,
-)
-
-__all__ = [
-    "api_get_step",
-    "api_get_with_params_step",
-    "api_get_with_table_params_step",
-    "api_post_step",
-    "api_put_step",
-    "api_delete_step",
-    "api_get_with_entity_step",
-    "api_post_with_entity_step",
-    "api_put_with_entity_step",
-    "api_delete_with_entity_step",
-]
+# 使用 core.bdd.api_steps 中的通用步骤
+# 添加项目特定的自定义步骤在此文件中

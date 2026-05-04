@@ -9,7 +9,7 @@ from pytest_factoryboy import register
 from datetime import datetime
 from decimal import Decimal
 
-from auto_tests.bdd_api_mock.data_factory.base import BDDAPIBaseFactory
+from core.base.base_factory import BaseFactory
 from auto_tests.bdd_api_mock.data_factory.specs.user.user_spec import UserSpec
 from auto_tests.bdd_api_mock.data_factory.specs.product.product_spec import ProductSpec
 from auto_tests.bdd_api_mock.data_factory.entities.order.order_entity import OrderEntity
@@ -27,12 +27,15 @@ def auto_order_no():
 
 
 @register
-class OrderSpec(BDDAPIBaseFactory):
+class OrderSpec(BaseFactory):
     """订单 Spec"""
 
     class Meta:
         model = OrderEntity
         exclude = ("_user", "_product")
+
+    # 指定项目 settings 模块路径
+    _settings_module = "auto_tests.bdd_api_mock.config"
 
     # 关联实体 - 自动创建
     _user = factory.SubFactory(UserSpec)

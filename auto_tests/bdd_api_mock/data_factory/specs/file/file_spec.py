@@ -7,16 +7,19 @@ import factory
 from pytest_factoryboy import register
 from datetime import datetime
 
-from auto_tests.bdd_api_mock.data_factory.base import BDDAPIBaseFactory
+from core.base.base_factory import BaseFactory
 from auto_tests.bdd_api_mock.data_factory.entities.file.file_entity import FileEntity
 
 
 @register
-class FileSpec(BDDAPIBaseFactory):
+class FileSpec(BaseFactory):
     """文件 Spec"""
 
     class Meta:
         model = FileEntity
+
+    # 指定项目 settings 模块路径
+    _settings_module = "auto_tests.bdd_api_mock.config"
 
     # 基本字段
     file_id = factory.LazyFunction(lambda: __import__("uuid").uuid4().hex)

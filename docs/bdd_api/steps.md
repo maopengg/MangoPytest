@@ -20,63 +20,73 @@ def response_code_should_be_cn(api_response) → assert
 
 ```
 steps/
-├── common/           # 公共 fixture（api_response, created_entity）
-├── api/              # GET/POST/PUT/DELETE 通用步骤
-├── auth/             # 登录相关步骤
-├── data/             # 数据创建步骤（调 data_factory）
-└── assertions/       # 响应断言步骤
+├── api/              # API 请求步骤（项目特定自定义）
+├── auth/             # 登录相关步骤（项目特定）
+└── __init__.py       # 导出项目特定步骤
 ```
 
-## 写法
+**说明**：通用步骤已从 `core.bdd` 模块导入，不再在项目中重复定义。
 
-### API 请求步骤
+## 通用步骤（core.bdd）
+
+### 数据工厂步骤 (core.bdd.data_steps)
+
+| 步骤 | 说明 | 示例 |
+|------|------|------|
+| `存在"{entity}" 作为 @{alias}` | 创建命名实体 | `假如 存在"产品" 作为 @产品A` |
+| `存在"{entity}"` | 创建实体（使用中文名作为别名） | `假如 存在"产品"` |
+| `存在 {count} 个"{entity}" 作为 @{alias}` | 批量创建实体 | `假如 存在 3 个"产品" 作为 @产品` |
+
+### API 请求步骤 (core.bdd.api_steps)
+
+| 步骤 | 说明 | 示例 |
+|------|------|------|
+| `GET "{path}"` | GET 请求 | `当 GET "/users/${{用户.id}}"` |
+| `POST "{path}":` | POST 请求 | `当 POST "/orders": ...` |
+| `PUT "{path}":` | PUT 请求 | `当 PUT "/orders/${{订单.id}}": ...` |
+| `DELETE "{path}"` | DELETE 请求 | `当 DELETE "/orders/${{订单.id}}"` |
+| `使用 @{alias} 发送 {method} 到 "{path}":` | 使用指定实体上下文 | `当使用 @产品 发送 POST 到 "/orders": ...` |
+
+### 断言步骤 (core.bdd.assertion_steps)
+
+| 步骤 | 说明 | 示例 |
+|------|------|------|
+| `响应状态码应该为 {code}` | 验证状态码 | `那么 响应状态码应该为 200` |
+| `响应数据应该包含字段 "{field}"` | 验证字段存在 | `而且 响应数据应该包含字段 "order_no"` |
+| `响应数据 "{field}" 应该为 "{value}"` | 验证字段值 | `而且 响应数据 "status" 应该为 "paid"` |
+| `响应数据应该是列表` | 验证数据类型 | `而且 响应数据应该是列表` |
+| `列表长度应该为 {length}` | 验证列表长度 | `而且 列表长度应该为 3` |
+| `响应消息应该包含 "{text}"` | 验证消息内容 | `而且 响应消息应该包含 "成功"` |
+
+## 配置方法
+
+在项目的 `conftest.py` 中导入通用步骤：
 
 ```python
-# steps/api/base.py
-from pytest_bdd import when, parsers
-
-@when(parsers.re(r'GET "(?P<path>[^"]+)"'), target_fixture="api_response")
-def api_get_step(path, mock_api_client):
-    response = mock_api_client.get(path)
-    return response   # target_fixture 会把返回值注入 api_response
+# conftest.py
+from core.bdd.data_steps import *
+from core.bdd.api_steps import *
+from core.bdd.assertion_steps import *
 ```
 
-**关键**：`target_fixture="api_response"` 让返回值自动成为 `api_response` fixture，后续断言步骤直接使用。
+## 项目特定步骤
 
-### 认证步骤
+如需添加项目特定的步骤，在 `steps/` 目录下创建：
 
 ```python
 # steps/auth/login.py
-@given(parsers.parse('用户"{username}"已登录'), target_fixture="logged_in_user")
-def user_logged_in_step(username):
-    client = APIClient()
-    resp = client.post("/auth/login", {"username": username, "password": md5(pwd)})
-    return resp["data"]   # 包含 token、user_id 等
+from pytest_bdd import given, parsers
+
+@given(parsers.parse('用户"{username}"已登录'))
+def user_logged_in_step(username, api_client):
+    # 自定义登录逻辑
+    pass
 ```
 
-### 数据创建步骤
+然后在 `conftest.py` 中导入：
 
 ```python
-# steps/data/factory.py
-@given(parsers.parse('存在"{entity_name}"'))
-def create_entity_step(entity_name, created_entity):
-    factory_class = ENTITY_FACTORY_MAP[entity_name]  # 中文名 → Spec 类
-    entity = factory_class()
-    created_entity["id"] = entity.id
-    created_entity["type"] = entity_name
-```
-
-### 断言步骤
-
-```python
-# steps/assertions/response.py
-@then(parsers.parse("响应状态码应该为 {expected_code:d}"))
-def response_code_should_be_cn(expected_code, api_response):
-    assert api_response.get("code") == expected_code
-
-@then(parsers.parse("响应消息应该包含 {text}"))
-def response_message_should_contain(text, api_response):
-    assert text in api_response.get("message", "")
+from auto_tests.bdd_api_mock.steps.auth.login import *
 ```
 
 ## 步骤间数据传递
@@ -85,12 +95,20 @@ def response_message_should_contain(text, api_response):
 @when("GET /users", target_fixture="api_response")  → api_response = {...}
 @then("响应状态码应该为 200")                          → 消费 api_response
 
-@given('存在"用户"')                                   → created_entity = {"id": 1, "type": "用户"}
-@when('GET "/users?id=${{user.id}}"')                    → 消费 created_entity
+@given('存在"产品" 作为 @产品A')                        → entity_context.add("产品A", entity)
+@when('GET "/orders?id=${{产品A.id}}"')                 → 从 entity_context 获取
 ```
 
 - `api_response` fixture：传递 API 响应
-- `created_entity` fixture：传递创建的实体
+- `entity_context` fixture：传递创建的实体（支持多个命名实体）
+
+## 占位符语法
+
+| 格式 | 说明 | 示例 |
+|------|------|------|
+| `${{alias.attr}}` | 双括号格式 | `${{产品.id}}` |
+| `@alias.attr` | @符号格式 | `@产品.id` |
+| `{{attr}}` | 简写格式（配合 `使用 @xxx 发送`） | `{{id}}` |
 
 ## 参数解析
 
@@ -102,4 +120,5 @@ def response_message_should_contain(text, api_response):
 ## 新增步骤模块
 
 1. 在 `steps/` 下新建 `.py` 文件
-2. conftest 自动发现，无需手动注册
+2. 在 `conftest.py` 中导入新模块
+3. 使用 `@when`、`@then`、`@given` 装饰器定义步骤

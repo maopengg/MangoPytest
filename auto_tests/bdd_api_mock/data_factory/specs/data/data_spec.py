@@ -7,16 +7,19 @@ import factory
 from pytest_factoryboy import register
 from datetime import datetime
 
-from auto_tests.bdd_api_mock.data_factory.base import BDDAPIBaseFactory
+from core.base.base_factory import BaseFactory
 from auto_tests.bdd_api_mock.data_factory.entities.data.data_entity import DataSubmissionEntity
 
 
 @register
-class DataSubmissionSpec(BDDAPIBaseFactory):
+class DataSubmissionSpec(BaseFactory):
     """数据提交 Spec"""
 
     class Meta:
         model = DataSubmissionEntity
+
+    # 指定项目 settings 模块路径
+    _settings_module = "auto_tests.bdd_api_mock.config"
 
     # 基本字段
     name = factory.Sequence(

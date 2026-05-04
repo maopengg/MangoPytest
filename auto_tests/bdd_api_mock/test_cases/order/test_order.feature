@@ -16,11 +16,11 @@
 
       @smoke @integration @positive
       场景: 创建新订单
-      假如 存在"产品"
+      假如 存在"产品" 作为 @产品
       当 POST "/orders":
       """
       {
-      "product_id": ${{product.id}},
+      "product_id": ${{产品.id}},
       "user_id": 1,
       "quantity": 2
       }
@@ -31,15 +31,15 @@
 
       @positive
       场景: 根据ID获取指定订单
-      假如 存在"订单"
-      当 使用订单ID GET "/orders/${{order.id}}"
+      假如 存在"订单" 作为 @订单
+      当 GET "/orders/${{订单.id}}"
       那么 响应状态码应该为 200
       而且 响应数据应该包含字段 "order_no"
 
       @positive
       场景: 更新订单状态
-      假如 存在"订单"
-      当 使用订单ID PUT "/orders/${{order.id}}":
+      假如 存在"订单" 作为 @订单
+      当 PUT "/orders/${{订单.id}}":
       """
       {
         "product_id": 1,
