@@ -10,30 +10,50 @@ from typing import Any, Dict
 from pytest_bdd import then, parsers
 
 
+def _get_response_data(api_response):
+    """从 api_response 中提取响应数据
+    
+    支持 APIResponse 对象或 dict 类型的响应数据
+    """
+    if hasattr(api_response, "data"):
+        # APIResponse 对象
+        return api_response.data
+    elif isinstance(api_response, dict):
+        if "response" in api_response:
+            # 从 fixture 字典中获取 APIResponse 对象
+            response_obj = api_response["response"]
+            return response_obj.data if hasattr(response_obj, "data") else response_obj
+        return api_response
+    return api_response
+
+
 @then(parsers.parse('response data should contain "{field}"'))
-def response_data_should_contain_field(field: str, api_response: Dict[str, Any]):
+def response_data_should_contain_field(field: str, api_response):
     """验证响应数据包含字段"""
-    data = api_response.get("data", {})
-    assert field in data, f"响应数据中不包含字段 '{field}'"
+    data = _get_response_data(api_response)
+    data_dict = data.get("data", {}) if isinstance(data, dict) else {}
+    assert field in data_dict, f"响应数据中不包含字段 '{field}'"
 
 
 @then(parsers.parse('响应数据应该包含字段 "{field}"'))
 def response_data_should_contain_field_cn(
     field: str,
-    api_response: Dict[str, Any],
+    api_response,
 ):
     """验证响应数据包含字段（中文）"""
-    data = api_response.get("data", {})
-    assert field in data, f"响应数据中不包含字段 '{field}'"
+    data = _get_response_data(api_response)
+    data_dict = data.get("data", {}) if isinstance(data, dict) else {}
+    assert field in data_dict, f"响应数据中不包含字段 '{field}'"
 
 
 @then(parsers.parse('response data "{field}" should be "{expected_value}"'))
 def response_data_field_should_be(
-    field: str, expected_value: str, api_response: Dict[str, Any]
+    field: str, expected_value: str, api_response
 ):
     """验证响应数据字段值"""
-    data = api_response.get("data", {})
-    actual_value = data.get(field)
+    data = _get_response_data(api_response)
+    data_dict = data.get("data", {}) if isinstance(data, dict) else {}
+    actual_value = data_dict.get(field)
     assert (
         str(actual_value) == expected_value
     ), f"期望 '{field}'='{expected_value}'，实际 '{actual_value}'"
@@ -41,64 +61,70 @@ def response_data_field_should_be(
 
 @then(parsers.parse('响应数据 "{field}" 应该为 "{expected_value}"'))
 def response_data_field_should_be_cn(
-    field: str, expected_value: str, api_response: Dict[str, Any]
+    field: str, expected_value: str, api_response
 ):
     """验证响应数据字段值（中文）"""
-    data = api_response.get("data", {})
-    actual_value = data.get(field)
+    data = _get_response_data(api_response)
+    data_dict = data.get("data", {}) if isinstance(data, dict) else {}
+    actual_value = data_dict.get(field)
     assert (
         str(actual_value) == expected_value
     ), f"期望 '{field}'='{expected_value}'，实际 '{actual_value}'"
 
 
 @then(parsers.parse("response data should be a list"))
-def response_data_should_be_list(api_response: Dict[str, Any]):
+def response_data_should_be_list(api_response):
     """验证响应数据是列表"""
-    data = api_response.get("data", [])
-    assert isinstance(data, list), f"响应数据不是列表: {type(data)}"
+    data = _get_response_data(api_response)
+    data_list = data.get("data", []) if isinstance(data, dict) else []
+    assert isinstance(data_list, list), f"响应数据不是列表: {type(data_list)}"
 
 
 @then(parsers.parse("响应数据应该是列表"))
-def response_data_should_be_list_cn(api_response: Dict[str, Any]):
+def response_data_should_be_list_cn(api_response):
     """验证响应数据是列表（中文）"""
-    data = api_response.get("data", [])
-    assert isinstance(data, list), f"响应数据不是列表: {type(data)}"
+    data = _get_response_data(api_response)
+    data_list = data.get("data", []) if isinstance(data, dict) else []
+    assert isinstance(data_list, list), f"响应数据不是列表: {type(data_list)}"
 
 
 @then(parsers.parse("response data list length should be {expected_length:d}"))
 def response_data_list_length_should_be(
-    expected_length: int, api_response: Dict[str, Any]
+    expected_length: int, api_response
 ):
     """验证列表长度"""
-    data = api_response.get("data", [])
-    assert isinstance(data, list), f"响应数据不是列表"
+    data = _get_response_data(api_response)
+    data_list = data.get("data", []) if isinstance(data, dict) else []
+    assert isinstance(data_list, list), f"响应数据不是列表"
     assert (
-        len(data) == expected_length
-    ), f"期望列表长度 {expected_length}，实际 {len(data)}"
+        len(data_list) == expected_length
+    ), f"期望列表长度 {expected_length}，实际 {len(data_list)}"
 
 
 @then(parsers.parse("列表长度应该为 {expected_length:d}"))
 def response_data_list_length_should_be_cn(
-    expected_length: int, api_response: Dict[str, Any]
+    expected_length: int, api_response
 ):
     """验证列表长度（中文）"""
-    data = api_response.get("data", [])
-    assert isinstance(data, list), f"响应数据不是列表"
+    data = _get_response_data(api_response)
+    data_list = data.get("data", []) if isinstance(data, dict) else []
+    assert isinstance(data_list, list), f"响应数据不是列表"
     assert (
-        len(data) == expected_length
-    ), f"期望列表长度 {expected_length}，实际 {len(data)}"
+        len(data_list) == expected_length
+    ), f"期望列表长度 {expected_length}，实际 {len(data_list)}"
 
 
 @then(parsers.parse("列表长度应该大于等于 {expected_length:d}"))
 def response_data_list_length_should_be_gte_cn(
-    expected_length: int, api_response: Dict[str, Any]
+    expected_length: int, api_response
 ):
     """验证列表长度大于等于（中文）"""
-    data = api_response.get("data", [])
-    assert isinstance(data, list), f"响应数据不是列表"
+    data = _get_response_data(api_response)
+    data_list = data.get("data", []) if isinstance(data, dict) else []
+    assert isinstance(data_list, list), f"响应数据不是列表"
     assert (
-        len(data) >= expected_length
-    ), f"期望列表长度 >= {expected_length}，实际 {len(data)}"
+        len(data_list) >= expected_length
+    ), f"期望列表长度 >= {expected_length}，实际 {len(data_list)}"
 
 
 @then(parsers.parse('数据库中存在"{entity_name}"'))

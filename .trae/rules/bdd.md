@@ -58,14 +58,14 @@ L1: 数据库（MySQL）
 
 ### 1. Feature 文件规范
 - 使用中文 Gherkin 语法（`# language: zh-CN`）
-- 使用占位符传递数据：`${entity.id}`
+- 使用占位符传递数据：`${{entity.id}}`
 - 示例：
 ```gherkin
 # language: zh-CN
 功能: 用户管理
   场景: 获取用户详情
     假如 存在"用户"
-    当 使用用户ID GET "/users/${user.id}"
+    当 使用用户ID GET "/users/${{user.id}}"
     那么 响应状态码应该为 200
 ```
 

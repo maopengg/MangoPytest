@@ -58,17 +58,23 @@ Feature 文件对应三层分别用 `@smoke/@positive/@negative`、`@integration
 
 ### JSON 数据体
 
-步骤中的 JSON 字符串支持 `${变量}` 占位符：
+步骤中的 JSON 字符串支持 `${{变量}}` 占位符（双括号格式）：
 
 ```gherkin
-当 使用用户ID PUT "/users/${user.id}":
+当 使用用户ID PUT "/users/${{user.id}}":
 """
 {
-  "username": "AUTO_updated_${user.id}",
+  "username": "AUTO_updated_${{user.id}}",
   "email": "new@example.com"
 }
 """
 ```
+
+**占位符规则：**
+- 使用 `${{key}}` 格式（双大括号）
+- 支持在 URL 路径和 JSON 请求体中使用
+- 上下文数据通过 `context` 参数传递给 APIClient
+- 示例：`${{product.id}}`、`${{order.id}}`、`${{user.name}}`
 
 ### BDD 绑定文件
 

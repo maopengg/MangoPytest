@@ -86,7 +86,7 @@ def response_message_should_contain(text, api_response):
 @then("响应状态码应该为 200")                          → 消费 api_response
 
 @given('存在"用户"')                                   → created_entity = {"id": 1, "type": "用户"}
-@when('GET "/users?id=${user.id}"')                    → 消费 created_entity
+@when('GET "/users?id=${{user.id}}"')                    → 消费 created_entity
 ```
 
 - `api_response` fixture：传递 API 响应

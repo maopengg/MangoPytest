@@ -15,29 +15,31 @@ from pydantic import BaseModel, ConfigDict
 from core.enums.api_enum import IsSchemaEnum
 from core.exceptions import *
 
-warnings.filterwarnings(
-    "ignore",
-    message='Field name "json"'
-)
+warnings.filterwarnings("ignore", message='Field name "json"')
 
 
-@dataclass
-class APIResponse:
+class APIResponse(BaseModel):
     """
     API 响应数据类
-    
+
     统一的 API 响应封装，包含请求和响应信息
+    支持文件下载：如果是文件响应，data 为文件路径字符串
     """
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     status_code: int
     data: Any
     headers: Dict[str, str]
     elapsed_ms: float
     # 存储请求信息用于 Allure 记录
-    request_method: str = field(default="")
-    request_url: str = field(default="")
-    request_headers: Dict[str, Any] = field(default_factory=dict)
-    request_params: Optional[Dict[str, Any]] = field(default=None)
-    request_data: Optional[Any] = field(default=None)
+    request_method: str = ""
+    request_url: str = ""
+    request_headers: Dict[str, Any] = {}
+    request_params: Optional[Dict[str, Any]] = None
+    request_data: Optional[Any] = None
+    # 文件下载信息
+    file_path: Optional[str] = None  # 下载文件的本地路径，有值则表示是文件响应
 
     @property
     def is_success(self) -> bool:
@@ -49,6 +51,11 @@ class APIResponse:
         """是否错误响应"""
         return not self.is_success
 
+    @property
+    def is_file_response(self) -> bool:
+        """是否为文件下载响应"""
+        return self.file_path is not None
+
 
 def json_serialize(data: str | None, field: str | None = None):
     try:
@@ -59,12 +66,14 @@ def json_serialize(data: str | None, field: str | None = None):
     except (json.decoder.JSONDecodeError, TypeError):
         if field is None:
             raise ToolsError(*ERROR_MSG_0345, value=(data,))
-        if field == 'params':
-            if field == 'params':
+        if field == "params":
+            if field == "params":
                 try:
                     return dict(parse_qsl(data))
                 except Exception as e2:
-                    raise ToolsError(*ERROR_MSG_0345, value=(data, f"parse_qs failed: {str(e2)}")) from e2
+                    raise ToolsError(
+                        *ERROR_MSG_0345, value=(data, f"parse_qs failed: {str(e2)}")
+                    ) from e2
 
 
 class ApiInfoModel(BaseModel):
@@ -82,16 +91,16 @@ class ApiInfoModel(BaseModel):
     @classmethod
     def get_obj(cls, data: dict):
         return cls(
-            id=data['id'],
-            project_name=data['project_name'],
-            name=data['name'],
-            client_type=data['client_type'],
-            method=data['method'],
-            url=data['url'],
-            headers=json_serialize(data.get('headers')),
-            json=json_serialize(data.get('JSON')),
-            is_schema=data.get('is_schema'),
-            ass_schema=json_serialize(data.get('ass_schema')),
+            id=data["id"],
+            project_name=data["project_name"],
+            name=data["name"],
+            client_type=data["client_type"],
+            method=data["method"],
+            url=data["url"],
+            headers=json_serialize(data.get("headers")),
+            json=json_serialize(data.get("JSON")),
+            is_schema=data.get("is_schema"),
+            ass_schema=json_serialize(data.get("ass_schema")),
         )
 
 

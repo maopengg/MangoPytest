@@ -5,10 +5,29 @@
 提供使用实体 ID 的 HTTP 请求步骤
 """
 
-import json
-from typing import Any, Dict, Optional
-
 from pytest_bdd import when, parsers
+
+
+# 实体名称到占位符 key 的映射
+ENTITY_NAME_TO_KEY = {
+    "用户": "user",
+    "产品": "product",
+    "订单": "order",
+    "数据": "data",
+    "文件": "file",
+    "报销": "reimbursement",
+    "部门审批": "deptapproval",
+    "财务审批": "financeapproval",
+    "总经理审批": "ceoapproval",
+    "认证": "auth",
+    "API日志": "apilog",
+    "健康状态": "health",
+}
+
+
+def _get_entity_key(entity_name: str) -> str:
+    """获取实体对应的占位符 key"""
+    return ENTITY_NAME_TO_KEY.get(entity_name, entity_name.lower())
 
 
 def _get_entity_from_fixture(created_entity):
@@ -22,13 +41,20 @@ def _get_entity_from_fixture(created_entity):
     parsers.re(r'使用(?P<entity_name>\w+)ID\s+GET\s+"(?P<path>[^"]+)"'),
 )
 def api_get_with_entity_step(
-    entity_name: str, path: str, mock_api_client, created_entity, api_response
+    entity_name: str, path: str, api_client, created_entity, api_response
 ):
     """使用实体ID的 GET 请求步骤"""
     entity = _get_entity_from_fixture(created_entity)
-    result = mock_api_client.get(path, created_entity=entity)
+    
+    # 构建 context 用于占位符替换
+    context = {}
+    if entity and hasattr(entity, "id"):
+        entity_key = _get_entity_key(entity_name)
+        context[f"{entity_key}.id"] = entity.id
+    
+    result = api_client.request("GET", path, context=context)
     api_response.clear()
-    api_response.update(result)
+    api_response["response"] = result
 
 
 @when(
@@ -38,33 +64,23 @@ def api_post_with_entity_step(
     entity_name: str,
     path: str,
     docstring,
-    mock_api_client,
+    api_client,
     created_entity,
     api_response,
 ):
     """使用实体ID的 POST 请求步骤"""
-    body = json.loads(docstring) if docstring else {}
     entity = _get_entity_from_fixture(created_entity)
 
-    # 根据实体名称自动添加相应的 ID 字段
+    # 构建 context 用于占位符替换
+    context = {}
     if entity and hasattr(entity, "id"):
-        entity_id = entity.id
-        if entity_name == "报销":
-            body["reimbursement_id"] = entity_id
-        elif entity_name == "部门审批":
-            body["dept_approval_id"] = entity_id
-        elif entity_name == "财务审批":
-            body["finance_approval_id"] = entity_id
-        elif entity_name == "用户":
-            body["user_id"] = entity_id
-        elif entity_name == "产品":
-            body["product_id"] = entity_id
-        elif entity_name == "订单":
-            body["order_id"] = entity_id
+        entity_key = _get_entity_key(entity_name)
+        context[f"{entity_key}.id"] = entity.id
 
-    result = mock_api_client.post(path, body, created_entity=entity)
+    # 将 docstring 作为原始字符串传递给 client，由 client 处理占位符替换和 JSON 解析
+    result = api_client.request("POST", path, json_data=docstring, context=context)
     api_response.clear()
-    api_response.update(result)
+    api_response["response"] = result
 
 
 @when(
@@ -74,26 +90,40 @@ def api_put_with_entity_step(
     entity_name: str,
     path: str,
     docstring,
-    mock_api_client,
+    api_client,
     created_entity,
     api_response,
 ):
     """使用实体ID的 PUT 请求步骤"""
-    body = json.loads(docstring) if docstring else {}
     entity = _get_entity_from_fixture(created_entity)
-    result = mock_api_client.put(path, body, created_entity=entity)
+    
+    # 构建 context 用于占位符替换
+    context = {}
+    if entity and hasattr(entity, "id"):
+        entity_key = _get_entity_key(entity_name)
+        context[f"{entity_key}.id"] = entity.id
+
+    # 将 docstring 作为原始字符串传递给 client，由 client 处理占位符替换和 JSON 解析
+    result = api_client.request("PUT", path, json_data=docstring, context=context)
     api_response.clear()
-    api_response.update(result)
+    api_response["response"] = result
 
 
 @when(
     parsers.re(r'使用(?P<entity_name>\w+)ID\s+DELETE\s+"(?P<path>[^"]+)"'),
 )
 def api_delete_with_entity_step(
-    entity_name: str, path: str, mock_api_client, created_entity, api_response
+    entity_name: str, path: str, api_client, created_entity, api_response
 ):
     """使用实体ID的 DELETE 请求步骤"""
     entity = _get_entity_from_fixture(created_entity)
-    result = mock_api_client.delete(path, created_entity=entity)
+    
+    # 构建 context 用于占位符替换
+    context = {}
+    if entity and hasattr(entity, "id"):
+        entity_key = _get_entity_key(entity_name)
+        context[f"{entity_key}.id"] = entity.id
+    
+    result = api_client.request("DELETE", path, context=context)
     api_response.clear()
-    api_response.update(result)
+    api_response["response"] = result

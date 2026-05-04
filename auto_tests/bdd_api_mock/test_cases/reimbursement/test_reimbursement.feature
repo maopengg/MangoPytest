@@ -33,14 +33,14 @@
       @positive
       场景: 根据ID获取报销申请
       假如 存在"报销"
-      当 使用报销ID GET "/reimbursements?id=${reimbursement.id}"
+      当 使用报销ID GET "/reimbursements?id=${{reimbursement.id}}"
       那么 响应状态码应该为 200
       而且 响应数据应该包含字段 "reimb_no"
 
       @positive
       场景: 更新报销申请
       假如 存在"报销"
-      当 使用报销ID PUT "/reimbursements/${reimbursement.id}":
+      当 使用报销ID PUT "/reimbursements/${{reimbursement.id}}":
       """
       {
         "user_id": 1,
@@ -55,5 +55,5 @@
 @positive
 场景: 删除报销申请
 假如 存在"报销"
-当 使用报销ID DELETE "/reimbursements/${reimbursement.id}"
+当 使用报销ID DELETE "/reimbursements/${{reimbursement.id}}"
 那么 响应状态码应该为 200

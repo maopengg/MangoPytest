@@ -9,11 +9,10 @@ import tempfile
 import time
 import traceback
 
-import pytest
 
 from core.utils import log
 
-# ========== pytest-factoryboy 注册所有 Factories ==========
+# ========== pytest-factory 注册所有 Factories ==========
 from auto_tests.bdd_api_mock.data_factory.specs.user import user_spec          # noqa: F401
 from auto_tests.bdd_api_mock.data_factory.specs.auth import auth_spec          # noqa: F401
 from auto_tests.bdd_api_mock.data_factory.specs.product import product_spec    # noqa: F401

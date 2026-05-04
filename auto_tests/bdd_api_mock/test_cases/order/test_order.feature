@@ -20,9 +20,9 @@
       当 POST "/orders":
       """
       {
-        "product_id": ${product.id},
-        "user_id": 1,
-        "quantity": 2
+      "product_id": ${{product.id}},
+      "user_id": 1,
+      "quantity": 2
       }
       """
       那么 响应状态码应该为 200
@@ -32,14 +32,14 @@
       @positive
       场景: 根据ID获取指定订单
       假如 存在"订单"
-      当 使用订单ID GET "/orders/${order.id}"
+      当 使用订单ID GET "/orders/${{order.id}}"
       那么 响应状态码应该为 200
       而且 响应数据应该包含字段 "order_no"
 
       @positive
       场景: 更新订单状态
       假如 存在"订单"
-      当 使用订单ID PUT "/orders/${order.id}":
+      当 使用订单ID PUT "/orders/${{order.id}}":
       """
       {
         "product_id": 1,
@@ -48,5 +48,5 @@
         "status": "paid"
       }
       """
-      那么 响应状态码应该为 200
-      而且 响应数据 "status" 应该为 "paid"
+那么 响应状态码应该为 200
+而且 响应数据 "status" 应该为 "paid"

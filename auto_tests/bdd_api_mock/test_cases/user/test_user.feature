@@ -30,17 +30,17 @@
       @positive
       场景: 根据ID获取指定用户
       假如 存在"用户"
-      当 使用用户ID GET "/users?id=${user.id}"
+      当 使用用户ID GET "/users?id=${{user.id}}"
       那么 响应状态码应该为 200
       而且 响应数据应该包含字段 "username"
 
       @positive
       场景: 更新用户信息
       假如 存在"用户"
-      当 使用用户ID PUT "/users/${user.id}":
+      当 使用用户ID PUT "/users/${{user.id}}":
       """
       {
-        "username": "AUTO_updated_${user.id}",
+        "username": "AUTO_updated_${{user.id}}",
         "email": "updated@example.com",
         "full_name": "Updated User",
         "password": "password123"
@@ -51,5 +51,5 @@
 @positive
 场景: 删除用户
 假如 存在"用户"
-当 使用用户ID DELETE "/users/${user.id}"
+当 使用用户ID DELETE "/users/${{user.id}}"
 那么 响应状态码应该为 200

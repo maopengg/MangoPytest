@@ -19,7 +19,7 @@ class APIClient:
         self._client = httpx.Client(timeout=30)
 
     def get(self, path, created_entity=None, **kwargs) -> dict:
-        url = self._prepare_url(path, created_entity)  # 替换 ${entity.id}
+        url = self._prepare_url(path, created_entity)  # 替换 ${{entity.id}}
         response = self._client.get(url, **kwargs)
         return {"code": response.status_code, "data": response.json()}
 
@@ -32,7 +32,7 @@ class APIClient:
 
 ### 占位符替换
 
-Feature 文件中的 `${user.id}` 在请求前替换为实际值：
+Feature 文件中的 `${{user.id}}` 在请求前替换为实际值：
 
 ```python
 def _prepare_url(self, path, created_entity):
@@ -50,11 +50,11 @@ def _prepare_body(self, body, created_entity):
 
 ## 与 core APIClient 的关系
 
-| | core APIClient | BDD APIClient |
-|---|---|---|
-| 返回值 | `APIResponse` 对象 | Dict |
-| 占位符 | 无 | `${entity.id}` |
-| Allure 集成 | 有 | 有 |
-| 重试 | 有 | 有 |
+| | core APIClient | BDD APIClient    |
+|---|---|------------------|
+| 返回值 | `APIResponse` 对象 | Dict             |
+| 占位符 | 无 | `${{entity.id}}` |
+| Allure 集成 | 有 | 有                |
+| 重试 | 有 | 有                |
 
 BDD APIClient 是 core APIClient 的 BDD 适配层。如果不需要 Dict 返回和占位符，直接使用 core APIClient 即可。
