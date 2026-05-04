@@ -128,3 +128,51 @@ def create_multiple_entities_step(
         log.info(f"✓ 创建成功: {entity_name} → @{alias}")
 
     return entities
+
+
+@given(parsers.parse('存在"{entity_name}" 作为 @{alias}:'))
+def create_named_entity_with_params_step(
+    entity_name: str,
+    alias: str,
+    docstring: str,
+    db_session,
+    entity_factory_map: dict,
+    entity_context: EntityContext,
+):
+    """创建命名实体并添加到上下文（支持自定义参数）
+
+    示例:
+        假如 存在"用户" 作为 @用户:
+          参数 JSON
+    """
+    import json
+
+    factory_class = entity_factory_map.get(entity_name)
+    if not factory_class:
+        available = ", ".join(entity_factory_map.keys())
+        raise ValueError(f"未知实体类型: '{entity_name}'\n" f"可用实体: {available}")
+
+    log.debug(f"创建实体: {entity_name} 作为 @{alias} (带参数)")
+
+    # 解析自定义参数
+    custom_params = {}
+    if docstring:
+        try:
+            custom_params = json.loads(docstring.strip())
+        except json.JSONDecodeError as e:
+            raise ValueError(f"无效的 JSON 参数: {e}")
+
+    # 设置 sqlalchemy_session
+    factory_class._meta.sqlalchemy_session = db_session
+
+    # 创建实体（使用自定义参数）
+    entity = factory_class.create(**custom_params)
+
+    # 添加到上下文
+    entity_context.add(alias, entity)
+
+    log.info(
+        f"✓ 创建成功: {entity_name} → @{alias} (id={getattr(entity, 'id', 'N/A')})"
+    )
+
+    return entity

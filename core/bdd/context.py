@@ -112,8 +112,8 @@ class EntityContext:
         pattern1 = r'\$\{\{(\w+)\.(\w+)\}\}'
         matches1 = re.findall(pattern1, docstring)
         
-        # 匹配 @alias.attr 格式
-        pattern2 = r'@(\w+)\.(\w+)'
+        # 匹配 @alias.attr 格式（要求 @ 前面是空白或字符串开头）
+        pattern2 = r'(?:^|\s)@(\w+)\.(\w+)'
         matches2 = re.findall(pattern2, docstring)
         
         for alias, attr in matches1 + matches2:

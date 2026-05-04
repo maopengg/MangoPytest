@@ -25,15 +25,15 @@
 
   @positive
   场景: 根据ID获取指定产品
-    假如 存在"产品"
-    当 使用产品ID GET "/products?id=${{product.id}}"
+    假如 存在"产品" 作为 @产品
+    当 GET "/products?id=${{产品.id}}"
     那么 响应状态码应该为 200
     而且 响应数据应该包含字段 "name"
 
   @positive
   场景: 更新产品信息
-    假如 存在"产品"
-    当 使用产品ID PUT "/products/${{product.id}}":
+    假如 存在"产品" 作为 @产品
+    当 PUT "/products/${{产品.id}}":
       """
       {"name": "更新后的产品", "price": 888.88, "stock": 50}
       """
@@ -42,6 +42,6 @@
 
   @positive
   场景: 删除产品
-    假如 存在"产品"
-    当 使用产品ID DELETE "/products/${{product.id}}"
+    假如 存在"产品" 作为 @产品
+    当 DELETE "/products/${{产品.id}}"
     那么 响应状态码应该为 200

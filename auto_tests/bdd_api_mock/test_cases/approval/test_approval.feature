@@ -12,6 +12,7 @@
 当 使用 @报销 发送 POST 到 "/dept-approvals":
 """
 {
+      "reimbursement_id": ${{报销.id}},
       "approver_id": ${{用户.id}},
       "status": "approved",
       "comment": "同意报销"
@@ -21,4 +22,19 @@
 而且 响应数据应该包含字段 "approval_no"
 
 @integration @positive
-场景:
+场景: 获取部门审批列表
+当 GET "/dept-approvals"
+那么 响应状态码应该为 200
+而且 响应数据应该是列表
+
+@integration @positive
+场景: 获取财务审批列表
+当 GET "/finance-approvals"
+那么 响应状态码应该为 200
+而且 响应数据应该是列表
+
+@integration @positive
+场景: 获取总经理审批列表
+当 GET "/ceo-approvals"
+那么 响应状态码应该为 200
+而且 响应数据应该是列表
