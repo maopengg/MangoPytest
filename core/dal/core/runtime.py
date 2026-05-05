@@ -149,21 +149,15 @@ class DALRuntime:
         return EvaluationResult.ok(expr.value)
     
     def _eval_Identifier(self, expr: Identifier) -> EvaluationResult:
-        """求值标识符（从根数据中获取）"""
-        # 特殊标识符：root 返回根数据
+        """求值标识符：优先从数据中查找属性，找不到则当作字符串字面量（TestCharm 行为）"""
         if expr.name == "root":
             return EvaluationResult.ok(self.context.root, path="root")
-        
         try:
             value = Operators.get_property(self.context.root, expr.name)
             return EvaluationResult.ok(value, path=expr.name)
         except (AttributeError, KeyError):
-            return EvaluationResult.fail(
-                expected=f"property '{expr.name}'",
-                actual="not found",
-                path=expr.name,
-                message=f"Property '{expr.name}' not found"
-            )
+            # 属性不存在 → 把标识符名本身当作字符串值
+            return EvaluationResult.ok(expr.name, path=expr.name)
     
     # ==================== 访问求值 ====================
     
@@ -323,10 +317,32 @@ class DALRuntime:
                     )
             
             result = compare(operator, left_result.value, right_result.value)
-            # 比较操作符返回布尔值，而不是失败结果
-            # 这样逻辑操作符（如 not, and, or）可以正确处理
             return EvaluationResult.ok(result.success)
-        
+
+        # 字符串匹配操作符
+        if operator in ("contains", "starts", "ends"):
+            left_result = self.evaluate(expr.left)
+            if not left_result.success:
+                return left_result
+            right_result = self.evaluate(expr.right)
+            if not right_result.success:
+                return right_result
+            left_str = str(left_result.value)
+            right_str = str(right_result.value)
+            if operator == "contains":
+                ok = right_str in left_str
+            elif operator == "starts":
+                ok = left_str.startswith(right_str)
+            else:  # ends
+                ok = left_str.endswith(right_str)
+            if not ok:
+                return EvaluationResult.fail(
+                    expected=f"{operator} '{right_str}'",
+                    actual=left_str,
+                    message=f"Value does not {operator} '{right_str}'"
+                )
+            return EvaluationResult.ok(True)
+
         # 算术操作符
         if operator in ("+", "-", "*", "/"):
             left_result = self.evaluate(expr.left)

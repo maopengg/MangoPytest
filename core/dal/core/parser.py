@@ -54,11 +54,11 @@ class Parser:
     def _parse_and_expr(self) -> Expression:
         """解析 and 表达式"""
         left = self._parse_equality_expr()
-        
-        while self._match(TokenType.AND) or self._match(TokenType.COMMA):
+
+        while self._match(TokenType.AND):
             right = self._parse_equality_expr()
             left = BinaryOp(left, "and", right)
-        
+
         return left
     
     def _parse_equality_expr(self) -> Expression:
@@ -93,15 +93,17 @@ class Parser:
                 right = self._parse_comparison_expr()
                 left = BinaryOp(left, "match", right)
             elif self._match(TokenType.STARTS):
-                # starts with 操作符
-                if self._match(TokenType.IDENTIFIER) and self._previous().value.lower() == 'with':
-                    right = self._parse_comparison_expr()
-                    left = BinaryOp(left, "starts with", right)
+                # starts [with] 操作符
+                if self._check(TokenType.IDENTIFIER) and self._peek().value.lower() == 'with':
+                    self._advance()  # 跳过 with
+                right = self._parse_comparison_expr()
+                left = BinaryOp(left, "starts", right)
             elif self._match(TokenType.ENDS):
-                # ends with 操作符
-                if self._match(TokenType.IDENTIFIER) and self._previous().value.lower() == 'with':
-                    right = self._parse_comparison_expr()
-                    left = BinaryOp(left, "ends with", right)
+                # ends [with] 操作符
+                if self._check(TokenType.IDENTIFIER) and self._peek().value.lower() == 'with':
+                    self._advance()  # 跳过 with
+                right = self._parse_comparison_expr()
+                left = BinaryOp(left, "ends", right)
             else:
                 break
 

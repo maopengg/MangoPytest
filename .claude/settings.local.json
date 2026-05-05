@@ -65,7 +65,8 @@
       "Bash(rmdir test_cases/migrated)",
       "Bash(mv steps/migrated/* steps/)",
       "Bash(rmdir steps/migrated)",
-      "Bash(ENV=prod .venv/Scripts/python -m pytest auto_tests/bdd_ui_mock/test_cases/click/ -v --no-header -p no:warnings -s)"
+      "Bash(ENV=prod .venv/Scripts/python -m pytest auto_tests/bdd_ui_mock/test_cases/click/ -v --no-header -p no:warnings -s)",
+      "Bash(git checkout *)"
     ]
   }
 }
