@@ -6,65 +6,103 @@
 """
 
 import hashlib
+import os
 from typing import Dict, Any
 
 from pytest_bdd import given, when, then, parsers
 
+from core.utils import log
 
-@given(parsers.parse('用户"{username}"已登录'), target_fixture="logged_in_user")
-def user_logged_in_step(username: str, api_client):
-    """用户已登录步骤 - 使用共享的 api_client"""
-    # 根据用户名确定密码
-    if username == "testuser":
-        password = "password123"
-    elif username == "admin":
-        password = "admin"
-    else:
-        password = "password123"
-    password_md5 = hashlib.md5(password.encode()).hexdigest()
+
+# 缓存已登录用户信息（避免重复登录）
+_logged_in_users: Dict[str, Dict[str, Any]] = {}
+
+
+def _hash_password(password: str) -> str:
+    """统一密码加密：如果已经是 MD5 格式则跳过"""
+    if len(password) == 32 and all(c in "0123456789abcdef" for c in password.lower()):
+        return password
+    return hashlib.md5(password.encode()).hexdigest()
+
+
+def _do_login(api_client, username: str, password: str) -> Dict[str, Any]:
+    """统一登录请求，返回完整用户数据"""
+    password_md5 = _hash_password(password)
 
     response = api_client.post(
         "/auth/login", {"username": username, "password": password_md5}
     )
 
-    assert response.data.get("code") == 200, f"登录失败: {response.data.get('message')}"
+    if response.data.get("code") != 200:
+        raise RuntimeError(f"登录失败: {response.data.get('message')}")
 
-    # token 已在 api_client fixture 中设置
-    token = response.data["data"]["token"]
+    return response.data["data"]
 
-    return {
-        "user_id": response.data["data"]["user_id"],
-        "username": response.data["data"]["username"],
-        "role": response.data["data"]["role"],
-        "token": token,
+
+def _set_auth_header(api_client, token: str):
+    """设置认证请求头到客户端"""
+    api_client.headers["Authorization"] = f"Bearer {token}"
+    log.debug("已设置 Authorization 请求头")
+
+
+@given(parsers.parse('用户"{username}"已登录'), target_fixture="logged_in_user")
+def user_logged_in_step(username: str, api_client):
+    """用户已登录步骤
+
+    自动将 token 设置到 api_client 默认请求头
+    """
+    global _logged_in_users
+
+    # 检查全局缓存
+    if username in _logged_in_users:
+        user_info = _logged_in_users[username]
+        _set_auth_header(api_client, user_info["token"])
+        log.debug(f"用户 {username} 已从缓存获取")
+        return user_info
+
+    # 从环境变量或默认获取密码
+    password = os.environ.get(f"TEST_PASSWORD_{username.upper()}", "password123")
+
+    # 执行统一登录
+    user_data = _do_login(api_client, username, password)
+
+    # 提取用户信息
+    user_info = {
+        "user_id": user_data["user_id"],
+        "username": user_data["username"],
+        "role": user_data["role"],
+        "token": user_data["token"],
     }
+
+    # 缓存并设置请求头
+    _logged_in_users[username] = user_info
+    _set_auth_header(api_client, user_info["token"])
+    log.info(f"用户 {username} 登录成功，已缓存并设置请求头")
+
+    return user_info
 
 
 @given(parsers.parse("管理员已登录"), target_fixture="admin_logged_in")
 def admin_logged_in_step(api_client):
-    """管理员已登录步骤
-
-    注意：由于 testuser 是唯一可用的登录账号，使用 testuser 登录
-    但 testuser 不能用于修改和删除操作，这些操作需要通过数据工厂创建测试数据
-    """
+    """管理员已登录（默认 testuser）"""
     return user_logged_in_step("testuser", api_client)
 
 
 @given(parsers.parse("部门经理已登录"), target_fixture="manager_logged_in")
 def manager_logged_in_step(api_client):
-    """部门经理已登录步骤"""
+    """部门经理已登录"""
     return user_logged_in_step("dept_manager", api_client)
 
 
 @given(parsers.parse("财务经理已登录"), target_fixture="finance_logged_in")
 def finance_logged_in_step(api_client):
-    """财务经理已登录步骤"""
+    """财务经理已登录"""
     return user_logged_in_step("finance_manager", api_client)
 
 
 @given(parsers.parse("总经理已登录"), target_fixture="ceo_logged_in")
 def ceo_logged_in_step(api_client):
-    """总经理已登录步骤"""
+    """总经理已登录"""
     return user_logged_in_step("ceo", api_client)
 
 
@@ -73,15 +111,11 @@ def ceo_logged_in_step(api_client):
     target_fixture="login_response",
 )
 def user_login_step(username: str, password: str, api_client):
-    """用户登录步骤"""
-    # 如果密码不是 MD5 格式，进行 MD5 加密
-    if len(password) != 32 or not all(
-        c in "0123456789abcdef" for c in password.lower()
-    ):
-        password = hashlib.md5(password.encode()).hexdigest()
+    """用户登录步骤（用于测试登录场景，不自动设置请求头）"""
+    password_md5 = _hash_password(password)
 
     response = api_client.post(
-        "/auth/login", {"username": username, "password": password}
+        "/auth/login", {"username": username, "password": password_md5}
     )
 
     return response

@@ -7,7 +7,7 @@
 from fastapi import FastAPI, HTTPException, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from typing import Optional
 import uvicorn
 import uuid
@@ -17,6 +17,8 @@ from pydantic import BaseModel
 from fastapi import Request, UploadFile, File
 import pymysql
 from contextlib import contextmanager
+import io
+import csv
 
 # MySQL 配置
 MYSQL_CONFIG = {
@@ -223,6 +225,38 @@ async def verify_token(
     if not token.startswith("mock_token_"):
         raise HTTPException(status_code=401, detail="无效的token")
     return token
+
+
+# ========================
+# 自定义请求头验证
+# ========================
+
+
+async def verify_custom_header(
+    x_custom_key: str = Header(None, alias="X-Custom-Key"),
+    x_request_source: str = Header(None, alias="X-Request-Source"),
+):
+    """
+    验证自定义请求头
+    要求必须同时提供：
+    1. X-Custom-Key: 自定义密钥（必须为 "mango_secret_key"）
+    2. X-Request-Source: 请求来源标识
+    """
+    if x_custom_key is None:
+        raise HTTPException(status_code=403, detail="缺少自定义请求头: X-Custom-Key")
+
+    if x_request_source is None:
+        raise HTTPException(
+            status_code=403, detail="缺少自定义请求头: X-Request-Source"
+        )
+
+    if x_custom_key != "mango_secret_key":
+        raise HTTPException(status_code=403, detail="无效的 X-Custom-Key")
+
+    if x_request_source.strip() == "":
+        raise HTTPException(status_code=403, detail="X-Request-Source 不能为空")
+
+    return {"custom_key": x_custom_key, "source": x_request_source}
 
 
 # ========================
@@ -543,7 +577,9 @@ async def create_order(order: Order, token: str = Depends(verify_token)):
             # 计算订单金额
             unit_price = product["price"]
             total_amount = unit_price * order.quantity
-            order_no = f"ORD{datetime.now().strftime('%Y%m%d%H%M%S')}{str(uuid.uuid4())[:4]}"
+            order_no = (
+                f"ORD{datetime.now().strftime('%Y%m%d%H%M%S')}{str(uuid.uuid4())[:4]}"
+            )
 
             # 创建订单
             sql = """
@@ -552,7 +588,14 @@ async def create_order(order: Order, token: str = Depends(verify_token)):
             """
             cursor.execute(
                 sql,
-                (order_no, order.product_id, order.quantity, order.user_id, unit_price, total_amount),
+                (
+                    order_no,
+                    order.product_id,
+                    order.quantity,
+                    order.user_id,
+                    unit_price,
+                    total_amount,
+                ),
             )
             order_id = cursor.lastrowid
 
@@ -619,26 +662,26 @@ async def update_order(order_id: int, order: Order, token: str = Depends(verify_
             # 构建动态更新字段
             update_fields = []
             params = []
-            
+
             # 更新数量（如果提供且大于0）
             if order.quantity and order.quantity > 0:
                 update_fields.append("quantity = %s")
                 params.append(order.quantity)
-                
+
                 # 重新计算总金额
                 sql = "SELECT unit_price FROM orders WHERE id = %s"
                 cursor.execute(sql, (order_id,))
                 result = cursor.fetchone()
                 if result:
-                    new_total = result['unit_price'] * order.quantity
+                    new_total = result["unit_price"] * order.quantity
                     update_fields.append("total_amount = %s")
                     params.append(new_total)
-            
+
             # 更新状态（如果提供）
             if order.status:
                 update_fields.append("status = %s")
                 params.append(order.status)
-            
+
             # 执行更新
             if update_fields:
                 sql = f"""
@@ -772,12 +815,73 @@ async def upload_file(file: UploadFile = File(...), token: str = Depends(verify_
 
 
 # ========================
+# 文件下载 - 自动生成Excel
+# ========================
+
+
+@app.get("/download/excel", summary="下载Excel文件")
+async def download_excel(token: str = Depends(verify_token)):
+    """
+    自动生成Excel(CSV)文件并下载
+    包含3列表头和5行数据
+    """
+    try:
+        # 定义表头
+        headers = ["姓名", "年龄", "城市"]
+
+        # 定义5行数据
+        data_rows = [
+            ["张三", "28", "北京"],
+            ["李四", "32", "上海"],
+            ["王五", "25", "广州"],
+            ["赵六", "30", "深圳"],
+            ["孙七", "27", "杭州"],
+        ]
+
+        # 创建内存中的CSV文件
+        output = io.StringIO()
+        writer = csv.writer(output)
+
+        # 写入表头
+        writer.writerow(headers)
+
+        # 写入数据行
+        for row in data_rows:
+            writer.writerow(row)
+
+        # 获取CSV内容并编码为字节
+        csv_content = output.getvalue()
+        output.close()
+
+        # 添加BOM以支持中文
+        csv_bytes = io.BytesIO()
+        csv_bytes.write("\ufeff".encode("utf-8"))
+        csv_bytes.write(csv_content.encode("utf-8-sig"))
+        csv_bytes.seek(0)
+
+        # 生成文件名
+        filename = f"report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+
+        return StreamingResponse(
+            csv_bytes,
+            media_type="application/vnd.ms-excel",
+            headers={"Content-Disposition": f"attachment; filename={filename}"},
+        )
+    except Exception as e:
+        return error(500, f"文件生成失败: {str(e)}")
+
+
+# ========================
 # 健康检查
 # ========================
 
 
 @app.get("/health", summary="健康检查")
-async def health_check(token: str = Depends(verify_token)):
+async def health_check(
+    token: str = Depends(verify_token),
+    custom_headers: dict = Depends(verify_custom_header),
+):
+    """健康检查接口 - 需要Token和自定义请求头"""
     try:
         # 检查数据库连接
         with get_db_connection() as conn:
@@ -789,6 +893,7 @@ async def health_check(token: str = Depends(verify_token)):
                 "status": "healthy",
                 "database": "connected",
                 "timestamp": datetime.now().isoformat(),
+                "request_source": custom_headers["source"],
             },
             "服务正常运行",
         )
@@ -802,7 +907,11 @@ async def health_check(token: str = Depends(verify_token)):
 
 
 @app.get("/info", summary="服务器信息")
-async def server_info(token: str = Depends(verify_token)):
+async def server_info(
+    token: str = Depends(verify_token),
+    custom_headers: dict = Depends(verify_custom_header),
+):
+    """服务器信息接口 - 需要Token和自定义请求头"""
     return success(
         {
             "app_name": "Mock API Service",
@@ -810,6 +919,7 @@ async def server_info(token: str = Depends(verify_token)):
             "framework": "FastAPI",
             "python_version": "3.10",
             "database": "MySQL",
+            "request_source": custom_headers["source"],
         },
         "获取成功",
     )

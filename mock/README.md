@@ -711,8 +711,18 @@
 
 #### 28. `POST /api/data` - 提交数据
 
-- **请求头**: `Content-Type: application/x-www-form-urlencoded`, `X-Token: {token}`
-- **请求体**: 表单数据，包含字段 `name` 和 `value`
+- **请求头**: `Content-Type: application/json`, `X-Token: {token}`
+- **请求体** (JSON格式，支持 query 和 body 参数，body 优先):
+  ```json
+  {
+    "name": "example",
+    "value": "123"
+  }
+  ```
+- **校验规则**:
+  - `name` 不能为空
+  - `value` 不能为空
+  - `value` 必须是整数（字符串形式的数字）
 - **响应示例**:
   ```json
   {
@@ -728,7 +738,11 @@
 
 #### 29. `GET /health` - 健康检查
 
-- **请求头**: `X-Token: {token}`
+- **请求头**:
+  - `X-Token: {token}`
+  - `X-Custom-Key: mango_secret_key` (自定义请求头)
+  - `X-Request-Source: {来源标识}` (自定义请求头)
+- **说明**: 需要同时提供 Token 和自定义请求头
 - **响应示例**:
   ```json
   {
@@ -736,14 +750,20 @@
     "message": "服务正常运行",
     "data": {
       "status": "healthy",
-      "timestamp": "2023-01-01T00:00:00"
+      "database": "connected",
+      "timestamp": "2023-01-01T00:00:00",
+      "request_source": "test_client"
     }
   }
   ```
 
 #### 30. `GET /info` - 获取服务器信息
 
-- **请求头**: `X-Token: {token}`
+- **请求头**:
+  - `X-Token: {token}`
+  - `X-Custom-Key: mango_secret_key` (自定义请求头)
+  - `X-Request-Source: {来源标识}` (自定义请求头)
+- **说明**: 需要同时提供 Token 和自定义请求头
 - **响应示例**:
   ```json
   {
@@ -751,14 +771,32 @@
     "message": "获取成功",
     "data": {
       "app_name": "Mock API Service",
-      "version": "1.0.0",
+      "version": "2.0.0",
       "framework": "FastAPI",
-      "python_version": "3.10"
+      "python_version": "3.10",
+      "database": "MySQL",
+      "request_source": "test_client"
     }
   }
   ```
 
-#### 31. `GET /startup` - 初始化数据
+#### 31. `GET /download/excel` - 下载Excel文件
+
+- **请求头**: `X-Token: {token}`
+- **说明**: 自动生成包含表头和5行数据的 CSV 文件（可被 Excel 打开）
+- **响应**: 文件下载，Content-Type: `application/vnd.ms-excel`
+- **文件名格式**: `report_YYYYMMDD_HHMMSS.csv`
+- **文件内容示例**:
+  ```csv
+  姓名,年龄,城市
+  张三,28,北京
+  李四,32,上海
+  王五,25,广州
+  赵六,30,深圳
+  孙七,27,杭州
+  ```
+
+#### 32. `GET /startup` - 初始化数据
 
 - **请求头**: 无
 - **说明**: 初始化测试数据（用户、产品等）

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
-# @Description: 
+# @Description:
 # @Time   : 2023-08-11 11:08
 # @Author : 毛鹏
 
@@ -21,9 +21,9 @@ BROWSER_IS_MAXIMIZE = True  # 是否开启UI自动化浏览器全屏
 
 # ----------------------------------------邮件配置---------------------------------------
 
-EMAIL_HOST = 'smtp.qq.com'  # 发送邮件host，这个是QQ邮箱
-SEND_USER = '2716185083@qq.com'  # 发送用户
-STAMP_KEY = 'jmuamgciqntydeji'  # 用户的key
+EMAIL_HOST = "smtp.qq.com"  # 发送邮件host，这个是QQ邮箱
+SEND_USER = "2716185083@qq.com"  # 发送用户
+STAMP_KEY = "jmuamgciqntydeji"  # 用户的key
 
 # ------------------------------------全局请求代理设置------------------------------------
 
