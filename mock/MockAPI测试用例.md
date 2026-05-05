@@ -32,16 +32,16 @@
 
 | 编号 | 用例标题 | 优先级 | 类型 | 前置条件 | 测试步骤 | 预期结果 | 自动化 |
 |------|----------|--------|------|----------|----------|----------|--------|
-| TC-AUTH-0001 | 用户使用有效凭证登录成功 | P0 | 正向 | 服务正常；用户testuser存在 | 1.POST /auth/login<br>2.输入正确用户名密码<br>3.检查响应 | code=200；data含token | ❌未自动化 |
+| TC-AUTH-0001 | 用户使用有效凭证登录成功 | P0 | 正向 | 服务正常；用户testuser存在 | 1.POST /auth/login<br>2.输入正确用户名密码<br>3.检查响应 | code=200；data含token | ✅已自动化 |
 | TC-AUTH-0002 | 用户使用明文密码登录成功 | P1 | 正向 | 服务正常；用户存在 | 1.POST /auth/login<br>2.输入明文密码<br>3.检查响应 | code=200；系统自动MD5加密 | ❌未自动化 |
-| TC-AUTH-0003 | 用户使用不存在的用户名登录 | P1 | 负向 | 服务正常 | 1.POST /auth/login<br>2.输入不存在的用户名 | code=401；用户名或密码错误 | ❌未自动化 |
-| TC-AUTH-0004 | 用户使用错误密码登录 | P1 | 负向 | 服务正常；用户存在 | 1.POST /auth/login<br>2.输入错误密码 | code=402；用户名或密码错误 | ❌未自动化 |
+| TC-AUTH-0003 | 用户使用不存在的用户名登录 | P1 | 负向 | 服务正常 | 1.POST /auth/login<br>2.输入不存在的用户名 | code=401；用户名或密码错误 | ✅已自动化 |
+| TC-AUTH-0004 | 用户使用错误密码登录 | P1 | 负向 | 服务正常；用户存在 | 1.POST /auth/login<br>2.输入错误密码 | code=402；用户名或密码错误 | ✅已自动化 |
 | TC-AUTH-0005 | 用户登录-用户名为空 | P1 | 负向/边界 | 服务正常 | 1.POST /auth/login<br>2.用户名为空 | code=400；用户名或密码不能为空 | ❌未自动化 |
 | TC-AUTH-0006 | 用户登录-密码为空 | P1 | 负向/边界 | 服务正常 | 1.POST /auth/login<br>2.密码为空 | code=400；用户名或密码不能为空 | ❌未自动化 |
 | TC-AUTH-0007 | 新用户注册成功 | P0 | 正向 | 服务正常；用户名未注册 | 1.POST /auth/register<br>2.输入完整注册信息<br>3.检查响应和数据库 | code=200；数据库新增记录 | ❌未自动化 |
 | TC-AUTH-0008 | 注册-用户名已存在 | P1 | 负向 | 服务正常；用户已存在 | 1.POST /auth/register<br>2.输入已存在用户名 | code=400；用户名已存在 | ❌未自动化 |
 | TC-AUTH-0009 | 注册-用户名为空 | P1 | 负向/边界 | 服务正常 | 1.POST /auth/register<br>2.用户名为空 | code=400；用户名或密码不能为空 | ❌未自动化 |
-| TC-AUTH-0010 | 注册-使用MD5密码注册 | P2 | 正向 | 服务正常 | 1.POST /auth/register<br>2.密码传MD5值 | code=200；不做二次加密 | ❌ |
+| TC-AUTH-0010 | 注册-使用MD5密码注册 | P2 | 正向 | 服务正常 | 1.POST /auth/register<br>2.密码传MD5值 | code=200；不做二次加密 | ❌未自动化 |
 
 ---
 
@@ -51,15 +51,15 @@
 
 | 编号 | 用例标题 | 优先级 | 类型 | 前置条件 | 测试步骤 | 预期结果 | 自动化 |
 |------|----------|--------|------|----------|----------|----------|--------|
-| TC-USER-0001 | 获取用户列表成功 | P0 | 正向 | 服务正常；有Token；有用户数据 | 1.GET /users<br>2.携带Token | code=200；data为数组；无password字段 | ❌未自动化 |
-| TC-USER-0002 | 根据ID获取用户成功 | P0 | 正向 | 服务正常；有Token；ID=1存在 | 1.GET /users?id=1 | code=200；单个用户对象 | ❌未自动化 |
+| TC-USER-0001 | 获取用户列表成功 | P0 | 正向 | 服务正常；有Token；有用户数据 | 1.GET /users<br>2.携带Token | code=200；data为数组；无password字段 | ✅已自动化 |
+| TC-USER-0002 | 根据ID获取用户成功 | P0 | 正向 | 服务正常；有Token；ID=1存在 | 1.GET /users?id=1 | code=200；单个用户对象 | ✅已自动化 |
 | TC-USER-0003 | 获取不存在的用户 | P1 | 负向 | 服务正常；有Token | 1.GET /users?id=99999 | code=404；用户不存在 | ❌未自动化 |
-| TC-USER-0004 | 更新用户信息成功 | P1 | 正向 | 服务正常；有Token；ID=1存在 | 1.PUT /users/1<br>2.输入更新信息 | code=200；data反映更新值 | ❌未自动化 |
+| TC-USER-0004 | 更新用户信息成功 | P1 | 正向 | 服务正常；有Token；ID=1存在 | 1.PUT /users/1<br>2.输入更新信息 | code=200；data反映更新值 | ✅已自动化 |
 | TC-USER-0005 | 更新不存在的用户 | P1 | 负向 | 服务正常；有Token | 1.PUT /users/99999 | code=404；用户不存在 | ❌未自动化 |
-| TC-USER-0006 | 删除用户成功 | P1 | 正向 | 服务正常；有Token；有测试用户 | 1.DELETE /users/{id} | code=200；status变deleted | ❌未自动化 |
+| TC-USER-0006 | 删除用户成功 | P1 | 正向 | 服务正常；有Token；有测试用户 | 1.DELETE /users/{id} | code=200；status变deleted | ✅已自动化 |
 | TC-USER-0007 | 未授权访问用户列表 | P1 | 负向/安全 | 服务正常 | 1.GET /users<br>2.无Token | HTTP 401；未提供token | ❌未自动化 |
 | TC-USER-0008 | 使用无效Token访问 | P1 | 负向/安全 | 服务正常 | 1.GET /users<br>2.Token=invalid | HTTP 401；无效的token | ❌未自动化 |
-| TC-USER-0009 | 使用Authorization头传递Token | P2 | 正向 | 服务正常；有Token | 1.GET /users<br>2.Authorization: Bearer {token} | code=200；正常返回 | ❌ |
+| TC-USER-0009 | 使用Authorization头传递Token | P2 | 正向 | 服务正常；有Token | 1.GET /users<br>2.Authorization: Bearer {token} | code=200；正常返回 | ❌未自动化 |
 
 ---
 
