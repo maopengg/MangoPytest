@@ -19,8 +19,19 @@ class BaseFactory(SQLAlchemyModelFactory):
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
-        """延迟获取数据库会话，避免模块级别依赖项目配置"""
+        """延迟获取数据库会话，从子类 _settings_module 读取配置"""
         if cls._meta.sqlalchemy_session is None:
-            from auto_tests.bdd_api_mock.config import settings
+            # 获取子类定义的 settings 模块路径
+            settings_module = getattr(cls, '_settings_module', None)
+            if settings_module is None:
+                raise RuntimeError(
+                    f"{cls.__name__} 未定义 _settings_module，"
+                    f"请在类中添加: _settings_module = 'your.project.config'"
+                )
+            
+            # 动态导入 settings 模块
+            import importlib
+            settings = importlib.import_module(settings_module)
             cls._meta.sqlalchemy_session = settings.SessionLocal()
+        
         return super()._create(model_class, *args, **kwargs)

@@ -17,7 +17,6 @@ def mock_api_settings():
 def api_client(mock_api_settings):
     """基础 API 客户端（session 级别）
 
-    注意：此 fixture 仅创建客户端，不执行登录
     登录认证由 BDD 步骤（如"管理员已登录"）完成
     使用方式:
         - 直接发送请求（默认 JSON 格式）
