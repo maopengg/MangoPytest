@@ -18,6 +18,20 @@ from core.bdd.data_steps import *
 from core.bdd.api_steps import *
 from core.bdd.assertion_steps import *
 
+
+# ========== pytest-bdd 表格 fixture ==========
+@pytest.fixture
+def pytestbdd_table():
+    """pytest-bdd 表格数据 fixture
+
+    用于支持 Gherkin 表格数据步骤，如:
+        假如 设置请求头:
+          | 字段名   | 值        |
+          | X-Key    | abc123    |
+    """
+    return []
+
+
 # ========== 导入项目特定的步骤 ==========
 from auto_tests.bdd_api_mock.steps.auth.login import *  # noqa: F401
 

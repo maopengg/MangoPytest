@@ -53,3 +53,40 @@
     假如 存在"用户" 作为 @用户
     当 DELETE "/users/${{用户.id}}"
     那么 响应状态码应该为 200
+
+  @negative
+  场景: 获取不存在的用户
+    当 GET "/users?id=99999"
+    那么 响应字段 "code" 应该为 "404"
+
+  @negative
+  场景: 更新不存在的用户
+    当 PUT "/users/99999":
+      """
+      {
+        "username": "nonexistent",
+        "email": "test@example.com",
+        "full_name": "Test User",
+        "password": "password123"
+      }
+      """
+    那么 响应字段 "code" 应该为 "404"
+
+  @negative @security
+  场景: 未授权访问用户列表
+    假如 未登录用户
+    当 GET "/users" 预期失败
+    那么 响应状态码应该为 401
+
+  @negative @security
+  场景: 使用无效Token访问用户列表
+    假如 使用无效Token
+    当 GET "/users" 预期失败
+    那么 响应状态码应该为 401
+
+  @positive
+  场景: 使用Authorization头传递Token访问用户列表
+    假如 用户"testuser"已登录
+    当 使用Authorization头发送 GET 到 "/users"
+    那么 响应状态码应该为 200
+    而且 响应数据应该是列表

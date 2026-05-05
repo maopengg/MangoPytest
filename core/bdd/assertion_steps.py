@@ -32,8 +32,15 @@ from core.utils import log
 @then(parsers.parse("响应状态码应该为 {expected_code:d}"))
 def response_status_code_should_be(expected_code: int, api_response: Dict):
     """验证 HTTP 响应状态码"""
-    response: APIResponse = api_response["response"]
-    actual_code = response.status_code
+    from core.exceptions import ApiError
+    
+    response = api_response.get("response")
+    
+    # 处理 ApiError 异常对象
+    if isinstance(response, ApiError):
+        actual_code = response.code
+    else:
+        actual_code = response.status_code
 
     assert actual_code == expected_code, (
         f"期望状态码 {expected_code}，实际 {actual_code}"

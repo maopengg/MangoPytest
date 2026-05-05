@@ -147,20 +147,27 @@ allure generate ./report/tmp -o ./report/html --clean
 
 ## Available Assertion Steps
 
-来自 `core/api/bdd_steps.py` 和 `core/dal/bdd_steps.py`：
+**强制使用 DAL 断言（`core/dal/bdd_steps.py`）**：
 
 | Gherkin 步骤 | 说明 |
 |---|---|
-| `响应状态码为 {code:d}` | 验证 HTTP 状态码 |
-| `code 为 {expected:d}` | 验证 JSON body 中的 code 字段 |
-| `success 为 true/false` | 验证 success 布尔字段 |
-| `{path} 为 {expected}` | 通用路径断言 |
-| `{path} 存在` | 验证路径不为 null |
-| `{path} 包含 {expected}` | 验证字段包含子串 |
-| `{path} 不为空` | 验证列表不为空 |
-| `{path} 应该为 true/false` | DAL 布尔断言 |
-| `{path} 应该等于 {expected}` | DAL 路径断言 |
-| `{path} 应该包含 {expected}` | DAL 包含断言 |
+| `响应状态码应该为 {code}` | 验证 HTTP 状态码 |
+| `响应字段 "{field}" 应该为 "{value}"` | 验证响应 JSON 字段 |
+| `响应数据 "{field}" 应该为 "{value}"` | 验证 data 内业务数据 |
+| `响应数据应该包含字段 "{field}"` | 验证字段存在性 |
+| `响应数据应该是列表` | 验证数据类型 |
+| `列表长度应该为 {length}` | 验证列表长度 |
+| `响应消息应该包含 "{text}"` | 验证消息内容 |
+
+**DAL 表达式断言（推荐）**：
+```gherkin
+那么 响应应该为:
+  """
+  status_code = 200
+  body.code = 200
+  body.data.size > 0
+  """
+```
 
 ## Required Test Marks (from pytest.ini)
 

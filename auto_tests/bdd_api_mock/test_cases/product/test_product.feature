@@ -45,3 +45,37 @@
     假如 存在"产品" 作为 @产品
     当 DELETE "/products/${{产品.id}}"
     那么 响应状态码应该为 200
+
+  @negative @boundary
+  场景: 创建产品-名称为空
+    当 POST "/products":
+      """
+      {"name": "", "price": 999.99, "description": "这是一个新产品", "stock": 100}
+      """
+    那么 响应状态码应该为 200
+
+  @negative @boundary
+  场景: 创建产品-价格为负数
+    当 POST "/products":
+      """
+      {"name": "测试产品", "price": -100, "description": "这是一个新产品", "stock": 100}
+      """
+    那么 响应状态码应该为 200
+
+  @negative @boundary
+  场景: 创建产品-库存为负数
+    当 POST "/products":
+      """
+      {"name": "测试产品", "price": 999.99, "description": "这是一个新产品", "stock": -10}
+      """
+    那么 响应状态码应该为 200
+
+  @negative
+  场景: 获取不存在的产品
+    当 GET "/products?id=99999"
+    那么 响应字段 "code" 应该为 "404"
+
+  @negative
+  场景: 删除不存在的产品
+    当 DELETE "/products/99999"
+    那么 响应字段 "code" 应该为 "404"
