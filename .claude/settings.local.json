@@ -66,7 +66,11 @@
       "Bash(mv steps/migrated/* steps/)",
       "Bash(rmdir steps/migrated)",
       "Bash(ENV=prod .venv/Scripts/python -m pytest auto_tests/bdd_ui_mock/test_cases/click/ -v --no-header -p no:warnings -s)",
-      "Bash(git checkout *)"
+      "Bash(git checkout *)",
+      "Bash(.venv/Scripts/python.exe -c \"import sys; sys.path.insert\\(0, '.'\\); from auto_tests.qfei_contract_ui.conftest import pytest_plugins; print\\('pytest_plugins:', pytest_plugins\\); print\\('OK: conftest imports cleanly'\\)\")",
+      "Bash(.venv/Scripts/python.exe -c ' *)",
+      "Bash(.venv/Scripts/python.exe D:/code/qfei_auto_tests/core/sources/__init__.py)",
+      "Bash(PYTHONPATH=. .venv/Scripts/python.exe core/sources/__init__.py)"
     ]
   }
 }

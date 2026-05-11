@@ -9,7 +9,6 @@ import os.path
 import pandas
 import pandas as pd
 import requests
-from mangotools.enums import NoticeEnum
 
 from core.enums.tools_enum import StatusEnum
 from core.enums.ui_enum import ElementExpEnum
@@ -67,8 +66,18 @@ class DocumentData:
             df = self.cls(url)
             element_exp_reversal = ElementExpEnum.reversal_obj()
             for col in ["定位方式1", "定位方式2", "定位方式3"]:
-                mapped = df[col].map(element_exp_reversal)
-                df[col] = mapped.where(mapped.notna(), df[col])
+                s = df[col]
+                mapped = s.map(element_exp_reversal)
+                result = mapped.where(mapped.notna(), s)
+                # map 引入的 NaN 会将整列 int 值强转为 float（0→0.0），
+                # .apply() 也会被 pandas 自动转回 float64，只能用列表推导
+                df[col] = pd.Series(
+                    [
+                        int(v) if isinstance(v, float) and pd.notna(v) else v
+                        for v in result
+                    ],
+                    dtype=object,
+                )
             df_list.append(df.reset_index(drop=True))
         combined_df = pd.concat(df_list, ignore_index=True)
         duplicate_ids = combined_df[combined_df.duplicated(subset=["ID"], keep=False)]

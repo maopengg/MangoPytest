@@ -4,6 +4,7 @@
 # @Time   : 2024-04-02 9:48
 # @Author : 毛鹏
 import json
+import os.path
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, Dict, Any
@@ -14,7 +15,7 @@ from pandas.core.frame import DataFrame
 
 from core.exceptions import *
 from core.sources.feishu.document_data import DocumentData
-
+from core.utils import project_dir
 
 class SourcesData:
     """
@@ -34,7 +35,7 @@ class SourcesData:
     _cache_time: Optional[datetime] = None
 
     # 缓存配置
-    _CACHE_FILE = Path("cache/ui_elements.json")
+    _CACHE_FILE =Path(os.path.join(project_dir.root_path(), 'cache', 'ui_elements.json'))
     _CACHE_EXPIRE_SECONDS = 300  # 5 分钟
 
     @classmethod
@@ -42,7 +43,7 @@ class SourcesData:
         """
         获取 UI 元素
         """
-        cls.ui_element = cls._get_cached_data()
+        # cls.ui_element = cls._get_cached_data()
         if cls.ui_element is None:
             cls.ui_element = cls.r.ui_element().replace({np.nan: None})
             cls._save_cache(cls.ui_element)
@@ -266,8 +267,8 @@ class SourcesData:
 if __name__ == "__main__":
     element_dict: dict = SourcesData.get_ui_element(
         项目名称='qfei_contract_ui',
-        模块名称='系统管理',
-        页面名称='合同类型管理',
-        元素名称= '创建二级合同类型-创建成功提示',
+        模块名称='首页',
+        页面名称='协商合同',
+        元素名称= '合同期限-框架协议-是',
     )
     print(element_dict)

@@ -64,7 +64,6 @@ class WebBaseObject(SyncWebDevice):
         self.web_ass = SyncWebAssertion(self.base_data)
         super().__init__(base_data)
         d = re.DEBUG
-        self.set_cookie()
 
     @sync_retry()
     def element(self, ele_name: str, is_count=True) -> Locator:
@@ -81,18 +80,19 @@ class WebBaseObject(SyncWebDevice):
             页面名称=self.page_name,
             元素名称=ele_name,
         )
+
         element_list = [{
             'method': element_dict.get('定位方式1'),
             'locator': self.test_data.replace(element_dict.get('表达式1')),
             'nth': element_dict.get('下标1')
         }]
-        if element_dict.get('定位方式2') and element_dict.get('表达式2'):
+        if element_dict.get('定位方式2') is not None and element_dict.get('表达式2') is not None:
             element_list.append({
                 'method': element_dict.get('定位方式2'),
                 'locator': self.test_data.replace(element_dict.get('表达式2')),
                 'nth': element_dict.get('下标2')
             })
-        if element_dict.get('定位方式3') and element_dict.get('表达式3'):
+        if element_dict.get('定位方式3') is not None and element_dict.get('表达式3') is not None:
             element_list.append({
                 'method': element_dict.get('定位方式3'),
                 'locator': self.test_data.replace(element_dict.get('表达式3')),
@@ -119,7 +119,7 @@ class WebBaseObject(SyncWebDevice):
         )
         if count < 1 and is_count:
             raise PytestAutoTestError(*ERROR_MSG_0001, value=(ele_name, loc))
-        log.debug(f'元素【{ele_name}】获取到的信息：{loc.count()}, {count}, {text}')
+        log.debug(f'元素【{ele_name}】个数：{count}，文本信息： {text}')
         return loc
 
     def w_contains_text(self, text: str) -> bool:
@@ -139,7 +139,8 @@ class WebBaseObject(SyncWebDevice):
 
     def set_cookie(self,
                    storage_state_path: str = os.path.join(
-                       project_dir.root_path(), 'auto_tests', 'qfei_contract_ui', 'upload', 'storage_state.json')):
+                       project_dir.root_path(), 'auto_tests', 'qfei_contract_ui', 'data', 'upload',
+                       'storage_state.json')):
         """设置 cookie，如果文件不存在则跳过"""
         if not os.path.isfile(storage_state_path):
             return
