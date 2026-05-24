@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """BDD UI 公共 Fixtures"""
 import pytest
-from mangoautomation.uidrive import DriverObject
+from mangoautomation.uidrives import DriverObject
 from mangoautomation.uidrives import BaseData as BaseDataDrives
 
 from core.enums.ui_enum import BrowserTypeEnum

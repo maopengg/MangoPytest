@@ -29,8 +29,8 @@ import re
 
 import allure
 from mangoautomation.enums import ElementOperationEnum
-from mangoautomation.mangos import SyncWebAssertion
-from mangoautomation.uidrive import BaseData, SyncWebDevice
+from mangoautomation.uidrives import SyncWebDevice, BaseData
+from mangoautomation.uidrives.web import SyncWebAssertion
 from mangotools.decorator import sync_retry
 from mangotools.enums import StatusEnum
 from playwright.sync_api import Locator

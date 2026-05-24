@@ -11,7 +11,7 @@ Web 驱动 Fixtures 模块
 """
 
 import pytest
-from mangoautomation.uidrive import DriverObject
+from mangoautomation.uidrives import DriverObject
 
 from core.enums.ui_enum import BrowserTypeEnum
 from core.utils import log

@@ -5,7 +5,7 @@
 # @Author : 毛鹏
 from urllib.parse import urljoin
 
-from mangoautomation.uidrive import BaseData
+from mangoautomation.uidrives import BaseData
 
 from auto_tests.pytest_ui_mock import PROJECT_DISPLAY_NAME
 from auto_tests.pytest_ui_mock.config import settings
