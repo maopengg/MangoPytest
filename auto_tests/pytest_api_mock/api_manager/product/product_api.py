@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
 # @Description: 产品API - 使用 Core APIClient
 # @Time   : 2026-01-18 13:56
@@ -28,7 +28,7 @@ class ProductAPI(DemoProjectBaseAPI):
         data = {"name": name, "price": price, "stock": stock}
         if description:
             data["description"] = description
-        response = self.client.post("/products", json=data)
+        response = self.client.post("/products", json_data=data)
         return response.data
 
     def get_all_products(self) -> dict:
@@ -58,7 +58,7 @@ class ProductAPI(DemoProjectBaseAPI):
         @param kwargs: 更新字段
         @return: 响应字典
         """
-        response = self.client.put(f"/products/{product_id}", json=kwargs)
+        response = self.client.put(f"/products/{product_id}", json_data=kwargs)
         return response.data
 
     def delete_product(self, product_id: int) -> dict:

@@ -118,6 +118,64 @@ class TestCreateOrder(UnitTest):
 
         test_context.set("orders", orders)
 
+    @allure.title("创建订单-产品不存在")
+    def test_create_order_product_not_found(self, authenticated_client, test_user):
+        """覆盖 TC-ORDER-0006。"""
+        result = authenticated_client.order.create_order(
+            product_id=99999,
+            user_id=test_user.id,
+            quantity=2,
+        )
+
+        assert result.get("code") == 404
+
+    @allure.title("创建订单-库存不足")
+    def test_create_order_out_of_stock(self, authenticated_client, product_builder, test_user):
+        """覆盖 TC-ORDER-0007。"""
+        product = product_builder.create(name="AUTO_out_of_stock", price=99.99, stock=0)
+        result = authenticated_client.order.create_order(
+            product_id=product.get("id"),
+            user_id=test_user.id,
+            quantity=1,
+        )
+
+        assert result.get("code") == 400
+
+    @allure.title("创建订单-数量为0")
+    def test_create_order_zero_quantity(self, authenticated_client, test_product, test_user):
+        """覆盖 TC-ORDER-0008。"""
+        result = authenticated_client.order.create_order(
+            product_id=test_product.get("id"),
+            user_id=test_user.id,
+            quantity=0,
+        )
+        order_id = result.get("data", {}).get("id")
+
+        try:
+            assert result.get("code") == 200
+            assert result.get("data", {}).get("quantity") == 0
+        finally:
+            if order_id:
+                authenticated_client.order.delete_order(order_id)
+
+    @allure.title("订单金额计算准确性")
+    def test_order_total_amount_calculation(self, authenticated_client, product_builder, test_user):
+        """覆盖 TC-ORDER-0012。"""
+        product = product_builder.create(name="AUTO_amount_product", price=99.99, stock=100)
+        result = authenticated_client.order.create_order(
+            product_id=product.get("id"),
+            user_id=test_user.id,
+            quantity=3,
+        )
+        order_id = result.get("data", {}).get("id")
+
+        try:
+            assert result.get("code") == 200
+            assert str(result.get("data", {}).get("total_amount")) == "299.97"
+        finally:
+            if order_id:
+                authenticated_client.order.delete_order(order_id)
+
 
 @allure.feature("订单管理")
 @allure.story("获取订单")

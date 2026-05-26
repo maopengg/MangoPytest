@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
 # @Description: 报销申请API - 使用 Core APIClient
 # @Time   : 2024-03-17 19:50
@@ -40,7 +40,7 @@ class ReimbursementAPI(DemoProjectBaseAPI):
         """
         response = self.client.post(
             "/reimbursements",
-            json={"user_id": user_id, "amount": amount, "reason": reason}
+            json_data={"user_id": user_id, "amount": amount, "reason": reason}
         )
         return response.data
 
@@ -52,7 +52,7 @@ class ReimbursementAPI(DemoProjectBaseAPI):
         @param kwargs: 更新字段
         @return: 响应字典
         """
-        response = self.client.put(f"/reimbursements/{reimbursement_id}", json=kwargs)
+        response = self.client.put(f"/reimbursements/{reimbursement_id}", json_data=kwargs)
         return response.data
 
     def delete_reimbursement(self, reimbursement_id: int) -> dict:

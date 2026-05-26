@@ -117,6 +117,51 @@ class TestCreateProduct(UnitTest):
 
         test_context.set("products", products)
 
+    @allure.title("创建产品-名称为空")
+    def test_create_product_empty_name(self, authenticated_client):
+        """覆盖 TC-PROD-0006。"""
+        result = authenticated_client.product.create_product(
+            name="", price=99.99, description="AUTO empty name", stock=100
+        )
+        product_id = result.get("data", {}).get("id")
+
+        try:
+            assert result.get("code") == 200
+            assert result.get("data", {}).get("name") == ""
+        finally:
+            if product_id:
+                authenticated_client.product.delete_product(product_id)
+
+    @allure.title("创建产品-价格为负数")
+    def test_create_product_negative_price(self, authenticated_client):
+        """覆盖 TC-PROD-0007。"""
+        result = authenticated_client.product.create_product(
+            name="AUTO_negative_price", price=-100, description="negative price", stock=100
+        )
+        product_id = result.get("data", {}).get("id")
+
+        try:
+            assert result.get("code") == 200
+            assert result.get("data", {}).get("price") == -100
+        finally:
+            if product_id:
+                authenticated_client.product.delete_product(product_id)
+
+    @allure.title("创建产品-库存为负数")
+    def test_create_product_negative_stock(self, authenticated_client):
+        """覆盖 TC-PROD-0008。"""
+        result = authenticated_client.product.create_product(
+            name="AUTO_negative_stock", price=99.99, description="negative stock", stock=-10
+        )
+        product_id = result.get("data", {}).get("id")
+
+        try:
+            assert result.get("code") == 200
+            assert result.get("data", {}).get("stock") == -10
+        finally:
+            if product_id:
+                authenticated_client.product.delete_product(product_id)
+
 
 @allure.feature("产品管理")
 @allure.story("获取产品")

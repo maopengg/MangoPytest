@@ -4,9 +4,12 @@
 # @Time   : 2026-03-31
 # @Author : 毛鹏
 import allure
+import pytest
 
 from auto_tests.pytest_api_mock.data_factory.builders.system import SystemBuilder
+from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
 from core.base.layering_base import UnitTest, IntegrationTest
+from core.exceptions import ApiError
 
 @allure.epic('演示-pytest_api_mock')
 @allure.feature("系统管理")
@@ -41,6 +44,30 @@ class TestHealthCheck(UnitTest):
             result = system_builder.health_check()
             assert result is not None
             assert result.get("status") == "healthy"
+
+    @allure.title("健康检查-缺少自定义头")
+    def test_health_check_missing_custom_header(self, test_token):
+        """覆盖 TC-SYS-0002。"""
+        pytest_api_mock.set_token(test_token)
+        with pytest.raises(ApiError) as exc_info:
+            pytest_api_mock.system.health_check(with_custom_headers=False)
+
+        assert exc_info.value.code == 403
+
+    @allure.title("健康检查-自定义密钥错误")
+    def test_health_check_invalid_custom_key(self, test_token):
+        """覆盖 TC-SYS-0003。"""
+        pytest_api_mock.set_token(test_token)
+        with pytest.raises(ApiError) as exc_info:
+            pytest_api_mock.system.health_check(
+                headers={
+                    "X-Custom-Key": "wrong_key",
+                    "X-Request-Source": "pytest_api_mock",
+                },
+                with_custom_headers=False,
+            )
+
+        assert exc_info.value.code == 403
 
 
 @allure.feature("系统管理")
@@ -79,6 +106,46 @@ class TestServerInfo(UnitTest):
         for field in required_fields:
             assert field in result
             assert result[field] is not None
+
+    @allure.title("服务器信息-缺少自定义头")
+    def test_server_info_missing_custom_header(self, test_token):
+        """覆盖 TC-SYS-0007。"""
+        pytest_api_mock.set_token(test_token)
+        with pytest.raises(ApiError) as exc_info:
+            pytest_api_mock.system.get_server_info(with_custom_headers=False)
+
+        assert exc_info.value.code == 403
+
+
+@allure.feature("系统管理")
+@allure.story("初始化和首页")
+class TestStartupAndHome(UnitTest):
+    """初始化数据和首页接口测试"""
+
+    @allure.title("初始化数据成功")
+    def test_startup_success(self):
+        """覆盖 TC-SYS-0005。"""
+        result = pytest_api_mock.system.startup()
+
+        assert result.get("code") == 200
+        assert "message" in result.get("data", {})
+
+    @allure.title("访问首页成功")
+    def test_home_success(self):
+        """覆盖 TC-SYS-0006。"""
+        response = pytest_api_mock.system.home()
+
+        assert response.status_code == 200
+        assert "芒果mock服务" in str(response.data)
+
+    @allure.title("重复初始化数据")
+    def test_startup_repeat(self):
+        """覆盖 TC-SYS-0008。"""
+        first = pytest_api_mock.system.startup()
+        second = pytest_api_mock.system.startup()
+
+        assert first.get("code") == 200
+        assert second.get("code") == 200
 
 
 @allure.feature("系统管理")

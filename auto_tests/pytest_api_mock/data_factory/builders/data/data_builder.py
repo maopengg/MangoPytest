@@ -28,8 +28,8 @@ class DataBuilder:
         @return: 数据字典
         """
         return {
-            "name": name or f"data_{uuid.uuid4().hex[:6]}",
-            "value": value or 100
+            "name": name or f"AUTO_data_{uuid.uuid4().hex[:6]}",
+            "value": 100 if value is None else value
         }
 
     def submit(self, name: str = None, value: int = None) -> Dict[str, Any]:

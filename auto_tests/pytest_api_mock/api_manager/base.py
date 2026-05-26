@@ -29,12 +29,12 @@ class DemoProjectBaseAPI:
     @classmethod
     def set_token(cls, token: str):
         """设置全局认证 token"""
-        cls._token = token
+        DemoProjectBaseAPI._token = token
 
     @classmethod
     def clear_token(cls):
         """清除全局认证 token"""
-        cls._token = None
+        DemoProjectBaseAPI._token = None
 
     @classmethod
     def _auth_interceptor(cls, method: str, url: str, headers: dict, data: any):

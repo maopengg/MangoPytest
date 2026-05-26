@@ -85,21 +85,46 @@ class TestSubmitData(UnitTest):
     def test_submit_data_empty_value(self, authenticated_client):
         """测试提交空value的数据"""
         pytest_api_mock.data.set_token(authenticated_client.token)
-        # 使用0代替None，因为API期望整数
-        result = pytest_api_mock.data.submit_data(name="test", value=0)
+        result = pytest_api_mock.data.submit_data_raw(
+            body={"name": "AUTO_empty_value", "value": ""}
+        )
 
-        # 应该成功，因为0是有效的整数
-        assert result.get("code") == 200
+        assert result.get("code") == 400
+        assert "value不能为空" in result.get("message", "")
 
     @allure.title("提交数据失败-非数字value")
     def test_submit_data_non_numeric_value(self, authenticated_client):
         """测试提交非数字value的数据"""
         pytest_api_mock.data.set_token(authenticated_client.token)
+        result = pytest_api_mock.data.submit_data_raw(
+            body={"name": "AUTO_non_numeric", "value": "abc"}
+        )
 
-        # 提交字符串数值 - 这会失败因为API期望整数
-        # 由于Python类型检查，我们传递字符串会被转为整数或报错
-        # 这里我们直接测试API返回错误的情况
-        result = pytest_api_mock.data.submit_data(name="test", value=0)
+        assert result.get("code") == 400
+        assert "value必须是整数" in result.get("message", "")
 
-        # 正常提交应该成功
+    @allure.title("提交数据成功-query参数")
+    def test_submit_data_query_params(self, authenticated_client):
+        """覆盖 TC-DATA-0002。"""
+        pytest_api_mock.data.set_token(authenticated_client.token)
+        result = pytest_api_mock.data.submit_data_raw(
+            body={},
+            params={"name": "AUTO_query_value", "value": "200"},
+        )
+
         assert result.get("code") == 200
+        assert result.get("data", {}).get("name") == "AUTO_query_value"
+        assert result.get("data", {}).get("value") == 200
+
+    @allure.title("提交数据-body覆盖query")
+    def test_submit_data_body_overrides_query(self, authenticated_client):
+        """覆盖 TC-DATA-0003。"""
+        pytest_api_mock.data.set_token(authenticated_client.token)
+        result = pytest_api_mock.data.submit_data_raw(
+            body={"name": "AUTO_body_value", "value": "400"},
+            params={"name": "AUTO_query_value", "value": "300"},
+        )
+
+        assert result.get("code") == 200
+        assert result.get("data", {}).get("name") == "AUTO_body_value"
+        assert result.get("data", {}).get("value") == 400

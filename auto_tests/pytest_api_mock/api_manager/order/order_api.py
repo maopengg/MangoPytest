@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
 # @Description: 订单API - 使用 Core APIClient
 # @Time   : 2026-01-18 13:57
@@ -21,7 +21,7 @@ class OrderAPI(DemoProjectBaseAPI):
         """
         response = self.client.post(
             "/orders",
-            json={"product_id": product_id, "quantity": quantity, "user_id": user_id}
+            json_data={"product_id": product_id, "quantity": quantity, "user_id": user_id}
         )
         return response.data
 
@@ -52,7 +52,7 @@ class OrderAPI(DemoProjectBaseAPI):
         @param kwargs: 更新字段
         @return: 响应字典
         """
-        response = self.client.put(f"/orders/{order_id}", json=kwargs)
+        response = self.client.put(f"/orders/{order_id}", json_data=kwargs)
         return response.data
 
     def delete_order(self, order_id: int) -> dict:

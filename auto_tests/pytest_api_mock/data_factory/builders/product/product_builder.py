@@ -32,7 +32,7 @@ class ProductBuilder(BaseBuilder):
         @return: 产品数据字典
         """
         return {
-            "name": name or f"Product {uuid.uuid4().hex[:6]}",
+            "name": name or f"AUTO_Product_{uuid.uuid4().hex[:6]}",
             "price": price or 99.99,
             "description": description or f"Test product description {uuid.uuid4().hex[:4]}",
             "stock": stock,
@@ -131,4 +131,11 @@ class ProductBuilder(BaseBuilder):
         """
         清理创建的数据
         """
+        for product in reversed(self._created):
+            product_id = product.get("id") if isinstance(product, dict) else None
+            if product_id:
+                try:
+                    self.delete(product_id)
+                except Exception:
+                    pass
         self._created.clear()

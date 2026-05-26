@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
 # @Description: 登录API - 使用 Core APIClient
 # @Time   : 2024-03-17 19:50
@@ -28,6 +28,6 @@ class LoginAPI(DemoProjectBaseAPI):
         password_md5 = self._encrypt_password(password)
         response = self.client.post(
             "/auth/login",
-            json={"username": username, "password": password_md5}
+            json_data={"username": username, "password": password_md5}
         )
         return response.data

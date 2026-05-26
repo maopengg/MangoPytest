@@ -90,8 +90,8 @@ class UserEntity(PydanticEntity):
         """创建默认用户"""
         import uuid
         return cls(
-            username=f"user_{uuid.uuid4().hex[:8]}",
-            email=f"{uuid.uuid4().hex[:8]}@example.com",
+            username=f"AUTO_user_{uuid.uuid4().hex[:8]}",
+            email=f"AUTO_{uuid.uuid4().hex[:8]}@example.com",
             full_name="Test User",
             password="password123",
             role="user",
@@ -102,8 +102,8 @@ class UserEntity(PydanticEntity):
         """创建管理员用户"""
         import uuid
         return cls(
-            username=f"admin_{uuid.uuid4().hex[:8]}",
-            email=f"admin_{uuid.uuid4().hex[:8]}@example.com",
+            username=f"AUTO_admin_{uuid.uuid4().hex[:8]}",
+            email=f"AUTO_admin_{uuid.uuid4().hex[:8]}@example.com",
             full_name="Admin User",
             password="admin123",
             role="admin",

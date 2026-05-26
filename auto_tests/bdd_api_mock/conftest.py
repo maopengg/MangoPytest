@@ -34,6 +34,7 @@ def pytestbdd_table():
 
 # ========== 导入项目特定的步骤 ==========
 from auto_tests.bdd_api_mock.steps.auth.login import *  # noqa: F401
+from auto_tests.bdd_api_mock.steps.api.mock_specific import *  # noqa: F401
 
 # ========== pytest-factoryboy 注册所有 Factories ==========
 from auto_tests.bdd_api_mock.data_factory.specs.user import user_spec  # noqa: F401
@@ -176,17 +177,21 @@ def pytest_sessionstart(session):
 
 
 def pytest_sessionfinish(session, exitstatus):
-    """测试会话结束时清理锁文件"""
+    """测试会话结束时清理数据和锁文件"""
+    if os.environ.get("PYTEST_XDIST_WORKER") is None:
+        log.info(">>> [Main] 测试会话结束，执行数据清理...")
+        _cleanup_test_data()
+
     pid_file = os.path.join(tempfile.gettempdir(), "bdd_api_mock_cleanup.pid")
     try:
         if os.path.exists(pid_file):
             with open(pid_file, "r") as f:
                 content = f.read().strip()
-                if content:
-                    pid, _ = content.split(",")
-                    if int(pid) == os.getpid():
-                        os.remove(pid_file)
-                        log.info(">>> 清理锁文件")
+            if content:
+                pid, _ = content.split(",")
+                if int(pid) == os.getpid():
+                    os.remove(pid_file)
+                    log.info(">>> 清理锁文件")
     except Exception as e:
         log.warning(f">>> 清理锁文件失败: {e}")
 

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
 # @Description: 数据API - 使用 Core APIClient
 # @Time   : 2026-01-18 13:57
@@ -18,5 +18,16 @@ class DataAPI(DemoProjectBaseAPI):
         @param value: 数据值
         @return: 响应字典
         """
-        response = self.client.post("/api/data", json={"name": name, "value": value})
+        response = self.client.post("/api/data", json_data={"name": name, "value": value})
+        return response.data
+
+    def submit_data_raw(self, body: dict = None, params: dict = None) -> dict:
+        """
+        提交数据接口（支持原始body/query组合）
+        """
+        response = self.client.post(
+            "/api/data",
+            json_data=body or {},
+            params=params,
+        )
         return response.data

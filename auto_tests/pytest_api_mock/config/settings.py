@@ -97,6 +97,8 @@ class ProdConfig(PytestApiMockConfig):
     # 数据库配置
     DB_HOST: str = Field(default="43.142.161.61", description="数据库主机")
     DB_PORT: int = Field(default=3306, description="数据库端口")
+    DB_USER: str = Field(default="root", description="数据库用户名")
+    DB_PASSWORD: str = Field(default="mP123456&", description="数据库密码")
     DB_NAME: str = Field(default="mango_mock", description="数据库名")
 
     # 日志级别

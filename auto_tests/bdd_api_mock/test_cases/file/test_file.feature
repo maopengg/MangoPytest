@@ -18,6 +18,7 @@
   场景: 下载Excel文件成功
     当 GET "/download/excel"
     那么 响应状态码应该为 200
+    而且 下载CSV文件应该包含3列5行数据
 
   @negative
   场景: 未选择文件上传

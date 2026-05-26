@@ -6,3 +6,10 @@
 
 from auto_tests.pytest_api_mock.fixtures.conftest import *
 from core.reporting import *
+
+
+def pytest_sessionfinish(session, exitstatus):
+    """测试会话结束后兜底清理自动化测试数据。"""
+    from auto_tests.pytest_api_mock.hooks.cleanup_hooks import cleanup_auto_test_data
+
+    cleanup_auto_test_data()

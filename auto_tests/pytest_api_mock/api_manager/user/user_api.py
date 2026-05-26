@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
 # @Description: 用户API - 使用 Core APIClient
 # @Time   : 2024-03-17 19:50
@@ -51,7 +51,7 @@ class UserAPI(DemoProjectBaseAPI):
         password_md5 = self._encrypt_password(password)
         response = self.client.post(
             "/users",
-            json={
+            json_data={
                 "username": username,
                 "email": email,
                 "full_name": full_name,
@@ -70,7 +70,7 @@ class UserAPI(DemoProjectBaseAPI):
         """
         response = self.client.put(
             f"/users/{user_id}",
-            json=kwargs
+            json_data=kwargs
         )
         return response.data
 

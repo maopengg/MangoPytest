@@ -4,11 +4,15 @@
 # @Time   : 2026-03-31
 # @Author : 毛鹏
 import os
+import csv
 
 import allure
+import pytest
 
 from auto_tests.pytest_api_mock.data_factory.builders.file import FileBuilder
+from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
 from core.base.layering_base import UnitTest
+from core.exceptions import ApiError
 
 @allure.epic('演示-pytest_api_mock')
 @allure.feature("文件管理")
@@ -112,3 +116,30 @@ class TestUploadFile(UnitTest):
 
         # 清理
         os.remove(file_path)
+
+    @allure.title("下载Excel文件成功")
+    def test_download_excel_success(self, test_token):
+        """覆盖 TC-FILE-0002：下载CSV并校验3列5行。"""
+        pytest_api_mock.set_token(test_token)
+        response = pytest_api_mock.file.download_excel()
+
+        assert response.status_code == 200
+        assert response.file_path
+        assert os.path.exists(response.file_path)
+
+        with open(response.file_path, "r", encoding="utf-8-sig", newline="") as f:
+            rows = list(csv.reader(f))
+
+        header = [cell.lstrip("\ufeff") for cell in rows[0]]
+        assert header == ["姓名", "年龄", "城市"]
+        assert len(rows[1:]) == 5
+        assert all(len(row) == 3 for row in rows[1:])
+
+    @allure.title("上传文件-未选择文件")
+    def test_upload_without_file(self, test_token):
+        """覆盖 TC-FILE-0004。"""
+        pytest_api_mock.set_token(test_token)
+        with pytest.raises(ApiError) as exc_info:
+            pytest_api_mock.file.upload_without_file()
+
+        assert exc_info.value.code == 422

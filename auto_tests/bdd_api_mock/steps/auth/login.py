@@ -241,7 +241,7 @@ def user_register_with_plain_password_step(username: str, password: str, api_cli
 )
 def user_register_with_md5_password_step(password_md5: str, api_client):
     """用户使用MD5密码注册步骤（不做二次加密）"""
-    username = f"md5user_{uuid.uuid4().hex[:8]}"
+    username = f"AUTO_md5user_{uuid.uuid4().hex[:8]}"
     log.debug(f"使用MD5密码注册: {username}")
     email = _data_processor.character_email()
     full_name = _data_processor.character_male_name()
@@ -289,7 +289,7 @@ def user_register_with_empty_username_step(password: str, api_client):
 )
 def user_register_with_random_username_step(password: str, api_client):
     """用户使用随机用户名注册（确保用户名唯一）"""
-    username = f"testuser_{uuid.uuid4().hex[:8]}"
+    username = f"AUTO_testuser_{uuid.uuid4().hex[:8]}"
     log.debug(f"使用随机用户名注册: {username}")
     password_md5 = _hash_password(password)
     email = _data_processor.character_email()

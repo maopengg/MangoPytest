@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
 # @Description: 部门审批API - 使用 Core APIClient
 # @Time   : 2024-03-17 19:50
@@ -48,7 +48,7 @@ class DeptApprovalAPI(DemoProjectBaseAPI):
         }
         if comment:
             data["comment"] = comment
-        response = self.client.post("/dept-approvals", json=data)
+        response = self.client.post("/dept-approvals", json_data=data)
         return response.data
 
     def update_dept_approval(self, approval_id: int, **kwargs) -> dict:
@@ -61,7 +61,7 @@ class DeptApprovalAPI(DemoProjectBaseAPI):
         """
         response = self.client.put(
             "/dept-approvals",
-            json=kwargs,
+            json_data=kwargs,
             params={"approval_id": approval_id}
         )
         return response.data

@@ -6,8 +6,7 @@
 
 from fastapi import FastAPI, HTTPException, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
 from typing import Optional
 import uvicorn
 import uuid
@@ -266,7 +265,21 @@ async def verify_custom_header(
 
 @app.get("/")
 async def read_index():
-    return FileResponse("static/index.html")
+    return HTMLResponse(
+        """
+        <!doctype html>
+        <html lang="zh-CN">
+          <head>
+            <meta charset="utf-8">
+            <title>Mock API Service</title>
+          </head>
+          <body>
+            <h1>Mock API Service</h1>
+            <p>服务正常运行</p>
+          </body>
+        </html>
+        """
+    )
 
 
 # ========================

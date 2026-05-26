@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
 # @Description: 认证API - 使用 Core APIClient
 # @Time   : 2026-01-18 13:55
@@ -22,7 +22,17 @@ class AuthAPI(DemoProjectBaseAPI):
         """
         password_md5 = hashlib.md5(password.encode()).hexdigest()
         response = self.client.post(
-            "/auth/login", json={"username": username, "password": password_md5}
+            "/auth/login", json_data={"username": username, "password": password_md5}
+        )
+        return response.data
+
+    def api_login_raw(self, username: str, password: str) -> dict:
+        """
+        用户登录接口（原样传递密码）
+        用于覆盖服务端自动识别明文/MD5密码的场景。
+        """
+        response = self.client.post(
+            "/auth/login", json_data={"username": username, "password": password}
         )
         return response.data
 
@@ -41,11 +51,29 @@ class AuthAPI(DemoProjectBaseAPI):
         password_md5 = hashlib.md5(password.encode()).hexdigest()
         response = self.client.post(
             "/auth/register",
-            json={
+            json_data={
                 "username": username,
                 "email": email,
                 "full_name": full_name,
                 "password": password_md5,
+            },
+        )
+        return response.data
+
+    def api_register_raw(
+        self, username: str, email: str, full_name: str, password: str
+    ) -> dict:
+        """
+        用户注册接口（原样传递密码）
+        用于覆盖MD5密码注册不二次加密的场景。
+        """
+        response = self.client.post(
+            "/auth/register",
+            json_data={
+                "username": username,
+                "email": email,
+                "full_name": full_name,
+                "password": password,
             },
         )
         return response.data

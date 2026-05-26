@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 # @Project: 芒果测试平台
 # @Description: 总经理审批API - 使用 Core APIClient
 # @Time   : 2024-03-17 19:50
@@ -55,7 +55,7 @@ class CEOApprovalAPI(DemoProjectBaseAPI):
         }
         if comment:
             data["comment"] = comment
-        response = self.client.post("/ceo-approvals", json=data)
+        response = self.client.post("/ceo-approvals", json_data=data)
         return response.data
 
     def update_ceo_approval(self, approval_id: int, **kwargs) -> dict:
@@ -66,7 +66,7 @@ class CEOApprovalAPI(DemoProjectBaseAPI):
         @param kwargs: 更新字段
         @return: 响应字典
         """
-        response = self.client.put("/ceo-approvals", json=kwargs, params={"approval_id": approval_id})
+        response = self.client.put("/ceo-approvals", json_data=kwargs, params={"approval_id": approval_id})
         return response.data
 
     def delete_ceo_approval(self, approval_id: int) -> dict:

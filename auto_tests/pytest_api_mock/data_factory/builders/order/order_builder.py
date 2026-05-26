@@ -32,7 +32,7 @@ class OrderBuilder(BaseBuilder):
         """
         return {
             "product_id": product_id or 1,
-            "quantity": quantity or 1,
+            "quantity": 1 if quantity is None else quantity,
             "user_id": user_id or 1
         }
 
@@ -144,4 +144,11 @@ class OrderBuilder(BaseBuilder):
         """
         清理创建的数据
         """
+        for order in reversed(self._created):
+            order_id = order.get("id") if isinstance(order, dict) else None
+            if order_id:
+                try:
+                    self.delete(order_id)
+                except Exception:
+                    pass
         self._created.clear()

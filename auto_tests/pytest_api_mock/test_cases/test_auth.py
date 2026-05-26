@@ -18,6 +18,7 @@
 
 import allure
 import pytest
+import uuid
 
 from auto_tests.pytest_api_mock.api_manager import pytest_api_mock
 from auto_tests.pytest_api_mock.data_factory.entities import UserEntityPydantic
@@ -60,6 +61,16 @@ class TestAuthLogin(UnitTest):
 
         assert token is not None
         assert token.startswith("mock_token_")
+
+    @allure.title("正常登录 - 明文密码由服务端处理")
+    def test_login_success_with_plain_password(self, api_client):
+        """覆盖 TC-AUTH-0002：登录时原样传递明文密码。"""
+        result = api_client.auth.api_login_raw(
+            username="testuser", password="password123"
+        )
+
+        assert result.get("code") == 200
+        assert result.get("data", {}).get("token")
 
     @allure.title("登录失败 - 用户名错误")
     def test_login_wrong_username(self):
@@ -183,6 +194,19 @@ class TestAuthRegister(UnitTest):
         )
 
         assert result.get("code") == 400
+
+    @allure.title("正常注册 - 使用MD5密码")
+    def test_register_success_with_md5_password(self, api_client):
+        """覆盖 TC-AUTH-0010：注册时原样传递MD5密码。"""
+        suffix = uuid.uuid4().hex[:8]
+        result = api_client.auth.api_register_raw(
+            username=f"AUTO_md5_{suffix}",
+            email=f"AUTO_md5_{suffix}@example.com",
+            full_name="AUTO MD5 User",
+            password="482c811da5d5b4bc6d497ffa98491e38",
+        )
+
+        assert result.get("code") == 200
 
 
 @allure.feature("认证模块")

@@ -20,3 +20,12 @@ class FileAPI(DemoProjectBaseAPI):
         """
         response = self.client.upload("/upload", file_path, headers=headers)
         return response.data
+
+    def upload_without_file(self) -> dict:
+        """不选择文件上传，用于验证422。"""
+        response = self.client.request("POST", "/upload")
+        return response.data
+
+    def download_excel(self):
+        """下载Excel/CSV文件，返回APIResponse以便校验文件内容。"""
+        return self.client.get("/download/excel")
