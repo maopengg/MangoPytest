@@ -1,10 +1,12 @@
 ##ignore this file##
 /venv/
+/.venv/
+**/.pytest_cache/
+**/__pycache__/
 /target/
 /.idea/
 /bin/
-/report/*
-/reports/*
+/artifacts/
 !index.pyc
 *.pyc
 .classpath
@@ -50,11 +52,6 @@ Thumbs.db
 /.mvn/
 /mvnw.cmd
 /mvnw
-logs/
-report/
-reports/
-download/
-screenshot/
 allure-report/
 allure-results/
 cache/

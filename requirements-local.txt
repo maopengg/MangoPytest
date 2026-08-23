@@ -1,0 +1,3 @@
+# 与 qfei-auto-platform 一致：芒果内部包只从仓库内 wheel 安装，不使用 PyPI。
+./local_packages/mangotools-2.0.8-py3-none-any.whl
+./local_packages/mangoautomation-2.0.4-py3-none-any.whl

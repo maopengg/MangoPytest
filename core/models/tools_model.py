@@ -9,7 +9,7 @@ from mangotools.database import MysqlConnect
 from mangotools.models import MysqlConingModel
 from pydantic import BaseModel, ConfigDict
 
-from auto_tests.project_config import ProjectEnum
+from auto_tests.project_registry import ProjectEnum
 from core.enums.tools_enum import AutoTestTypeEnum, EnvironmentEnum
 from core.utils.obtain_test_data import ObtainTestData
 

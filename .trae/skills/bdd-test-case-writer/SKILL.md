@@ -41,7 +41,7 @@ L1: Database (MySQL)
 
 ### Step 2: Write Feature File (L5)
 
-**File location**: `auto_tests/bdd_api_mock/test_cases/<module>/test_<module>.feature`
+**File location**: `auto_tests/api/bdd_api/test_cases/<module>/test_<module>.feature`
 
 **Template**:
 ```gherkin
@@ -68,7 +68,7 @@ L1: Database (MySQL)
 
 ### Step 3: Write Step Definitions (L4)
 
-**File location**: `auto_tests/bdd_api_mock/steps/<module>/<step_file>.py`
+**File location**: `auto_tests/api/bdd_api/steps/<module>/<step_file>.py`
 
 **Template for When steps**:
 ```python
@@ -100,7 +100,7 @@ def <assertion_function_name>(<fixture_name>):
 
 ### Step 4: Add pytest Markers (if needed)
 
-**File location**: `auto_tests/bdd_api_mock/pytest.ini`
+**File location**: `auto_tests/api/bdd_api/pytest.ini`
 
 Add new markers if using custom tags:
 ```ini
@@ -164,7 +164,7 @@ uuid_str = _data_processor.str_uuid_no_dash()
 ## File Structure
 
 ```
-auto_tests/bdd_api_mock/
+auto_tests/api/bdd_api/
 ├── test_cases/
 │   └── <module>/
 │       ├── test_<module>.feature    # L5: Gherkin scenarios
@@ -182,13 +182,13 @@ auto_tests/bdd_api_mock/
 
 ```bash
 # Run specific test file
-.venv\Scripts\python -m pytest auto_tests\bdd_api_mock\test_cases\auth\test_auth.py -v
+.venv\Scripts\python -m pytest auto_tests\bdd_api\test_cases\auth\test_auth.py -v
 
 # Run by tags
-.venv\Scripts\python -m pytest auto_tests\bdd_api_mock\test_cases\auth\test_auth.py -v -m "smoke"
+.venv\Scripts\python -m pytest auto_tests\bdd_api\test_cases\auth\test_auth.py -v -m "smoke"
 
 # Run all tests
-.venv\Scripts\python -m pytest auto_tests\bdd_api_mock\ -v
+.venv\Scripts\python -m pytest auto_tests\bdd_api\ -v
 ```
 
 ## Best Practices

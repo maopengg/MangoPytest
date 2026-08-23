@@ -85,8 +85,7 @@ class Operators:
         """
         = 严格相等操作符
         
-        要求类型和值都完全相同
-        但对于数字和字符串，如果字符串表示的数字相同，也视为相等
+        要求类型和值都完全相同。类型转换只属于 ``:`` 宽松匹配。
         
         Args:
             actual: 实际值
@@ -117,26 +116,8 @@ class Operators:
                     message=f"Value does not match pattern /{pattern}/"
                 )
         
-        # 类型检查 - 严格模式：int 和 float 视为不同类型
-        # 但对于数字和字符串，如果字符串表示的数字相同，也视为相等
+        # 类型检查：严格模式不进行数字/字符串互转，int 与 float 也不同。
         if type(actual) != type(expected):
-            # 处理数字和字符串的互转
-            if isinstance(actual, str) and isinstance(expected, (int, float)):
-                # 实际是字符串，期望是数字：尝试将字符串转为数字比较
-                try:
-                    if '.' in actual:
-                        actual_as_num = float(actual)
-                    else:
-                        actual_as_num = int(actual)
-                    if actual_as_num == expected:
-                        return CompareResult(success=True, expected=repr(expected), actual=repr(actual))
-                except ValueError:
-                    pass
-            elif isinstance(actual, (int, float)) and isinstance(expected, str):
-                # 实际是数字，期望是字符串：尝试将数字转为字符串比较
-                if str(actual) == expected:
-                    return CompareResult(success=True, expected=repr(expected), actual=repr(actual))
-            
             return CompareResult(
                 success=False,
                 expected=f"{type(expected).__name__} ({expected!r})",

@@ -143,7 +143,7 @@ class TestRegexAssertions:
     def test_regex_match(self):
         """正则匹配"""
         expect("hello world").should("= /hello.*/")
-        expect("ORD-001").should("= /ORD-\d+/")
+        expect("ORD-001").should(r"= /ORD-\d+/")
 
 
 class TestTableAssertions:

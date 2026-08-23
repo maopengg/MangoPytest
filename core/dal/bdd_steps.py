@@ -160,7 +160,7 @@ def verify_path_ends_with(data: Any, path: str, suffix: str):
 
 @then(parsers.cfparse('{path} 应该匹配 {pattern}'))
 def verify_path_matches_pattern(data: Any, path: str, pattern: str):
-    """
+    r"""
     验证路径匹配正则表达式
 
     示例:

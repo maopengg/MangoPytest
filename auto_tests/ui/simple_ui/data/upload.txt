@@ -1,0 +1,2 @@
+AUTO_UI_UPLOAD
+用于 Mango Mock UI 上传操作兼容性验证。

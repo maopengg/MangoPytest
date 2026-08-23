@@ -2,6 +2,9 @@
 
 DAL 是一个用于测试数据验证的表达式语言，灵感来源于 Java TestCharm DAL。它提供了简洁、强大的语法来验证各种数据结构。
 
+DAL 只归属于本仓库：实现位于 `core/dal/`，完整测试位于
+`tests/test_dal/`。`mangotools` 不再发布 DAL 子模块。
+
 ## 目录
 
 - [快速开始](#快速开始)
@@ -22,7 +25,7 @@ DAL 是一个用于测试数据验证的表达式语言，灵感来源于 Java T
 ## 快速开始
 
 ```python
-from mangotools.dal import expect
+from core.dal import expect
 
 # 基础断言
 expect(1).should("= 1")
@@ -48,8 +51,8 @@ expect([{"id": 1}, {"id": 2}]).should("""
 ### 导入模块
 
 ```python
-from mangotools.dal import expect, get
-from mangotools.dal.schema import register_schema, validate_schema
+from core.dal import expect, get
+from core.dal.schema import register_schema, validate_schema
 ```
 
 ### 基本断言
@@ -113,7 +116,7 @@ expect(data).should("items[0].name = 'A'")
 ### 使用 get 访问器
 
 ```python
-from mangotools.dal import get
+from core.dal import get
 
 data = {"user": {"name": "张三", "age": 25}}
 
@@ -567,8 +570,8 @@ expect(data).should("::common")  # 返回 ["name", "age"]
 ### 内置 Schema
 
 ```python
-from mangotools.dal import expect
-from mangotools.dal.schema import validate_schema
+from core.dal import expect
+from core.dal.schema import validate_schema
 
 # AlmostNow - 验证时间戳是否接近当前时间（±5秒）
 from datetime import datetime
@@ -633,7 +636,7 @@ expect(data).should("""
 ### 自定义 Schema
 
 ```python
-from mangotools.dal.schema import register_schema, SchemaValidationResult
+from core.dal.schema import register_schema, SchemaValidationResult
 
 # 注册自定义 Schema
 @register_schema("EvenNumber")
@@ -658,7 +661,7 @@ expect(4).should("is EvenNumber")
 ```python
 import time
 import threading
-from mangotools.dal import expect
+from core.dal import expect
 
 # 等待列表大小变为 5
 data = []
@@ -731,7 +734,7 @@ except AssertionError as e:
 ### 注册自定义操作符
 
 ```python
-from mangotools.dal.core.operators import Operators, CompareResult
+from core.dal.core.operators import Operators, CompareResult
 
 # 注册自定义操作符
 @Operators.register("~=")
@@ -816,7 +819,7 @@ Feature: DAL 数据验证
 import json
 import pytest
 from pytest_bdd import given, when, then, parsers
-from mangotools.dal import expect
+from core.dal import expect
 
 
 class TestContext:
@@ -884,7 +887,7 @@ def then_validation_fails(ctx):
 
 ```python
 import requests
-from mangotools.dal import expect
+from core.dal import expect
 
 def test_api_response():
     response = requests.get("https://api.example.com/users/1")
@@ -948,7 +951,7 @@ def test_database_query():
 ```python
 import time
 import threading
-from mangotools.dal import expect
+from core.dal import expect
 
 def test_async_task():
     task = {"id": 1, "status": "pending", "progress": 0}

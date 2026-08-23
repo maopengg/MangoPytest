@@ -1,7 +1,7 @@
 """
 pytest-bdd feature 测试入口
 
-运行 tests/dal/features/ 目录下的所有 .feature 文件
+运行 tests/test_dal/test_features/ 目录下的所有 .feature 文件
 """
 from pytest_bdd import scenarios
 

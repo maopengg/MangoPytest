@@ -28,7 +28,7 @@ class SourcesData:
     """
 
     ui_element: DataFrame = None
-    r = DocumentData()
+    r: Optional[DocumentData] = None
 
     # 内存缓存
     _ui_element_cache: Optional[DataFrame] = None
@@ -43,10 +43,13 @@ class SourcesData:
         """
         获取 UI 元素
         """
-        # cls.ui_element = cls._get_cached_data()
         if cls.ui_element is None:
-            cls.ui_element = cls.r.ui_element().replace({np.nan: None})
-            cls._save_cache(cls.ui_element)
+            cls.ui_element = cls._get_cached_data()
+            if cls.ui_element is None:
+                # 远程数据源延迟到真正读取元素时创建，避免 pytest 收集阶段发起网络请求。
+                cls.r = cls.r or DocumentData()
+                cls.ui_element = cls.r.ui_element().replace({np.nan: None})
+                cls._save_cache(cls.ui_element)
         return cls.get(cls.ui_element, is_dict, **kwargs)
 
     @classmethod
@@ -266,7 +269,7 @@ class SourcesData:
 
 if __name__ == "__main__":
     element_dict: dict = SourcesData.get_ui_element(
-        项目名称='qfei_contract_ui',
+        项目名称='simple_ui',
         模块名称='首页',
         页面名称='协商合同',
         元素名称= '合同期限-框架协议-是',

@@ -4,7 +4,7 @@ DAL (Data Assertion Language) - 数据断言语言
 提供类似 Java TestCharm DAL 的表达式语言，用于测试数据验证。
 
 基本用法:
-    from mangotools.dal import expect
+    from core.dal import expect
 
     # 基础断言
     expect(1).should("= 1")

@@ -11,8 +11,16 @@ from pathlib import Path
 class ProjectDir:
 
     def __init__(self):
-        self.folder_list = ['logs', 'download', 'screenshot']
         self._root_path = self.init_project_path()
+        self._artifact_path = os.path.join(self._root_path, "artifacts")
+        self.folder_list = [
+            "reports",
+            "downloads",
+            "screenshots",
+            "generated_cases",
+            os.path.join("temp", "logs"),
+            os.path.join("temp", "cache"),
+        ]
         self.init_folder()
 
     @staticmethod
@@ -22,7 +30,7 @@ class ProjectDir:
 
     def init_folder(self):
         for i in self.folder_list:
-            subdirectory = os.path.join(self._root_path, i)
+            subdirectory = os.path.join(self._artifact_path, i)
             if not os.path.exists(subdirectory):
                 os.makedirs(subdirectory)
 
@@ -33,29 +41,22 @@ class ProjectDir:
         return os.path.join(self.cache(), 'cache.db')
 
     def cache(self):
-        return os.path.join(self.root_path(), 'cache')
+        return os.path.join(self._artifact_path, "temp", "cache")
 
-    def report(self, folder_name='report'):
-        return os.path.join(self.root_path(), folder_name)
+    def report(self, folder_name="allure"):
+        return os.path.join(self._artifact_path, "reports", folder_name)
 
-    def reports(self, folder_name='reports'):
-        return os.path.join(self.root_path(), folder_name)
+    def reports(self, folder_name=""):
+        return os.path.join(self._artifact_path, "reports", folder_name)
 
-    def logs(self, folder_name='logs'):
-        return os.path.join(self.root_path(), folder_name)
+    def logs(self, folder_name=""):
+        return os.path.join(self._artifact_path, "temp", "logs", folder_name)
 
-    def download(self, folder_name='download'):
-        return os.path.join(self.root_path(), folder_name)
+    def download(self, folder_name=""):
+        return os.path.join(self._artifact_path, "downloads", folder_name)
 
-    def screenshot(self, folder_name='screenshot'):
-        return os.path.join(self.root_path(), folder_name)
+    def screenshot(self, folder_name=""):
+        return os.path.join(self._artifact_path, "screenshots", folder_name)
 
 
 project_dir = ProjectDir()
-
-if __name__ == '__main__':
-    print(project_dir.root_path())
-    print(project_dir.download())
-    print(project_dir.logs())
-    print(project_dir.reports())
-    print(project_dir.report())

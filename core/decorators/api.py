@@ -19,7 +19,7 @@ from core.models import (
     RequestModel,
     APIResponse,
 )
-from core.reporting.adapter import AllureAdapter
+from core.utils.allure import AllureAdapter
 from core.settings.settings import PRINT_EXECUTION_RESULTS, REQUEST_TIMEOUT_FAILURE_TIME
 from core.utils import log
 

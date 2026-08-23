@@ -1,63 +1,62 @@
-# -*- coding: utf-8 -*-
-# @Project: 芒果测试平台
-# @Description:
-# @Time   : 2024-02-19 10:07
-# @Author : 毛鹏
-from core.enums.tools_enum import EnvironmentEnum
-from auto_tests.bdd_api_mock import PROJECT_NAME
-from core.utils.main_run import MainRun
+"""从仓库根目录独立运行任一自动化 Demo。"""
 
-MainRun(
-    project_config={
-        'project': PROJECT_NAME,
-        'test_environment': EnvironmentEnum.PROD,
-    },
-    pytest_command=[
-        '-s',                                                   # 捕获 print 输出
-        '-v',                                                   # 显示详细测试结果
-        '-W',                                                   # 过滤警告
-        'ignore:Module already imported:pytest.PytestWarning',  # 忽略重复导入警告
-        '--alluredir', './report/tmp',                          # Allure 报告输出目录
-        "--clean-alluredir",                                    # 运行前清空报告目录
-        '-n 3',                                                 # 3 进程并行
-        '--dist=loadscope',                                     # 按模块分配到进程
-        '-p no:warnings',                                       # 不显示所有警告
-    ],
-).main()
+from __future__ import annotations
 
-# =============================================================================
-# 参数速查（按需添加到 pytest_command 中）
-# =============================================================================
-#
-# [pytest 核心参数]
-#   -s                          捕获 print 输出
-#   -v                          显示详细测试结果
-#   -W                          过滤警告
-#   -k EXPRESSION              按名称过滤测试用例
-#   -m MARKEXPR                按 marker 过滤测试用例
-#   --tb=style                 控制 traceback 显示 (auto/long/short/line/native/no)
-#   --maxfail=num              失败 N 次后停止
-#   --durations=N              显示最慢的 N 个测试
-#   --co / --collect-only      仅收集用例不执行，显示用例列表
-#   -p no:warnings             不显示所有警告
-#
-# [pytest-rerunfailures 插件]
-#   --reruns NUM               失败重试次数
-#   --reruns-delay SECONDS     重试间隔秒数
-#
-# [pytest-xdist 插件]
-#   -n NUM                     并行进程数 (auto 表示自动)
-#   --dist=mode                分发模式 (load/loadfile/loadscope/no)
-#   --tx NUM*SPEC              指定执行节点
-#
-# [allure-pytest 插件]
-#   --alluredir DIR            Allure 报告输出目录
-#   --clean-alluredir          运行前清空报告目录
-#   --allure-no-capture        禁用 Allure 捕获 log/stdout/stderr 附件
-#   --allure-link-pattern      自定义链接模板
-#   --allure-severities        按严重级别过滤用例
-#   --allure-features          按 feature 过滤用例
-#   --allure-stories           按 story 过滤用例
-#   --allure-epics             按 epic 过滤用例
-#   --allure-labels            按 label 过滤用例
-# =============================================================================
+import argparse
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+from auto_tests.project_registry import PROJECT_REGISTRY, enabled_projects
+
+
+ROOT = Path(__file__).resolve().parent
+
+
+def parse_args() -> tuple[argparse.Namespace, list[str]]:
+    parser = argparse.ArgumentParser(description="运行 Mango Pytest 自动化 Demo")
+    parser.add_argument("--project", choices=(*enabled_projects(), "all"), default="pytest_api")
+    parser.add_argument(
+        "--env",
+        choices=("dev", "test", "pre", "prod"),
+        default=os.getenv("ENV", "test").lower(),
+        help="默认 test；生产环境必须显式指定",
+    )
+    parser.add_argument("--collect-only", action="store_true")
+    parser.add_argument("--list-projects", action="store_true")
+    return parser.parse_known_args()
+
+
+def list_projects() -> None:
+    for name, config in PROJECT_REGISTRY.items():
+        state = "enabled" if config["enabled"] else f"disabled: {config['reason']}"
+        print(f"{name:12} {config['path']:24} {state}")
+
+
+def run_project(name: str, env_name: str, collect_only: bool, extra: list[str]) -> int:
+    project_root = ROOT / "auto_tests" / PROJECT_REGISTRY[name]["path"]
+    command = [sys.executable, "-m", "pytest"]
+    if collect_only:
+        command.append("--collect-only")
+    command.extend(arg for arg in extra if arg != "--")
+    process_env = os.environ.copy()
+    process_env["ENV"] = env_name
+    print(f"\n[{name}] ENV={env_name} ROOT={project_root}")
+    return subprocess.run(command, cwd=project_root, env=process_env, check=False).returncode
+
+
+def main() -> int:
+    args, pytest_args = parse_args()
+    if args.list_projects:
+        list_projects()
+        return 0
+    projects = enabled_projects() if args.project == "all" else (args.project,)
+    result = 0
+    for project in projects:
+        result = max(result, run_project(project, args.env, args.collect_only, pytest_args))
+    return result
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -139,8 +139,7 @@ class WebBaseObject(SyncWebDevice):
 
     def set_cookie(self,
                    storage_state_path: str = os.path.join(
-                       project_dir.root_path(), 'auto_tests', 'qfei_contract_ui', 'data', 'upload',
-                       'storage_state.json')):
+                       project_dir.download(), 'storage_state.json')):
         """设置 cookie，如果文件不存在则跳过"""
         if not os.path.isfile(storage_state_path):
             return
