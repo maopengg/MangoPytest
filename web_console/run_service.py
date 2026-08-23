@@ -37,6 +37,9 @@ class RunService:
 
     def create(self, data: CreateRunInput) -> dict:
         project = self.catalog.get(data.project)
+        available_environments = {profile["id"] for profile in self.catalog.environment_profiles(data.project)}
+        if data.environment not in available_environments:
+            raise ValueError(f"项目 {data.project} 不存在环境配置: {data.environment}")
         if data.environment == "prod" and data.production_confirmation != data.project:
             raise ValueError("生产环境执行必须输入项目 ID 进行确认")
         target_kind = TargetKind(data.target.type)

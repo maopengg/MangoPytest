@@ -2,3 +2,4 @@
 :root{--source-panel:#101713}
 .source-dialog{width:min(1000px,92vw)}.source-dialog .source-title{padding:18px 22px 0}.source-dialog pre{background:var(--source-panel);color:#d8e3dc;height:70vh;margin-top:15px}.file-kind{display:inline-block;width:20px;color:var(--green);font:9px ui-monospace,monospace}
 .failure-list{display:grid;gap:10px}.failure-item{background:#fff;border:1px solid #f3c4c0;border-left:4px solid var(--red);border-radius:10px;padding:14px}.failure-item strong{display:block}.failure-item pre{height:auto;max-height:280px;background:#fff7f6;color:#59201b;margin-top:10px;border-radius:8px}.artifact-list{display:flex;flex-wrap:wrap}
+.config-preview{margin:-3px 0 16px;padding:10px 12px;background:#f1f6f3;border-radius:8px;color:var(--muted);font:11px/1.5 ui-monospace,monospace;word-break:break-all}

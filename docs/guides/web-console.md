@@ -3,7 +3,7 @@
 ## 启动
 
 ```bash
-ENV=test .venv/bin/python -m web_console
+.venv/bin/python -m web_console
 ```
 
 默认地址为 `http://127.0.0.1:8765`。服务只允许绑定 `127.0.0.1` 或 `localhost`，启动命令不会主动打开浏览器。
@@ -19,7 +19,7 @@ ENV=test .venv/bin/python -m web_console
 1. 在首页选择一个已注册项目。
 2. 首次进入时点击“重新收集”，生成结构化用例清单。
 3. 选择运行整个项目、测试文件或单条 pytest node ID。
-4. 选择环境、markers、并发数和失败重跑次数后开始执行。
+4. 从项目现有的 `config/.env.*` 中选择运行配置，再设置 markers、并发数和失败重跑次数。
 5. 在执行详情页查看实时日志、JUnit 统计和报告产物。
 
 生产环境默认需要在执行面板输入项目 ID 二次确认。

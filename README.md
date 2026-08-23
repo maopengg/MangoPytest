@@ -74,7 +74,7 @@ ENV=test .venv/bin/python -m pytest
 ## Web 控制台
 
 ```bash
-ENV=test .venv/bin/python -m web_console
+.venv/bin/python -m web_console
 ```
 
 然后由用户打开 `http://127.0.0.1:8765`。控制台不会自动打开浏览器，只监听本机地址，支持收集和浏览用例、执行项目/文件/单用例、实时日志、停止任务、失败重跑、JUnit/Allure 产物和历史记录。

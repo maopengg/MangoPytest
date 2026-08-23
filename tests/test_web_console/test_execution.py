@@ -3,6 +3,7 @@ from pathlib import Path
 import pytest
 
 from core.execution.command_builder import CommandBuilder
+from core.execution.catalog import ProjectCatalog
 from core.execution.models import ProjectDescriptor, RunOptions, TargetKind
 from core.execution.result_parser import parse_failures, parse_junit, status_from_exit_code
 
@@ -50,3 +51,13 @@ def test_junit_failure_details(tmp_path: Path) -> None:
         "name": "test_login", "classname": "tests.auth",
         "message": "expected 200", "traceback": "assert 500 == 200",
     }]
+
+
+def test_catalog_discovers_project_environment_profiles() -> None:
+    repository_root = Path(__file__).resolve().parents[2]
+    profiles = ProjectCatalog(repository_root).environment_profiles("pytest_api")
+    assert [profile["id"] for profile in profiles] == ["dev", "test", "pre", "prod"]
+    test_profile = next(profile for profile in profiles if profile["id"] == "test")
+    assert test_profile["inherits"] == "prod"
+    assert test_profile["summary"]["BASE_URL"] == "http://43.142.161.61:8003"
+    assert all("PASSWORD" not in profile["summary"] for profile in profiles)

@@ -65,7 +65,9 @@ def create_app(settings: WebConsoleSettings | None = None) -> FastAPI:
             project = catalog.get(project_id, require_enabled=False)
         except ValueError as exc:
             raise HTTPException(404, str(exc)) from exc
-        return templates.TemplateResponse(request, "project.html", {"project": project})
+        return templates.TemplateResponse(
+            request, "project.html", {"project": project, "profiles": catalog.environment_profiles(project_id)}
+        )
 
     @app.get("/runs/{run_id}", response_class=HTMLResponse)
     async def run_page(request: Request, run_id: str):
@@ -82,6 +84,7 @@ def create_app(settings: WebConsoleSettings | None = None) -> FastAPI:
             result.append({
                 "id": project.id, "name": project.name, "kind": project.kind,
                 "enabled": project.enabled, "reason": project.reason,
+                "environments": catalog.environment_profiles(project.id),
                 "case_count": collection["count"], "collected": collection["collected"],
                 "latest": latest[0] if latest else None,
             })

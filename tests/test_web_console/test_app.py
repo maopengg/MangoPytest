@@ -21,6 +21,8 @@ def test_project_api_and_pages(tmp_path) -> None:
         assert response.status_code == 200
         projects = response.json()
         assert {item["id"] for item in projects} >= {"simple_api", "bdd_api", "pytest_api"}
+        pytest_api = next(item for item in projects if item["id"] == "pytest_api")
+        assert [item["id"] for item in pytest_api["environments"]] == ["dev", "test", "pre", "prod"]
         assert client.get("/").status_code == 200
         assert client.get("/projects/pytest_api").status_code == 200
         assert client.get("/api/projects/pytest_api/source", params={"path": "../../AGENTS.md"}).status_code == 400
