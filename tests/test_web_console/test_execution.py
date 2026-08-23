@@ -56,8 +56,8 @@ def test_junit_failure_details(tmp_path: Path) -> None:
 def test_catalog_discovers_project_environment_profiles() -> None:
     repository_root = Path(__file__).resolve().parents[2]
     profiles = ProjectCatalog(repository_root).environment_profiles("pytest_api")
-    assert [profile["id"] for profile in profiles] == ["dev", "test", "pre", "prod"]
-    test_profile = next(profile for profile in profiles if profile["id"] == "test")
-    assert test_profile["inherits"] == "prod"
+    assert [profile["id"] for profile in profiles] == ["test"]
+    test_profile = profiles[0]
+    assert test_profile["inherits"] == ""
     assert test_profile["summary"]["BASE_URL"] == "http://43.142.161.61:8003"
     assert all("PASSWORD" not in profile["summary"] for profile in profiles)

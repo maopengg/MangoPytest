@@ -19,17 +19,18 @@ class ProjectEnum(BaseEnum):
 
 
 PROJECT_REGISTRY = {
-    "simple_api": {"type": AutoTestTypeEnum.API, "project_name": ProjectEnum.SIMPLE_API, "path": "api/simple_api", "enabled": True},
-    "bdd_api": {"type": AutoTestTypeEnum.API, "project_name": ProjectEnum.BDD_API, "path": "api/bdd_api", "enabled": True},
-    "pytest_api": {"type": AutoTestTypeEnum.API, "project_name": ProjectEnum.PYTEST_API, "path": "api/pytest_api", "enabled": True},
-    "simple_ui": {"type": AutoTestTypeEnum.UI, "project_name": ProjectEnum.SIMPLE_UI, "path": "ui/simple_ui", "enabled": True},
-    "bdd_ui": {"type": AutoTestTypeEnum.UI, "project_name": ProjectEnum.BDD_UI, "path": "ui/bdd_ui", "enabled": True},
-    "pytest_ui": {"type": AutoTestTypeEnum.UI, "project_name": ProjectEnum.PYTEST_UI, "path": "ui/pytest_ui", "enabled": True},
+    "simple_api": {"type": AutoTestTypeEnum.API, "project_name": ProjectEnum.SIMPLE_API, "path": "api/simple_api", "enabled": True, "environments": {"test": {"label": "Mango Mock 测试环境", "config_file": "config/.env.test"}}},
+    "bdd_api": {"type": AutoTestTypeEnum.API, "project_name": ProjectEnum.BDD_API, "path": "api/bdd_api", "enabled": True, "environments": {"test": {"label": "Mango Mock 测试环境", "config_file": "config/.env.test"}}},
+    "pytest_api": {"type": AutoTestTypeEnum.API, "project_name": ProjectEnum.PYTEST_API, "path": "api/pytest_api", "enabled": True, "environments": {"test": {"label": "Mango Mock 测试环境", "config_file": "config/.env.test"}}},
+    "simple_ui": {"type": AutoTestTypeEnum.UI, "project_name": ProjectEnum.SIMPLE_UI, "path": "ui/simple_ui", "enabled": True, "environments": {"test": {"label": "Mango Mock 测试环境", "config_file": "config/.env.test"}}},
+    "bdd_ui": {"type": AutoTestTypeEnum.UI, "project_name": ProjectEnum.BDD_UI, "path": "ui/bdd_ui", "enabled": True, "environments": {"test": {"label": "Mango Mock 测试环境", "config_file": "config/.env.test"}}},
+    "pytest_ui": {"type": AutoTestTypeEnum.UI, "project_name": ProjectEnum.PYTEST_UI, "path": "ui/pytest_ui", "enabled": True, "environments": {"test": {"label": "Mango Mock 测试环境", "config_file": "config/.env.test"}}},
     "sql": {
         "type": AutoTestTypeEnum.OTHER,
         "project_name": ProjectEnum.SQL,
         "path": "other/sql",
         "enabled": False,
+        "environments": {},
         "reason": "尚未提供可收集的 pytest 用例",
     },
 }

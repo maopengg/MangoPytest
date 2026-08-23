@@ -27,30 +27,23 @@ class ProjectCatalog:
         return project
 
     def environment_profiles(self, project_id: str) -> tuple[dict, ...]:
-        """从项目现有 ``config/.env.*`` 发现可选运行配置。"""
+        """返回注册代码明确允许执行的环境，不根据文件名推断。"""
         project = self.get(project_id, require_enabled=False)
-        config_dir = project.root / "config"
-        labels = {"dev": "开发环境", "test": "测试环境", "pre": "预发布环境", "prod": "生产环境"}
-        order = {"dev": 0, "test": 1, "pre": 2, "prod": 3}
-        raw_profiles = {
-            path.name.removeprefix(".env."): self._safe_env_values(path)
-            for path in config_dir.glob(".env.*") if path.is_file()
-        }
+        declared = PROJECT_REGISTRY[project_id].get("environments", {})
         profiles = []
-        for environment, values in raw_profiles.items():
-            inherited_from = ""
-            effective = values.copy()
-            if environment in {"test", "pre"} and not effective and "prod" in raw_profiles:
-                effective = raw_profiles["prod"].copy()
-                inherited_from = "prod"
+        for environment, metadata in declared.items():
+            config_file = metadata["config_file"]
+            config_path = (project.root / config_file).resolve()
+            if not config_path.is_relative_to(project.root) or not config_path.is_file():
+                raise ValueError(f"项目 {project_id} 的环境配置不存在: {config_file}")
             profiles.append({
                 "id": environment,
-                "label": labels.get(environment, environment),
-                "file": f"config/.env.{environment}",
-                "inherits": inherited_from,
-                "summary": effective,
+                "label": metadata.get("label", environment),
+                "file": config_file,
+                "inherits": "",
+                "summary": self._safe_env_values(config_path),
             })
-        return tuple(sorted(profiles, key=lambda item: (order.get(item["id"], 99), item["id"])))
+        return tuple(profiles)
 
     @staticmethod
     def _safe_env_values(path: Path) -> dict[str, str]:

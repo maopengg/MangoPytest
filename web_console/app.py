@@ -67,8 +67,10 @@ def create_app(settings: WebConsoleSettings | None = None) -> FastAPI:
             project = catalog.get(project_id, require_enabled=False)
         except ValueError as exc:
             raise HTTPException(404, str(exc)) from exc
+        profiles = catalog.environment_profiles(project_id)
         return templates.TemplateResponse(
-            request, "project.html", {"project": project, "profiles": catalog.environment_profiles(project_id)}
+            request, "project.html",
+            {"project": project, "profiles": profiles, "has_prod": any(item["id"] == "prod" for item in profiles)},
         )
 
     @app.get("/runs/{run_id}", response_class=HTMLResponse)
