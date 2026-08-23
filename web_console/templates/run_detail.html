@@ -4,9 +4,18 @@
 <div class="breadcrumb"><a href="/">项目</a><span>/</span><span>执行详情</span></div>
 <section class="run-heading"><div><p class="eyebrow">RUN ID</p><h1 class="mono">{{ run_id }}</h1></div><div class="actions"><button id="cancel-button" class="button danger" onclick="cancelRun()">停止</button><button class="button secondary" onclick="rerun()">重新运行</button></div></section>
 <div id="run-meta" class="meta-grid"></div>
-<div class="result-grid"><div class="metric"><span>总计</span><strong id="total">0</strong></div><div class="metric success"><span>通过</span><strong id="passed">0</strong></div><div class="metric failure"><span>失败</span><strong id="failed">0</strong></div><div class="metric"><span>跳过</span><strong id="skipped">0</strong></div></div>
-<section class="console-card"><div class="console-head"><span>实时日志</span><span id="stream-state" class="live">● 连接中</span></div><pre id="console-output">等待任务输出…</pre></section>
-<section id="failure-section" class="hidden"><div class="section-title"><h2>失败详情</h2></div><div id="failures" class="failure-list"></div></section>
-<section><div class="section-title"><h2>产物</h2></div><div id="artifacts" class="artifact-list"></div></section>
+<div class="result-grid"><div class="metric"><span>总计</span><strong id="total">0</strong></div><div class="metric success"><span>通过</span><strong id="passed">0</strong></div><div class="metric failure"><span>失败</span><strong id="failed">0</strong></div><div class="metric broken"><span>异常</span><strong id="broken">0</strong></div><div class="metric"><span>跳过</span><strong id="skipped">0</strong></div></div>
+<section class="report-shell">
+  <div class="report-tabs"><button class="report-tab active" data-tab="cases" onclick="switchRunTab('cases',this)">测试结果</button><button class="report-tab" data-tab="log" onclick="switchRunTab('log',this)">实时日志</button><button class="report-tab" data-tab="artifacts" onclick="switchRunTab('artifacts',this)">全部产物</button></div>
+  <div id="tab-cases" class="run-tab active">
+    <div id="allure-overview" class="allure-overview"></div>
+    <div class="allure-layout">
+      <aside class="allure-sidebar"><div class="allure-filter"><input id="allure-search" placeholder="搜索用例" oninput="filterAllureCases()"><select id="allure-status" onchange="filterAllureCases()"><option value="">全部状态</option><option value="failed">失败</option><option value="broken">异常</option><option value="passed">通过</option><option value="skipped">跳过</option></select></div><div id="allure-case-list" class="allure-case-list"></div></aside>
+      <article id="allure-case-detail" class="allure-case-detail"><div class="empty">执行完成后显示结构化 Allure 结果</div></article>
+    </div>
+  </div>
+  <div id="tab-log" class="run-tab"><section class="console-card"><div class="console-head"><span>pytest 实时输出</span><span id="stream-state" class="live">● 连接中</span></div><pre id="console-output">等待任务输出…</pre></section></div>
+  <div id="tab-artifacts" class="run-tab"><div id="artifacts" class="artifact-list"></div></div>
+</section>
 {% endblock %}
 {% block scripts %}<script>window.runId={{ run_id|tojson }};document.addEventListener('DOMContentLoaded',loadRunDetail);</script>{% endblock %}

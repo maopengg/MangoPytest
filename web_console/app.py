@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 from contextlib import asynccontextmanager
 import json
+import mimetypes
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -15,6 +16,7 @@ from core.execution import ProjectCatalog
 from core.execution.models import FINAL_STATUSES
 from core.execution.result_parser import parse_failures
 from web_console.collection_service import CollectionService
+from web_console.allure_service import AllureResultService
 from web_console.config import WebConsoleSettings
 from web_console.repository import RunRepository
 from web_console.run_service import RunService
@@ -202,6 +204,13 @@ def create_app(settings: WebConsoleSettings | None = None) -> FastAPI:
             raise HTTPException(404, "执行记录不存在")
         return parse_failures(Path(record["artifact_dir"]) / "junit.xml")
 
+    @app.get("/api/runs/{run_id}/allure")
+    async def allure_report(run_id: str):
+        record = repository.get(run_id)
+        if not record:
+            raise HTTPException(404, "执行记录不存在")
+        return AllureResultService(Path(record["artifact_dir"])).report()
+
     @app.get("/api/runs/{run_id}/artifacts")
     async def artifacts(run_id: str):
         record = repository.get(run_id)
@@ -214,6 +223,17 @@ def create_app(settings: WebConsoleSettings | None = None) -> FastAPI:
             {"path": path.relative_to(root).as_posix(), "size": path.stat().st_size}
             for path in sorted(root.rglob("*")) if path.is_file()
         ][:2000]
+
+    @app.get("/api/runs/{run_id}/preview/{artifact_path:path}")
+    async def preview_artifact(run_id: str, artifact_path: str):
+        record = repository.get(run_id)
+        if not record:
+            raise HTTPException(404, "执行记录不存在")
+        root = Path(record["artifact_dir"]).resolve()
+        candidate = (root / artifact_path).resolve()
+        if not candidate.is_relative_to(root) or not candidate.is_file():
+            raise HTTPException(404, "产物不存在")
+        return FileResponse(candidate, media_type=mimetypes.guess_type(candidate.name)[0] or "application/octet-stream")
 
     @app.get("/api/runs/{run_id}/artifacts/{artifact_path:path}")
     async def artifact(run_id: str, artifact_path: str):

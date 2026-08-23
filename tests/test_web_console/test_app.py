@@ -25,6 +25,7 @@ def test_project_api_and_pages(tmp_path) -> None:
         assert [item["id"] for item in pytest_api["environments"]] == ["dev", "test", "pre", "prod"]
         assert client.get("/").status_code == 200
         assert client.get("/projects/pytest_api").status_code == 200
+        assert client.get("/api/runs/not-found/allure").status_code == 404
         assert client.get("/api/projects/pytest_api/source", params={"path": "../../AGENTS.md"}).status_code == 400
         assert client.post(
             "/api/projects/simple_api/collect", headers={"Origin": "https://attacker.example"}
