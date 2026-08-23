@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}自动化项目 · Mango Pytest{% endblock %}
+{% block content %}
+<section class="hero">
+  <div><p class="eyebrow">AUTOMATION WORKSPACE</p><h1>本地自动化控制台</h1><p>浏览项目、执行测试并实时查看结果。默认使用安全的 test 环境。</p></div>
+  <button class="button secondary" onclick="loadProjects()">刷新状态</button>
+</section>
+<section><div class="section-title"><h2>项目</h2><span id="project-summary" class="muted">正在读取…</span></div><div id="project-grid" class="project-grid"></div></section>
+<section class="history"><div class="section-title"><h2>最近执行</h2><button class="text-button" onclick="loadRuns()">刷新</button></div><div id="run-list" class="table-wrap"></div></section>
+{% endblock %}
+{% block scripts %}<script>document.addEventListener('DOMContentLoaded',()=>{loadProjects();loadRuns();});</script>{% endblock %}

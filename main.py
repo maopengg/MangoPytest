@@ -4,14 +4,11 @@ from __future__ import annotations
 
 import argparse
 import os
-from pathlib import Path
 import subprocess
 import sys
 
 from auto_tests.project_registry import PROJECT_REGISTRY, enabled_projects
-
-
-ROOT = Path(__file__).resolve().parent
+from core.execution import CommandBuilder, ProjectCatalog, RunOptions, TargetKind
 
 
 def parse_args() -> tuple[argparse.Namespace, list[str]]:
@@ -35,15 +32,13 @@ def list_projects() -> None:
 
 
 def run_project(name: str, env_name: str, collect_only: bool, extra: list[str]) -> int:
-    project_root = ROOT / "auto_tests" / PROJECT_REGISTRY[name]["path"]
-    command = [sys.executable, "-m", "pytest"]
-    if collect_only:
-        command.append("--collect-only")
-    command.extend(arg for arg in extra if arg != "--")
-    process_env = os.environ.copy()
-    process_env["ENV"] = env_name
-    print(f"\n[{name}] ENV={env_name} ROOT={project_root}")
-    return subprocess.run(command, cwd=project_root, env=process_env, check=False).returncode
+    project = ProjectCatalog().get(name)
+    command = CommandBuilder(sys.executable).build(
+        project, env_name, TargetKind.PROJECT, "",
+        RunOptions(collect_only=collect_only, extra_args=tuple(arg for arg in extra if arg != "--")),
+    )
+    print(f"\n[{name}] ENV={env_name} ROOT={project.root}")
+    return subprocess.run(command.argv, cwd=command.cwd, env=command.environment, check=False).returncode
 
 
 def main() -> int:

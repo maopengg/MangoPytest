@@ -19,6 +19,7 @@ mango_pytest/
 │   ├── other/sql/               # 尚无 pytest Case，注册表中禁用
 │   └── project_registry.py
 ├── core/                        # 框架公共能力，DAL 位于 core/dal/
+├── web_console/                 # 本地 Web 自动化控制台
 ├── tests/                       # 只测试 core，DAL Case 位于 tests/test_dal/
 ├── docs/
 │   ├── architecture/
@@ -69,6 +70,16 @@ ENV=test .venv/bin/python main.py --project all --collect-only -q
 # 根 pytest 只验证 core，避免不同 Demo 的 fixture/plugin 冲突
 ENV=test .venv/bin/python -m pytest
 ```
+
+## Web 控制台
+
+```bash
+ENV=test .venv/bin/python -m web_console
+```
+
+然后由用户打开 `http://127.0.0.1:8765`。控制台不会自动打开浏览器，只监听本机地址，支持收集和浏览用例、执行项目/文件/单用例、实时日志、停止任务、失败重跑、JUnit/Allure 产物和历史记录。
+
+详细说明见 [Web 控制台指南](/Users/mango/code/mango_pytest/docs/guides/web-console.md)。
 
 ## 产物规则
 
