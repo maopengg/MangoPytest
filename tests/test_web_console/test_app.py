@@ -25,8 +25,8 @@ def test_project_api_and_pages(tmp_path) -> None:
         assert [item["id"] for item in pytest_api["environments"]] == ["test"]
         dashboard_html = client.get("/").text
         assert 'id="global-api-loading"' in dashboard_html
-        assert "/static/app.css?v=20260824-23" in dashboard_html
-        assert "/static/app.js?v=20260824-23" in dashboard_html
+        assert "/static/app.css?v=20260824-24" in dashboard_html
+        assert "/static/app.js?v=20260824-24" in dashboard_html
         assert "loadProjects(this)" in dashboard_html
         assert "loadRuns(true,this)" in dashboard_html
         assert client.get("/projects/pytest_api").status_code == 200
@@ -100,6 +100,9 @@ def test_project_api_and_pages(tmp_path) -> None:
         assert ".allure-case-detail{height:100%;min-height:0;overflow-y:hidden" in console_styles
         assert ".file-state.not-collected" in console_styles
         assert ".collection-notice" in console_styles
+        assert ".json-row.complex{grid-template-columns:minmax(0,1fr)}" in console_styles
+        assert ".json-string{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}" in console_styles
+        assert "json-row ${complex?'complex':''}" in project_script
         assert ".report-shell.is-pinned .allure-case-list,.report-shell.is-pinned .allure-case-detail" in console_styles
         assert client.get("/api/runs/not-found/allure").status_code == 404
         assert client.get("/api/projects/pytest_api/source", params={"path": "../../AGENTS.md"}).status_code == 400
