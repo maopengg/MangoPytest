@@ -3,7 +3,7 @@
 import json
 from typing import Any
 
-from auto_tests.ui.pytest_ui.repositories import PytestUIRepositories
+from auto_tests.common.mango_mock.repositories import MangoMockRepositories
 
 from .entities import ClaimData, OrderData, ReviewData, RunData
 from .factories import ClaimFactory, OrderFactory, ReviewFactory
@@ -13,7 +13,7 @@ from .specs import ClaimSpec, OrderSpec, ReviewSpec
 class PytestUIDataFactory:
     """组合实体 Factory，并记录当前场景创建的全部实体。"""
 
-    def __init__(self, repository: PytestUIRepositories):
+    def __init__(self, repository: MangoMockRepositories):
         self.repository = repository
         self.order_factory = OrderFactory(repository.orders)
         self.claim_factory = ClaimFactory(repository.claims)

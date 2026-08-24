@@ -10,9 +10,11 @@ from mangoautomation.uidrives.web import SyncWebAssertion
 from playwright.sync_api import Locator, TimeoutError as PlaywrightTimeoutError
 
 from auto_tests.ui.simple_ui.config import settings
-from auto_tests.ui.simple_ui.elements import elements
 from auto_tests.ui.simple_ui.excel_cases.models import ElementCase, InventoryCase, OperationCase
+from core.ui import configured_element_repository, element_runtime
 from core.utils import log, project_dir
+
+elements = configured_element_repository(settings)
 
 
 class ExcelCasePage(SyncWebDevice):
@@ -80,13 +82,31 @@ class ExcelCasePage(SyncWebDevice):
         self.element_result_model = None
         self.element_model = SimpleNamespace(name="Excel data-testid")
         super().__init__(base_data)
+        self.named_elements = element_runtime(base_data, elements, settings)
 
     @property
     def page(self):
         return self.base_data.page
 
     def locator(self, element_id: str) -> Locator:
-        return elements.locate(self.page, element_id)
+        return self.named_elements.locator(element_id)
+
+    def element_action(
+        self,
+        element_id: str,
+        method: str,
+        params: dict[str, Any] | None = None,
+        *,
+        assertion: bool = False,
+        target_names: tuple[str, ...] = (),
+    ):
+        return self.named_elements.execute(
+            element_id,
+            method,
+            params,
+            assertion=assertion,
+            target_names=target_names,
+        )
 
     def goto(self) -> None:
         log.info(f"打开 Mango Mock UI：{settings.BASE_URL}")
@@ -101,7 +121,7 @@ class ExcelCasePage(SyncWebDevice):
         container_id = self.PAGE_CONTAINERS.get(page_key)
         if navigation_id is None or container_id is None:
             raise ValueError(f"Excel 中存在未知页面标识：{page_key}")
-        self.w_click(self.locator(navigation_id))
+        self.element_action(navigation_id, "w_click")
         self.locator(container_id).wait_for(state="visible")
 
     def execute_operation(self, case: OperationCase) -> Any:
@@ -110,7 +130,7 @@ class ExcelCasePage(SyncWebDevice):
         params = self._expand(case.params)
         target = self._operation_target(case)
         self._prepare_operation(case, target, params)
-        result = self._invoke(case.method, target, params)
+        result = self._invoke(case.method, target, params, case.target_id)
         self._complete_operation(case)
         self._verify_operation(case, target, result, params)
         return result
@@ -125,7 +145,7 @@ class ExcelCasePage(SyncWebDevice):
             self.w_focus(target)
         method, params = self._element_method_and_params(case)
         before = self._safe_state(target)
-        result = self._invoke(method, target, params)
+        result = self._invoke(method, target, params, case.element_id)
         if case.element_id == "create-run-login":
             self.page.wait_for_function(
                 "() => document.querySelector('[data-testid=\"current-run-id\"]')?.textContent !== '未创建'",
@@ -155,7 +175,7 @@ class ExcelCasePage(SyncWebDevice):
             return
         try:
             self.open_page("httpPage")
-            self.w_click(self.locator("cleanup-run"))
+            self.element_action("cleanup-run", "w_click")
             self.page.wait_for_function(
                 "() => document.querySelector('[data-testid=\"current-run-id\"]')?.textContent === '未创建'",
                 timeout=5000,
@@ -166,12 +186,12 @@ class ExcelCasePage(SyncWebDevice):
 
     def _prepare_operation(self, case: OperationCase, target: Locator, params: dict[str, Any]) -> None:
         if case.method.startswith("w_keyboard") or case.method == "w_keys":
-            self.w_focus(self.locator("keyboard-target"))
+            self.element_action("keyboard-target", "w_focus")
         if case.method in {"w_get_input_value", "w_keyboard_delete_text"}:
-            self.w_input(self.locator("keyboard-target"), "AUTO_KEYBOARD_VALUE")
-            self.w_focus(self.locator("keyboard-target"))
+            self.element_action("keyboard-target", "w_input", {"input_value": "AUTO_KEYBOARD_VALUE"})
+            self.element_action("keyboard-target", "w_focus")
         if case.method == "w_mouse_wheel_xy":
-            self.w_scroll_to_element(self.locator("scroll-operation-target"))
+            self.element_action("scroll-operation-target", "w_scroll_to_element")
         if case.method in {
             "w_mouse_click", "w_mouse_move", "w_mouse_dblclick", "w_mouse_right_click",
         }:
@@ -195,14 +215,14 @@ class ExcelCasePage(SyncWebDevice):
             if case.method == "w_close_page_by_index":
                 params["individual"] = 2
         if case.method == "w_go_back":
-            self.w_click(self.locator("push-history-state"))
+            self.element_action("push-history-state", "w_click")
         if case.method == "w_go_forward":
-            self.w_click(self.locator("push-history-state"))
+            self.element_action("push-history-state", "w_click")
             self.w_go_back()
         if case.method == "w_set_cookie":
             params["storage_state"] = json.dumps(params["storage_state"], ensure_ascii=False)
         if case.method in {"w_get_cookie", "w_clear_cookies", "w_clear_storage"}:
-            self.w_click(self.locator("seed-browser-storage"))
+            self.element_action("seed-browser-storage", "w_click")
         if case.method == "w_wait_for_timeout":
             # mangoautomation 此方法以秒为单位，Excel 里的 300 表示毫秒。
             params["_time"] = 1
@@ -213,7 +233,7 @@ class ExcelCasePage(SyncWebDevice):
 
     def _complete_operation(self, case: OperationCase) -> None:
         if case.method in {"w_accept_dialog", "w_dismiss_dialog"}:
-            self.w_click(self.locator("native-confirm"))
+            self.element_action("native-confirm", "w_click")
         elif case.method == "w_add_init_script":
             self.w_goto(settings.BASE_URL)
 
@@ -271,14 +291,14 @@ class ExcelCasePage(SyncWebDevice):
     def _prepare_element_case(self, case: ElementCase) -> None:
         if case.element_id in {"modal-input", "cancel-modal", "confirm-modal"}:
             self.open_page("componentsPage")
-            self.w_click(self.locator("open-modal"))
+            self.element_action("open-modal", "w_click")
             self.locator("demo-modal").wait_for(state="visible")
             return
         if case.element_id in self.AUTH_TARGETS:
             self._bootstrap_business()
         self.open_page(case.page_key)
         if case.element_id == "order-product":
-            self.w_click(self.locator("load-products"))
+            self.element_action("load-products", "w_click")
             self.page.wait_for_function(
                 "() => Boolean(document.querySelector('[data-testid=\"order-product\"]')?.value)",
             )
@@ -294,12 +314,12 @@ class ExcelCasePage(SyncWebDevice):
         }:
             self._connect_websocket()
         elif case.element_id == "disconnect-sse":
-            self.w_click(self.locator("connect-sse"))
+            self.element_action("connect-sse", "w_click")
             self.page.wait_for_timeout(300)
         elif case.element_id == "upload-files":
-            self.w_upload_files(self.locator("ui-file-input"), self._upload_file())
+            self.element_action("ui-file-input", "w_upload_files", {"file_path": self._upload_file()})
         elif case.element_id == "validate-form":
-            self.w_input(self.locator("required-text"), "AUTO_UI_CASE")
+            self.element_action("required-text", "w_input", {"input_value": "AUTO_UI_CASE"})
         elif case.element_id in {"tree-leaf-scenario", "tree-leaf-trace"}:
             target = self.locator(case.element_id)
             target.evaluate("element => { for (const item of element.closest('details').parentElement.querySelectorAll('details')) item.open = true; }")
@@ -357,7 +377,26 @@ class ExcelCasePage(SyncWebDevice):
             assert before["count"] == 1
             assert after["count"] in {0, 1} or len(self.base_data.context.pages) > 1
 
-    def _invoke(self, method: str, target: Locator, params: dict[str, Any]) -> Any:
+    def _invoke(
+        self,
+        method: str,
+        target: Locator,
+        params: dict[str, Any],
+        element_id: str | None = None,
+    ) -> Any:
+        raw_locator_methods = {
+            "w_many_click", "w_get_texts", "w_to_have_count", "w_to_element_count",
+        }
+        if element_id and method not in raw_locator_methods:
+            if method == "w_drag_to":
+                target_id = params.pop("target_element_id")
+                return self.element_action(
+                    element_id, method, params, target_names=(target_id,),
+                )
+            if method in self.ASSERTION_METHODS:
+                return self.element_action(element_id, method, params, assertion=True)
+            if method in self.LOCATOR_METHODS:
+                return self.element_action(element_id, method, params)
         if method in self.ASSERTION_METHODS:
             return getattr(self.web_ass, method)(target, **params)
         operation = getattr(self, method, None)
@@ -374,11 +413,11 @@ class ExcelCasePage(SyncWebDevice):
         if self.run_created:
             return
         self.open_page("httpPage")
-        self.w_clear_input(self.locator("run-name"), "AUTO_UI_EXCEL")
-        self.w_clear_input(self.locator("run-seed"), "20260823")
-        self.w_select_option(self.locator("login-username"), "employee")
-        self.w_clear_input(self.locator("login-password"), "password123")
-        self.w_click(self.locator("create-run-login"))
+        self.element_action("run-name", "w_clear_input", {"input_value": "AUTO_UI_EXCEL"})
+        self.element_action("run-seed", "w_clear_input", {"input_value": "20260823"})
+        self.element_action("login-username", "w_select_option", {"values": "employee"})
+        self.element_action("login-password", "w_clear_input", {"input_value": "password123"})
+        self.element_action("create-run-login", "w_click")
         self.page.wait_for_function(
             "() => document.querySelector('[data-testid=\"current-run-id\"]')?.textContent !== '未创建'",
             timeout=10000,
@@ -390,40 +429,40 @@ class ExcelCasePage(SyncWebDevice):
         self.run_created = True
 
     def _prepare_order(self, target_id: str) -> None:
-        self.w_click(self.locator("load-products"))
+        self.element_action("load-products", "w_click")
         self.page.wait_for_function(
             "() => Boolean(document.querySelector('[data-testid=\"order-product\"]')?.value)",
         )
         if target_id == "create-order":
             return
-        self.w_click(self.locator("create-order"))
+        self.element_action("create-order", "w_click")
         self._wait_for_business_state(
             "() => document.querySelector('[data-testid=\"order-id\"]')?.textContent !== '-'",
             "创建订单",
         )
         if target_id == "refund-order":
-            self.w_click(self.locator("pay-order"))
+            self.element_action("pay-order", "w_click")
             self.page.wait_for_function(
                 "() => document.querySelector('[data-testid=\"order-status\"]')?.textContent === 'paid'",
                 timeout=10000,
             )
 
     def _prepare_claim(self) -> None:
-        self.w_click(self.locator("create-claim"))
+        self.element_action("create-claim", "w_click")
         self.page.wait_for_function(
             "() => document.querySelector('[data-testid=\"claim-id\"]')?.textContent !== '-'",
             timeout=10000,
         )
 
     def _prepare_review(self) -> None:
-        self.w_click(self.locator("start-review"))
+        self.element_action("start-review", "w_click")
         self.page.wait_for_function(
             "() => !document.querySelector('[data-testid=\"review-status\"]')?.textContent.startsWith('未开始')",
             timeout=10000,
         )
 
     def _connect_websocket(self) -> None:
-        self.w_click(self.locator("connect-ws"))
+        self.element_action("connect-ws", "w_click")
         self.page.wait_for_function(
             "() => document.querySelector('[data-testid=\"ws-messages\"]')?.textContent !== '未连接'",
             timeout=10000,

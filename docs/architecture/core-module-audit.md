@@ -12,6 +12,10 @@
 | `core/reporting` | 只有 Allure 基础适配器仍被使用 | 适配器迁至 `core/utils/allure.py`，其余删除 |
 | `core/utils/main_run.py` | 已由根 `main.py` 的隔离子进程入口替代 | 删除 |
 | `core/utils/notice.py`、`zip_files.py` | 仅被旧 MainRun 使用 | 删除 |
+| `core/dal/core/parser_old.py`、`parser_new.py` | DAL 只使用 `parser.py` | 删除 |
+| `core/models/demo_model.py` | 无运行时消费者，且与正式模型重复 | 删除 |
+| `core/base/state_machine.py`、`layering_base.py`、`data_builder_base.py` | 旧架构实验，无运行时消费者 | 删除 |
+| `core/sources.SourcesData`、`project_public_methods.py` | 旧平台数据源入口，已由项目注册表和新 Sources 模块替代 | 删除 |
 
 ## 保留
 

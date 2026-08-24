@@ -18,13 +18,38 @@ class ProjectEnum(BaseEnum):
     SQL = "sql"
 
 
+API_RUNTIME_OPTIONS = (
+    {"key": "BASE_URL", "label": "API 服务地址", "type": "url", "placeholder": "http://host:port"},
+    {"key": "MOCK_TIMEOUT", "label": "请求超时（秒）", "type": "integer", "default": "30", "min": 1, "max": 300},
+)
+
+UI_RUNTIME_OPTIONS = (
+    {"key": "BASE_URL", "label": "测试页面地址", "type": "url", "placeholder": "http://host:port"},
+    {"key": "ELEMENT_SOURCE", "label": "元素数据源", "type": "select", "default": "excel", "choices": ["excel", "feishu"]},
+    {"key": "BROWSER", "label": "浏览器类型", "type": "select", "default": "chromium", "choices": ["chromium", "edge", "firefox", "webkit"]},
+    {"key": "BROWSER_PATH", "label": "浏览器可执行文件路径", "type": "text", "default": "", "placeholder": "留空则自动查找或使用 Playwright 浏览器"},
+    {"key": "HEADLESS", "label": "无头模式", "type": "boolean", "default": "true"},
+    {"key": "IMPLICIT_WAIT", "label": "操作超时（秒）", "type": "integer", "default": "10", "min": 1, "max": 300},
+    {"key": "TRACE_ENABLED", "label": "记录 Playwright Trace", "type": "boolean", "default": "true"},
+    {"key": "ELEMENT_HEALING_ENABLED", "label": "启用元素自愈", "type": "boolean", "default": "true"},
+    {"key": "ELEMENT_HEALING_MODE", "label": "元素自愈模式", "type": "select", "default": "2", "choices": ["1", "2", "3"]},
+    {"key": "AI_ELEMENT_HEALING_ENABLED", "label": "启用 AI 元素修复", "type": "boolean", "default": "false"},
+    {"key": "AI_API_KEY", "label": "AI API Key", "type": "text", "default": ""},
+    {"key": "AI_BASE_URL", "label": "AI 服务地址", "type": "url", "default": "https://api.siliconflow.cn/v1"},
+    {"key": "AI_MODEL", "label": "AI 模型", "type": "text", "default": "THUDM/GLM-Z1-9B-0414"},
+)
+SIMPLE_UI_RUNTIME_OPTIONS = tuple(
+    option for option in UI_RUNTIME_OPTIONS if option["key"] != "TRACE_ENABLED"
+)
+
+
 PROJECT_REGISTRY = {
-    "simple_api": {"type": AutoTestTypeEnum.API, "project_name": ProjectEnum.SIMPLE_API, "path": "api/simple_api", "enabled": True, "environments": {"test": {"label": "Mango Mock 测试环境", "config_file": "config/.env.test"}}},
-    "bdd_api": {"type": AutoTestTypeEnum.API, "project_name": ProjectEnum.BDD_API, "path": "api/bdd_api", "enabled": True, "environments": {"test": {"label": "Mango Mock 测试环境", "config_file": "config/.env.test"}}},
-    "pytest_api": {"type": AutoTestTypeEnum.API, "project_name": ProjectEnum.PYTEST_API, "path": "api/pytest_api", "enabled": True, "environments": {"test": {"label": "Mango Mock 测试环境", "config_file": "config/.env.test"}}},
-    "simple_ui": {"type": AutoTestTypeEnum.UI, "project_name": ProjectEnum.SIMPLE_UI, "path": "ui/simple_ui", "enabled": True, "environments": {"test": {"label": "Mango Mock 测试环境", "config_file": "config/.env.test"}}},
-    "bdd_ui": {"type": AutoTestTypeEnum.UI, "project_name": ProjectEnum.BDD_UI, "path": "ui/bdd_ui", "enabled": True, "environments": {"test": {"label": "Mango Mock 测试环境", "config_file": "config/.env.test"}}},
-    "pytest_ui": {"type": AutoTestTypeEnum.UI, "project_name": ProjectEnum.PYTEST_UI, "path": "ui/pytest_ui", "enabled": True, "environments": {"test": {"label": "Mango Mock 测试环境", "config_file": "config/.env.test"}}},
+    "simple_api": {"type": AutoTestTypeEnum.API, "project_name": ProjectEnum.SIMPLE_API, "path": "api/simple_api", "enabled": True, "runtime_options": API_RUNTIME_OPTIONS, "environments": {"test": {"label": "Mango Mock 测试环境", "config_file": "config/.env.test"}}},
+    "bdd_api": {"type": AutoTestTypeEnum.API, "project_name": ProjectEnum.BDD_API, "path": "api/bdd_api", "enabled": True, "runtime_options": API_RUNTIME_OPTIONS, "environments": {"test": {"label": "Mango Mock 测试环境", "config_file": "config/.env.test"}}},
+    "pytest_api": {"type": AutoTestTypeEnum.API, "project_name": ProjectEnum.PYTEST_API, "path": "api/pytest_api", "enabled": True, "runtime_options": API_RUNTIME_OPTIONS, "environments": {"test": {"label": "Mango Mock 测试环境", "config_file": "config/.env.test"}}},
+    "simple_ui": {"type": AutoTestTypeEnum.UI, "project_name": ProjectEnum.SIMPLE_UI, "path": "ui/simple_ui", "enabled": True, "runtime_options": SIMPLE_UI_RUNTIME_OPTIONS, "environments": {"test": {"label": "Mango Mock 测试环境", "config_file": "config/.env.test"}}},
+    "bdd_ui": {"type": AutoTestTypeEnum.UI, "project_name": ProjectEnum.BDD_UI, "path": "ui/bdd_ui", "enabled": True, "runtime_options": UI_RUNTIME_OPTIONS, "environments": {"test": {"label": "Mango Mock 测试环境", "config_file": "config/.env.test"}}},
+    "pytest_ui": {"type": AutoTestTypeEnum.UI, "project_name": ProjectEnum.PYTEST_UI, "path": "ui/pytest_ui", "enabled": True, "runtime_options": UI_RUNTIME_OPTIONS, "environments": {"test": {"label": "Mango Mock 测试环境", "config_file": "config/.env.test"}}},
     "sql": {
         "type": AutoTestTypeEnum.OTHER,
         "project_name": ProjectEnum.SQL,

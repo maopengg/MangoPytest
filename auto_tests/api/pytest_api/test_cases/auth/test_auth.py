@@ -5,6 +5,7 @@ import pytest
 pytestmark = [pytest.mark.integration, pytest.mark.http, pytest.mark.auth, allure.epic("Mango Mock API 自动化"), allure.feature("认证")]
 
 @allure.title("FTAPI-0006 使用有效 employee 账号登录")
+@pytest.mark.smoke
 def test_ftapi_0006(auth_service, assert_scenario): assert_scenario(auth_service.login_valid_employee())
 
 @allure.title("FTAPI-0007 使用错误密码登录")

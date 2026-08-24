@@ -15,6 +15,7 @@ pytestmark = [
 FEATURE = "../../features/auth/auth.feature"
 
 @allure.title("FTAPI-0006 使用有效 employee 账号登录")
+@pytest.mark.smoke
 @scenario(FEATURE, "FTAPI-0006 使用有效 employee 账号登录")
 def test_ftapi_0006():
     pass
@@ -66,4 +67,3 @@ def test_ftapi_0013():
 @scenario(FEATURE, "FTAPI-0014 退出登录后使用原访问令牌查询当前用户")
 def test_ftapi_0014():
     pass
-

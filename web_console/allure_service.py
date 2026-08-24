@@ -9,12 +9,12 @@ import re
 from typing import Any
 
 
-_SECRET_PATTERN = re.compile(r"(?i)(authorization|token|password|secret|cookie)(\s*[:=]\s*)([^\s,;]+)")
 _TEXT_TYPES = {"text/plain", "application/json", "text/csv", "text/html", "application/xml", "text/xml"}
 
 
 def _scrub(value: str) -> str:
-    return _SECRET_PATTERN.sub(r"\1\2***", value)
+    """Keep local execution evidence verbatim for debugging."""
+    return value
 
 
 class AllureResultService:
@@ -61,7 +61,10 @@ class AllureResultService:
         for label in result.get("labels", []):
             labels[str(label.get("name", ""))].append(str(label.get("value", "")))
         start, stop = result.get("start"), result.get("stop")
-        return {
+        normalized_steps = self._normalize_steps(result.get("steps", []))
+        normalized_attachments = self._normalize_attachments(result.get("attachments", []))
+        normalized_fixtures = fixtures or {"befores": [], "afters": []}
+        normalized = {
             "id": result.get("uuid", ""),
             "history_id": result.get("historyId", ""),
             "name": result.get("name", "未命名用例"),
@@ -78,7 +81,7 @@ class AllureResultService:
             "suite": self._first(labels, "suite"),
             "parent_suite": self._first(labels, "parentSuite"),
             "epic": self._first(labels, "epic"),
-            "feature": self._first(labels, "feature"),
+            "feature": self._first(labels, "feature") or self._fallback_feature(result, labels),
             "story": self._first(labels, "story"),
             "severity": self._first(labels, "severity"),
             "tags": labels.get("tag", []),
@@ -88,10 +91,35 @@ class AllureResultService:
                 for item in result.get("parameters", [])
             ],
             "links": result.get("links", []),
-            "steps": self._normalize_steps(result.get("steps", [])),
-            "fixtures": fixtures or {"befores": [], "afters": []},
-            "attachments": self._normalize_attachments(result.get("attachments", [])),
+            "steps": normalized_steps,
+            "fixtures": normalized_fixtures,
+            "attachments": normalized_attachments,
         }
+        normalized["evidence"] = self._extract_evidence(
+            normalized_attachments, normalized_steps, normalized_fixtures
+        )
+        title_match = re.match(r"^([A-Za-z][A-Za-z0-9_-]*-\d+)\b", normalized["name"])
+        for attachment in normalized["evidence"]["case"]:
+            data = attachment.get("data")
+            if isinstance(data, dict):
+                data["display_name"] = normalized["name"]
+                if not data.get("case_id") and title_match:
+                    data["case_id"] = title_match.group(1)
+        return normalized
+
+    @classmethod
+    def _fallback_feature(cls, result: dict, labels: dict[str, list[str]]) -> str:
+        """Give legacy/unannotated results a stable module-level business group."""
+        full_name = str(result.get("fullName", "")).split("#", 1)[0]
+        candidates = [cls._first(labels, "suite"), full_name.rsplit(".", 1)[-1]]
+        acronyms = {"api", "bdd", "grpc", "http", "mcp", "sse", "ui", "websocket"}
+        for candidate in candidates:
+            value = re.sub(r"^test_", "", candidate or "").strip("_-. ")
+            if not value or value in {"test", "tests"}:
+                continue
+            words = re.split(r"[_\-\s]+", value)
+            return " ".join(word.upper() if word.lower() in acronyms else word.title() for word in words)
+        return "其他用例"
 
     def _normalize_steps(self, steps: list[dict]) -> list[dict]:
         return [{
@@ -121,15 +149,74 @@ class AllureResultService:
             content = ""
             if media_type in _TEXT_TYPES and path.stat().st_size <= 256_000:
                 content = _scrub(path.read_text(encoding="utf-8", errors="replace"))
+            data = None
+            if media_type == "application/json" and content:
+                try:
+                    data = json.loads(content)
+                except json.JSONDecodeError:
+                    pass
             normalized.append({
                 "name": item.get("name", source),
                 "source": f"allure-results/{source}",
                 "type": media_type,
                 "size": path.stat().st_size,
                 "content": content,
+                "data": data,
                 "preview": media_type.startswith("image/") or media_type in _TEXT_TYPES,
             })
         return normalized
+
+    @staticmethod
+    def _extract_evidence(attachments: list[dict], steps: list[dict], fixtures: dict) -> dict[str, list[dict]]:
+        evidence: dict[str, list[dict]] = {
+            "case": [], "data": [], "requests": [], "responses": [],
+            "operations": [], "logs": [], "screenshots": [], "lineage": [],
+        }
+
+        def add(items: list[dict], *, context: str = "", phase: str = "") -> None:
+            for attachment in items:
+                evidence_item = {
+                    **attachment,
+                    "context": context,
+                    "phase": phase,
+                }
+                name = str(attachment.get("name", ""))
+                lowered = name.lower()
+                if name == "Case 信息":
+                    evidence["case"].append(evidence_item)
+                elif name == "测试数据":
+                    evidence["data"].append(evidence_item)
+                elif name == "数据血缘":
+                    evidence["lineage"].append(evidence_item)
+                elif "请求信息" in name:
+                    evidence["requests"].append(evidence_item)
+                elif "响应信息" in name:
+                    evidence["responses"].append(evidence_item)
+                elif name in {"操作信息", "操作结果"}:
+                    evidence["operations"].append(evidence_item)
+                elif "截图" in name or attachment.get("type", "").startswith("image/"):
+                    evidence["screenshots"].append(evidence_item)
+                elif any(word in lowered for word in ("log", "stdout", "stderr")):
+                    evidence["logs"].append(evidence_item)
+
+        def walk(items: list[dict], *, phase: str = "") -> None:
+            for step in items:
+                add(step.get("attachments", []), context=step.get("name", ""), phase=phase)
+                walk(step.get("steps", []), phase=phase)
+
+        add(attachments)
+        walk(steps)
+        walk(fixtures.get("befores", []), phase="前置")
+        walk(fixtures.get("afters", []), phase="清理")
+        log_names = {str(item.get("name", "")).strip().lower() for item in evidence["logs"]}
+        if "log" in log_names and "stderr" in log_names:
+            # pytest 的 captured log 经常会被日志处理器再次写入 stderr。
+            # 两者同时存在时保留更适合直接阅读的 stderr，避免报告重复展示同一批日志。
+            evidence["logs"] = [
+                item for item in evidence["logs"]
+                if str(item.get("name", "")).strip().lower() != "log"
+            ]
+        return evidence
 
     def _load_documents(self, pattern: str) -> list[dict]:
         if not self.results_dir.is_dir():

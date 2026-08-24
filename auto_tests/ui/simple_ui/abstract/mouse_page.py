@@ -26,7 +26,7 @@ class MousePage(WebBaseObject):
         page_name = '鼠标操作页面'
         self.base_data = base_data
         self.test_data = test_data
-        super().__init__(project_name, module_name, page_name, self.base_data, test_data)
+        super().__init__(project_name, module_name, page_name, self.base_data, test_data, settings)
         self.url = settings.BASE_URL
 
     def goto(self):

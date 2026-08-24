@@ -17,14 +17,6 @@ BDD API Mock 配置模块
     # 或者直接使用全局配置实例
     print(settings.BASE_URL)
     
-    # 获取数据库会话
-    session = config.SessionLocal()
-    try:
-        # 执行数据库操作
-        pass
-    finally:
-        session.close()
-
 环境变量设置:
     通过设置 ENV 环境变量来切换环境:
     - dev: 开发环境
@@ -107,11 +99,6 @@ def get_config(env: str = None) -> Union[DevConfig, TestConfig, PreConfig, ProdC
 # 全局配置实例（根据环境变量或 DEFAULT_ENV 自动加载）
 settings = get_config()
 
-# 导出常用对象（保持向后兼容）
-engine = settings.engine
-SessionLocal = settings.SessionLocal
-Base = settings.Base
-
 __all__ = [
     "BaseConfig",  # 从 core.base 导出
     "BddApiMockConfig",  # 基础配置类
@@ -121,7 +108,4 @@ __all__ = [
     "ProdConfig",  # 生产环境配置
     "get_config",  # 获取配置函数
     "settings",  # 默认配置实例
-    "engine",  # SQLAlchemy 引擎
-    "SessionLocal",  # 会话工厂
-    "Base",  # 声明基类
 ]

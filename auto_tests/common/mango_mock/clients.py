@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+from functools import wraps
+import time
 import uuid
 from dataclasses import dataclass
 from typing import Any, Iterator
@@ -17,6 +19,7 @@ from websockets.sync.client import connect
 from auto_tests.common.mango_mock.grpc import mango_mock_pb2 as pb2
 from auto_tests.common.mango_mock.grpc import mango_mock_pb2_grpc as pb2_grpc
 from core.utils import log
+from core.execution.evidence import attach_json, evidence_step, response_evidence, safe_value
 
 
 @dataclass(frozen=True)
@@ -90,12 +93,29 @@ class HttpProtocolClient:
         url = path if path.startswith(("http://", "https://")) else (
             f"{self.base_url}/{path.lstrip('/')}"
         )
-        return self._client.request(
-            method,
-            url,
-            headers={**self.headers(run_id, token), **(headers or {})},
-            **kwargs,
-        )
+        merged_headers = {**self.headers(run_id, token), **(headers or {})}
+        request_info = {
+            "protocol": "HTTP", "method": method.upper(), "url": url,
+            "headers": merged_headers, "params": kwargs.get("params"),
+            "json": kwargs.get("json"), "data": kwargs.get("data"),
+            "files": kwargs.get("files"), "follow_redirects": kwargs.get("follow_redirects"),
+        }
+        started = time.perf_counter()
+        with evidence_step(f"HTTP {method.upper()} {urlparse(url).path}", request=request_info):
+            response = self._client.request(method, url, headers=merged_headers, **kwargs)
+            try:
+                body = response.json()
+            except (json.JSONDecodeError, UnicodeDecodeError):
+                content_type = response.headers.get("content-type", "")
+                body = response.text if ("text" in content_type or "json" in content_type) else {
+                    "type": "binary", "size": len(response.content),
+                    "preview": response.content[:100].hex(),
+                }
+            response_evidence(
+                status=response.status_code, headers=dict(response.headers), body=body,
+                elapsed_ms=(time.perf_counter() - started) * 1000,
+            )
+            return response
 
     # 保留 httpx 风格快捷方法，便于功能用例处理文件、回调及临时 Test Run。
     def get(self, path: str, **kwargs: Any) -> httpx.Response:
@@ -148,24 +168,41 @@ class WebSocketProtocolClient:
         self.url = f"{scheme}://{parsed.netloc}/ws"
 
     def session(self, run_id: str, token: str):
-        return connect(
-            f"{self.url}?test_run_id={run_id}&token={token}",
-            open_timeout=10,
-            close_timeout=5,
-        )
+        with evidence_step("WebSocket 建立连接", request={
+            "protocol": "WebSocket", "url": self.url,
+            "query": {"test_run_id": run_id, "token": token},
+        }):
+            socket = connect(
+                f"{self.url}?test_run_id={run_id}&token={token}",
+                open_timeout=10, close_timeout=5,
+            )
+            attach_json("响应信息", {"status": "connected"})
+            return socket
 
     @staticmethod
     def send(socket, payload: dict[str, Any]) -> dict[str, Any]:
-        socket.send(json.dumps(payload, ensure_ascii=False))
-        return json.loads(socket.recv(timeout=10))
+        with evidence_step("WebSocket 发送并接收消息", request={
+            "protocol": "WebSocket", "payload": payload,
+        }):
+            socket.send(json.dumps(payload, ensure_ascii=False))
+            response = json.loads(socket.recv(timeout=10))
+            response_evidence(body=response)
+            return response
 
     @staticmethod
     def receive_type(socket, expected_type: str, limit: int = 20) -> dict[str, Any]:
-        for _ in range(limit):
-            message = json.loads(socket.recv(timeout=10))
-            if message.get("type") == expected_type:
-                return message
-        raise AssertionError(f"未收到 WebSocket 消息类型: {expected_type}")
+        with evidence_step("WebSocket 等待指定消息", request={
+            "protocol": "WebSocket", "expected_type": expected_type, "limit": limit,
+        }):
+            received = []
+            for _ in range(limit):
+                message = json.loads(socket.recv(timeout=10))
+                received.append(message)
+                if message.get("type") == expected_type:
+                    response_evidence(body={"matched": message, "received": received})
+                    return message
+            response_evidence(body={"received": received})
+            raise AssertionError(f"未收到 WebSocket 消息类型: {expected_type}")
 
 
 class SseProtocolClient:
@@ -204,40 +241,49 @@ class SseProtocolClient:
         if fail_after:
             params["fail_after"] = fail_after
         collected: list[dict[str, Any]] = []
-        with httpx.Client(timeout=self.timeout, trust_env=False) as client:
-            with client.stream(
-                "GET", f"{self.base_url}/api/v1/events/stream",
-                headers=headers, params=params,
-            ) as response:
-                response.raise_for_status()
-                current: dict[str, Any] = {}
-                data_lines: list[str] = []
-                for line in response.iter_lines():
-                    if line == "":
-                        if current or data_lines:
-                            raw = "\n".join(data_lines)
-                            try:
-                                data = json.loads(raw) if raw else None
-                            except json.JSONDecodeError:
-                                data = raw
-                            event = {**current, "data": data}
-                            collected.append(event)
-                            if end_event and event.get("event") == end_event:
-                                break
-                            if len(collected) >= max_events:
-                                break
-                        current = {}
-                        data_lines = []
-                        continue
-                    if line.startswith(":"):
-                        continue
-                    field, _, value = line.partition(":")
-                    value = value.lstrip()
-                    if field == "data":
-                        data_lines.append(value)
-                    elif field in {"id", "event", "retry"}:
-                        current[field] = value
-        return collected
+        started = time.perf_counter()
+        with evidence_step("SSE 订阅事件流", request={
+            "protocol": "SSE", "url": f"{self.base_url}/api/v1/events/stream",
+            "headers": headers, "params": params,
+        }):
+            with httpx.Client(timeout=self.timeout, trust_env=False) as client:
+                with client.stream(
+                    "GET", f"{self.base_url}/api/v1/events/stream",
+                    headers=headers, params=params,
+                ) as response:
+                    response.raise_for_status()
+                    current: dict[str, Any] = {}
+                    data_lines: list[str] = []
+                    for line in response.iter_lines():
+                        if line == "":
+                            if current or data_lines:
+                                raw = "\n".join(data_lines)
+                                try:
+                                    data = json.loads(raw) if raw else None
+                                except json.JSONDecodeError:
+                                    data = raw
+                                event = {**current, "data": data}
+                                collected.append(event)
+                                if end_event and event.get("event") == end_event:
+                                    break
+                                if len(collected) >= max_events:
+                                    break
+                            current = {}
+                            data_lines = []
+                            continue
+                        if line.startswith(":"):
+                            continue
+                        field, _, value = line.partition(":")
+                        value = value.lstrip()
+                        if field == "data":
+                            data_lines.append(value)
+                        elif field in {"id", "event", "retry"}:
+                            current[field] = value
+            response_evidence(
+                status=response.status_code, headers=dict(response.headers), body={"events": collected},
+                elapsed_ms=(time.perf_counter() - started) * 1000,
+            )
+            return collected
 
 
 class McpProtocolClient:
@@ -270,6 +316,24 @@ class McpProtocolClient:
             headers["Mcp-Session-Id"] = self._session_id
         return headers
 
+    def _post(self, run_id: str, token: str, payload: Any) -> httpx.Response:
+        method = payload.get("method", "batch") if isinstance(payload, dict) else "batch"
+        headers = self._headers(run_id, token)
+        started = time.perf_counter()
+        with evidence_step(f"MCP {method}", request={
+            "protocol": "MCP", "url": self.url, "headers": headers, "payload": payload,
+        }):
+            response = self._client.post(self.url, headers=headers, json=payload)
+            try:
+                body = response.json() if response.content else None
+            except json.JSONDecodeError:
+                body = response.text
+            response_evidence(
+                status=response.status_code, headers=dict(response.headers), body=body,
+                elapsed_ms=(time.perf_counter() - started) * 1000,
+            )
+            return response
+
     def initialize(self, run_id: str, token: str) -> dict[str, Any]:
         payload = {
             "jsonrpc": "2.0", "id": self._id(), "method": "initialize",
@@ -279,14 +343,12 @@ class McpProtocolClient:
                 "clientInfo": {"name": "mango-pytest-bdd", "version": "1.0"},
             },
         }
-        response = self._client.post(self.url, headers=self._headers(run_id, token), json=payload)
+        response = self._post(run_id, token, payload)
         response.raise_for_status()
         self._session_id = response.headers.get("mcp-session-id")
         result = response.json()
         notify = {"jsonrpc": "2.0", "method": "notifications/initialized"}
-        initialized = self._client.post(
-            self.url, headers=self._headers(run_id, token), json=notify
-        )
+        initialized = self._post(run_id, token, notify)
         if initialized.status_code not in {200, 202, 204}:
             initialized.raise_for_status()
         return result
@@ -300,7 +362,7 @@ class McpProtocolClient:
             "jsonrpc": "2.0", "id": self._id(), "method": "tools/call",
             "params": {"name": name, "arguments": arguments},
         }
-        response = self._client.post(self.url, headers=self._headers(run_id, token), json=payload)
+        response = self._post(run_id, token, payload)
         response.raise_for_status()
         rpc = response.json()
         if "error" in rpc:
@@ -331,11 +393,7 @@ class McpProtocolClient:
         payload = {"jsonrpc": "2.0", "id": self._id(), "method": method}
         if params is not None:
             payload["params"] = params
-        response = self._client.post(
-            self.url,
-            headers=self._headers(run_id, token),
-            json=payload,
-        )
+        response = self._post(run_id, token, payload)
         body = response.json() if response.content else None
         return response.status_code, body, dict(response.headers)
 
@@ -344,11 +402,7 @@ class McpProtocolClient:
     ) -> tuple[int, Any]:
         if not self._session_id:
             self.initialize(run_id, token)
-        response = self._client.post(
-            self.url,
-            headers=self._headers(run_id, token),
-            json=requests,
-        )
+        response = self._post(run_id, token, requests)
         return response.status_code, response.json() if response.content else None
 
     def rpc_with_session(
@@ -529,3 +583,61 @@ class GrpcProtocolClient:
         }
         status = health_pb2.HealthCheckResponse.ServingStatus.Name(health.status)
         return status, names
+
+
+class _GrpcStreamEvidence:
+    """Transparent iterator proxy that records every received stream message."""
+
+    def __init__(self, call, method_name: str):
+        self._call = call
+        self._method_name = method_name
+        self._index = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        self._index += 1
+        with evidence_step(f"gRPC {self._method_name} · 接收消息 #{self._index}"):
+            try:
+                message = next(self._call)
+            except StopIteration:
+                attach_json("响应信息", {"status": "stream_completed", "message_count": self._index - 1})
+                raise
+            response_evidence(status="OK", body=safe_value(message))
+            return message
+
+    def __getattr__(self, name):
+        return getattr(self._call, name)
+
+
+def _grpc_evidence(method):
+    """Record all public gRPC client calls without repeating reporting code."""
+    @wraps(method)
+    def wrapped(self, *args, **kwargs):
+        request = {
+            "protocol": "gRPC", "method": method.__name__,
+            "arguments": safe_value(args), "keyword_arguments": safe_value(kwargs),
+        }
+        started = time.perf_counter()
+        with evidence_step(f"gRPC {method.__name__}", request=request):
+            result = method(self, *args, **kwargs)
+            is_stream = hasattr(result, "__next__") and not isinstance(result, (str, bytes))
+            response_evidence(
+                status="stream_opened" if is_stream else "OK",
+                body={"stream": True} if is_stream else safe_value(result),
+                elapsed_ms=(time.perf_counter() - started) * 1000,
+            )
+            return _GrpcStreamEvidence(result, method.__name__) if is_stream else result
+    return wrapped
+
+
+for _grpc_method_name in (
+    "create_claim", "act_claim", "get_claim", "start_review", "get_review", "echo",
+    "create_claim_without_complete_metadata", "server_stream", "client_stream", "chat",
+    "fail_result", "delay_result", "versioned_contract", "watch_review", "health_and_services",
+):
+    setattr(
+        GrpcProtocolClient, _grpc_method_name,
+        _grpc_evidence(getattr(GrpcProtocolClient, _grpc_method_name)),
+    )

@@ -2,12 +2,12 @@
 
 from pytest_bdd import given, parsers, then, when
 
-from auto_tests.ui.bdd_ui.cases import (
+from auto_tests.ui.bdd_ui.capabilities.cases import (
     ELEMENT_CASES,
     INVENTORY_CASES,
     OPERATION_CASES,
 )
-from auto_tests.ui.bdd_ui.page_object.case_page import BddUICasePage
+from auto_tests.ui.bdd_ui.capabilities import BddUICasePage
 
 OPERATIONS = {case.case_id: case for case in OPERATION_CASES}
 ELEMENTS = {case.case_id: case for case in ELEMENT_CASES}

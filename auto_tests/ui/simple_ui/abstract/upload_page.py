@@ -26,7 +26,7 @@ class UploadPage(WebBaseObject):
         page_name = '文件上传页面'
         self.base_data = base_data
         self.test_data = test_data
-        super().__init__(project_name, module_name, page_name, self.base_data, test_data)
+        super().__init__(project_name, module_name, page_name, self.base_data, test_data, settings)
         self.url = settings.BASE_URL
 
     def goto(self):
@@ -34,6 +34,6 @@ class UploadPage(WebBaseObject):
 
     def test_upload_file(self, file_path: str):
         """测试文件上传"""
-        self.w_upload_files(self.element('拖拽上传文件'), file_path)
+        self.element_action('拖拽上传文件', 'w_upload_files', {'file_path': file_path})
         self.w_wait_for_timeout(1)
-        return self.w_get_text(self.element('结果'))
+        return self.element_action('结果', 'w_get_text')

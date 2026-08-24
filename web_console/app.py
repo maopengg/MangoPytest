@@ -29,7 +29,7 @@ def create_app(settings: WebConsoleSettings | None = None) -> FastAPI:
     repository = RunRepository(settings.database_path)
     repository.interrupt_stale()
     collector = CollectionService(settings, catalog)
-    runner = RunService(settings, catalog, repository)
+    runner = RunService(settings, catalog, repository, collector)
     package_root = Path(__file__).resolve().parent
     templates = Jinja2Templates(directory=package_root / "templates")
 
@@ -124,7 +124,13 @@ def create_app(settings: WebConsoleSettings | None = None) -> FastAPI:
             values = [item for item in values if mark in item["markers"]]
         if q:
             lowered = q.lower()
-            values = [item for item in values if lowered in item["node_id"].lower() or lowered in item["case_id"].lower()]
+            values = [
+                item for item in values
+                if lowered in item["node_id"].lower()
+                or lowered in item["case_id"].lower()
+                or lowered in item.get("name", "").lower()
+                or any(lowered in marker.lower() for marker in item.get("markers", []))
+            ]
         return values
 
     @app.get("/api/projects/{project_id}/source")
@@ -142,8 +148,13 @@ def create_app(settings: WebConsoleSettings | None = None) -> FastAPI:
             raise HTTPException(400, str(exc)) from exc
 
     @app.get("/api/runs")
-    async def runs(limit: int = 100, project: str = "", status: str = ""):
-        return repository.list(limit=limit, project=project, status=status)
+    async def runs(
+        limit: int = Query(100, ge=1, le=500),
+        offset: int = Query(0, ge=0),
+        project: str = "",
+        status: str = "",
+    ):
+        return repository.list(limit=limit, offset=offset, project=project, status=status)
 
     @app.get("/api/runs/{run_id}")
     async def run_detail(run_id: str):
@@ -168,6 +179,7 @@ def create_app(settings: WebConsoleSettings | None = None) -> FastAPI:
             "project": record["project"], "environment": record["environment"],
             "target": {"type": record["target_kind"], "id": record["target"]},
             "options": record["options"],
+            "runtime_overrides": record["runtime_overrides"],
             "production_confirmation": record["project"] if record["environment"] == "prod" else "",
         })
         return runner.create(data)

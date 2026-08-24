@@ -1,41 +1,14 @@
-# Repos — Repository 数据访问设计
+# Repository — Mango Mock 产品数据访问
 
-## 职责
+UI 项目统一使用：
 
-封装数据库操作，提供级联清理。UI 测试与 API 测试共用同一套 Repository 逻辑。
-
-## 设计思路
-
-```
-UI 测试结束
-  → pytest_sessionstart 清理
-  → UserRepo.delete_by_pattern("AUTO_%")
-  → session.delete(user) → cascade 删关联数据
+```text
+auto_tests/common/mango_mock/repositories/
+├── context.py     # Test Run、认证与清理上下文
+├── domains.py     # 订单、报销、评审等领域 Repository
+└── bundle.py      # MangoMockRepositories 聚合入口
 ```
 
-## 写法
+Repository 只访问公共 Mango Mock 协议客户端。BDD 和纯 pytest 项目的数据工厂分别调用相同领域 Repository，避免复制 HTTP 请求和清理逻辑。
 
-```python
-class UserRepo(BaseRepository[UserEntity]):
-    model = UserEntity
-    CODE_FIELD = "username"
-```
-
-## 必须遵守
-
-Repository 设计规范与 BDD API 完全相同，详见 [BDD API - Repos](../bdd_api/repos.md)：
-
-- 用 `session.delete()` 而不是裸 SQL `DELETE FROM`
-- 每个 Repo 设置 `CODE_FIELD` 指定匹配 `AUTO_%` 的列
-- 清理时级联由 Entity 上的 `cascade` 配置自动完成
-- 禁止用 `FK_CLEANUP_CONFIG` 或手动排清理顺序
-
-## 与 API 项目的关系
-
-在真实项目中，UI 项目直接导入 API 项目的 Repo：
-
-```python
-from auto_tests.<api_project>.repos import UserRepo, ProductRepo
-```
-
-避免维护两份副本。
+Fixture 必须在结束时调用 `repositories.close()`；清理由隔离 Test Run 的 cleanup token 完成，不使用项目级数据库清理 hooks。

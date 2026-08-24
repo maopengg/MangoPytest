@@ -26,7 +26,7 @@ class AlertPage(WebBaseObject):
         page_name = '浏览器弹窗页面'
         self.base_data = base_data
         self.test_data = test_data
-        super().__init__(project_name, module_name, page_name, self.base_data, test_data)
+        super().__init__(project_name, module_name, page_name, self.base_data, test_data, settings)
         self.url = settings.BASE_URL
 
     def goto(self):
@@ -34,15 +34,15 @@ class AlertPage(WebBaseObject):
 
     def test_alert(self):
         """测试alert弹窗"""
-        self.w_click(self.element('w_alert 测试浏览器弹窗'))
+        self.element_action('w_alert 测试浏览器弹窗', 'w_click')
         self.w_wait_for_timeout(1)
 
     def test_confirm(self):
         """测试confirm弹窗"""
-        self.w_click(self.element('确认弹窗测试'))
+        self.element_action('确认弹窗测试', 'w_click')
         self.w_wait_for_timeout(1)
 
     def test_prompt(self):
         """测试prompt弹窗"""
-        self.w_click(self.element('输入弹窗测试'))
+        self.element_action('输入弹窗测试', 'w_click')
         self.w_wait_for_timeout(1)

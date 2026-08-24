@@ -4,19 +4,25 @@ from pathlib import Path
 
 import pytest
 
-from auto_tests.ui.pytest_ui.cases import (
+from auto_tests.ui.pytest_ui.capabilities.cases import (
     ELEMENT_CASES,
     INVENTORY_CASES,
     OPERATION_CASES,
 )
-from auto_tests.ui.pytest_ui.elements import elements
+from auto_tests.ui.pytest_ui.config import settings
+from core.ui import configured_element_repository
+
+elements = configured_element_repository(settings)
 
 pytestmark = pytest.mark.architecture
 PROJECT = Path(__file__).resolve().parents[1]
+COMMON_UI_BUSINESS = (
+    PROJECT.parents[1] / "common" / "mango_mock" / "ui_business"
+)
 
 
 def test_local_excel_registry_covers_capability_inventory():
-    excel_keys = {definition.name for definition in elements.all_local()}
+    excel_keys = {definition.name for definition in elements.all()}
     inventory_keys = {case.element_id for case in INVENTORY_CASES}
     assert len(excel_keys) >= 260
     assert excel_keys == inventory_keys
@@ -34,7 +40,7 @@ def test_business_layers_do_not_import_another_ui_demo():
 
 
 def test_page_objects_do_not_create_test_data():
-    for file in (PROJECT / "page_object").rglob("*.py"):
+    for file in COMMON_UI_BUSINESS.rglob("*.py"):
         content = file.read_text(encoding="utf-8")
         assert "data_factory" not in content, file
         assert "HttpProtocolClient" not in content, file

@@ -9,6 +9,7 @@ class TargetKind(str, Enum):
     PROJECT = "project"
     FILE = "file"
     NODE = "node"
+    FEATURE = "feature"
 
 
 class RunStatus(str, Enum):

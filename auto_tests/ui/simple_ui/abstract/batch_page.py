@@ -26,7 +26,7 @@ class BatchPage(WebBaseObject):
         page_name = '批量操作'
         self.base_data = base_data
         self.test_data = test_data
-        super().__init__(project_name, module_name, page_name, self.base_data, test_data)
+        super().__init__(project_name, module_name, page_name, self.base_data, test_data, settings)
         self.url = settings.BASE_URL
 
     def goto(self):
@@ -34,7 +34,6 @@ class BatchPage(WebBaseObject):
 
     def test_batch_checkbox(self):
         """批量勾选复选框"""
-        checkboxes = self.element('复选框')
-        self.w_many_click(checkboxes)
+        self.element_action('复选框', 'w_many_click')
         self.w_wait_for_timeout(1)
-        return self.w_get_text(self.element('结果'))
+        return self.element_action('结果', 'w_get_text')

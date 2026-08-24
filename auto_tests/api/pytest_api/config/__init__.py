@@ -46,9 +46,6 @@ def get_config(
 
 
 settings = get_config()
-engine = settings.engine
-SessionLocal = settings.SessionLocal
-Base = settings.Base
 
 __all__ = [
     "BaseConfig",
@@ -59,7 +56,4 @@ __all__ = [
     "ProdConfig",
     "get_config",
     "settings",
-    "engine",
-    "SessionLocal",
-    "Base",
 ]

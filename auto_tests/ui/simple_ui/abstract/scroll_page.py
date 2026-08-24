@@ -26,7 +26,7 @@ class ScrollPage(WebBaseObject):
         page_name = '滚动页面'
         self.base_data = base_data
         self.test_data = test_data
-        super().__init__(project_name, module_name, page_name, self.base_data, test_data)
+        super().__init__(project_name, module_name, page_name, self.base_data, test_data, settings)
         self.url = settings.BASE_URL
 
     def goto(self):
@@ -34,8 +34,8 @@ class ScrollPage(WebBaseObject):
 
     def test_scroll(self):
         """测试页面滚动"""
-        self.w_element_wheel(self.element('内容行 10'))
+        self.element_action('内容行 10', 'w_element_wheel')
         self.w_wait_for_timeout(1)
-        self.w_element_wheel(self.element('底部内容'))
+        self.element_action('底部内容', 'w_element_wheel')
         self.w_wait_for_timeout(1)
-        return self.w_get_text(self.element('底部内容'))
+        return self.element_action('底部内容', 'w_get_text')

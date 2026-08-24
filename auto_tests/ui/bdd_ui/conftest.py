@@ -1,12 +1,11 @@
 """新版 bdd_ui 只注册本项目独立 Steps 与 Fixtures。"""
 
-from auto_tests.ui.bdd_ui.cases import ELEMENT_CASES, OPERATION_CASES
+from auto_tests.ui.bdd_ui.capabilities.cases import ELEMENT_CASES, OPERATION_CASES
 
 pytest_plugins = [
     "auto_tests.ui.bdd_ui.fixtures.bdd",
     "auto_tests.ui.bdd_ui.steps.mango_mock_steps",
     "auto_tests.ui.bdd_ui.steps.business_steps",
-    "auto_tests.ui.bdd_ui.hooks.artifacts",
 ]
 
 

@@ -26,7 +26,7 @@ class ClickPage(WebBaseObject):
         page_name = '元素点击'
         self.base_data = base_data
         self.test_data = test_data
-        super().__init__(project_name, module_name, page_name, self.base_data, test_data)
+        super().__init__(project_name, module_name, page_name, self.base_data, test_data, settings)
         self.url = settings.BASE_URL
 
     def goto(self):
@@ -34,25 +34,25 @@ class ClickPage(WebBaseObject):
 
     def test_double_click(self):
         """双击操作"""
-        self.w_dblclick(self.element('双击按钮'))
-        return self.w_get_text(self.element('结果'))
+        self.element_action('双击按钮', 'w_dblclick')
+        return self.element_action('结果', 'w_get_text')
 
     def test_right_click(self):
         """右键点击操作"""
-        self.w_right_click(self.element('右键点击按钮'))
-        return self.w_get_text(self.element('结果'))
+        self.element_action('右键点击按钮', 'w_right_click')
+        return self.element_action('结果', 'w_get_text')
 
     def test_force_click(self):
         """强制点击操作"""
-        self.w_force_click(self.element('强制点击按钮'))
-        return self.w_get_text(self.element('结果'))
+        self.element_action('强制点击按钮', 'w_force_click')
+        return self.element_action('结果', 'w_get_text')
 
     def test_simple_click(self):
         """简单点击操作"""
-        self.w_click(self.element('简单点击按钮'))
-        return self.w_get_text(self.element('结果'))
+        self.element_action('简单点击按钮', 'w_click')
+        return self.element_action('结果', 'w_get_text')
 
     def test_hover(self):
         """鼠标悬停操作"""
-        self.w_hover(self.element('鼠标悬停按钮'))
-        return self.w_get_text(self.element('结果'))
+        self.element_action('鼠标悬停按钮', 'w_hover')
+        return self.element_action('结果', 'w_get_text')

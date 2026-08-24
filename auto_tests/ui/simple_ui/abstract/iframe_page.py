@@ -26,7 +26,7 @@ class IframePage(WebBaseObject):
         page_name = 'iframe页面'
         self.base_data = base_data
         self.test_data = test_data
-        super().__init__(project_name, module_name, page_name, self.base_data, test_data)
+        super().__init__(project_name, module_name, page_name, self.base_data, test_data, settings)
         self.url = settings.BASE_URL
 
     def goto(self):
@@ -34,6 +34,6 @@ class IframePage(WebBaseObject):
 
     def test_iframe_element(self):
         """测试iframe中的元素"""
-        self.w_click(self.element('iframe按钮'))
+        self.element_action('iframe按钮', 'w_click')
         self.w_wait_for_timeout(1)
-        return self.w_get_text(self.element('结果'))
+        return self.element_action('结果', 'w_get_text')

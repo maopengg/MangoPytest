@@ -3,7 +3,7 @@
 import allure
 import pytest
 
-from auto_tests.ui.pytest_ui.cases import (
+from auto_tests.ui.pytest_ui.capabilities.cases import (
     ELEMENT_CASES,
     INVENTORY_CASES,
     OPERATION_CASES,

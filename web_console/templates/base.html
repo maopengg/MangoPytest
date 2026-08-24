@@ -4,16 +4,17 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>{% block title %}Mango Pytest{% endblock %}</title>
-  <link rel="stylesheet" href="/static/app.css">
+  <link rel="stylesheet" href="/static/app.css?v=20260824-20">
 </head>
 <body>
+  <div id="global-api-loading" class="global-api-loading" role="status" aria-live="polite" aria-label="正在加载数据" hidden><span></span></div>
   <header class="topbar">
     <a class="brand" href="/"><span class="logo">M</span><span>Mango Pytest</span></a>
     <span class="local-badge">LOCAL CONSOLE</span>
   </header>
   <main class="shell">{% block content %}{% endblock %}</main>
   <div id="toast" class="toast"></div>
-  <script src="/static/app.js"></script>
+  <script src="/static/app.js?v=20260824-20"></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>

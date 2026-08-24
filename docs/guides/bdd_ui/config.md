@@ -1,102 +1,14 @@
-# Config — 多环境配置设计
+# Config — UI 运行配置
 
-## 职责
-
-根据 `ENV` 环境变量加载对应环境的配置。UI 项目除了 API/浏览器配置外，还需要数据库连接来管理测试数据。
-
-## 设计思路
-
-```
-os.environ["ENV"] = "prod"
-    ↓
-_resolve_env() → "prod"
-    ↓
-_config_mapping["prod"] → ProdConfig()
-    ↓
-settings.BASE_URL     → 被测页面地址
-settings.SessionLocal → 数据库会话工厂
-```
-
-## 文件结构
-
-```
-config/
-├── __init__.py       # _resolve_env() + get_config() + 全局 settings
-├── settings.py       # 配置类 + SQLAlchemy 初始化
-├── .env.dev
-├── .env.test
-├── .env.pre
-└── .env.prod
-```
-
-## 写法
-
-### 基础配置类（含数据库初始化）
+项目配置继承 `core.ui.UIRuntimeConfig`，只声明项目名称、产物目录和环境差异，不初始化数据库或浏览器。
 
 ```python
-class BddUIMockConfig(BaseConfig):
-    # 浏览器配置
-    BROWSER: str = "chrome"
-    HEADLESS: bool = False
-    WINDOW_WIDTH: int = 1920
-
-    # SQLAlchemy 延迟初始化
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        if self.DB_HOST and self.DB_NAME:
-            db_url = f"mysql+pymysql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
-            self._engine = create_engine(db_url, poolclass=StaticPool, pool_pre_ping=True)
-            self._SessionLocal = sessionmaker(bind=self._engine)
-            self._Base = declarative_base()
-
-    @property
-    def SessionLocal(self):
-        return self._SessionLocal
-
-    @property
-    def Base(self):
-        return self._Base
+class BddUIMockConfig(UIRuntimeConfig):
+    ELEMENT_PROJECT = "mock_ui"
+    ELEMENT_PRODUCT = "MockUI服务"
+    ARTIFACT_DIR = artifact_path("reports", "bdd_ui", "artifacts")
 ```
 
-### 环境配置
+环境文件使用 `Path(__file__).parent / ".env.<name>"` 加载。可执行环境以 `auto_tests/project_registry.py` 为唯一来源；当前 `bdd_ui` 只注册了 `test`，所以 Web 控制台和 `main.py` 都只允许选择 `test`。
 
-```python
-class DevConfig(BddUIMockConfig):
-    ENV: str = "dev"
-    BASE_URL: str = "http://localhost:8003"
-    HEADLESS: bool = False
-
-class ProdConfig(BddUIMockConfig):
-    ENV: str = "prod"
-    BASE_URL: str = "http://your-server:8003"
-    HEADLESS: bool = True
-```
-
-### 环境解析
-
-```python
-# __init__.py
-_config_mapping = {"dev": DevConfig, "test": TestConfig, "pre": PreConfig, "prod": ProdConfig}
-
-def _resolve_env() -> str:
-    env = os.getenv("ENV")
-    if env:
-        return env.lower()
-    from auto_tests.<project> import DEFAULT_ENV
-    return DEFAULT_ENV.name.lower()
-
-settings = get_config()
-```
-
-## .env 文件
-
-```ini
-# .env.prod
-BASE_URL=http://your-server:8003
-DB_HOST=your-server
-DB_PORT=3306
-DB_USER=root
-DB_PASSWORD=xxx
-DB_NAME=your_db
-HEADLESS=true
-```
+执行页面可临时覆盖注册表中明确声明的运行参数，例如浏览器类型、无头模式、元素来源和元素自愈选项。临时覆盖只进入当前子进程，不修改配置文件。

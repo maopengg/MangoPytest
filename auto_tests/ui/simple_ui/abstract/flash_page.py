@@ -26,7 +26,7 @@ class FlashPage(WebBaseObject):
         page_name = '闪现元素页面'
         self.base_data = base_data
         self.test_data = test_data
-        super().__init__(project_name, module_name, page_name, self.base_data, test_data)
+        super().__init__(project_name, module_name, page_name, self.base_data, test_data, settings)
         self.url = settings.BASE_URL
 
     def goto(self):
@@ -34,6 +34,6 @@ class FlashPage(WebBaseObject):
 
     def test_flash_element(self):
         """捕获闪现元素"""
-        self.w_click(self.element('显示闪现元素'))
+        self.element_action('显示闪现元素', 'w_click')
         self.w_wait_for_timeout(0.5)
-        return self.w_get_text(self.element('结果'))
+        return self.element_action('结果', 'w_get_text')

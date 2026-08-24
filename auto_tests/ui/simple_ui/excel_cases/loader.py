@@ -2,30 +2,17 @@
 
 import json
 from pathlib import Path
-from typing import Any, Iterable
-
-from openpyxl import load_workbook
+from typing import Any
 
 from .models import ElementCase, InventoryCase, OperationCase
+from core.sources.excel import ExcelWorkbookSource
 
 
 CASE_FILE = Path(__file__).resolve().parents[1] / "data" / "MangoMock_UI全元素操作测试用例.xlsx"
 
 
-def _rows(sheet_name: str) -> Iterable[dict[str, Any]]:
-    if not CASE_FILE.is_file():
-        raise FileNotFoundError(f"UI Excel 用例文件不存在：{CASE_FILE}")
-    workbook = load_workbook(CASE_FILE, read_only=True, data_only=True)
-    try:
-        sheet = workbook[sheet_name]
-        iterator = sheet.iter_rows(values_only=True)
-        headers = [str(value).strip() for value in next(iterator)]
-        for values in iterator:
-            row = dict(zip(headers, values))
-            if any(value not in (None, "") for value in values):
-                yield row
-    finally:
-        workbook.close()
+def _rows(sheet_name: str) -> tuple[dict[str, Any], ...]:
+    return ExcelWorkbookSource(CASE_FILE).records(sheet_name)
 
 
 def _json(value: Any) -> dict[str, Any]:
@@ -108,4 +95,3 @@ def _validate(cases: tuple[Any, ...], expected_count: int, label: str) -> None:
 OPERATION_CASES = _load_operation_cases()
 ELEMENT_CASES = _load_element_cases()
 INVENTORY_CASES = _load_inventory_cases()
-

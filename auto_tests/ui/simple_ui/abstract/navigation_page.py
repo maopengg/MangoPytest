@@ -26,7 +26,7 @@ class NavigationPage(WebBaseObject):
         page_name = '页面导航页面'
         self.base_data = base_data
         self.test_data = test_data
-        super().__init__(project_name, module_name, page_name, self.base_data, test_data)
+        super().__init__(project_name, module_name, page_name, self.base_data, test_data, settings)
         self.url = settings.BASE_URL
 
     def goto(self):
@@ -34,9 +34,9 @@ class NavigationPage(WebBaseObject):
 
     def test_navigation(self):
         """测试页面导航"""
-        self.w_open_new_tab_and_switch(self.element('打开新标签页'))
+        self.element_action('打开新标签页', 'w_open_new_tab_and_switch')
         self.w_wait_for_timeout(2)
         self.w_switch_tabs(1)
-        text = self.w_get_text(self.element('新页面元素'))
+        text = self.element_action('新页面元素', 'w_get_text')
         self.w_switch_tabs(0)
         return text

@@ -84,9 +84,9 @@ L5: Feature 文件（中文业务 Gherkin）
     ↓
 L4: Steps（领域步骤、公共步骤、断言步骤）
     ↓
-L3: Flows + Data Factory（entities/factories/specs/scenarios）
+L3: 被测产品公共 Flows + 项目 Data Factory（entities/factories/specs）
     ↓
-L2: Page Objects + Repositories + 本地 Excel 元素仓库
+L2: 被测产品公共 Page Objects + Repositories + 本地 Excel 元素仓库
     ↓
 L1: SyncWebRuntime / 公共协议客户端 / 数据库 Gateway
 ```
@@ -96,11 +96,11 @@ L1: SyncWebRuntime / 公共协议客户端 / 数据库 Gateway
 ```
 L5: Tests（pytest 测试、marks、参数化与业务断言）
     ↓
-L4: Flows（跨页面业务场景编排）
+L4: 被测产品公共 Flows（跨页面业务场景编排）
     ↓
 L3: Data Factory（entities/factories/specs/scenarios）
     ↓
-L2: Page Objects + Repositories + 本地 Excel 元素仓库
+L2: 被测产品公共 Page Objects + Repositories + 本地 Excel 元素仓库
     ↓
 L1: SyncWebRuntime / 公共协议客户端 / 数据库 Gateway
 ```
@@ -108,7 +108,16 @@ L1: SyncWebRuntime / 公共协议客户端 / 数据库 Gateway
 - `pytest_ui` 禁止新增 Feature、Steps 或 `pytest_bdd` 依赖。
 - `bdd_ui` 的业务 Feature 禁止使用“执行 UI-xxx 用例”式编号转发步骤；
   框架操作能力矩阵必须放在独立的 `features/capabilities/` 下。
-- UI 元素只读取各项目自己的本地 Excel，禁止依赖飞书和跨 Demo 元素文件。
+- UI 元素读取统一由 `core/sources/` 管理；项目设置使用
+  `ELEMENT_SOURCE=excel|feishu` 选择来源。
+- 本地元素 Excel 统一存放在 `core/sources/workbooks/` 并按被测产品命名；
+  测试同一产品的不同 Demo 必须复用同一元素工作簿，禁止按测试模式复制数据。
+- 同一被测产品的 Page Object、Flow、Repository、能力执行器和能力用例模型统一
+  放在 `auto_tests/common/<product>/`；BDD/pytest 项目只保留各自的用例表达、
+  Fixture 装配、数据工厂和项目配置，禁止复制产品业务实现。
+- UI 项目统一复用 `core/ui/` 的元素仓库、Runtime 参数、浏览器生命周期、
+  临时设备切换以及截图/HTML/控制台日志/Trace 产物能力；项目 Fixture 只负责
+  Case 判定和注入本项目的业务对象，禁止复制公共浏览器基础设施。
 - Tests、Steps 和 Flows 禁止直接操作 Playwright Locator；页面行为必须进入 Page Object。
 - Page Object 禁止创建测试数据或编写 pytest 业务断言。
 

@@ -7,6 +7,7 @@ from pathlib import Path
 
 from core.execution.catalog import ProjectCatalog
 from web_console.config import WebConsoleSettings
+from web_console.pytest_plugin import COLLECTION_SCHEMA_VERSION
 
 
 class CollectionService:
@@ -22,7 +23,12 @@ class CollectionService:
         path = self.cache_path(project_id)
         if not path.is_file():
             return {"count": 0, "cases": [], "collected": False}
-        result = json.loads(path.read_text(encoding="utf-8"))
+        try:
+            result = json.loads(path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            return {"count": 0, "cases": [], "collected": False, "stale": True}
+        if result.get("schema_version") != COLLECTION_SCHEMA_VERSION:
+            return {"count": 0, "cases": [], "collected": False, "stale": True}
         result["collected"] = True
         return result
 
@@ -46,9 +52,9 @@ class CollectionService:
     def tree(self, project_id: str) -> list[dict]:
         project = self.catalog.get(project_id, require_enabled=False)
         cases = self.read(project_id)["cases"]
-        files: dict[str, int] = {}
+        files: dict[str, list[dict]] = {}
         for case in cases:
-            files[case["file"]] = files.get(case["file"], 0) + 1
+            files.setdefault(case["file"], []).append(case)
         visible_files = []
         for path in project.root.rglob("*"):
             if not path.is_file() or path.suffix not in {".py", ".feature"}:
@@ -57,13 +63,38 @@ class CollectionService:
             if any(part.startswith(".") or part == "__pycache__" for part in relative.parts):
                 continue
             value = relative.as_posix()
+            file_cases = files.get(value, [])
+            is_pytest_file = path.suffix == ".py" and path.name.startswith("test_")
             visible_files.append({
                 "path": value,
-                "count": files.get(value, 0),
-                "executable": bool(files.get(value, 0)) and path.name.startswith("test_"),
+                "count": len(file_cases),
+                "executable": is_pytest_file or (path.suffix == ".feature" and bool(file_cases)),
+                "execution_kind": "file" if is_pytest_file else ("feature" if file_cases else ""),
+                "execution_target": value if (is_pytest_file or file_cases) else "",
                 "type": "feature" if path.suffix == ".feature" else "python",
             })
         return sorted(visible_files, key=lambda item: item["path"])
+
+    def feature_nodes(self, project_id: str, relative_path: str) -> tuple[str, ...]:
+        project = self.catalog.get(project_id)
+        candidate = (project.root / relative_path).resolve()
+        if (
+            not candidate.is_relative_to(project.root)
+            or not candidate.is_file()
+            or candidate.suffix != ".feature"
+        ):
+            raise ValueError("Feature 文件不存在或路径越界")
+        collection = self.read(project_id)
+        if not collection["collected"]:
+            raise ValueError("用例收集缓存已失效，请先重新收集项目")
+        nodes = tuple(dict.fromkeys(
+            str(case["node_id"])
+            for case in collection["cases"]
+            if case.get("file") == relative_path and case.get("node_id")
+        ))
+        if not nodes:
+            raise ValueError("该 Feature 没有可执行用例，请先检查绑定并重新收集")
+        return nodes
 
     def source(self, project_id: str, relative_path: str) -> str:
         project = self.catalog.get(project_id)

@@ -26,11 +26,11 @@ class HomePage(WebBaseObject):
         page_name = '首页'
         self.base_data = base_data
         self.test_data = test_data
-        super().__init__(project_name, module_name, page_name, self.base_data, test_data)
+        super().__init__(project_name, module_name, page_name, self.base_data, test_data, settings)
         self.url = settings.BASE_URL
 
     def goto(self):
         self.base_data.page.goto(self.url, timeout=30000)
 
     def switch_menu(self):
-        self.w_click(self.element('演示-元素中包含全局变量'))
+        self.element_action('演示-元素中包含全局变量', 'w_click')

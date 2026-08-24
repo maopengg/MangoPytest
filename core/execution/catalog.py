@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from urllib.parse import urlsplit
 
 from auto_tests.project_registry import PROJECT_REGISTRY
 from core.execution.models import ProjectDescriptor
@@ -42,12 +43,65 @@ class ProjectCatalog:
                 "file": config_file,
                 "inherits": "",
                 "summary": self._safe_env_values(config_path),
+                "runtime_options": self._runtime_options(project_id, config_path),
             })
         return tuple(profiles)
 
+    def environment_ids(self, project_id: str) -> tuple[str, ...]:
+        """返回项目注册表明确声明的可执行环境。"""
+
+        return tuple(profile["id"] for profile in self.environment_profiles(project_id))
+
+    def validate_runtime_overrides(self, project_id: str, values: dict[str, str]) -> dict[str, str]:
+        """Validate and normalize only options explicitly declared by the project."""
+        declared = {
+            option["key"]: option
+            for option in PROJECT_REGISTRY[project_id].get("runtime_options", ())
+        }
+        unknown = set(values) - set(declared)
+        if unknown:
+            raise ValueError(f"项目 {project_id} 不允许临时覆盖配置: {', '.join(sorted(unknown))}")
+        normalized = {}
+        for key, raw_value in values.items():
+            if len(raw_value) > 2000 or "\x00" in raw_value:
+                raise ValueError(f"配置 {key} 内容不合法")
+            option, value = declared[key], raw_value.strip()
+            field_type = option["type"]
+            if field_type == "url":
+                parsed = urlsplit(value)
+                if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+                    raise ValueError(f"配置 {key} 必须是 http/https 地址")
+            elif field_type == "integer":
+                try:
+                    number = int(value)
+                except ValueError as exc:
+                    raise ValueError(f"配置 {key} 必须是整数") from exc
+                if not option.get("min", number) <= number <= option.get("max", number):
+                    raise ValueError(f"配置 {key} 超出允许范围")
+                value = str(number)
+            elif field_type == "boolean":
+                if value.lower() not in {"true", "false"}:
+                    raise ValueError(f"配置 {key} 必须是 true 或 false")
+                value = value.lower()
+            elif field_type == "select":
+                if value not in option["choices"]:
+                    raise ValueError(f"配置 {key} 不在允许选项中")
+            normalized[key] = value
+        return normalized
+
+    def _runtime_options(self, project_id: str, config_path: Path) -> list[dict]:
+        configured = self._safe_env_values(config_path)
+        return [
+            {**option, "value": configured.get(option["key"], option.get("default", ""))}
+            for option in PROJECT_REGISTRY[project_id].get("runtime_options", ())
+        ]
+
     @staticmethod
     def _safe_env_values(path: Path) -> dict[str, str]:
-        allowed = {"BASE_URL", "BROWSER", "HEADLESS", "LOG_LEVEL", "MOCK_TIMEOUT", "MOCK_RETRY_TIMES"}
+        allowed = {
+            "BASE_URL", "BROWSER", "BROWSER_PATH", "HEADLESS", "IMPLICIT_WAIT",
+            "TRACE_ENABLED", "LOG_LEVEL", "MOCK_TIMEOUT", "MOCK_RETRY_TIMES",
+        }
         result = {}
         for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
             if not line or line.lstrip().startswith("#") or "=" not in line:

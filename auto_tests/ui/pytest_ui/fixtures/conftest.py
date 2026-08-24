@@ -9,18 +9,7 @@ UI Mock 项目的 Fixtures 注册中心
 此文件集中注册所有 fixtures，便于管理和使用。
 在测试文件中只需导入此模块即可使用所有 fixtures。
 
-使用示例：
-    # test_example.py
-    from auto_tests.ui.pytest_ui.fixtures.conftest import *
-
-    def test_with_driver(web_runtime):
-        context, page = web_runtime.new_context_page()
-        page.goto("https://example.com")
-
-    def test_with_base_data(base_data):
-        from auto_tests.ui.pytest_ui.page_object.home_page import HomePage
-        home_page = HomePage(base_data, test_data)
-        home_page.goto()
+项目用例直接声明所需 fixture；Page Object 与 Flow 由 fixture 完成装配。
 """
 
 # ========== 基础设施 fixtures ==========

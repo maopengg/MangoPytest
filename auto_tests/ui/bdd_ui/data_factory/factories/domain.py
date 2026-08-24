@@ -2,7 +2,7 @@
 
 import uuid
 
-from auto_tests.ui.bdd_ui.repositories.domains import (
+from auto_tests.common.mango_mock.repositories import (
     ClaimRepository,
     OrderRepository,
     ReviewRepository,
@@ -55,4 +55,3 @@ class ReviewFactory:
             current.expected_risk_count,
         )
         return ReviewData(raw["id"], raw["status"], raw)
-

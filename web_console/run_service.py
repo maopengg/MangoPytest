@@ -4,7 +4,6 @@ import asyncio
 from datetime import datetime, timezone
 import json
 from pathlib import Path
-import re
 import uuid
 
 from core.execution import CommandBuilder, ProjectCatalog, RunOptions, RunStatus, TargetKind
@@ -12,11 +11,9 @@ from core.execution.models import FINAL_STATUSES
 from core.execution.result_parser import parse_junit, status_from_exit_code
 from core.execution.subprocess_runner import run_subprocess, terminate_process
 from web_console.config import WebConsoleSettings
+from web_console.collection_service import CollectionService
 from web_console.repository import RunRepository
 from web_console.schemas import CreateRunInput
-
-
-_SECRET_PATTERN = re.compile(r"(?i)(authorization|token|password|secret|cookie)(\s*[:=]\s*)([^\s,;]+)")
 
 
 def now() -> str:
@@ -24,10 +21,17 @@ def now() -> str:
 
 
 class RunService:
-    def __init__(self, settings: WebConsoleSettings, catalog: ProjectCatalog, repository: RunRepository) -> None:
+    def __init__(
+        self,
+        settings: WebConsoleSettings,
+        catalog: ProjectCatalog,
+        repository: RunRepository,
+        collector: CollectionService,
+    ) -> None:
         self.settings = settings
         self.catalog = catalog
         self.repository = repository
+        self.collector = collector
         self.builder = CommandBuilder(settings.python_executable)
         self.semaphore = asyncio.Semaphore(settings.max_concurrent)
         self.ui_semaphore = asyncio.Semaphore(1)
@@ -43,19 +47,28 @@ class RunService:
         if data.environment == "prod" and data.production_confirmation != data.project:
             raise ValueError("生产环境执行必须输入项目 ID 进行确认")
         target_kind = TargetKind(data.target.type)
+        feature_nodes = self._feature_nodes(data.project, target_kind, data.target.id)
         options = RunOptions(
             markers=tuple(data.options.markers), keyword=data.options.keyword,
             workers=data.options.workers, reruns=data.options.reruns,
             max_failures=data.options.max_failures,
         )
+        runtime_overrides = self.catalog.validate_runtime_overrides(
+            data.project, data.runtime_overrides
+        )
         # 创建记录前先完整验证路径与参数。
-        self.builder.build(project, data.environment, target_kind, data.target.id, options)
+        self.builder.build(
+            project, data.environment, target_kind, data.target.id, options,
+            runtime_overrides=runtime_overrides,
+            feature_nodes=feature_nodes,
+        )
         run_id = uuid.uuid4().hex
         artifact_dir = (self.settings.artifacts_root / "reports" / "runs" / run_id).resolve()
         record = {
             "id": run_id, "project": project.id, "project_kind": project.kind,
             "environment": data.environment, "target_kind": target_kind.value, "target": data.target.id,
             "options_json": json.dumps(data.options.model_dump(), ensure_ascii=False),
+            "runtime_overrides_json": json.dumps(runtime_overrides, ensure_ascii=False),
             "status": RunStatus.QUEUED.value, "created_at": now(), "artifact_dir": str(artifact_dir),
         }
         self.repository.create(record)
@@ -98,6 +111,10 @@ class RunService:
         command = self.builder.build(
             self.catalog.get(record["project"]), record["environment"], TargetKind(record["target_kind"]),
             record["target"], options, junit_path=junit_path, allure_dir=allure_dir,
+            runtime_overrides=record["runtime_overrides"],
+            feature_nodes=self._feature_nodes(
+                record["project"], TargetKind(record["target_kind"]), record["target"]
+            ),
         )
         self.repository.update(run_id, status=RunStatus.RUNNING.value, started_at=now(), command=command.display)
         await self._event(record, "status", "running")
@@ -107,7 +124,7 @@ class RunService:
             self.repository.update(run_id, pid=process.pid)
 
         async def line_received(line: str) -> None:
-            await self._event(record, "log", _SECRET_PATTERN.sub(r"\1\2***", line))
+            await self._event(record, "log", line)
 
         exit_code = await run_subprocess(command, line_received, started)
         current = self.repository.get(run_id)
@@ -123,6 +140,11 @@ class RunService:
             run_id, status=status.value, exit_code=exit_code, finished_at=now(), pid=None, **summary,
         )
         await self._event(record, "status", status.value)
+
+    def _feature_nodes(self, project_id: str, kind: TargetKind, target: str) -> tuple[str, ...]:
+        if kind is not TargetKind.FEATURE:
+            return ()
+        return self.collector.feature_nodes(project_id, target)
 
     async def _event(self, record: dict, event_type: str, message: str) -> None:
         artifact_dir = Path(record["artifact_dir"])

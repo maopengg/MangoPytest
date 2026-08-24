@@ -28,6 +28,11 @@ class RunRepository:
                     message TEXT NOT NULL DEFAULT ''
                 )
             """)
+            columns = {row[1] for row in self.connection.execute("PRAGMA table_info(runs)")}
+            if "runtime_overrides_json" not in columns:
+                self.connection.execute(
+                    "ALTER TABLE runs ADD COLUMN runtime_overrides_json TEXT NOT NULL DEFAULT '{}'"
+                )
 
     def create(self, record: dict[str, Any]) -> None:
         columns = ",".join(record)
@@ -47,7 +52,9 @@ class RunRepository:
             row = self.connection.execute("SELECT * FROM runs WHERE id=?", (run_id,)).fetchone()
         return self._convert(row) if row else None
 
-    def list(self, limit: int = 100, project: str = "", status: str = "") -> list[dict[str, Any]]:
+    def list(
+        self, limit: int = 100, project: str = "", status: str = "", offset: int = 0
+    ) -> list[dict[str, Any]]:
         where, params = [], []
         if project:
             where.append("project=?")
@@ -56,9 +63,12 @@ class RunRepository:
             where.append("status=?")
             params.append(status)
         clause = " WHERE " + " AND ".join(where) if where else ""
+        page_limit = max(1, min(limit, 500))
+        page_offset = max(0, offset)
         with self.lock:
             rows = self.connection.execute(
-                f"SELECT * FROM runs{clause} ORDER BY created_at DESC LIMIT ?", (*params, min(limit, 500))
+                f"SELECT * FROM runs{clause} ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?",
+                (*params, page_limit, page_offset),
             ).fetchall()
         return [self._convert(row) for row in rows]
 
@@ -73,4 +83,5 @@ class RunRepository:
     def _convert(row: sqlite3.Row) -> dict[str, Any]:
         value = dict(row)
         value["options"] = json.loads(value.pop("options_json"))
+        value["runtime_overrides"] = json.loads(value.pop("runtime_overrides_json", "{}"))
         return value

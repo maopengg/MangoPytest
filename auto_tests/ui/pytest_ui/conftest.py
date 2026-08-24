@@ -9,6 +9,4 @@ UI Mock 项目的 Pytest 配置文件
 从 fixtures 模块导入所有 fixtures
 """
 
-pytest_plugins = ["auto_tests.ui.pytest_ui.hooks.artifacts"]
-
 from auto_tests.ui.pytest_ui.fixtures.conftest import *

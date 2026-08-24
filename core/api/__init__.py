@@ -24,9 +24,11 @@ Core API 模块
 
 from .auth import AuthManager
 from .client import APIClient
+from .config import APIRuntimeConfig
 
 __all__ = [
     # 客户端和认证
     "APIClient",
+    "APIRuntimeConfig",
     "AuthManager",
 ]

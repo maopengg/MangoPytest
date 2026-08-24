@@ -26,7 +26,7 @@ class KeyboardPage(WebBaseObject):
         page_name = '键盘操作页面'
         self.base_data = base_data
         self.test_data = test_data
-        super().__init__(project_name, module_name, page_name, self.base_data, test_data)
+        super().__init__(project_name, module_name, page_name, self.base_data, test_data, settings)
         self.url = settings.BASE_URL
 
     def goto(self):
@@ -34,8 +34,7 @@ class KeyboardPage(WebBaseObject):
 
     def test_keyboard_input(self):
         """测试键盘输入"""
-        input_element = self.element('按键输入框')
-        self.w_click(input_element)
+        self.element_action('按键输入框', 'w_click')
         self.w_keys('Enter')
         self.w_wait_for_timeout(1)
-        return self.w_get_text(self.element('结果'))
+        return self.element_action('结果', 'w_get_text')

@@ -16,14 +16,15 @@ class CommandBuilder:
         self.python_executable = str(Path(python_executable).absolute())
 
     def build(self, project: ProjectDescriptor, environment: str, target_kind: TargetKind, target: str,
-              options: RunOptions, *, junit_path: Path | None = None, allure_dir: Path | None = None) -> RunCommand:
+              options: RunOptions, *, junit_path: Path | None = None, allure_dir: Path | None = None,
+              runtime_overrides: dict[str, str] | None = None,
+              feature_nodes: tuple[str, ...] = ()) -> RunCommand:
         environment = environment.lower()
         if environment not in {"dev", "test", "pre", "prod"}:
             raise ValueError(f"不支持的环境: {environment}")
         argv = [self.python_executable, "-m", "pytest"]
-        resolved_target = self._validate_target(project, target_kind, target)
-        if resolved_target:
-            argv.append(resolved_target)
+        resolved_targets = self._validate_targets(project, target_kind, target, feature_nodes)
+        argv.extend(resolved_targets)
         if options.collect_only:
             argv.append("--collect-only")
         if options.markers:
@@ -52,6 +53,7 @@ class CommandBuilder:
         argv.extend(options.extra_args)
         process_env = os.environ.copy()
         process_env["ENV"] = environment
+        process_env.update(runtime_overrides or {})
         repository_root = str(project.root.parents[2])
         process_env["PYTHONPATH"] = os.pathsep.join(filter(None, (repository_root, process_env.get("PYTHONPATH", ""))))
         return RunCommand(tuple(argv), project.root, process_env, shlex.join(argv))
@@ -62,13 +64,36 @@ class CommandBuilder:
             raise ValueError(f"{label} 表达式包含不允许的字符")
 
     @staticmethod
-    def _validate_target(project: ProjectDescriptor, kind: TargetKind, target: str) -> str:
+    def _validate_targets(
+        project: ProjectDescriptor,
+        kind: TargetKind,
+        target: str,
+        feature_nodes: tuple[str, ...],
+    ) -> tuple[str, ...]:
         if kind is TargetKind.PROJECT:
             if target:
                 raise ValueError("项目执行不能指定 target")
-            return ""
+            return ()
         if not target or "\x00" in target:
             raise ValueError("测试目标不能为空")
+        if kind is TargetKind.FEATURE:
+            candidate = Path(target)
+            if candidate.is_absolute():
+                raise ValueError("测试目标必须是项目内相对路径")
+            resolved = (project.root / candidate).resolve()
+            if (
+                not resolved.is_relative_to(project.root)
+                or not resolved.is_file()
+                or resolved.suffix != ".feature"
+            ):
+                raise ValueError("Feature 目标不存在或超出项目目录")
+            if not feature_nodes:
+                raise ValueError("Feature 目标没有可执行的 pytest 节点")
+            nodes = tuple(dict.fromkeys(
+                CommandBuilder._validate_targets(project, TargetKind.NODE, node, ())[0]
+                for node in feature_nodes
+            ))
+            return nodes
         file_part = target.split("::", 1)[0]
         candidate = Path(file_part)
         if candidate.is_absolute():
@@ -82,7 +107,7 @@ class CommandBuilder:
         if kind is TargetKind.FILE:
             if "::" in target:
                 raise ValueError("文件目标不能包含 node ID")
-            return relative
+            return (relative,)
         if kind is TargetKind.NODE and "::" in target:
-            return relative + "::" + target.split("::", 1)[1]
+            return (relative + "::" + target.split("::", 1)[1],)
         raise ValueError("单用例目标必须是完整 pytest node ID")

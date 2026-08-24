@@ -26,13 +26,20 @@ def parse_args() -> tuple[argparse.Namespace, list[str]]:
 
 
 def list_projects() -> None:
+    catalog = ProjectCatalog()
     for name, config in PROJECT_REGISTRY.items():
         state = "enabled" if config["enabled"] else f"disabled: {config['reason']}"
-        print(f"{name:12} {config['path']:24} {state}")
+        environments = ",".join(catalog.environment_ids(name)) or "-"
+        print(f"{name:12} {config['path']:24} {state:36} env={environments}")
 
 
 def run_project(name: str, env_name: str, collect_only: bool, extra: list[str]) -> int:
-    project = ProjectCatalog().get(name)
+    catalog = ProjectCatalog()
+    project = catalog.get(name)
+    allowed_environments = catalog.environment_ids(name)
+    if env_name not in allowed_environments:
+        allowed = ", ".join(allowed_environments) or "无"
+        raise ValueError(f"项目 {name} 未注册环境 {env_name}；可用环境: {allowed}")
     command = CommandBuilder(sys.executable).build(
         project, env_name, TargetKind.PROJECT, "",
         RunOptions(collect_only=collect_only, extra_args=tuple(arg for arg in extra if arg != "--")),
@@ -49,7 +56,14 @@ def main() -> int:
     projects = enabled_projects() if args.project == "all" else (args.project,)
     result = 0
     for project in projects:
-        result = max(result, run_project(project, args.env, args.collect_only, pytest_args))
+        try:
+            project_result = run_project(
+                project, args.env, args.collect_only, pytest_args
+            )
+        except ValueError as exc:
+            print(f"配置错误: {exc}", file=sys.stderr)
+            return 2
+        result = max(result, project_result)
     return result
 
 

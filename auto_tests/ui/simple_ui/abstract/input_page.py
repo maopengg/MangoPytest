@@ -26,7 +26,7 @@ class InputPage(WebBaseObject):
         page_name = '输入框页面'
         self.base_data = base_data
         self.test_data = test_data
-        super().__init__(project_name, module_name, page_name, self.base_data, test_data)
+        super().__init__(project_name, module_name, page_name, self.base_data, test_data, settings)
         self.url = settings.BASE_URL
 
     def goto(self):
@@ -35,10 +35,10 @@ class InputPage(WebBaseObject):
     def test_input_types(self, value: str):
         """测试不同类型的输入"""
         # 普通输入框
-        self.w_input(self.element('普通输入框'), value)
+        self.element_action('普通输入框', 'w_input', {'input_value': value})
         # 数字输入框
-        self.w_input(self.element('数字输入框'), '123')
+        self.element_action('数字输入框', 'w_input', {'input_value': '123'})
         # 密码输入框
-        self.w_input(self.element('密码输入框'), 'password123')
+        self.element_action('密码输入框', 'w_input', {'input_value': 'password123'})
         self.w_wait_for_timeout(1)
-        return self.w_get_text(self.element('结果'))
+        return self.element_action('结果', 'w_get_text')

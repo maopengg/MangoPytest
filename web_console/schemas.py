@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, field_validator
 
 
 class TargetInput(BaseModel):
-    type: Literal["project", "file", "node"] = "project"
+    type: Literal["project", "file", "node", "feature"] = "project"
     id: str = ""
 
 
@@ -23,6 +23,7 @@ class CreateRunInput(BaseModel):
     environment: Literal["dev", "test", "pre", "prod"] = "test"
     target: TargetInput = Field(default_factory=TargetInput)
     options: RunOptionsInput = Field(default_factory=RunOptionsInput)
+    runtime_overrides: dict[str, str] = Field(default_factory=dict)
     production_confirmation: str = ""
 
     @field_validator("production_confirmation")

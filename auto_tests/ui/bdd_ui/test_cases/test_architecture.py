@@ -4,15 +4,22 @@ from pathlib import Path
 
 import pytest
 
-from auto_tests.ui.bdd_ui.cases import ELEMENT_CASES, INVENTORY_CASES, OPERATION_CASES
-from auto_tests.ui.bdd_ui.elements import elements
+from auto_tests.ui.bdd_ui.capabilities.cases import (
+    ELEMENT_CASES,
+    INVENTORY_CASES,
+    OPERATION_CASES,
+)
+from auto_tests.ui.bdd_ui.config import settings
+from core.ui import configured_element_repository
+
+elements = configured_element_repository(settings)
 
 pytestmark = pytest.mark.architecture
 PROJECT = Path(__file__).resolve().parents[1]
 
 
 def test_local_excel_registry_covers_capability_inventory():
-    excel_keys = {definition.name for definition in elements.all_local()}
+    excel_keys = {definition.name for definition in elements.all()}
     inventory_keys = {case.element_id for case in INVENTORY_CASES}
     assert len(excel_keys) >= 260
     assert excel_keys == inventory_keys
