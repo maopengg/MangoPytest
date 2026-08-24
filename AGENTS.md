@@ -13,7 +13,7 @@ This file provides guidance to Codex (Codex.ai/code) when working with code in t
 | 源码仓库 | Python 包 | 本项目联调版本 |
 |---|---|---|
 | `/Users/mango/code/mango_tools` | `mangotools` | `2.0.8` |
-| `/Users/mango/code/mango_automation` | `mangoautomation` | `2.0.4` |
+| `/Users/mango/code/mango_automation` | `mangoautomation` | `2.0.5` |
 
 - `mangotools` 和 `mangoautomation` 禁止从 PyPI 安装；PyPI 版本是旧实现。
 - 公共三方依赖维护在 `requirements.txt`，内部包只维护在
@@ -110,6 +110,11 @@ L1: SyncWebRuntime / 公共协议客户端 / 数据库 Gateway
   框架操作能力矩阵必须放在独立的 `features/capabilities/` 下。
 - UI 元素读取统一由 `core/sources/` 管理；项目设置使用
   `ELEMENT_SOURCE=excel|feishu` 选择来源。
+- UI 元素表固定为 18 列：`ID`、项目/模块/页面/元素名称，以及 3 组
+  `定位方式`、`定位表达式`、`元素下标`、`AI定位提示词`，最后为`说明`；
+  iframe、等待、快照、交互状态等运行行为禁止写入元素表。
+- 元素自愈和 AI 的开关、模式、模型、服务地址、超时及语义强度统一在
+  `core/settings/settings.py` 设置，并允许项目运行参数覆盖；真实 API Key 禁止入库。
 - 本地元素 Excel 统一存放在 `core/sources/workbooks/` 并按被测产品命名；
   测试同一产品的不同 Demo 必须复用同一元素工作簿，禁止按测试模式复制数据。
 - 同一被测产品的 Page Object、Flow、Repository、能力执行器和能力用例模型统一
@@ -122,6 +127,21 @@ L1: SyncWebRuntime / 公共协议客户端 / 数据库 Gateway
 - Page Object 禁止创建测试数据或编写 pytest 业务断言。
 
 ## 测试用例编写规范
+
+### 0. 全局 Case 分类与命名规范（强制）
+
+- 所有 API/UI、BDD/纯 pytest 项目统一使用“自动化项目 → Epic（被测产品）→
+  Feature（一级模块）→ Story（可选子模块）→ Case”的报告层级。
+- Web Console 从项目注册表提供“自动化项目”；每条非架构 Case 必须显式提供
+  Epic、Feature、稳定 Case ID 和中文业务标题，禁止显示原始 `test_xxx[...]`。
+- Case 标题统一为 `<CASE-ID> <中文业务名称>`；参数化 ID 仅用于 pytest 节点，
+  不能代替 Allure 标题。
+- 一个测试文件只表达一个一级模块；业务域、能力类型不同必须拆分文件。
+  参数数据可以集中维护，但测试表达层禁止把操作、交互、元素清单和业务流程混在同一文件。
+- 参数化 Case 必须调用 `core.execution.apply_case_metadata`；禁止各项目自行拼接
+  不一致的 Epic/Feature/Story/Title。
+- BDD 项目以 Feature 名作为 Feature 分类、Scenario 名作为 Case 标题；绑定文件必须
+  与单个 Feature 一一对应，禁止一个 `scenario(...)` / `scenarios(...)` 绑定多个业务模块。
 
 ### 1. BDD Feature 文件规范
 

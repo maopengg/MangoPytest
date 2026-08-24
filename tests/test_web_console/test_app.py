@@ -25,6 +25,8 @@ def test_project_api_and_pages(tmp_path) -> None:
         assert [item["id"] for item in pytest_api["environments"]] == ["test"]
         dashboard_html = client.get("/").text
         assert 'id="global-api-loading"' in dashboard_html
+        assert "/static/app.css?v=20260824-23" in dashboard_html
+        assert "/static/app.js?v=20260824-23" in dashboard_html
         assert "loadProjects(this)" in dashboard_html
         assert "loadRuns(true,this)" in dashboard_html
         assert client.get("/projects/pytest_api").status_code == 200
@@ -35,9 +37,14 @@ def test_project_api_and_pages(tmp_path) -> None:
         assert "function setButtonLoading(button,loading,label='加载中')" in project_script
         assert "offset=${runsOffset}" in project_script
         assert "selectedFileExecutionKind" in project_script
+        assert "selectedFileCollectionState" in project_script
+        assert "未被 pytest 收集" in project_script
+        assert "data-collection-state" in project_script
         assert "(c.name||'').toLowerCase().includes(q)" in project_script
         assert "c.markers||[]" in project_script
-        console_styles = client.get("/static/app.css").text
+        style_response = client.get("/static/app.css")
+        assert style_response.headers["cache-control"] == "no-cache, must-revalidate"
+        console_styles = style_response.text
         assert ".case-detail-head{position:sticky;top:0" in console_styles
         assert ".report-shell{overflow:clip}" in console_styles
         assert ".report-anchor{height:100vh;height:100dvh}" in console_styles
@@ -59,6 +66,10 @@ def test_project_api_and_pages(tmp_path) -> None:
         assert "function groupUiOperations(items=[])" in project_script
         assert "function renderUiOperations(items=[])" in project_script
         assert "renderUiOperations(e.operations)" in project_script
+        assert "named=input.named_elements?.[0]?.name" in project_script
+        assert "named_elements:'元素仓库信息'" in project_script
+        assert ".ui-operation-detail{display:grid;grid-template-columns:1fr;" in console_styles
+        assert ".ui-operation-detail{display:grid;grid-template-columns:1fr 1fr;" not in console_styles
         assert "element_reference:'元素引用'" in project_script
         assert "match_count:'匹配数量'" in project_script
         assert "function renderCollapsibleSection(title,content,count=0,open=false)" in project_script
@@ -85,8 +96,10 @@ def test_project_api_and_pages(tmp_path) -> None:
         assert 'class="project-title-line"' in project_template
         assert "setupProjectExplorerSticky()" in project_template
         assert 'id="back-to-top"' in project_template
-        assert ".allure-case-list{flex:1 1 auto;min-height:0;max-height:none;overflow-y:hidden" in console_styles
+        assert ".allure-case-list{overflow-y:auto;scrollbar-gutter:stable" in console_styles
         assert ".allure-case-detail{height:100%;min-height:0;overflow-y:hidden" in console_styles
+        assert ".file-state.not-collected" in console_styles
+        assert ".collection-notice" in console_styles
         assert ".report-shell.is-pinned .allure-case-list,.report-shell.is-pinned .allure-case-detail" in console_styles
         assert client.get("/api/runs/not-found/allure").status_code == 404
         assert client.get("/api/projects/pytest_api/source", params={"path": "../../AGENTS.md"}).status_code == 400

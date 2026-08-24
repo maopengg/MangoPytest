@@ -55,7 +55,12 @@ def create_app(settings: WebConsoleSettings | None = None) -> FastAPI:
                 allowed_hosts = {request.url.netloc, "127.0.0.1", "localhost"}
                 if origin_parts.hostname not in allowed_hosts or origin_parts.port != request.url.port:
                     return JSONResponse({"detail": "拒绝跨来源写操作"}, status_code=403)
-        return await call_next(request)
+        response = await call_next(request)
+        if request.url.path.startswith("/static/"):
+            # The console is a local development tool. Always revalidate its
+            # CSS/JS so an already-running server does not expose stale UI.
+            response.headers["Cache-Control"] = "no-cache, must-revalidate"
+        return response
 
     @app.get("/", response_class=HTMLResponse)
     async def dashboard(request: Request):

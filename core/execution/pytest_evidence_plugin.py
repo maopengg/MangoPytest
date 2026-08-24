@@ -160,6 +160,14 @@ def _patch_method(owner: type, method_name: str) -> None:
 
     @wraps(original)
     def wrapped(self, *args, **kwargs):
+        base_data = getattr(self, "base_data", None)
+        managed = getattr(base_data, "_ui_operation_evidence_context", None)
+        if isinstance(managed, dict) and managed.get("method") == method_name:
+            # Named-element execution owns the single Allure step. Capture the
+            # resolved Locator here without creating a nested duplicate step.
+            managed["input"] = _ui_operation_evidence(method_name, args, kwargs)
+            return original(self, *args, **kwargs)
+
         started = time.perf_counter()
         with allure.step(f"UI 操作 · {method_name}"):
             attach_json("操作信息", _ui_operation_evidence(method_name, args, kwargs))

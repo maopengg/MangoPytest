@@ -29,10 +29,12 @@ def test_tree_maps_feature_to_exact_feature_execution_target(tmp_path: Path) -> 
     project_root = tmp_path / "bdd_api"
     feature_file = project_root / "features" / "grpc" / "grpc.feature"
     test_file = project_root / "test_cases" / "grpc" / "test_grpc.py"
+    ignored_file = project_root / "test_cases" / "test_ignored.py"
     feature_file.parent.mkdir(parents=True)
     test_file.parent.mkdir(parents=True)
     feature_file.write_text("功能: gRPC\n", encoding="utf-8")
     test_file.write_text("def test_ftapi_0140(): pass\n", encoding="utf-8")
+    ignored_file.write_text("def test_ignored(): pass\n", encoding="utf-8")
     settings = SimpleNamespace(artifacts_root=tmp_path / "artifacts")
     catalog = SimpleNamespace(get=lambda *args, **kwargs: SimpleNamespace(root=project_root))
     service = CollectionService(settings, catalog)
@@ -58,7 +60,20 @@ def test_tree_maps_feature_to_exact_feature_execution_target(tmp_path: Path) -> 
         "executable": True,
         "execution_kind": "feature",
         "execution_target": "features/grpc/grpc.feature",
+        "collection_state": "collected",
         "type": "feature",
+    }
+    assert tree["test_cases/grpc/test_grpc.py"]["executable"] is True
+    assert tree["test_cases/grpc/test_grpc.py"]["count"] == 2
+    assert tree["test_cases/grpc/test_grpc.py"]["collection_state"] == "collected"
+    assert tree["test_cases/test_ignored.py"] == {
+        "path": "test_cases/test_ignored.py",
+        "count": 0,
+        "executable": False,
+        "execution_kind": "",
+        "execution_target": "",
+        "collection_state": "not_collected",
+        "type": "python",
     }
     assert service.feature_nodes("bdd_api", "features/grpc/grpc.feature") == (
         "test_cases/grpc/test_grpc.py::test_unary",

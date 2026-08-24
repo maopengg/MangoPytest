@@ -31,6 +31,13 @@ def test_local_excel_registry_covers_capability_inventory():
 
 
 def test_business_layers_do_not_import_another_ui_demo():
+    test_cases = PROJECT / "test_cases"
+    assert len(list((test_cases / "capabilities" / "operations").glob("test_*.py"))) == 12
+    assert len(list((test_cases / "capabilities" / "interactions").glob("test_*.py"))) == 5
+    assert len(list((test_cases / "capabilities" / "inventory").glob("test_*.py"))) == 8
+    assert len(list((test_cases / "business").glob("test_*.py"))) == 3
+    assert not (test_cases / "test_mango_mock_ui.py").exists()
+    assert not (test_cases / "test_business_workflows.py").exists()
     forbidden = ("auto_tests.ui.simple_ui", "auto_tests.ui.bdd_ui")
     for file in PROJECT.rglob("*.py"):
         if file == Path(__file__):

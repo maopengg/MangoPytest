@@ -5,6 +5,7 @@ from typing import Literal
 from pydantic import ConfigDict, Field
 
 from core.base.config import BaseConfig
+from core.settings import settings as system_settings
 
 
 class UIRuntimeConfig(BaseConfig):
@@ -24,17 +25,33 @@ class UIRuntimeConfig(BaseConfig):
     WINDOW_HEIGHT: int = Field(default=900, description="窗口高度")
     TRACE_ENABLED: bool = Field(default=True, description="采集 Playwright Trace")
 
-    ELEMENT_HEALING_ENABLED: bool = Field(default=True, description="启用元素自愈")
-    ELEMENT_HEALING_MODE: int = Field(default=2, description="元素自愈模式")
-    AI_ELEMENT_HEALING_ENABLED: bool = Field(default=False, description="启用 AI 元素修复")
-    AI_API_KEY: str = Field(default="", description="AI 模型 API Key")
+    ELEMENT_HEALING_ENABLED: bool = Field(
+        default=system_settings.ELEMENT_HEALING_ENABLED, description="启用元素自愈"
+    )
+    ELEMENT_HEALING_MODE: int = Field(
+        default=system_settings.ELEMENT_HEALING_MODE, description="元素自愈模式"
+    )
+    AI_ELEMENT_HEALING_ENABLED: bool = Field(
+        default=system_settings.AI_ELEMENT_HEALING_ENABLED,
+        description="启用 AI 元素修复",
+    )
+    AI_API_KEY: str = Field(
+        default=system_settings.AI_API_KEY, description="AI 模型 API Key"
+    )
     AI_BASE_URL: str = Field(
-        default="https://api.siliconflow.cn/v1",
+        default=system_settings.AI_BASE_URL,
         description="AI 模型地址",
     )
     AI_MODEL: str = Field(
-        default="THUDM/GLM-Z1-9B-0414",
+        default=system_settings.AI_MODEL,
         description="AI 模型名称",
+    )
+    AI_TIMEOUT: int = Field(
+        default=system_settings.AI_TIMEOUT, description="AI 请求超时(秒)"
+    )
+    AI_SEMANTIC_STRENGTH: int = Field(
+        default=system_settings.AI_SEMANTIC_STRENGTH,
+        description="AI 语义定位强度",
     )
 
     ARTIFACT_DIR: str

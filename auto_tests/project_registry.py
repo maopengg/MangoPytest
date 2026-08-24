@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from core.enums import BaseEnum
 from core.enums.tools_enum import AutoTestTypeEnum, EnvironmentEnum
+from core.settings import settings as system_settings
 
 
 class ProjectEnum(BaseEnum):
@@ -31,12 +32,14 @@ UI_RUNTIME_OPTIONS = (
     {"key": "HEADLESS", "label": "无头模式", "type": "boolean", "default": "true"},
     {"key": "IMPLICIT_WAIT", "label": "操作超时（秒）", "type": "integer", "default": "10", "min": 1, "max": 300},
     {"key": "TRACE_ENABLED", "label": "记录 Playwright Trace", "type": "boolean", "default": "true"},
-    {"key": "ELEMENT_HEALING_ENABLED", "label": "启用元素自愈", "type": "boolean", "default": "true"},
-    {"key": "ELEMENT_HEALING_MODE", "label": "元素自愈模式", "type": "select", "default": "2", "choices": ["1", "2", "3"]},
-    {"key": "AI_ELEMENT_HEALING_ENABLED", "label": "启用 AI 元素修复", "type": "boolean", "default": "false"},
-    {"key": "AI_API_KEY", "label": "AI API Key", "type": "text", "default": ""},
-    {"key": "AI_BASE_URL", "label": "AI 服务地址", "type": "url", "default": "https://api.siliconflow.cn/v1"},
-    {"key": "AI_MODEL", "label": "AI 模型", "type": "text", "default": "THUDM/GLM-Z1-9B-0414"},
+    {"key": "ELEMENT_HEALING_ENABLED", "label": "启用元素自愈", "type": "boolean", "default": str(system_settings.ELEMENT_HEALING_ENABLED).lower()},
+    {"key": "ELEMENT_HEALING_MODE", "label": "元素自愈模式", "type": "select", "default": str(system_settings.ELEMENT_HEALING_MODE), "choices": ["1", "2", "3"]},
+    {"key": "AI_ELEMENT_HEALING_ENABLED", "label": "启用 AI 元素修复", "type": "boolean", "default": str(system_settings.AI_ELEMENT_HEALING_ENABLED).lower()},
+    {"key": "AI_API_KEY", "label": "AI API Key", "type": "text", "default": system_settings.AI_API_KEY},
+    {"key": "AI_BASE_URL", "label": "AI 服务地址", "type": "url", "default": system_settings.AI_BASE_URL},
+    {"key": "AI_MODEL", "label": "AI 模型", "type": "text", "default": system_settings.AI_MODEL},
+    {"key": "AI_TIMEOUT", "label": "AI 请求超时（秒）", "type": "integer", "default": str(system_settings.AI_TIMEOUT), "min": 1, "max": 300},
+    {"key": "AI_SEMANTIC_STRENGTH", "label": "AI 语义定位强度", "type": "integer", "default": str(system_settings.AI_SEMANTIC_STRENGTH), "min": 0, "max": 100},
 )
 SIMPLE_UI_RUNTIME_OPTIONS = tuple(
     option for option in UI_RUNTIME_OPTIONS if option["key"] != "TRACE_ENABLED"

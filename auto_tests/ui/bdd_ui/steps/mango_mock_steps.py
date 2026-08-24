@@ -25,6 +25,11 @@ def execute_operation_case(case_id, base_data, scenario_context):
     scenario_context["passed"] = True
 
 
+@when("执行当前分类的 mangoautomation 操作用例")
+def execute_current_operation_case(case_id, base_data, scenario_context):
+    execute_operation_case(case_id, base_data, scenario_context)
+
+
 @when(parsers.parse('操作交互控件用例 "{case_id}"'))
 def execute_element_case(case_id, base_data, bdd_ui_data_factory, scenario_context):
     page = BddUICasePage(base_data, bdd_ui_data_factory)
@@ -35,10 +40,20 @@ def execute_element_case(case_id, base_data, bdd_ui_data_factory, scenario_conte
         page.cleanup_run()
 
 
+@when("操作当前分类的交互控件用例")
+def execute_current_element_case(case_id, base_data, bdd_ui_data_factory, scenario_context):
+    execute_element_case(case_id, base_data, bdd_ui_data_factory, scenario_context)
+
+
 @when(parsers.parse('验证元素定位用例 "{case_id}"'))
 def execute_inventory_case(case_id, base_data, scenario_context):
     BddUICasePage(base_data).verify_inventory(INVENTORY[case_id])
     scenario_context["passed"] = True
+
+
+@when("验证当前页面的元素定位用例")
+def execute_current_inventory_case(case_id, base_data, scenario_context):
+    execute_inventory_case(case_id, base_data, scenario_context)
 
 
 @then("BDD UI 用例应该执行成功")

@@ -9,18 +9,8 @@ UI Mock 项目的 Fixtures 注册中心
 此文件集中注册所有 fixtures，便于管理和使用。
 在测试文件中只需导入此模块即可使用所有 fixtures。
 
-使用示例：
-    # test_example.py
-    from auto_tests.ui.simple_ui.fixtures.conftest import *
-
-    def test_with_driver(web_runtime):
-        context, page = web_runtime.new_context_page()
-        page.goto("https://example.com")
-
-    def test_with_base_data(base_data):
-        from auto_tests.ui.simple_ui.abstract.home_page import HomePage
-        home_page = HomePage(base_data, test_data)
-        home_page.goto()
+正式 Case 统一位于 ``test_cases/capabilities/``，通过 ``ExcelCasePage``
+执行本地 Excel 声明的操作、交互和元素定位能力。
 """
 
 # ========== 基础设施 fixtures ==========

@@ -42,3 +42,14 @@ def test_business_features_use_real_domain_steps():
         assert "执行 UI-" not in content, file
         assert "操作交互控件用例" not in content, file
         assert "API 查询到的" in content, file
+
+    test_cases = PROJECT / "test_cases"
+    assert not (test_cases / "test_business_bdd.py").exists()
+    assert not (test_cases / "test_capabilities_bdd.py").exists()
+    assert len(list((test_cases / "capabilities" / "operations").glob("test_*.py"))) == 12
+    assert len(list((test_cases / "capabilities" / "interactions").glob("test_*.py"))) == 5
+    assert len(list((test_cases / "capabilities" / "inventory").glob("test_*.py"))) == 8
+    for file in (test_cases / "capabilities").rglob("test_*.py"):
+        assert file.read_text(encoding="utf-8").count("@scenario(") == 1
+    for file in (test_cases / "business").glob("test_*.py"):
+        assert file.read_text(encoding="utf-8").count("scenarios(") == 1

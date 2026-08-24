@@ -53,8 +53,12 @@ class CollectionService:
         project = self.catalog.get(project_id, require_enabled=False)
         cases = self.read(project_id)["cases"]
         files: dict[str, list[dict]] = {}
+        test_files: dict[str, list[dict]] = {}
         for case in cases:
             files.setdefault(case["file"], []).append(case)
+            test_file = str(case.get("test_file", ""))
+            if test_file:
+                test_files.setdefault(test_file, []).append(case)
         visible_files = []
         for path in project.root.rglob("*"):
             if not path.is_file() or path.suffix not in {".py", ".feature"}:
@@ -65,13 +69,23 @@ class CollectionService:
             value = relative.as_posix()
             file_cases = files.get(value, [])
             is_pytest_file = path.suffix == ".py" and path.name.startswith("test_")
+            collected_cases = test_files.get(value, file_cases)
+            is_collected = bool(collected_cases)
+            is_feature = path.suffix == ".feature"
+            executable = (is_pytest_file and is_collected) or (is_feature and bool(file_cases))
             visible_files.append({
                 "path": value,
-                "count": len(file_cases),
-                "executable": is_pytest_file or (path.suffix == ".feature" and bool(file_cases)),
-                "execution_kind": "file" if is_pytest_file else ("feature" if file_cases else ""),
-                "execution_target": value if (is_pytest_file or file_cases) else "",
-                "type": "feature" if path.suffix == ".feature" else "python",
+                "count": len(collected_cases) if is_pytest_file else len(file_cases),
+                "executable": executable,
+                "execution_kind": "file" if is_pytest_file and is_collected else ("feature" if is_feature and file_cases else ""),
+                "execution_target": value if executable else "",
+                "collection_state": (
+                    "collected" if is_collected or (is_feature and file_cases)
+                    else "not_collected" if is_pytest_file
+                    else "unbound" if is_feature
+                    else "source"
+                ),
+                "type": "feature" if is_feature else "python",
             })
         return sorted(visible_files, key=lambda item: item["path"])
 

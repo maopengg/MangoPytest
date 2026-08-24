@@ -3,8 +3,9 @@
 # @Description: 
 # @Time   : 2026-04-04 18:22
 # @Author : 毛鹏
+from core.sources.element_schema import CANONICAL_ELEMENT_HEADERS
+
 from .element_runtime import (
-    CANONICAL_ELEMENT_HEADERS,
     ElementDefinition,
     ElementRuntime,
     LocatorDefinition,

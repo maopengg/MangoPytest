@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import inspect
 import os
+import time
 from typing import Any, Protocol
 
 import allure
@@ -22,8 +23,6 @@ from mangotools.enums import StatusEnum
 from playwright.sync_api import Locator
 
 from core.execution.evidence import attach_json
-from core.sources.element_schema import CANONICAL_ELEMENT_HEADERS
-
 _EXPRESSIONS = {
     "XPATH": ElementExpEnum.XPATH.value,
     "0": ElementExpEnum.XPATH.value,
@@ -60,12 +59,6 @@ def _optional_text(value: Any) -> str | None:
     return None if value in (None, "") else str(value)
 
 
-def _bool(value: Any, *, default: bool = False) -> bool:
-    if value in (None, ""):
-        return default
-    return str(value).strip().lower() in {"是", "true", "1", "yes", "启用"}
-
-
 def _expression_type(value: str | int) -> int:
     key = str(value).strip().upper()
     if key not in _EXPRESSIONS:
@@ -88,7 +81,6 @@ class LocatorDefinition:
     method: str | int
     expression: str
     index: int | None = None
-    is_iframe: bool = False
     prompt: str | None = None
     slot: int = 1
 
@@ -101,7 +93,6 @@ class LocatorDefinition:
             exp=exp,
             loc=loc,
             sub=sub,
-            is_iframe=StatusEnum.SUCCESS.value if self.is_iframe else StatusEnum.FAIL.value,
             prompt=self.prompt,
             slot=self.slot,
         )
@@ -115,16 +106,7 @@ class ElementDefinition:
     page_name: str
     name: str
     locators: tuple[LocatorDefinition, ...]
-    category: str | None = None
-    ai_heal_status: int = 1
-    collect_snapshot: bool = True
-    sleep: int | None = None
-    tag: str | None = None
-    input_type: str | None = None
-    role: str | None = None
     description: str | None = None
-    interactive: bool = False
-    disabled: bool = False
 
     @property
     def locating_method(self) -> str | int:
@@ -159,9 +141,6 @@ class ElementDefinition:
                     index=_optional_int(
                         _value(record, f"元素下标{slot}", f"下标{slot}", f"元素下标-{slot}")
                     ),
-                    is_iframe=_bool(
-                        _value(record, f"是否iframe{slot}", "是否iframe", "iframe")
-                    ),
                     prompt=_optional_text(
                         _value(record, f"AI定位提示词{slot}", "AI定位提示词", "提示词")
                     ),
@@ -177,16 +156,7 @@ class ElementDefinition:
             page_name=str(_value(record, "页面名称", default="")),
             name=str(_value(record, "元素名称", "*元素名称")),
             locators=tuple(locators),
-            category=_optional_text(_value(record, "元素分类", "分类")),
-            ai_heal_status=int(_bool(_value(record, "AI自愈状态"), default=True)),
-            collect_snapshot=_bool(_value(record, "采集快照"), default=True),
-            sleep=_optional_int(_value(record, "等待时间")),
-            tag=_optional_text(record.get("标签")),
-            input_type=_optional_text(record.get("input类型")),
-            role=_optional_text(record.get("role")),
             description=_optional_text(record.get("说明")),
-            interactive=_bool(record.get("可交互")),
-            disabled=_bool(record.get("禁用")),
         )
 
     def to_element_model(
@@ -202,11 +172,9 @@ class ElementDefinition:
             element_id=self.element_id,
             type=operation_type,
             name=self.name,
-            category=self.category or self.page_name or self.module_name,
-            ai_heal_status=self.ai_heal_status,
-            collect_snapshot=self.collect_snapshot,
+            category=self.page_name or self.module_name,
             elements=[item.to_model() for item in (locators or self.locators)],
-            sleep=self.sleep,
+            sleep=None,
             ope_key=method,
             ope_value=arguments,
         )
@@ -236,7 +204,9 @@ class ElementRuntime:
             api_key=api_key if ai_enabled else None,
             base_url=str(getattr(settings, "AI_BASE_URL", "https://api.siliconflow.cn/v1")),
             model=str(getattr(settings, "AI_MODEL", "THUDM/GLM-Z1-9B-0414")),
+            timeout=int(getattr(settings, "AI_TIMEOUT", 30)),
             mode=int(getattr(settings, "ELEMENT_HEALING_MODE", 2)),
+            semantic_strength=int(getattr(settings, "AI_SEMANTIC_STRENGTH", 0)),
             logger=self.base_data.log,
         )
         self.base_data.set_locator_engine(engine)
@@ -280,10 +250,58 @@ class ElementRuntime:
             arguments=arguments,
             locators=locators,
         )
-        with allure.step(f"UI 元素 · {definition.name} · {method}"):
-            attach_json("操作信息", model.model_dump(mode="json"))
-            result = self.driver.element_main(model)
-            attach_json("操作结果", result.model_dump(mode="json"))
+        operation_context = {
+            "method": method,
+            "input": {
+                "operation": method,
+                "arguments": [],
+                "keyword_arguments": params or {},
+            },
+        }
+        missing = object()
+        previous_context = getattr(
+            self.base_data, "_ui_operation_evidence_context", missing
+        )
+        self.base_data._ui_operation_evidence_context = operation_context
+        started = time.perf_counter()
+        try:
+            with allure.step(f"UI 操作 · {method} · {definition.name}"):
+                try:
+                    result = self.driver.element_main(model)
+                except Exception as error:
+                    attach_json(
+                        "操作信息",
+                        self._operation_input_evidence(operation_context, all_definitions),
+                    )
+                    attach_json("操作结果", {
+                        "status": "failed",
+                        "duration_ms": round((time.perf_counter() - started) * 1000, 2),
+                        "page_url": getattr(
+                            getattr(self.base_data, "page", None), "url", ""
+                        ),
+                        "error_type": type(error).__name__,
+                        "error": str(error),
+                    })
+                    raise
+                attach_json(
+                    "操作信息",
+                    self._operation_input_evidence(operation_context, all_definitions),
+                )
+                attach_json("操作结果", {
+                    "status": (
+                        "passed"
+                        if result.status == StatusEnum.SUCCESS.value
+                        else "failed"
+                    ),
+                    "duration_ms": round((time.perf_counter() - started) * 1000, 2),
+                    "page_url": getattr(getattr(self.base_data, "page", None), "url", ""),
+                    "element_result": result.model_dump(mode="json"),
+                })
+        finally:
+            if previous_context is missing:
+                delattr(self.base_data, "_ui_operation_evidence_context")
+            else:
+                self.base_data._ui_operation_evidence_context = previous_context
         self.last_result = result
         history = getattr(self.base_data, "ui_element_results", None)
         if history is None:
@@ -293,6 +311,39 @@ class ElementRuntime:
         if result.status != StatusEnum.SUCCESS.value:
             raise MangoAutomationError(300, result.error_message or f"元素 {name} 执行失败")
         return result
+
+    @classmethod
+    def _operation_input_evidence(
+        cls,
+        operation_context: dict[str, Any],
+        definitions: tuple[ElementDefinition, ...],
+    ) -> dict[str, Any]:
+        operation_input = operation_context["input"]
+        operation_input["named_elements"] = [
+            cls._definition_evidence(item) for item in definitions
+        ]
+        return operation_input
+
+    @staticmethod
+    def _definition_evidence(definition: ElementDefinition) -> dict[str, Any]:
+        return {
+            "id": definition.element_id,
+            "project_name": definition.project_name,
+            "module_name": definition.module_name,
+            "page_name": definition.page_name,
+            "name": definition.name,
+            "description": definition.description,
+            "locators": [
+                {
+                    "slot": locator.slot,
+                    "method": locator.method,
+                    "expression": locator.expression,
+                    "index": locator.index,
+                    "ai_prompt": locator.prompt,
+                }
+                for locator in definition.locators
+            ],
+        }
 
     def _arguments(
         self,
