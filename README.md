@@ -224,3 +224,4 @@ ENV=test .venv/bin/python main.py --project all --collect-only -q
 <p align="center">
   <img src="docs/assets/images/wechat-payment.jpg" width="460" alt="微信收款码">
 </p>
+1
