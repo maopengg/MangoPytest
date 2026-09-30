@@ -204,6 +204,7 @@ ENV=test .venv/bin/python main.py --project all --collect-only -q
 
 - [项目架构](docs/architecture/)
 - [使用指南](docs/guides/)
+- [内部包升级记录与已知失败](docs/guides/内部包升级记录.md)
 - [重构与演进方案](docs/plans/)
 - [开源许可证](LICENSE)
 

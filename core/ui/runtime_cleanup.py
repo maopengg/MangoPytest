@@ -6,7 +6,7 @@ from playwright.sync_api import Error as PlaywrightError
 def close_sync_web_runtime(runtime, log) -> None:
     """停止 Playwright Driver，并由其级联关闭 Browser。
 
-    mangoautomation 2.0.4 的 ``SyncWebRuntime.close`` 当前只关闭 Browser；
+    mangoautomation 2.1.0 的 ``SyncWebRuntime.close`` 仍只关闭 Browser；
     在 xdist Worker 中 ``browser.close`` 可能等待 Driver 而无法退出，因此优先
     使用 Playwright 的完整停止入口。待内部包修复后可删除此兼容逻辑。
     """

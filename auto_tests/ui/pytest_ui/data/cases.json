@@ -607,7 +607,7 @@
       "description": "等待URL匹配",
       "target_id": "history-result",
       "params": {
-        "url": "**/",
+        "url": "**",
         "timeout": 5000
       },
       "expected": "等待URL匹配执行成功，operation-event-log/关联状态元素发生预期变化",

@@ -13,7 +13,7 @@ This file provides guidance to Codex (Codex.ai/code) when working with code in t
 | 源码仓库 | Python 包 | 本项目联调版本 |
 |---|---|---|
 | `/Users/mango/code/mango_tools` | `mangotools` | `2.0.8` |
-| `/Users/mango/code/mango_automation` | `mangoautomation` | `2.0.5` |
+| `/Users/mango/code/mango_automation` | `mangoautomation` | `2.1.0` |
 
 - `mangotools` 和 `mangoautomation` 禁止从 PyPI 安装；PyPI 版本是旧实现。
 - 公共三方依赖维护在 `requirements.txt`，内部包只维护在
