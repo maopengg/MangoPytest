@@ -204,7 +204,10 @@ ENV=test .venv/bin/python main.py --project all --collect-only -q
 
 - [项目架构](docs/architecture/)
 - [使用指南](docs/guides/)
+- [AI 元素定位使用指南](docs/guides/AI元素定位使用指南.md)
+- [AI 定位提示词编写规范](docs/guides/AI定位提示词编写规范.md)
 - [内部包升级记录与已知失败](docs/guides/内部包升级记录.md)
+- [AI 元素定位接入方案](docs/plans/AI元素定位接入方案.md)
 - [重构与演进方案](docs/plans/)
 - [开源许可证](LICENSE)
 

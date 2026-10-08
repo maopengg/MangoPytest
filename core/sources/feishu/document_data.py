@@ -91,7 +91,10 @@ class DocumentData:
                     [
                         row[0], row[1], row[2], row[3], name,
                         row[5], row[6], row[7],
-                        row[14] or f"查找元素：{name}",
+                        # 旧表没有提示词时留空，不再回退成「查找元素：<元素名>」——
+                        # 那种模板串与元素名等价、对 AI 没有增量语义（见
+                        # core/sources/prompt_spec.py 的 template_prompt 规则）。
+                        row[14] or None,
                         row[8], row[9], row[10], None,
                         row[11], row[12], row[13], None,
                         None,

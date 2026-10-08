@@ -22,7 +22,70 @@ def parse_args() -> tuple[argparse.Namespace, list[str]]:
     )
     parser.add_argument("--collect-only", action="store_true")
     parser.add_argument("--list-projects", action="store_true")
+    parser.add_argument(
+        "--check-elements",
+        action="store_true",
+        help="只做元素表 AI 定位提示词体检，不执行用例",
+    )
+    parser.add_argument(
+        "--element-product",
+        default="",
+        help="限定体检的 UI 元素产品（默认全部已注册产品）",
+    )
+    parser.add_argument(
+        "--max-issues",
+        type=int,
+        default=40,
+        help="每类体检结论最多打印多少条明细（默认 40）",
+    )
     return parser.parse_known_args()
+
+
+def check_elements(product: str, max_issues: int) -> int:
+    """元素表 AI 定位提示词体检。
+
+    用法：``python main.py --check-elements``。存在错误级结论时返回非 0，
+    便于接入提交前检查或 CI。
+    """
+
+    from collections import Counter
+
+    from core.sources.element_schema import REQUIRED_ELEMENT_HEADERS
+    from core.sources.excel import ExcelWorkbookSource
+    from core.sources.prompt_spec import ERROR, WARNING, lint_records, summarize
+    from core.sources.ui_elements import PRODUCT_WORKBOOKS, WORKBOOK_DIR
+
+    if product and product not in PRODUCT_WORKBOOKS:
+        print(f"未注册 UI 元素产品：{product}；可选：{', '.join(sorted(PRODUCT_WORKBOOKS))}")
+        return 2
+
+    targets = (
+        [(product, PRODUCT_WORKBOOKS[product])] if product else sorted(PRODUCT_WORKBOOKS.items())
+    )
+    exit_code = 0
+    for name, files in targets:
+        records = tuple(
+            record
+            for file_name in files
+            for record in ExcelWorkbookSource(WORKBOOK_DIR / file_name).records(
+                "UI元素", required_headers=REQUIRED_ELEMENT_HEADERS
+            )
+        )
+        issues = lint_records(records)
+        counts = summarize(issues)
+        errors = [issue for issue in issues if issue.is_error]
+        warnings = [issue for issue in issues if issue.level == WARNING]
+        print(f"\n[{name}] 元素 {len(records)} 条 · 错误 {counts[ERROR]} · 警告 {counts[WARNING]}")
+        for rule, count in Counter(issue.rule for issue in issues).most_common():
+            print(f"    {rule}: {count}")
+        for label, group in (("错误", errors), ("警告", warnings)):
+            for issue in group[:max_issues]:
+                print(f"  {issue.describe()}")
+            if len(group) > max_issues:
+                print(f"  … 另有 {len(group) - max_issues} 条{label}未显示")
+        if errors:
+            exit_code = 1
+    return exit_code
 
 
 def list_projects() -> None:
@@ -53,6 +116,8 @@ def main() -> int:
     if args.list_projects:
         list_projects()
         return 0
+    if args.check_elements:
+        return check_elements(args.element_product, args.max_issues)
     projects = enabled_projects() if args.project == "all" else (args.project,)
     result = 0
     for project in projects:

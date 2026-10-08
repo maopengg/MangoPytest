@@ -5,6 +5,7 @@ from urllib.parse import urlsplit
 
 from auto_tests.project_registry import PROJECT_REGISTRY
 from core.execution.models import ProjectDescriptor
+from core.execution.secrets import is_sensitive_key, mask_secret
 
 
 class ProjectCatalog:
@@ -98,17 +99,27 @@ class ProjectCatalog:
 
     @staticmethod
     def _safe_env_values(path: Path) -> dict[str, str]:
+        """读取项目 .env 中可安全展示的配置，用于控制台的配置来源预览。
+
+        AI 与元素自愈配置在这里一并放行，否则写进 ``.env.<env>`` 的值不会反映到
+        控制台预览（子进程 pydantic 仍会读到，导致"预览与实跑不一致"）。
+        敏感字段（API Key 等）按其规则脱敏后展示，禁止明文进入预览。
+        """
+
         allowed = {
             "BASE_URL", "BROWSER", "BROWSER_PATH", "HEADLESS", "IMPLICIT_WAIT",
             "TRACE_ENABLED", "LOG_LEVEL", "MOCK_TIMEOUT", "MOCK_RETRY_TIMES",
         }
+        allowed_prefixes = ("AI_", "ELEMENT_HEALING_")
         result = {}
         for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
             if not line or line.lstrip().startswith("#") or "=" not in line:
                 continue
             key, value = line.split("=", 1)
-            if key.strip() in allowed:
-                result[key.strip()] = value.strip()
+            key, value = key.strip(), value.strip()
+            if key not in allowed and not key.startswith(allowed_prefixes):
+                continue
+            result[key] = mask_secret(value) if is_sensitive_key(key) else value
         return result
 
     def _build(self, project_id: str, config: dict) -> ProjectDescriptor:

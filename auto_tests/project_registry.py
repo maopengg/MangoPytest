@@ -33,9 +33,11 @@ UI_RUNTIME_OPTIONS = (
     {"key": "IMPLICIT_WAIT", "label": "操作超时（秒）", "type": "integer", "default": "10", "min": 1, "max": 300},
     {"key": "TRACE_ENABLED", "label": "记录 Playwright Trace", "type": "boolean", "default": "true"},
     {"key": "ELEMENT_HEALING_ENABLED", "label": "启用元素自愈", "type": "boolean", "default": str(system_settings.ELEMENT_HEALING_ENABLED).lower()},
-    {"key": "ELEMENT_HEALING_MODE", "label": "元素自愈模式", "type": "select", "default": str(system_settings.ELEMENT_HEALING_MODE), "choices": ["1", "2", "3"]},
+    # 以下两项刻意不在控制台暴露：
+    # * ELEMENT_HEALING_MODE —— mangoautomation 2.1.0 的 harness 内部把模式硬编码为 2，
+    #   1/2/3 不产生任何行为差异，暴露出来只会误导使用者（恢复语义后可重新加入）。
+    # * AI_API_KEY —— 真实凭据只允许通过环境变量 / CI Secret 注入，避免明文落库与页面回显。
     {"key": "AI_ELEMENT_HEALING_ENABLED", "label": "启用 AI 元素修复", "type": "boolean", "default": str(system_settings.AI_ELEMENT_HEALING_ENABLED).lower()},
-    {"key": "AI_API_KEY", "label": "AI API Key", "type": "text", "default": system_settings.AI_API_KEY},
     {"key": "AI_BASE_URL", "label": "AI 服务地址", "type": "url", "default": system_settings.AI_BASE_URL},
     {"key": "AI_MODEL", "label": "AI 模型", "type": "text", "default": system_settings.AI_MODEL},
     {"key": "AI_TIMEOUT", "label": "AI 请求超时（秒）", "type": "integer", "default": str(system_settings.AI_TIMEOUT), "min": 1, "max": 300},

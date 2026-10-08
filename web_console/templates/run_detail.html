@@ -4,6 +4,7 @@
 <div class="breadcrumb"><a href="/">项目</a><span>/</span><span>执行详情</span></div>
 <section class="run-heading"><div><p class="eyebrow">RUN ID</p><h1 class="mono">{{ run_id }}</h1></div><div class="actions"><button id="cancel-button" class="button danger" onclick="cancelRun(this)">停止</button><button class="button secondary" onclick="rerun(this)">重新运行</button></div></section>
 <div id="run-meta" class="meta-grid"></div>
+<section id="ai-healing-panel" class="console-card hidden"><div class="console-head"><span>AI 元素定位 / 自愈统计</span><span id="ai-healing-state" class="muted">读取中</span></div><div id="ai-healing-body" class="artifact-list"></div></section>
 <div class="report-anchor"><section class="report-shell">
   <div class="report-tabs"><button class="report-tab" data-tab="cases" onclick="switchRunTab('cases',this)">测试结果</button><button class="report-tab active" data-tab="log" onclick="switchRunTab('log',this)">实时日志</button><button class="report-tab" data-tab="artifacts" onclick="switchRunTab('artifacts',this)">全部产物</button></div>
   <div id="tab-cases" class="run-tab">

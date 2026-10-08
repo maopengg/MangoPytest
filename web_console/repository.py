@@ -6,6 +6,8 @@ import sqlite3
 from threading import RLock
 from typing import Any
 
+from core.execution.secrets import strip_sensitive
+
 
 class RunRepository:
     def __init__(self, database_path: Path) -> None:
@@ -33,6 +35,38 @@ class RunRepository:
                 self.connection.execute(
                     "ALTER TABLE runs ADD COLUMN runtime_overrides_json TEXT NOT NULL DEFAULT '{}'"
                 )
+        self._scrub_legacy_secrets()
+
+    def _scrub_legacy_secrets(self) -> None:
+        """清理历史运行记录中遗留的明文凭据。
+
+        早期控制台允许填写 AI API Key 并原文落库（违反 ``AGENTS.md``）。这里在启动时
+        一次性删除这些字段：打码不可取，因为重跑会拿掩码去访问外部服务而产生难以排查
+        的失败；删除后该次运行会自然回退到环境变量 / CI Secret。
+        """
+
+        with self.lock, self.connection:
+            rows = self.connection.execute(
+                "SELECT id, runtime_overrides_json FROM runs "
+                "WHERE runtime_overrides_json NOT IN ('', '{}')"
+            ).fetchall()
+            for row in rows:
+                try:
+                    values = json.loads(row["runtime_overrides_json"] or "{}")
+                except json.JSONDecodeError:
+                    values = None
+                if not isinstance(values, dict):
+                    # 无法解析的历史载荷统一归零，避免读取路径 json.loads 抛异常。
+                    self.connection.execute(
+                        "UPDATE runs SET runtime_overrides_json='{}' WHERE id=?", (row["id"],)
+                    )
+                    continue
+                scrubbed = strip_sensitive(values)
+                if scrubbed != values:
+                    self.connection.execute(
+                        "UPDATE runs SET runtime_overrides_json=? WHERE id=?",
+                        (json.dumps(scrubbed, ensure_ascii=False), row["id"]),
+                    )
 
     def create(self, record: dict[str, Any]) -> None:
         columns = ",".join(record)

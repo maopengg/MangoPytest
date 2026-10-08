@@ -43,7 +43,8 @@ def test_chinese_element_row_maps_to_mangoautomation_models():
     )
 
     assert model.element_id == 7
-    assert model.category == "componentsPage"
+    # 页面键映射为中文页面名，提升送进 AI 请求的 category 语义。
+    assert model.category == "组件演示页"
     assert model.ai_heal_status == 0
     assert model.collect_snapshot is False
     assert len(model.elements) == 3
@@ -51,10 +52,20 @@ def test_chinese_element_row_maps_to_mangoautomation_models():
     assert model.elements[0].loc == "get_by_test_id('submit-button')"
     assert model.elements[0].sub == 1
     assert model.elements[0].is_iframe is None
-    assert model.elements[0].prompt == "提交表单按钮"
-    assert model.elements[1].prompt == "表单底部的提交按钮"
-    assert model.elements[2].prompt == "文本为提交的主按钮"
+    # 三组提示词按行合并后只写入第一组：库侧 first_prompt 只读第一个非空 prompt。
+    merged = "提交表单按钮\n表单底部的提交按钮\n文本为提交的主按钮"
+    assert model.elements[0].prompt == merged
+    assert model.elements[1].prompt is None
+    assert model.elements[2].prompt is None
+    assert model.description_template == merged
     assert definition.description == "提交当前表单"
+    # 逐 slot 的原值仍保留在 LocatorDefinition 上，供 Allure 证据展示。
+    assert [item.prompt for item in definition.locators] == [
+        "提交表单按钮", "表单底部的提交按钮", "文本为提交的主按钮",
+    ]
+    # element_version 是定位器 + 提示词的内容指纹，不是元素 ID。
+    assert definition.element_version != 7
+    assert model.element_version == definition.element_version
 
 
 def test_legacy_and_feishu_headers_remain_compatible():
@@ -155,10 +166,28 @@ def test_runtime_passes_ai_settings_to_healing_harness(monkeypatch):
             captured.update(kwargs)
             return "healing-engine"
 
+    class FakeLog:
+        def __init__(self):
+            self.records = []
+
+        def _record(self, level, message, *args):
+            self.records.append((level, message % args if args else message))
+
+        def debug(self, message, *args):
+            self._record("debug", message, *args)
+
+        def info(self, message, *args):
+            self._record("info", message, *args)
+
+        def warning(self, message, *args):
+            self._record("warning", message, *args)
+
     class FakeBaseData:
         locator_engine = None
-        log = "logger"
         is_ai = False
+
+        def __init__(self):
+            self.log = FakeLog()
 
         def set_locator_engine(self, engine):
             self.locator_engine = engine
@@ -187,8 +216,73 @@ def test_runtime_passes_ai_settings_to_healing_harness(monkeypatch):
         "timeout": 45,
         "mode": 3,
         "semantic_strength": 70,
-        "logger": "logger",
+        "logger": runtime.base_data.log,
     }
+    # 启用成功时要留下可检索的启用日志。
+    assert any(
+        level == "info" and "已启用" in message
+        for level, message in runtime.base_data.log.records
+    )
+
+
+def test_runtime_logs_missing_credential_instead_of_silently_disabling_ai(monkeypatch):
+    """AI 已请求启用但缺少凭据时必须告警，而不是静默降级。"""
+
+    from importlib import import_module
+
+    runtime_module = import_module("core.ui.element_runtime")
+
+    captured = {}
+
+    class FakeHarness:
+        @staticmethod
+        def standalone(**kwargs):
+            captured.update(kwargs)
+            return "healing-engine"
+
+    class FakeLog:
+        def __init__(self):
+            self.records = []
+
+        def _record(self, level, message, *args):
+            self.records.append((level, message % args if args else message))
+
+        def debug(self, message, *args):
+            self._record("debug", message, *args)
+
+        def info(self, message, *args):
+            self._record("info", message, *args)
+
+        def warning(self, message, *args):
+            self._record("warning", message, *args)
+
+    class FakeBaseData:
+        locator_engine = None
+        is_ai = False
+
+        def __init__(self):
+            self.log = FakeLog()
+
+        def set_locator_engine(self, engine):
+            self.locator_engine = engine
+
+    class Settings:
+        ELEMENT_HEALING_ENABLED = True
+        AI_ELEMENT_HEALING_ENABLED = True
+        AI_API_KEY = ""
+
+    monkeypatch.setattr(runtime_module, "WebElementHealingHarness", FakeHarness)
+    runtime = runtime_module.ElementRuntime.__new__(runtime_module.ElementRuntime)
+    runtime.base_data = FakeBaseData()
+    runtime._configure_healing(Settings())
+
+    # 缺 Key 时不传 api_key，引擎退化为本地自愈，但必须告警说明原因。
+    assert captured["api_key"] is None
+    assert runtime.base_data.is_ai is False
+    assert any(
+        level == "warning" and "缺少凭据" in message
+        for level, message in runtime.base_data.log.records
+    )
 
 
 def test_named_element_reuses_actual_operation_step(monkeypatch):
@@ -398,3 +492,170 @@ def test_feishu_source_is_selected_by_the_same_setting(monkeypatch):
     assert len(records) == 1
     assert records[0]["元素名称"] == "submit-button"
     sources.load_ui_element_records.cache_clear()
+
+
+def test_ai_description_falls_back_to_remark_when_prompts_are_empty():
+    """提示词全空时用「说明」列兜底，但过滤超长噪声。"""
+
+    definition = ElementDefinition.from_record({
+        "ID": 11, "项目名称": "MockUI服务", "模块名称": "components",
+        "页面名称": "componentsPage", "元素名称": "toast",
+        "定位方式1": "TEST_ID", "定位表达式1": "toast",
+        "说明": "保存成功",
+    })
+    assert definition.ai_description == "保存成功"
+
+    noisy = ElementDefinition.from_record({
+        "ID": 12, "项目名称": "MockUI服务", "模块名称": "global",
+        "页面名称": "global", "元素名称": "app-header",
+        "定位方式1": "TEST_ID", "定位表达式1": "app-header",
+        "说明": "很长的页面抓取文本" * 20,
+    })
+    assert noisy.ai_description is None
+
+
+def test_ai_description_prefers_prompt_over_remark():
+    definition = ElementDefinition.from_record({
+        "ID": 13, "项目名称": "MockUI服务", "模块名称": "components",
+        "页面名称": "componentsPage", "元素名称": "create-order",
+        "定位方式1": "TEST_ID", "定位表达式1": "create-order",
+        "AI定位提示词1": "位于订单业务区的主要动作按钮",
+        "说明": "创建订单",
+    })
+    assert definition.ai_description == "位于订单业务区的主要动作按钮"
+
+
+def test_element_version_tracks_locators_and_prompt_not_id():
+    base = {
+        "项目名称": "MockUI服务", "模块名称": "components",
+        "页面名称": "componentsPage", "元素名称": "create-order",
+        "定位方式1": "TEST_ID", "定位表达式1": "create-order",
+        "AI定位提示词1": "位于订单业务区的主要动作按钮",
+    }
+    version = ElementDefinition.from_record({"ID": 1, **base}).element_version
+
+    # 同样的定位器与提示词、不同的元素 ID → 指纹必须一致（ID 不参与）
+    assert ElementDefinition.from_record({"ID": 999, **base}).element_version == version
+
+    # 提示词变化 → 指纹变化（历史自愈记录应随之失效）
+    assert ElementDefinition.from_record({
+        "ID": 1, **base, "AI定位提示词1": "位于订单业务区的创建按钮",
+    }).element_version != version
+
+    # 定位表达式变化 → 指纹变化
+    assert ElementDefinition.from_record({
+        "ID": 1, **base, "定位表达式1": "create-order-v2",
+    }).element_version != version
+
+
+def test_page_display_name_falls_back_to_raw_key():
+    from core.sources.page_labels import page_display_name
+
+    assert page_display_name("MockUI服务", "componentsPage") == "组件演示页"
+    assert page_display_name("MockUI服务", "unknownPage") == "unknownPage"
+    assert page_display_name("未注册产品", "componentsPage") == "componentsPage"
+    assert page_display_name("MockUI服务", None) == ""
+
+
+def _description_only_record(**overrides):
+    value = {
+        "ID": 21,
+        "项目名称": "MockUI服务",
+        "模块名称": "componentsPage",
+        "页面名称": "componentsPage",
+        "元素名称": "ai-only-submit",
+        "AI定位提示词1": "位于组件演示页表单区、显示「提交」的按钮",
+        "说明": "AI 描述即定位",
+    }
+    value.update(overrides)
+    return value
+
+
+def test_description_only_element_is_allowed_and_yields_empty_elements():
+    """只填提示词、不填定位器时构造描述型元素。"""
+
+    definition = ElementDefinition.from_record(_description_only_record())
+    assert definition.is_description_only is True
+
+    model = definition.to_element_model(
+        operation_type=ElementOperationEnum.OPE,
+        method="w_click",
+        arguments=[MethodModel(f="locating")],
+    )
+    # 交给库合成占位定位组：elements 必须为空、description_template 必须非空
+    # （见 mangoautomation/uidrives/_sync_element.py 的占位合成分支）。
+    assert model.elements == []
+    assert model.description_template == "位于组件演示页表单区、显示「提交」的按钮"
+    assert model.name == "ai-only-submit"
+
+
+def test_element_without_locator_and_without_prompt_is_rejected():
+    import pytest
+
+    with pytest.raises(ValueError, match="既没有有效定位表达式，也没有 AI 定位提示词"):
+        ElementDefinition.from_record({
+            "ID": 22, "项目名称": "MockUI服务", "模块名称": "m", "页面名称": "p",
+            "元素名称": "broken-element",
+        })
+
+
+class _StubRepository:
+    def __init__(self, definitions):
+        self._definitions = tuple(definitions)
+
+    def all(self):
+        return self._definitions
+
+    def get(self, name, *args, **kwargs):
+        for item in self._definitions:
+            if item.name == name:
+                return item
+        raise KeyError(name)
+
+
+def _runtime_without_engine(definitions):
+    from importlib import import_module
+
+    runtime_module = import_module("core.ui.element_runtime")
+
+    class FakeBaseData:
+        locator_engine = None
+        is_ai = False
+        log = type("L", (), {
+            "debug": staticmethod(lambda *a, **k: None),
+            "info": staticmethod(lambda *a, **k: None),
+            "warning": staticmethod(lambda *a, **k: None),
+        })()
+
+        def set_locator_engine(self, engine):
+            self.locator_engine = engine
+
+    runtime = runtime_module.ElementRuntime.__new__(runtime_module.ElementRuntime)
+    runtime.base_data = FakeBaseData()
+    runtime.repository = _StubRepository(definitions)
+    runtime.last_result = None
+    return runtime
+
+
+def test_description_only_element_requires_healing_enabled_at_construction():
+    """未开启自愈时，构造期一次性报出全部描述型元素，而不是跑到一半才失败。"""
+
+    import pytest
+
+    runtime = _runtime_without_engine([
+        ElementDefinition.from_record(_description_only_record()),
+    ])
+    with pytest.raises(ValueError, match="元素自愈未开启"):
+        runtime._check_description_only_elements()
+
+
+def test_description_only_element_requires_healing_enabled_at_execute():
+    import pytest
+
+    definition = ElementDefinition.from_record(_description_only_record())
+    runtime = _runtime_without_engine([definition])
+
+    with pytest.raises(ValueError, match="没有固定定位器"):
+        runtime.execute("ai-only-submit", "w_click")
+    with pytest.raises(ValueError, match="不支持直接读取 Locator"):
+        runtime.locator("ai-only-submit")

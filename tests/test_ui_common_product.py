@@ -61,3 +61,33 @@ def test_common_repository_keeps_project_run_prefix(monkeypatch):
     repositories.close()
     assert repositories.deleted is True
     assert client.closed is True
+
+
+def test_ai_heal_classification_targets_the_healing_lab_only():
+    """ai_heal marker 只覆盖元素自愈靶场用例，便于 -m ai_heal 定向验证。"""
+
+    from auto_tests.common.mango_mock.ui_cases import (
+        HEALING_ELEMENT_IDS,
+        is_ai_heal_case,
+    )
+
+    class Case:
+        def __init__(self, **fields):
+            self.__dict__.update(fields)
+
+    # 元素用例用 element_id，操作用例用 target_id，两种都要识别
+    assert is_ai_heal_case(Case(element_id="healing-target-kind")) is True
+    assert is_ai_heal_case(Case(target_id="apply-healing-mutation")) is True
+    assert is_ai_heal_case(Case(element_id="single-click-target")) is False
+    assert is_ai_heal_case(Case(element_id="submit-button")) is False
+    assert is_ai_heal_case(Case(element_id=None, target_id=None)) is False
+    assert "element-healing-panel" in HEALING_ELEMENT_IDS
+
+
+def test_ui_projects_declare_the_ai_heal_marker():
+    """三个 UI 项目都必须在 pytest.ini 声明 ai_heal，否则 --strict-markers 会失败。"""
+
+    root = Path(__file__).resolve().parents[1]
+    for project in ("simple_ui", "bdd_ui", "pytest_ui"):
+        ini = (root / "auto_tests" / "ui" / project / "pytest.ini").read_text(encoding="utf-8")
+        assert "ai_heal" in ini, project

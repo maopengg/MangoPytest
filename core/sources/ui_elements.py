@@ -4,12 +4,16 @@ from __future__ import annotations
 
 from enum import Enum
 from functools import lru_cache
+import logging
 from pathlib import Path
 from typing import Any
 
 from core.sources.element_schema import REQUIRED_ELEMENT_HEADERS
 from core.sources.excel import ExcelWorkbookSource
 from core.sources.feishu.document_data import DocumentData
+from core.sources.prompt_spec import ERROR, WARNING, lint_records, summarize
+
+log = logging.getLogger(__name__)
 
 
 class ElementSourceType(str, Enum):
@@ -59,7 +63,39 @@ def load_ui_element_records(
             if str(record.get("项目名称", "")).strip() == product_name
         )
     _validate_element_records(records, project, product_name)
+    _lint_element_prompts(records, project)
     return records
+
+
+def _lint_element_prompts(
+    records: tuple[dict[str, Any], ...], project: str
+) -> None:
+    """加载期提示词体检。
+
+    错误级（排除项语义反转、只填排除项、未声明的运行时变量）会让 AI 拿到语义相反的
+    描述、或在元素初始化阶段直接抛错，因此在加载期 fail fast；警告级只记录，避免
+    历史数据一次性阻塞所有项目。可用 ``python main.py --check-elements`` 查看明细。
+    """
+
+    issues = lint_records(records)
+    if not issues:
+        return
+    counts = summarize(issues)
+    errors = [issue for issue in issues if issue.is_error]
+    if errors:
+        preview = "；".join(issue.describe() for issue in errors[:5])
+        raise ValueError(
+            f"{project} UI 元素提示词体检未通过（{counts[ERROR]} 项错误）：{preview}"
+            f"{'…' if len(errors) > 5 else ''}"
+            "；执行 `python main.py --check-elements` 查看完整报告"
+        )
+    warnings = [issue for issue in issues if issue.level == WARNING]
+    if warnings:
+        preview = "；".join(issue.describe() for issue in warnings[:3])
+        log.warning(
+            "%s UI 元素提示词体检有 %d 项警告（不阻塞）：%s%s",
+            project, counts[WARNING], preview, "…" if len(warnings) > 3 else "",
+        )
 
 
 def _validate_element_records(

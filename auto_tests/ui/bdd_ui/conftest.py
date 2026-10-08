@@ -2,6 +2,8 @@
 
 import re
 
+import pytest
+
 from core.execution import apply_case_metadata
 from auto_tests.common.mango_mock.ui_cases import (
     MANGO_MOCK_UI_EPIC,
@@ -11,6 +13,7 @@ from auto_tests.common.mango_mock.ui_cases import (
     group_element_cases,
     group_inventory_cases,
     group_operation_cases,
+    is_ai_heal_case,
 )
 
 from auto_tests.ui.bdd_ui.capabilities.cases import ELEMENT_CASES, OPERATION_CASES
@@ -40,18 +43,24 @@ INVENTORY_CATEGORY_BY_ID = {
 
 
 def pytest_collection_modifyitems(items):
-    """把能力矩阵的优先级转换为可选择的 pytest marks。"""
+    """把能力矩阵的优先级转换为可选择的 pytest marks，并标注自愈靶场用例。"""
     priorities = {case.case_id: case.priority.lower() for case in OPERATION_CASES}
     risk_priority = {"高": "p0", "中": "p1", "低": "p2"}
     priorities.update(
         {case.case_id: risk_priority[case.risk] for case in ELEMENT_CASES}
     )
+    # BDD 分支按 case_id 参数化，这里用 id → 用例模型的索引补 ai_heal 标记，
+    # 避免逐个改动 20+ 个 Feature/步骤绑定文件的参数声明。
+    cases_by_id = {case.case_id: case for case in (*OPERATION_CASES, *ELEMENT_CASES)}
     for item in items:
         callspec = getattr(item, "callspec", None)
         example = callspec.params.get("_pytest_bdd_example", {}) if callspec else {}
         case_id = example.get("case_id") or (callspec.params.get("case_id") if callspec else None)
         if case_id in priorities:
             item.add_marker(priorities[case_id])
+        case = cases_by_id.get(str(case_id))
+        if case is not None and is_ai_heal_case(case):
+            item.add_marker(pytest.mark.ai_heal)
 
 
 def pytest_bdd_before_scenario(request, feature, scenario):

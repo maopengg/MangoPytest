@@ -47,6 +47,26 @@ INVENTORY_PAGE_LABELS = {
     "websocketPage": "WebSocket 双向通信", "mcpPage": "MCP 协议", "grpcPage": "gRPC 协议",
 }
 
+#: 元素自愈验证靶场里的元素。这些用例直接操作"基线 / 漂移 / 恢复"面板，
+#: 是 AI 定位最该定向验证的对象，因此打 ``ai_heal`` marker 供定向执行
+#: （``-m ai_heal``）——AI 默认关闭，只在显式开启的运行里生效。
+HEALING_ELEMENT_IDS = frozenset({
+    "element-healing-panel", "healing-version-status", "healing-target-kind",
+    "healing-mutation", "capture-healing-baseline", "apply-healing-mutation",
+    "restore-healing-baseline", "healing-contract", "healing-baseline-locator",
+    "healing-semantic-fingerprint", "healing-expected-decision",
+    "healing-expected-source", "healing-stage", "healing-original-region",
+    "healing-primary-host", "healing-relocated-region", "healing-relocated-host",
+    "healing-interaction-result", "healing-candidate-summary", "healing-manifest",
+})
+
+
+def is_ai_heal_case(case: object) -> bool:
+    """判断用例是否以元素自愈靶场为目标。"""
+
+    target = getattr(case, "element_id", None) or getattr(case, "target_id", None)
+    return str(target or "").strip() in HEALING_ELEMENT_IDS
+
 
 def _group(cases: Iterable[T], classifier, labels: dict[str, str]) -> dict[str, tuple[T, ...]]:
     grouped: dict[str, list[T]] = {key: [] for key in labels}
@@ -78,4 +98,4 @@ def group_inventory_cases(cases: Iterable[InventoryCase]) -> dict[str, tuple[Inv
     return _group(cases, lambda case: case.page_key, INVENTORY_PAGE_LABELS)
 
 
-__all__ = ["ELEMENT_CATEGORY_LABELS", "INVENTORY_PAGE_LABELS", "OPERATION_CATEGORY_LABELS", "group_element_cases", "group_inventory_cases", "group_operation_cases"]
+__all__ = ["ELEMENT_CATEGORY_LABELS", "HEALING_ELEMENT_IDS", "INVENTORY_PAGE_LABELS", "OPERATION_CATEGORY_LABELS", "group_element_cases", "group_inventory_cases", "group_operation_cases", "is_ai_heal_case"]

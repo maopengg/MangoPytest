@@ -3,11 +3,13 @@
 from .loader import load_ui_capability_cases
 from .classification import (
     ELEMENT_CATEGORY_LABELS,
+    HEALING_ELEMENT_IDS,
     INVENTORY_PAGE_LABELS,
     OPERATION_CATEGORY_LABELS,
     group_element_cases,
     group_inventory_cases,
     group_operation_cases,
+    is_ai_heal_case,
 )
 from .metadata import (
     MANGO_MOCK_UI_EPIC,
@@ -21,6 +23,7 @@ from .models import ElementCase, InventoryCase, OperationCase
 __all__ = [
     "ElementCase",
     "ELEMENT_CATEGORY_LABELS",
+    "HEALING_ELEMENT_IDS",
     "InventoryCase",
     "INVENTORY_PAGE_LABELS",
     "MANGO_MOCK_UI_EPIC",
@@ -33,5 +36,6 @@ __all__ = [
     "group_element_cases",
     "group_inventory_cases",
     "group_operation_cases",
+    "is_ai_heal_case",
     "load_ui_capability_cases",
 ]

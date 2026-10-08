@@ -15,12 +15,29 @@ from fastapi.templating import Jinja2Templates
 from core.execution import ProjectCatalog
 from core.execution.models import FINAL_STATUSES
 from core.execution.result_parser import parse_failures
+from core.execution.secrets import redact_overrides
+from core.ui.healing_metrics import merge_summaries
 from web_console.collection_service import CollectionService
 from web_console.allure_service import AllureResultService
 from web_console.config import WebConsoleSettings
 from web_console.repository import RunRepository
 from web_console.run_service import RunService
 from web_console.schemas import CreateRunInput
+
+
+def public_run(record: dict | None) -> dict | None:
+    """对外返回运行记录前，对敏感运行参数脱敏。
+
+    只在"对外"边界脱敏：执行链路会从数据库读回 ``runtime_overrides`` 重新构造子进程
+    环境（``run_service._run_process``），因此写入侧必须保留原值。
+    """
+
+    if not record:
+        return record
+    overrides = record.get("runtime_overrides")
+    if not overrides:
+        return record
+    return {**record, "runtime_overrides": redact_overrides(overrides)}
 
 
 def create_app(settings: WebConsoleSettings | None = None) -> FastAPI:
@@ -148,7 +165,7 @@ def create_app(settings: WebConsoleSettings | None = None) -> FastAPI:
     @app.post("/api/runs", status_code=201)
     async def create_run(data: CreateRunInput):
         try:
-            return runner.create(data)
+            return public_run(runner.create(data))
         except ValueError as exc:
             raise HTTPException(400, str(exc)) from exc
 
@@ -159,14 +176,17 @@ def create_app(settings: WebConsoleSettings | None = None) -> FastAPI:
         project: str = "",
         status: str = "",
     ):
-        return repository.list(limit=limit, offset=offset, project=project, status=status)
+        return [
+            public_run(item)
+            for item in repository.list(limit=limit, offset=offset, project=project, status=status)
+        ]
 
     @app.get("/api/runs/{run_id}")
     async def run_detail(run_id: str):
         record = repository.get(run_id)
         if not record:
             raise HTTPException(404, "执行记录不存在")
-        return record
+        return public_run(record)
 
     @app.post("/api/runs/{run_id}/cancel")
     async def cancel_run(run_id: str):
@@ -187,7 +207,7 @@ def create_app(settings: WebConsoleSettings | None = None) -> FastAPI:
             "runtime_overrides": record["runtime_overrides"],
             "production_confirmation": record["project"] if record["environment"] == "prod" else "",
         })
-        return runner.create(data)
+        return public_run(runner.create(data))
 
     @app.get("/api/runs/{run_id}/events")
     async def events(request: Request, run_id: str):
@@ -229,6 +249,21 @@ def create_app(settings: WebConsoleSettings | None = None) -> FastAPI:
         if not record:
             raise HTTPException(404, "执行记录不存在")
         return AllureResultService(Path(record["artifact_dir"])).report()
+
+    @app.get("/api/runs/{run_id}/ai-healing")
+    async def ai_healing(run_id: str):
+        """汇总该次运行的元素自愈 / AI 定位统计。"""
+
+        record = repository.get(run_id)
+        if not record:
+            raise HTTPException(404, "执行记录不存在")
+        root = Path(record["artifact_dir"]).resolve()
+        if not root.is_dir():
+            return {"available": False}
+        merged = merge_summaries(root)
+        if not merged:
+            return {"available": False}
+        return {"available": True, **merged}
 
     @app.get("/api/runs/{run_id}/artifacts")
     async def artifacts(run_id: str):

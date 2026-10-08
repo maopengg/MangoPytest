@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from functools import wraps
 import inspect
+from pathlib import Path
 import time
 from typing import Any
 
@@ -17,6 +18,7 @@ from core.execution.data_lineage import (
     start_lineage,
     stop_lineage,
 )
+from core.utils.artifacts import artifact_path
 
 
 _PATCHED = False
@@ -216,3 +218,39 @@ def pytest_configure(config: pytest.Config) -> None:
                 if name.startswith(("w_", "a_")):
                     _patch_method(owner, name)
     _PATCHED = True
+
+
+def _healing_summary_directory(config: pytest.Config) -> Path:
+    """决定 AI 自愈汇总的落盘目录。
+
+    优先写在 ``--alluredir`` 的同级（即控制台的运行产物目录），这样控制台能按运行
+    直接读取；直接跑 ``main.py`` 时回退到仓库 ``artifacts/reports``。
+    """
+
+    allure_dir = getattr(config.option, "allure_report_dir", None)
+    if allure_dir:
+        return Path(allure_dir).resolve().parent
+    return Path(artifact_path("reports"))
+
+
+def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
+    """落盘元素自愈汇总，并在终端给出一行可检索的结论。"""
+
+    from core.ui.healing_metrics import healing_metrics, write_summary
+
+    payload = healing_metrics.snapshot()
+    if not payload["operations"]:
+        return
+    healer: Any = session.config.pluginmanager.get_plugin("terminalreporter")
+    if healer is not None:
+        healer.write_line(
+            "[AI 自愈] 操作 {operations} 次 · 触发自愈 {healed_operations} 次"
+            "（AI {ai_operations} / 本地 {local_healed}）· 自愈成功 {healed_successfully}"
+            " · 自愈后仍失败 {healed_failed}".format(**payload)
+        )
+    try:
+        path = write_summary(_healing_summary_directory(session.config))
+    except OSError:
+        return
+    if path is not None and healer is not None:
+        healer.write_line(f"[AI 自愈] 汇总已写入 {path}")
