@@ -489,7 +489,7 @@
       "description": "打开URL",
       "target_id": "components-page",
       "params": {
-        "url": "http://43.142.161.61:8003/"
+        "url": "${base_url}/"
       },
       "expected": "打开URL执行成功，operation-event-log/关联状态元素发生预期变化",
       "verify_id": "operation-event-log",
@@ -553,7 +553,7 @@
             {
               "name": "ui_case",
               "value": "AUTO",
-              "domain": "43.142.161.61",
+              "domain": "${base_hostname}",
               "path": "/"
             }
           ],

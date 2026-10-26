@@ -3,6 +3,7 @@
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
+from urllib.parse import urlsplit
 
 from mangoautomation.uidrives import BaseData, SyncWebDevice
 from mangoautomation.uidrives.web import SyncWebAssertion
@@ -170,6 +171,8 @@ class MangoMockUICapabilityBase(SyncWebDevice):
         if not isinstance(value, str):
             return value
         replacements = {
+            "${base_url}": self.settings.BASE_URL.rstrip("/"),
+            "${base_hostname}": urlsplit(self.settings.BASE_URL).hostname or "",
             "${project_root}": project_dir.root_path(),
             "${screenshot_dir}": str(Path(self.base_data.screenshot_path).resolve()),
             "${test_run_id}": self.run_name_prefix,
