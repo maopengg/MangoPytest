@@ -6,7 +6,6 @@
 import json
 import os.path
 
-import pandas
 import requests
 
 from core.enums.tools_enum import StatusEnum
@@ -58,49 +57,39 @@ class DocumentData:
         )
         return response.json()["data"]["sheets"]
 
-    def ui_element(self):
-        df_list = []
-        for i in self.get_sheet(self.config.surface.ui_element_id):
-            url = f"{self.url}{self.config.surface.ui_element_id}/values_batch_get?ranges={i.get('sheet_id')}{self.parameter}"
-            df = self.cls(url)
-            df = self._canonical_element_columns(df)
-            df_list.append(df.reset_index(drop=True))
-        combined_df = pandas.concat(df_list, ignore_index=True)
-        duplicate_ids = combined_df[combined_df.duplicated(subset=["ID"], keep=False)]
-        if not duplicate_ids.empty:
-            raise ToolsError(*ERROR_MSG_0351, value=("UI元素表",))
-        return combined_df
+    def ui_element(self) -> list[dict]:
+        records = []
+        ids = set()
+        for sheet in self.get_sheet(self.config.surface.ui_element_id):
+            url = f"{self.url}{self.config.surface.ui_element_id}/values_batch_get?ranges={sheet.get('sheet_id')}{self.parameter}"
+            for record in self._canonical_element_columns(self.cls(url)):
+                element_id = record["ID"]
+                if element_id in ids:
+                    raise ToolsError(*ERROR_MSG_0351, value=("UI元素表",))
+                ids.add(element_id)
+                records.append(record)
+        return records
 
     @staticmethod
-    def _canonical_element_columns(df: pandas.DataFrame) -> pandas.DataFrame:
-        """将新旧飞书元素表统一转换为 pytest UI 的 18 个元素字段。"""
-        columns = [str(column).strip() for column in df.columns]
+    def _canonical_element_columns(table: list[list]) -> list[dict]:
+        """将新旧飞书二维表转换为 18 字段记录，保留旧表重复列的位置语义。"""
+        if not table:
+            return []
+        columns = [str(column).strip() for column in table[0]]
         if len(columns) == 16 and columns[:6] == [
-            "ID",
-            "项目名称",
-            "模块名称",
-            "页面名称",
-            "元素名称",
-            "定位方式1",
+            "ID", "项目名称", "模块名称", "页面名称", "元素名称", "定位方式1",
         ]:
             records = []
-            for values in df.itertuples(index=False, name=None):
-                row = list(values) + [None] * (16 - len(values))
-                name = row[4]
-                records.append(
-                    [
-                        row[0], row[1], row[2], row[3], name,
-                        row[5], row[6], row[7],
-                        # 旧表没有提示词时留空，不再回退成「查找元素：<元素名>」——
-                        # 那种模板串与元素名等价、对 AI 没有增量语义（见
-                        # core/sources/prompt_spec.py 的 template_prompt 规则）。
-                        row[14] or None,
-                        row[8], row[9], row[10], None,
-                        row[11], row[12], row[13], None,
-                        None,
-                    ]
-                )
-            return pandas.DataFrame(records, columns=CANONICAL_ELEMENT_HEADERS)
+            for values in table[1:]:
+                row = list(values) + [None] * max(0, 16 - len(values))
+                canonical = [
+                    row[0], row[1], row[2], row[3], row[4],
+                    row[5], row[6], row[7], row[14] or None,
+                    row[8], row[9], row[10], None,
+                    row[11], row[12], row[13], None, None,
+                ]
+                records.append(dict(zip(CANONICAL_ELEMENT_HEADERS, canonical)))
+            return records
 
         aliases = {
             "*元素名称": "元素名称",
@@ -121,17 +110,14 @@ class DocumentData:
             "元素下标-3": "元素下标3",
             "AI提示词": "AI定位提示词1",
         }
-        normalized = df.rename(
-            columns={
-                source: target
-                for source, target in aliases.items()
-                if target not in df.columns
-            }
-        ).copy()
-        for column in CANONICAL_ELEMENT_HEADERS:
-            if column not in normalized.columns:
-                normalized[column] = None
-        return normalized.loc[:, CANONICAL_ELEMENT_HEADERS]
+        records = []
+        for values in table[1:]:
+            row = dict(zip(columns, list(values) + [None] * max(0, len(columns) - len(values))))
+            for source, target in aliases.items():
+                if target not in columns and source in row:
+                    row[target] = row[source]
+            records.append({column: row.get(column) for column in CANONICAL_ELEMENT_HEADERS})
+        return records
 
     def cls(self, url):
         response = requests.get(
@@ -144,7 +130,7 @@ class DocumentData:
             )
             response_dict = response.json()
         data = response_dict["data"]["valueRanges"][0]["values"]
-        return pandas.DataFrame(data[1:], columns=data[0])
+        return data
 
 
 if __name__ == "__main__":

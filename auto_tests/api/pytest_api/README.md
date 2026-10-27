@@ -40,5 +40,5 @@ ENV=test .venv/bin/python -m pytest auto_tests/api/pytest_api/test_cases
 ENV=test .venv/bin/python -m pytest auto_tests/api/pytest_api/test_cases -n 4
 ```
 
-`test` 环境使用 `http://43.142.161.61:8003`，不依赖本地 `mango-mock`。
+`test` 环境使用 `http://160.202.231.91:20017`，不依赖本地 `mango-mock`。
 内部包只允许从项目 `local_packages/` 安装，禁止使用 PyPI 旧版本。

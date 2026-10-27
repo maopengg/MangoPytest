@@ -30,7 +30,7 @@ class DevConfig(PytestApiMockConfig):
 
 
 class _RemoteConfig(PytestApiMockConfig):
-    BASE_URL: str = "http://43.142.161.61:8003"
+    BASE_URL: str = "http://160.202.231.91:20017"
     DB_HOST: str = "43.142.161.61"
     DB_USER: str = "root"
     DB_PASSWORD: str = "mP123456&"

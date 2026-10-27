@@ -32,7 +32,7 @@ class DevConfig(BddUIMockConfig):
 
 
 class _RemoteConfig(BddUIMockConfig):
-    BASE_URL: str = Field(default="http://43.142.161.61:8003")
+    BASE_URL: str = Field(default="http://160.202.231.91:20017")
     HEADLESS: bool = True
 
 

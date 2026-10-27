@@ -52,5 +52,5 @@ API Demo 表达相同业务场景；仅无关业务风格的协议通信复用
 ENV=test .venv/bin/python -m pytest auto_tests/api/bdd_api -q -ra
 ```
 
-`test` 环境当前指向 `http://43.142.161.61:8003/`；gRPC 使用同主机的
+`test` 环境当前指向 `http://160.202.231.91:20017/`；gRPC 使用同主机的
 `50051` 端口。内部包仅从项目 `local_packages/` 安装，不使用 PyPI 旧版本。

@@ -18,7 +18,7 @@ ENV=test .venv/bin/python main.py --project simple_api
 ENV=test .venv/bin/python -m pytest auto_tests/api/simple_api
 ```
 
-Mango Mock 默认测试地址为 `http://43.142.161.61:8003`。
+Mango Mock 默认测试地址为 `http://160.202.231.91:20017`。
 
 项目结构：
 

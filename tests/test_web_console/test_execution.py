@@ -98,10 +98,10 @@ def test_catalog_discovers_project_environment_profiles() -> None:
     assert ProjectCatalog(repository_root).environment_ids("pytest_api") == ("test",)
     test_profile = profiles[0]
     assert test_profile["inherits"] == ""
-    assert test_profile["summary"]["BASE_URL"] == "http://43.142.161.61:8003"
+    assert test_profile["summary"]["BASE_URL"] == "http://160.202.231.91:20017"
     assert all("PASSWORD" not in profile["summary"] for profile in profiles)
     runtime_options = {item["key"]: item for item in test_profile["runtime_options"]}
-    assert runtime_options["BASE_URL"]["value"] == "http://43.142.161.61:8003"
+    assert runtime_options["BASE_URL"]["value"] == "http://160.202.231.91:20017"
     assert runtime_options["MOCK_TIMEOUT"]["value"] == "30"
     assert ProjectCatalog(repository_root).validate_runtime_overrides(
         "pytest_api", {"BASE_URL": "https://temporary.example", "MOCK_TIMEOUT": "60"}

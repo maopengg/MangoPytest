@@ -76,7 +76,7 @@ class DevConfig(MockUIConfig):
 
 
 class _RemoteConfig(MockUIConfig):
-    BASE_URL: str = Field(default="http://43.142.161.61:8003", description="生产环境地址")
+    BASE_URL: str = Field(default="http://160.202.231.91:20017", description="生产环境地址")
     HEADLESS: bool = Field(default=True, description="生产环境无头模式")
     LOG_LEVEL: str = Field(default="INFO", description="日志级别")
 

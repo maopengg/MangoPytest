@@ -78,7 +78,7 @@ mango_pytest/
 - Python 3.10+
 - Git
 - UI 自动化需要可用的 Chromium、Edge、Firefox、WebKit，或由 Playwright 安装的浏览器
-- 示例默认访问在线 Mango Mock：`http://43.142.161.61:8003`
+- 示例默认访问在线 Mango Mock：`http://160.202.231.91:20017`
 
 以下命令以 macOS/Linux 为例。
 
@@ -98,6 +98,12 @@ python3.10 -m venv .venv
 ```
 
 `requirements.txt` 管理开源三方依赖；`requirements-local.txt` 只安装 `local_packages/` 中的 `mangotools` 和 `mangoautomation` wheel。请勿单独从 PyPI 安装这两个内部包，PyPI 上是旧实现。
+
+`requirements-dev.txt` 单独管理 gRPC 代码生成工具，日常运行测试无需安装。需要修改 `.proto` 并重新生成代码时，再执行：
+
+```bash
+.venv/bin/python -m pip install -r requirements-dev.txt
+```
 
 首次运行 UI 自动化时，可安装 Playwright 浏览器：
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Factories 数据工厂层 - pytest-factoryboy
+Factories 数据工厂层 - factory-boy
 
 只保留 BaseFactory 基类，具体的 Spec 定义已移到 specs/ 目录
 BaseFactory 延迟获取数据库会话，不依赖具体项目配置

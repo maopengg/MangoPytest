@@ -28,7 +28,7 @@ class DevConfig(ApiMockConfig):
 
 
 class _RemoteConfig(ApiMockConfig):
-    BASE_URL: str = "http://43.142.161.61:8003"
+    BASE_URL: str = "http://160.202.231.91:20017"
 
 
 class TestConfig(_RemoteConfig):

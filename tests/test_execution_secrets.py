@@ -51,17 +51,17 @@ def test_redact_and_strip_only_touch_sensitive_keys() -> None:
         "AI_API_KEY": "sk-1234567890abcdef",
         "MANGO_MOCK_ADMIN_TOKEN": "token-value",
         "AI_MODEL": "glm-4",
-        "BASE_URL": "http://43.142.161.61:8003",
+        "BASE_URL": "http://160.202.231.91:20017",
     }
     assert redact_overrides(values) == {
         "AI_API_KEY": "sk-1********cdef",
         "MANGO_MOCK_ADMIN_TOKEN": "toke********alue",
         "AI_MODEL": "glm-4",
-        "BASE_URL": "http://43.142.161.61:8003",
+        "BASE_URL": "http://160.202.231.91:20017",
     }
     assert strip_sensitive(values) == {
         "AI_MODEL": "glm-4",
-        "BASE_URL": "http://43.142.161.61:8003",
+        "BASE_URL": "http://160.202.231.91:20017",
     }
 
 
@@ -79,7 +79,7 @@ def test_console_no_longer_declares_credential_or_dead_healing_mode_option() -> 
 def test_catalog_preview_allows_ai_settings_but_masks_credentials(tmp_path: Path) -> None:
     env_file = tmp_path / ".env.test"
     env_file.write_text(
-        "BASE_URL=http://43.142.161.61:8003\n"
+        "BASE_URL=http://160.202.231.91:20017\n"
         "AI_MODEL=glm-4\n"
         "AI_ELEMENT_HEALING_ENABLED=true\n"
         "AI_API_KEY=sk-1234567890abcdef\n"

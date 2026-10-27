@@ -81,7 +81,7 @@ class ProdConfig(ApiMockConfig):
     """
     
     ENV: str = "prod"
-    BASE_URL: str = Field(default="http://43.142.161.61:8003", description="生产环境API地址")
+    BASE_URL: str = Field(default="http://160.202.231.91:20017", description="生产环境API地址")
     
     # 数据库配置
     DB_HOST: str = Field(default="43.142.161.61", description="数据库主机")

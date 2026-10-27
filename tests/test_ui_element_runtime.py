@@ -88,42 +88,65 @@ def test_legacy_and_feishu_headers_remain_compatible():
 
 
 def test_feishu_columns_are_normalized_to_canonical_names():
-    import pandas as pd
-
-    source = pd.DataFrame([{
+    source_record = {
         "ID": 1,
         "*元素名称": "login-button",
         "*类型-1": "TEST_ID",
         "*定位-1": "login-button",
-    }])
+    }
+    source = [list(source_record), list(source_record.values())]
     normalized = DocumentData._canonical_element_columns(source)
 
-    assert normalized.loc[0, "元素名称"] == "login-button"
-    assert normalized.loc[0, "定位方式1"] == "TEST_ID"
-    assert normalized.loc[0, "定位表达式1"] == "login-button"
-    assert normalized.loc[0, "AI定位提示词1"] is None
-    assert list(normalized.columns) == list(CANONICAL_ELEMENT_HEADERS)
+    assert normalized[0]["元素名称"] == "login-button"
+    assert normalized[0]["定位方式1"] == "TEST_ID"
+    assert normalized[0]["定位表达式1"] == "login-button"
+    assert normalized[0]["AI定位提示词1"] is None
+    assert list(normalized[0]) == list(CANONICAL_ELEMENT_HEADERS)
 
 
 def test_legacy_feishu_sheet_maps_third_locator_by_column_position():
-    import pandas as pd
-
     headers = [
         "ID", "项目名称", "模块名称", "页面名称", "元素名称",
         "定位方式1", "表达式1", "下标1", "定位方式2", "表达式2",
         "下标2", "定位方式3", "表达式2", "下标3", "AI提示词", "等待",
     ]
-    source = pd.DataFrame([[
+    source = [headers, [
         1, "MockUI服务", "认证", "登录", "登录按钮",
         "TEST_ID", "login", 0, "CSS", "#login", 1,
         "XPATH", "//button", 2, "查找登录按钮", 3,
-    ]], columns=headers)
+    ]]
 
     normalized = DocumentData._canonical_element_columns(source)
 
-    assert list(normalized.columns) == list(CANONICAL_ELEMENT_HEADERS)
-    assert normalized.loc[0, "定位表达式3"] == "//button"
-    assert normalized.loc[0, "AI定位提示词1"] == "查找登录按钮"
+    assert list(normalized[0]) == list(CANONICAL_ELEMENT_HEADERS)
+    assert normalized[0]["定位表达式3"] == "//button"
+    assert normalized[0]["AI定位提示词1"] == "查找登录按钮"
+
+
+def test_feishu_sparse_rows_preserve_canonical_column_priority():
+    normalized = DocumentData._canonical_element_columns([
+        ["ID", "元素名称", "*元素名称", "定位方式1", "定位表达式1"],
+        [1, "canonical-name", "legacy-name"],
+    ])
+
+    assert normalized[0]["元素名称"] == "canonical-name"
+    assert normalized[0]["定位表达式1"] is None
+
+
+def test_feishu_duplicate_ids_across_sheets_are_rejected():
+    from types import SimpleNamespace
+    import pytest
+    from core.exceptions import ToolsError
+
+    document = object.__new__(DocumentData)
+    document.config = SimpleNamespace(surface=SimpleNamespace(ui_element_id="sheet-token"))
+    document.url = "https://example.invalid/"
+    document.parameter = ""
+    document.get_sheet = lambda token: [{"sheet_id": "first"}, {"sheet_id": "second"}]
+    document.cls = lambda url: [["ID", "元素名称"], [1, "repeated-id"]]
+
+    with pytest.raises(ToolsError):
+        document.ui_element()
 
 
 def test_canonical_schema_only_contains_pytest_ui_element_fields():
@@ -473,12 +496,11 @@ def test_core_element_repository_supports_page_scope():
 
 
 def test_feishu_source_is_selected_by_the_same_setting(monkeypatch):
-    import pandas as pd
     import core.sources.ui_elements as sources
 
     class FakeDocumentData:
         def ui_element(self):
-            return pd.DataFrame([_record()])
+            return [_record()]
 
     sources.load_ui_element_records.cache_clear()
     monkeypatch.setattr(sources, "DocumentData", FakeDocumentData)

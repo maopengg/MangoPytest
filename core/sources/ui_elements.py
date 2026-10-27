@@ -56,10 +56,9 @@ def load_ui_element_records(
             )
         )
     else:
-        frame = DocumentData().ui_element()
         records = tuple(
             record
-            for record in frame.to_dict(orient="records")
+            for record in DocumentData().ui_element()
             if str(record.get("项目名称", "")).strip() == product_name
         )
     _validate_element_records(records, project, product_name)
