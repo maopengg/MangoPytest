@@ -1,8 +1,22 @@
-# Mango Pytest
+# MangoPytest · API / UI 自动化示例项目
 
 一个面向真实项目结构设计的开源 pytest 自动化测试示例仓库，统一演示 API、UI、BDD、数据工厂、多协议测试、Allure 结果采集和本地 Web 测试控制台。
 
 项目不是把所有用例堆在同一种目录中，而是为团队提供三种可独立选择的自动化方式：轻量 Demo、BDD 和纯 pytest 大项目架构。仓库包含 7 个自动化项目，其中 6 个 API/UI Demo 已启用，SQL 项目作为数据库专项自动化的扩展位置。API 与 UI 项目共享框架基础能力，但各自保留独立的业务用例、数据工厂和配置，便于学习、对比和直接用于新项目脚手架。
+
+
+[Gitee 仓库](https://gitee.com/mao-peng/mango_pytest) · [GitHub 仓库](https://github.com/maopengg/MangoPytest) · [在线帮助文档](http://160.202.231.91:36696/pages/mango-pytest/deploy.html) · [芒果测试平台 Demo](http://160.202.231.91:35966/#/index/home) · [Mango Mock 靶场](http://160.202.231.91:20017)
+
+## 从这里开始
+
+| 你的目标 | 对应入口 |
+| --- | --- |
+| 安装并跑通第一个 Demo | [启动与运行 Demo](http://160.202.231.91:36696/pages/mango-pytest/deploy.html) |
+| 从网页选择、执行用例并查看结果 | [Web 控制执行](http://160.202.231.91:36696/pages/mango-pytest/Web控制台.html) |
+| 新增自己的项目、修改设置、了解数据存储位置 | [项目与配置](http://160.202.231.91:36696/pages/mango-pytest/项目与配置.html) |
+| 了解六种 API/UI Demo 的功能 | [Demo 功能说明](http://160.202.231.91:36696/pages/mango-pytest/function_Introduction.html) |
+
+可以独立在本机运行，不要求先部署芒果测试平台。用例采用普通 pytest、BDD 或其他组织方式，由你根据业务需要选择；仓库中的 Demo 用于对比和参考，不要求所有项目都照搬同一套分层。
 
 ## 主要能力
 
@@ -78,9 +92,9 @@ mango_pytest/
 - Python 3.10+
 - Git
 - UI 自动化需要可用的 Chromium、Edge、Firefox、WebKit，或由 Playwright 安装的浏览器
-- 示例默认访问在线 Mango Mock：`http://160.202.231.91:20017`
+- 示例默认访问 [Mango Mock 测试靶场](http://160.202.231.91:20017)，需要能从本机访问对应服务
 
-以下命令以 macOS/Linux 为例。
+以下命令以 macOS/Linux 为例。Windows 可用 `py -3.10 -m venv .venv` 创建环境，并将命令中的 `.venv/bin/python` 替换为 `.\.venv\Scripts\python.exe`；完整图文步骤见[在线帮助文档](http://160.202.231.91:36696/pages/mango-pytest/deploy.html)。
 
 ### 2. 获取项目并创建虚拟环境
 
@@ -193,7 +207,19 @@ artifacts/
 └── temp/
 ```
 
-需要长期维护的 Excel、图片或模板应放在 `docs/assets/`，不要放入 `artifacts/`。
+Web 控制台的执行历史保存在 `artifacts/temp/web_console/web_console.sqlite3`，收集缓存位于同目录下的 `collections/`；本地历史不依赖 MySQL。删除 `artifacts/` 前，请先备份需要保留的报告、附件和历史记录。
+
+需要长期维护的 Excel、图片或模板应放在项目约定的数据目录中，不要放入 `artifacts/`。当前 Demo 的共用元素表位于 `core/sources/workbooks/mock_ui/`；文档图片与二维码位于 `docs/assets/images/`。
+
+## 接入芒果测试平台执行
+
+本地调试好的 MangoPytest 项目，可以提交到 Git 仓库后，在芒果测试平台配置仓库同步、项目产品绑定和测试目录，再通过在线执行器运行并查看平台报告，也可纳入定时任务。
+
+- [平台在线 Demo](http://160.202.231.91:35966/#/index/home)
+- [测试平台 Pytest 接入流程](http://160.202.231.91:36696/pages/单元自动化/base-flow.html)
+
+本地 Web Console 与平台执行是两条运行入口：平台侧需单独准备执行器依赖、账号、环境及网络访问；本地 SQLite 历史不会自动上传为平台报告。
+
 
 ## 开发与贡献
 
@@ -217,9 +243,41 @@ ENV=test .venv/bin/python main.py --project all --collect-only -q
 - [重构与演进方案](docs/plans/)
 - [开源许可证](LICENSE)
 
+## 开源协议与使用要求
+
+### 开源许可证
+
+本仓库使用 [GNU GPL-3.0](LICENSE)，与芒果测试平台主仓库的许可证分别说明。修改、分发及再发布时，请遵守完整许可证，保留适用的版权与许可声明，并履行相应的源码提供义务。
+
+GPL-3.0 本身不是“禁止商业用途”的许可证，收费分发也需要遵守协议条件，参见 [GNU 官方说明](https://www.gnu.org/licenses/gpl-faq.en.html#DoesTheGPLAllowMoney)。
+
+### 作者的开源诉求
+
+- 希望项目用于**企业内部自动化建设、学习和技术交流**，帮助大家理解并实践 API/UI 自动化。
+- **不希望项目被用于收费教学、二次销售等以项目本身牟利的活动。**
+- 二次开发请尊重原作者，保留项目名称、作者署名、原始版权、许可证和 README 中的联系方式及帮助文档入口。
+- 欢迎 Fork、分享真实实践、提交 Issue 和 Pull Request，不要将原项目包装为完全独立原创的作品。
+
+以上是作者对项目使用和社区协作的倡议，与 GPL-3.0 条文本身分开说明；授权及义务以完整许可证和适用约定为准。
+
+### 运行与数据使用
+
+- 使用项目虚拟环境，并通过 `requirements.txt` 与 `requirements-local.txt` 安装配套依赖，不单独从 PyPI 安装旧版内部包。
+- Demo 用于测试环境和测试数据。换成自己的服务前，请确认目标地址、账号、用例副作用及清理策略，不要直接对生产环境全量执行示例。
+- 密码、访问令牌、AI 密钥及真实业务数据不要提交到公开仓库；报告和原始日志也可能包含请求与响应，分享前请脱敏。
+- 需要升级或清理本地产物时，先备份自己的测试配置、长期维护的数据文件及需要保留的运行记录。
+
 ## 联系作者与交流群
 
-如果你在使用、二次开发或学习过程中遇到问题，可以添加作者微信，备注“芒果测试平台”。交流群二维码可能会定期失效；失效时请添加作者微信并说明需要加入交流群。
+| 方式 | 联系信息 |
+| --- | --- |
+| 微信 | `mpeng0813`，添加时备注 **“芒果测试平台 / MangoPytest”** |
+| 邮箱 | [729164035@qq.com](mailto:729164035@qq.com) |
+| Gitee | [mao-peng/mango_pytest](https://gitee.com/mao-peng/mango_pytest) |
+| GitHub | [maopengg/MangoPytest](https://github.com/maopengg/MangoPytest) |
+| 使用文档 | [MangoPytest 启动与使用](http://160.202.231.91:36696/pages/mango-pytest/deploy.html) |
+
+扫码添加作者或加入交流群。群二维码失效时，请添加作者后申请邀请；群内主要交流项目使用、自动化实践和技术问题。
 
 <p align="center">
   <img src="docs/assets/images/author-wechat.jpg" width="280" alt="作者微信二维码">
@@ -227,14 +285,16 @@ ENV=test .venv/bin/python main.py --project all --collect-only -q
   <img src="docs/assets/images/wechat-group.jpg" width="260" alt="芒果测试平台交流群二维码">
 </p>
 
+反馈问题时请附上代码版本、操作系统、Python 版本、运行命令、复现步骤和脱敏后的完整错误。功能建议请说明业务场景和预期结果；维护精力有限，回复和实现时间会结合实际情况安排。
+
 ## 支持开源项目
 
-如果这个项目对你有帮助，欢迎点一个 Star、分享给需要的人，或通过下面的收款码支持项目持续维护。感谢每一份反馈与支持。
+如果这个项目对你有帮助，欢迎 **Star、分享实践、完善文档或贡献代码**。愿意请作者喝杯咖啡的话，可以使用下面的微信收款码；支持完全自愿。感谢每一份反馈与贡献。
 
 <p align="center">
-  <img src="docs/assets/images/wechat-payment.jpg" width="460" alt="微信收款码">
+  <img src="docs/assets/images/wechat-payment.jpg" width="460" alt="自愿支持项目的微信收款码">
 </p>
-1
-1
-1
-1
+
+---
+
+版权所有 © 2022–至今 芒果味。
