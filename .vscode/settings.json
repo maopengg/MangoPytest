@@ -1,0 +1,17 @@
+{
+  "python.terminal.activateEnvironment": true,
+  "python.terminal.executeInFileDir": false,
+  "python.analysis.extraPaths": ["${workspaceFolder}"],
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true
+  },
+  "search.exclude": {
+    "**/logs": true
+  },
+  "cucumberautocomplete.steps": ["auto_tests/**/steps/**/*.py"],
+  "cucumberautocomplete.syncfeatures": "auto_tests/**/features/**/*.feature",
+  "cucumberautocomplete.strictGherkinCompletion": true,
+  "cucumberautocomplete.smartSnippets": true,
+  "cucumberautocomplete.gherkinDialect": "zh-CN"
+}
