@@ -343,3 +343,8 @@ runtime/
 
 
 主项目不重复声明内部子库已提供的第三方依赖：`pymysql`、`pydantic`、`openpyxl`、`deepdiff`，以及依赖链中的 `httpx`、`FastAPI`、`uvicorn`，均随本地 wheel 的依赖元数据安装。新版 `mangotools` 的图片/PDF 断言还会关联安装 NumPy、Pillow 和 PyMuPDF；普通 Excel 元素读取仍不依赖 pandas。
+
+
+## 可选本地 Mock
+
+接口尚未开发完成时，可显式启动仓库内的 HTTP 模拟服务。配置、建表和启动方式见 [mock/README.md](mock/README.md)；它不会随测试或控制台自动启动。

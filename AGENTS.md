@@ -207,7 +207,7 @@ L1: SyncWebRuntime / 公共协议客户端 / 数据库 Gateway
 .venv/bin/python -m pip install -r requirements.txt
 
 # 通过 main.py 执行完整测试
-ENV=test .venv/bin/python main.py --project pytest_api
+ENV=test .venv/bin/python main.py
 
 # 生成 Allure 报告
 allure generate ./runtime/reports/allure-results -o ./runtime/reports/allure-html --clean
@@ -221,7 +221,7 @@ allure generate ./runtime/reports/allure-results -o ./runtime/reports/allure-htm
 |---|---|---|
 | 仓库入口与说明 | 根 `main.py`、`README.md`、`AGENTS.md` | 入口只做调度；README 说明使用方式；AGENTS 规定维护边界，不堆放业务实现 |
 | 依赖、测试默认策略与忽略规则 | 根 `requirements.txt`、`pytest.ini`、`.gitignore` | 依赖只维护一个入口，内部包使用本地 wheel；项目专属 pytest 策略留在项目目录 |
-| 项目及可执行环境登记 | `auto_tests/project_registry.py` | 新项目和环境显式注册，不在控制台或临时脚本中另建清单 |
+| 项目及可执行环境登记 | `auto_tests/project_registry.py` | 新项目、默认项目 `DEFAULT_PROJECT` 和环境显式注册，不在公共入口、控制台或临时脚本中写死业务项目 |
 | API/UI 业务回归表达 | `auto_tests/api/<project>/test_cases/`、`auto_tests/ui/<project>/test_cases/` | 断言真实产品规则、权限、状态或数据一致性的用例，不得放根 `tests/` |
 | BDD Feature 与步骤 | 对应项目的 `features/`、`steps/` | 仅 BDD 项目使用；纯 pytest 和轻量 API 项目不引入这两层 |
 | API 场景服务和编排 | 对应项目的 `services/` 或已约定的 `workflows/` | 不放根 `core/`、`web_console/` 或测试文件中；纯 pytest 遵守既定五层架构 |
@@ -236,6 +236,7 @@ allure generate ./runtime/reports/allure-results -o ./runtime/reports/allure-htm
 | 公共基类、配置、模型和枚举 | `core/base/`、`core/settings/`、`core/models/`、`core/enums/` | 只承载框架契约和默认参数，不承载业务域模型或真实凭据 |
 | 公共框架自身的验证 | 根 `tests/`，按下节分类 | 使用可独立构造的样例；不得为同步公司与开源框架增加业务适配版测试 |
 | 控制台接口、页面与静态资源 | `web_console/`，按其 README 的分层 | 控制台只负责公共管理与展示，不嵌入某个产品的业务客户端和用例逻辑 |
+| 可选公共 HTTP 模拟服务 | 根 `mock/` | 两边保持相同实现；仅显式启动，不嵌入真实业务凭据；产品专属模拟放 `auto_tests/common/<product>/mock/` |
 | 仓库级维护脚本 | 根 `scripts/` | 仅放框架维护、迁移和通用检查；依赖产品身份、接口或配置的脚本放对应项目的 `scripts/` |
 | 操作指南、架构说明、设计方案与文档图片 | `docs/guides/`、`docs/architecture/`、`docs/plans/`、`docs/assets/` | 各目录 README 放本目录职责、入口和维护方式；历史材料放 `docs/archive/`，不当作当前执行指引 |
 | 内部包 wheel 与构建来源记录 | `local_packages/` | 版本声明维护在根 `requirements.txt`，源码与 SHA256 记录在构建清单，不把内部包源码复制进公共模块 |
@@ -247,6 +248,13 @@ allure generate ./runtime/reports/allure-results -o ./runtime/reports/allure-htm
 - 修改已有实现前先沿用对应目录的职责；拆分文件按实际能力命名，不新增泛化的 `misc/`、`temp/` 或根级杂物文件来绕过分类。
 - 新增 Python 包目录补齐 `__init__.py`；迁移时同步修改导入、动态插件路径、模板、静态资源、文档和测试，不保留旧路径转发空壳。
 - 本表规定后续新增与迁移的归属，不自动授权启动服务、执行真实业务或搬迁历史凭据；这些操作仍遵守当前任务授权和项目运行约束。
+
+## 公司与开源同步边界（强制）
+
+- 除具体业务外，所有维护文件按开源基准对齐，包括 `main.py`、`core/` 公共代码、`tests/`、`web_console/`、`mock/`、公共 `scripts/`、依赖、工具配置、公共文档和本规范。
+- 允许不同的范围仅为：`auto_tests/` 中的项目与注册表、`core/sources/workbooks/` 产品元素资产、`docs/assets/test-cases/` 产品用例表，以及说明各自仓库身份与业务用法的根 `README.md`。
+- 公司业务规范写在 `auto_tests/AGENTS.md`，业务脚本和设计资料归对应业务项目；禁止通过保留根级业务目录或给公共框架加公司分支来规避对齐。
+- 用 `.venv/bin/python scripts/check_framework_alignment.py --upstream <另一仓库路径>` 检查。该命令比对 Git 跟踪文件及未忽略的新文件，按字节校验；本地虚拟环境、编辑器私有状态和 `runtime/` 不属于同步内容。不得为了通过检查随意扩大业务排除范围。
 
 ## 公共框架测试目录（强制）
 

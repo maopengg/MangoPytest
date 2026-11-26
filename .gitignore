@@ -56,3 +56,8 @@ Thumbs.db
 allure-report/
 allure-results/
 cache/
+
+work/
+logs/
+download/
+screenshot/

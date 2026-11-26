@@ -48,6 +48,9 @@ SIMPLE_UI_RUNTIME_OPTIONS = tuple(
 )
 
 
+DEFAULT_PROJECT = "pytest_api"
+
+
 PROJECT_REGISTRY = {
     "simple_api": {"type": AutoTestTypeEnum.API, "project_name": ProjectEnum.SIMPLE_API, "path": "api/simple_api", "enabled": True, "runtime_options": API_RUNTIME_OPTIONS, "environments": {"test": {"label": "Mango Mock 测试环境", "config_file": "config/.env.test"}}},
     "bdd_api": {"type": AutoTestTypeEnum.API, "project_name": ProjectEnum.BDD_API, "path": "api/bdd_api", "enabled": True, "runtime_options": API_RUNTIME_OPTIONS, "environments": {"test": {"label": "Mango Mock 测试环境", "config_file": "config/.env.test"}}},

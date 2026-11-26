@@ -1,4 +1,4 @@
-"""从仓库根目录独立运行任一自动化 Demo。"""
+"""从仓库根目录独立运行已注册的自动化项目。"""
 
 from __future__ import annotations
 
@@ -7,13 +7,13 @@ import os
 import subprocess
 import sys
 
-from auto_tests.project_registry import PROJECT_REGISTRY, enabled_projects
+from auto_tests.project_registry import DEFAULT_PROJECT, PROJECT_REGISTRY, enabled_projects
 from core.execution import CommandBuilder, ProjectCatalog, RunOptions, TargetKind
 
 
 def parse_args() -> tuple[argparse.Namespace, list[str]]:
-    parser = argparse.ArgumentParser(description="运行 Mango Pytest 自动化 Demo")
-    parser.add_argument("--project", choices=(*enabled_projects(), "all"), default="pytest_api")
+    parser = argparse.ArgumentParser(description="运行 Mango Pytest 自动化项目")
+    parser.add_argument("--project", choices=(*enabled_projects(), "all"), default=DEFAULT_PROJECT)
     parser.add_argument(
         "--env",
         choices=("dev", "test", "pre", "prod"),

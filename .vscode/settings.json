@@ -1,17 +1,29 @@
 {
   "python.terminal.activateEnvironment": true,
-  "python.terminal.executeInFileDir": false,
-  "python.analysis.extraPaths": ["${workspaceFolder}"],
-  "files.exclude": {
-    "**/__pycache__": true,
-    "**/*.pyc": true
-  },
-  "search.exclude": {
-    "**/logs": true
-  },
-  "cucumberautocomplete.steps": ["auto_tests/**/steps/**/*.py"],
+  "python.terminal.executeInFileDir": true,
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}"
+  ],
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "cucumberautocomplete.steps": [
+    "auto_tests/**/steps/**/*.py"
+  ],
   "cucumberautocomplete.syncfeatures": "auto_tests/**/features/**/*.feature",
   "cucumberautocomplete.strictGherkinCompletion": true,
   "cucumberautocomplete.smartSnippets": true,
-  "cucumberautocomplete.gherkinDialect": "zh-CN"
+  "cucumberautocomplete.gherkinDialect": "zh-CN",
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/.pytest_cache": true,
+    "**/.ruff_cache": true,
+    "**/runtime": false,
+    "**/logs": false
+  },
+  "search.exclude": {
+    "**/artifacts": true,
+    "**/logs": true
+  },
+  "explorer.excludeGitIgnore": false
 }

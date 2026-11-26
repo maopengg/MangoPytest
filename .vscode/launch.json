@@ -2,12 +2,31 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "运行用例 main.py (pytest_api / test)",
+      "name": "调试当前测试文件 (pytest)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": [
+        "-q",
+        "${file}"
+      ],
+      "python": "${workspaceFolder}/.venv/bin/python",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "env": {
+        "ENV": "test"
+      }
+    },
+    {
+      "name": "main.py --list-projects",
       "type": "debugpy",
       "request": "launch",
       "program": "${workspaceFolder}/main.py",
+      "args": [
+        "--list-projects"
+      ],
       "python": "${workspaceFolder}/.venv/bin/python",
-      "args": ["--project", "pytest_api", "--env", "test"],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
       "justMyCode": false,
@@ -20,11 +39,16 @@
       "type": "debugpy",
       "request": "launch",
       "program": "${workspaceFolder}/main.py",
+      "args": [
+        "--check-elements"
+      ],
       "python": "${workspaceFolder}/.venv/bin/python",
-      "args": ["--check-elements"],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",
-      "justMyCode": false
+      "justMyCode": false,
+      "env": {
+        "ENV": "test"
+      }
     }
   ]
 }
