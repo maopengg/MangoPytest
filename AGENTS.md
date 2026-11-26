@@ -254,7 +254,7 @@ allure generate ./runtime/reports/allure-results -o ./runtime/reports/allure-htm
 - 除具体业务外，所有维护文件按开源基准对齐，包括 `main.py`、`core/` 公共代码、`tests/`、`web_console/`、`mock/`、公共 `scripts/`、依赖、工具配置、公共文档和本规范。
 - 允许不同的范围仅为：`auto_tests/` 中的项目与注册表、`core/sources/workbooks/` 产品元素资产、`docs/assets/test-cases/` 产品用例表，以及说明各自仓库身份与业务用法的根 `README.md`。
 - 公司业务规范写在 `auto_tests/AGENTS.md`，业务脚本和设计资料归对应业务项目；禁止通过保留根级业务目录或给公共框架加公司分支来规避对齐。
-- 用 `.venv/bin/python scripts/check_framework_alignment.py --upstream <另一仓库路径>` 检查。该命令比对 Git 跟踪文件及未忽略的新文件，按字节校验；本地虚拟环境、编辑器私有状态和 `runtime/` 不属于同步内容。不得为了通过检查随意扩大业务排除范围。
+- 用 `.venv/bin/python scripts/check_framework_alignment.py --upstream <另一仓库路径>` 检查。该命令比对 Git 跟踪文件及未忽略的新文件，按字节校验；该检查包含实际目录（含空目录）、所有 `__init__.py`、文件内容、软链接类型和可执行标记；项目注册表中的公共函数与运行选项也会比较。业务例外逐项列在脚本中，禁止整棵排除 `auto_tests/`、工作簿或文档资产目录。本地虚拟环境、编辑器私有状态和 `runtime/` 不属于同步内容。不得为了通过检查随意扩大业务排除范围。
 
 ## 公共框架测试目录（强制）
 
