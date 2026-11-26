@@ -3,7 +3,7 @@
 DAL 是一个用于测试数据验证的表达式语言，灵感来源于 Java TestCharm DAL。它提供了简洁、强大的语法来验证各种数据结构。
 
 DAL 只归属于本仓库：实现位于 `core/dal/`，完整测试位于
-`tests/test_dal/`。`mangotools` 不再发布 DAL 子模块。
+`tests/dal/`。`mangotools` 不再发布 DAL 子模块。
 
 ## 目录
 

@@ -93,7 +93,7 @@
 |---|---|---|
 | C1 | 只支持"固定定位优先"，不支持"纯描述元素" | `core/ui/element_runtime.py:150-151` 硬抛 `ValueError` |
 | C2 | 可观测性只有单步 Allure 附件，无汇总、无用例级标记、无控制台面板 | — |
-| C3 | 无端到端 AI 测试（只有参数透传断言） | `tests/test_ui_element_runtime.py:145-191` |
+| C3 | 无端到端 AI 测试（只有参数透传断言） | `tests/ui/test_element_runtime.py:145-191` |
 | C4 | 无 AI/自愈使用文档与提示词编写规范 | `docs/` |
 | C5 | `WebBaseObject` 为死代码 | `core/ui/web_base.py:62-67` |
 
@@ -233,7 +233,7 @@ slot2/slot3 对 AI 完全无效（`semantic.py:82` 只在"动态元素"标记检
 #### 3.4.5 不新增元素表列
 
 `AGENTS.md:113-115` 规定元素表固定 18 列，并明文禁止 iframe、等待、快照、交互状态等运行行为入表；
-`tests/test_ui_element_runtime.py:118-130` 还有硬断言（`len == 18` 且
+`tests/ui/test_element_runtime.py:118-130` 还有硬断言（`len == 18` 且
 `{AI自愈状态, 采集快照, 等待时间, 是否iframe1}` 与表头不相交）。方案所需的模型字段全部可由现有列 +
 代码派生得到：
 
@@ -297,14 +297,14 @@ slot2/slot3 对 AI 完全无效（`semantic.py:82` 只在"动态元素"标记检
 **改动**
 1. `auto_tests/project_registry.py`：`AI_API_KEY` 的 `type` 由 `text` 改为 `password`；或在方案 A 下直接**从 `UI_RUNTIME_OPTIONS` 移除**，只保留环境变量注入。
 2. `web_console/run_service.py` / `repository.py`：落库前对 `runtime_overrides` 中的敏感键（`AI_API_KEY` 及未来的 `*_TOKEN` / `*_SECRET`）做**打码**（如 `sk-****abcd`）。
-3. `web_console/static/app.js`：详情页回显时同样打码；`app.js:32` 增加 `password` 类型的渲染分支。
+3. 前端脚本现已拆分：详情页展示位于 `web_console/static/js/pages/run_detail.js`，运行配置控件位于 `web_console/static/js/pages/project.js`；真实 API Key 不通过控制台录入。
 4. 清理已落库的历史明文 Key：迁移脚本或提示手动清理 `runtime/cache/web_console/web_console.sqlite3`。
 5. 凭据准备：确定 AI 网关与模型，按 CI Secret 注入 `AI_API_KEY`。
 
 **验收**
 - 控制台与数据库中都搜不到完整 Key（用 `sk-test-` 前缀做端到端验证）。
 - `ENV=test AI_API_KEY=xxx ... python -c "from ... import MockUIConfig; MockUIConfig().AI_API_KEY"` 仍能正确读到（env 注入路径不被破坏）。
-- 现有 `tests/test_web_console/test_execution.py:22-30` 与 `:94-119` 全绿。
+- 现有 `tests/execution/test_command_builder.py:22-30` 与 `:94-119` 全绿。
 
 **工作量**：0.5–1 人日
 
@@ -575,7 +575,7 @@ ELEMENT_SOURCE = excel | feishu
 
 **要点**：
 - `PRODUCT_WORKBOOKS`（`ui_elements.py:21-23`）只注册 `mock_ui` 一个产品，三个 UI 项目**共用同一个 260 行工作簿**，符合 `AGENTS.md`「同一被测产品禁止按测试模式复制数据」。
-- 读取层是**表头驱动、宽松**的：`ExcelWorkbookSource` 只校验 `REQUIRED_ELEMENT_HEADERS`（7 列），多列少列都不报错。但规范层有 3 道闸门——`AGENTS.md:113-115`、`CANONICAL_ELEMENT_HEADERS`、`tests/test_ui_element_runtime.py:118-130` 的硬断言。
+- 读取层是**表头驱动、宽松**的：`ExcelWorkbookSource` 只校验 `REQUIRED_ELEMENT_HEADERS`（7 列），多列少列都不报错。但规范层有 3 道闸门——`AGENTS.md:113-115`、`CANONICAL_ELEMENT_HEADERS`、`tests/ui/test_element_runtime.py:118-130` 的硬断言。
 - 因此**新增列必须走规范变更流程**，见 §3.4 ①。
 - 现状数据特征（实测）：260 行全部 `定位方式1 = TEST_ID`、无一行缺 `定位表达式1`（即当前**没有** AI-only 元素）；`模块名称` 与 `页面名称` 260 行取值完全相同，`模块名称` 暂无额外区分度（既有结构，不建议改动）。
 
@@ -600,7 +600,7 @@ ELEMENT_SOURCE = excel | feishu
 | 运行参数校验/白名单 | `core/execution/catalog.py:55-104` |
 | 运行参数注入子进程 | `core/execution/command_builder.py:56` |
 | 运行参数落库 | `web_console/run_service.py:56-71` |
-| 现有 AI 相关测试 | `tests/test_ui_element_runtime.py:133-191, 261-276` |
+| 现有 AI 相关测试 | `tests/ui/test_element_runtime.py:133-191, 261-276` |
 | 既有自愈问题记录 | `docs/guides/内部包升级记录.md` |
 | **提示词 → AI 描述的取用点** | 库 `element_healing/context/sanitizer.py:7-12`（`first_prompt`） |
 | **AI 请求体里的 `target.prompt`** | 库 `element_healing/agent/web/prompt.py:34` |
@@ -626,7 +626,7 @@ ELEMENT_SOURCE = excel | feishu
 | 2 元数据 | `core/sources/page_labels.py`；`element_runtime` 合并提示词写入 `elements[0].prompt`、补 `description_template` / `element_version`（定位器+提示词哈希）/ 中文 `category` / `说明` 列回退 / 显式降级日志 |
 | 3 描述型元素 | `from_record` 支持无定位器但有提示词；`to_element_model` 交给库合成占位定位组；构造期与执行期双重前置校验；删除 3 个死属性 |
 | 4 可观测性 | `core/ui/healing_metrics.py`（运行级统计 + 多 worker 合并）；「AI 自愈」Allure 附件与 `healed`/`heal_source`/`heal_mode`/`heal_model` 标签；`pytest_sessionfinish` 落盘与终端摘要；控制台 `GET /api/runs/{id}/ai-healing` + 运行详情页面板；三个 UI 项目声明并自动标注 `ai_heal` marker |
-| 5 测试文档 | `tests/test_ai_element_locating.py`（fake model client 端到端，`-m ai_e2e`）；`tests/test_ai_element_locating_smoke.py`（真实网关冒烟，默认跳过）；`AI元素定位使用指南.md`；`AI定位提示词编写规范.md`；`AGENTS.md` 与 `README.md` 更新 |
+| 5 测试文档 | `tests/integration/ui/test_ai_locating.py`（fake model client 端到端，`-m ai_e2e`）；`tests/integration/ui/test_ai_gateway.py`（真实网关冒烟，默认跳过）；`AI元素定位使用指南.md`；`AI定位提示词编写规范.md`；`AGENTS.md` 与 `README.md` 更新 |
 
 ### 11.2 与原方案的偏差
 
@@ -653,7 +653,7 @@ ELEMENT_SOURCE = excel | feishu
 ### 11.4 仍未完成 / 需人工介入
 
 1. **提示词业务评审**：260 条描述是结构化草稿。体检只能保证"结构正确、无反转陷阱"，**不能保证语义准确**，需业务方按《AI 定位提示词编写规范》逐条确认。
-2. **真实网关验证**：本机无任何可用凭据（环境变量与 `.env.*` 均为空），因此未执行真实模型调用；`tests/test_ai_element_locating_smoke.py` 已就绪，注入 `AI_API_KEY` 即可验证。
+2. **真实网关验证**：本机无任何可用凭据（环境变量与 `.env.*` 均为空），因此未执行真实模型调用；`tests/integration/ui/test_ai_gateway.py` 已就绪，注入 `AI_API_KEY` 即可验证。
 3. **双跑对比**：需在有凭据的环境执行 §6.2 的对比实验，才能得出"AI 救回了哪些用例"的结论。
 4. **上游需求 9 条**（§8）尚未提交给 `mangoautomation`，其中"恢复 `mode` 语义"能直接简化双跑流程。
 5. `WebBaseObject` 的去留待维护者确认。

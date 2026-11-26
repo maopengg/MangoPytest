@@ -152,13 +152,17 @@ ENV=test .venv/bin/python main.py --project bdd_api -- -m smoke -q
 # 只收集全部已启用 Demo，不执行用例
 ENV=test .venv/bin/python main.py --project all --collect-only -q
 
-# 运行 core 框架自身测试
-ENV=test .venv/bin/python -m pytest
+# 运行公共框架离线测试
+ENV=test .venv/bin/python -m pytest tests -m 'not ai_e2e and not ai_smoke and not browser_e2e'
 ```
+
+根 `tests/` 按架构、运行目录、执行、数据、DAL、UI 和控制台能力分类，使用临时样例验证公共框架；浏览器与 AI 集成测试单独放在 `tests/integration/ui/`。目录职责与执行方式见 [tests/README.md](tests/README.md)。Mango Mock 专属检查位于 `auto_tests/common/mango_mock/tests/`，与公共框架测试分开执行。
 
 项目配置来自各 Demo 的 `config/.env.test`。用例代码不应写死环境地址；Web Console 允许在单次执行时临时覆盖注册表明确开放的配置，临时值不会回写 `.env` 或源码。
 
 ## 使用 Web Console 测试
+
+控制台的目录职责、调用关系、资源组织与维护规则见 [web_console/README.md](web_console/README.md)。
 
 ### 启动
 

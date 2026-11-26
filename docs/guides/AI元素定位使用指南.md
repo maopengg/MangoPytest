@@ -180,12 +180,13 @@ AI_API_KEY=sk-xxx AI_ELEMENT_HEALING_ENABLED=true \
 
 | 层次 | 位置 | 是否需要 Key |
 |---|---|---|
-| 提示词契约与体检 | `tests/test_prompt_spec.py` | 否 |
-| 元素模型装配（合并/版本/回退） | `tests/test_ui_element_runtime.py` | 否 |
-| 自愈统计与汇总 | `tests/test_healing_metrics.py` | 否 |
-| 控制台统计接口 | `tests/test_web_console/test_ai_healing_api.py` | 否 |
-| **AI 链路端到端（fake model client）** | `tests/test_ai_element_locating.py`（`-m ai_e2e`） | 否 |
-| **真实网关冒烟** | `tests/test_ai_element_locating_smoke.py`（`-m ai_smoke`） | 是，默认跳过 |
+| 提示词契约与体检 | `tests/ui/test_prompt_spec.py` | 否 |
+| 元素模型装配（合并/版本/回退） | `tests/ui/test_element_runtime.py` | 否 |
+| Excel/飞书元素源与仓库 | `tests/ui/test_element_source.py`（临时样例工作簿） | 否 |
+| 自愈统计与汇总 | `tests/ui/test_healing_metrics.py` | 否 |
+| 控制台统计接口 | `tests/web_console/test_ai_healing.py` | 否 |
+| **AI 链路端到端（fake model client）** | `tests/integration/ui/test_ai_locating.py`（`-m ai_e2e`） | 否 |
+| **真实网关冒烟** | `tests/integration/ui/test_ai_gateway.py`（`-m ai_smoke`） | 是，默认跳过 |
 
 ```bash
 # 跳过需要浏览器的端到端用例
@@ -193,5 +194,5 @@ ENV=test .venv/bin/python -m pytest tests -q -m "not ai_e2e"
 
 # 真实网关冒烟（需注入 Key）
 AI_API_KEY=sk-xxx ENV=test .venv/bin/python -m pytest \
-    tests/test_ai_element_locating_smoke.py -q
+    tests/integration/ui/test_ai_gateway.py -q
 ```

@@ -213,6 +213,81 @@ ENV=test .venv/bin/python main.py --project pytest_api
 allure generate ./runtime/reports/allure-results -o ./runtime/reports/allure-html --clean
 ```
 
+## 文件与目录放置规范（强制）
+
+新增或迁移文件前，先判断它验证或服务的是公共框架还是某个产品，再按下表选择目录。文件名带 `test_`、使用 pytest 或不连接真实环境，都不能作为放入根 `tests/` 的依据。不要在仓库根目录或公共目录新建业务脚本、业务模型和临时输出。
+
+| 文件职责 | 应放位置 | 边界 |
+|---|---|---|
+| 仓库入口与说明 | 根 `main.py`、`README.md`、`AGENTS.md` | 入口只做调度；README 说明使用方式；AGENTS 规定维护边界，不堆放业务实现 |
+| 依赖、测试默认策略与忽略规则 | 根 `requirements.txt`、`pytest.ini`、`.gitignore` | 依赖只维护一个入口，内部包使用本地 wheel；项目专属 pytest 策略留在项目目录 |
+| 项目及可执行环境登记 | `auto_tests/project_registry.py` | 新项目和环境显式注册，不在控制台或临时脚本中另建清单 |
+| API/UI 业务回归表达 | `auto_tests/api/<project>/test_cases/`、`auto_tests/ui/<project>/test_cases/` | 断言真实产品规则、权限、状态或数据一致性的用例，不得放根 `tests/` |
+| BDD Feature 与步骤 | 对应项目的 `features/`、`steps/` | 仅 BDD 项目使用；纯 pytest 和轻量 API 项目不引入这两层 |
+| API 场景服务和编排 | 对应项目的 `services/` 或已约定的 `workflows/` | 不放根 `core/`、`web_console/` 或测试文件中；纯 pytest 遵守既定五层架构 |
+| 业务实体、数据构造、场景规格 | 对应项目的 `data_factory/{entities,factories,specs}/` | 公共 Factory 基类才进入 `core/base/`，业务字段和业务样本不进入公共基类 |
+| 业务数据访问与清理 | 对应项目的 `repositories/`，BDD 项目按已有约定放 `repos/` | 数据访问及清理由 Repository 负责，不写进 Tests、Steps 或 Page Object |
+| 同一产品复用的协议实现、Page Object、Flow、Repository | `auto_tests/common/<product>/` | 只在该产品内共享，不能因多个业务项目都用到就提升为公共框架 |
+| 具体项目或产品的离线检查、迁移检查、适配验证 | `auto_tests/<kind>/<project>/tests/` 或 `auto_tests/common/<product>/tests/` | 必须通过显式路径执行；不与业务回归 `test_cases/` 混放，也不回流根 `tests/` |
+| 业务配置与 Fixture 装配 | 对应项目的 `config/`、`fixtures/`、`conftest.py` | 公共生命周期复用 `core/`，项目只负责本项目判定、对象组装和参数注入 |
+| 非敏感业务样例、上传模板、维护数据 | 对应项目的 `data/` 或既有资产目录 | 维护资产不放 `runtime/`；真实凭据和运行生成的登录态不作为业务样例提交 |
+| 产品 UI 元素工作簿 | `core/sources/workbooks/<product>/` | 属于按产品管理的数据资产，不代表该产品测试可以放入根 `tests/`；同一产品复用一份工作簿 |
+| 通用 HTTP、DAL、执行、UI 生命周期和数据源能力 | `core/api/`、`core/dal/`、`core/execution/`、`core/ui/`、`core/sources/` | 必须独立于具体产品、Case ID、环境地址和业务配置，不放项目专属分支 |
+| 公共基类、配置、模型和枚举 | `core/base/`、`core/settings/`、`core/models/`、`core/enums/` | 只承载框架契约和默认参数，不承载业务域模型或真实凭据 |
+| 公共框架自身的验证 | 根 `tests/`，按下节分类 | 使用可独立构造的样例；不得为同步公司与开源框架增加业务适配版测试 |
+| 控制台接口、页面与静态资源 | `web_console/`，按其 README 的分层 | 控制台只负责公共管理与展示，不嵌入某个产品的业务客户端和用例逻辑 |
+| 仓库级维护脚本 | 根 `scripts/` | 仅放框架维护、迁移和通用检查；依赖产品身份、接口或配置的脚本放对应项目的 `scripts/` |
+| 操作指南、架构说明、设计方案与文档图片 | `docs/guides/`、`docs/architecture/`、`docs/plans/`、`docs/assets/` | 各目录 README 放本目录职责、入口和维护方式；历史材料放 `docs/archive/`，不当作当前执行指引 |
+| 内部包 wheel 与构建来源记录 | `local_packages/` | 版本声明维护在根 `requirements.txt`，源码与 SHA256 记录在构建清单，不把内部包源码复制进公共模块 |
+| 日志、报告、缓存、下载和临时执行数据 | `runtime/` 的对应子目录 | 统一通过 `core.runtime` / `artifact_path` 解析，不新增顶层 `artifacts/`、`logs/`、`report/`，不提交运行产物 |
+| 本地敏感运行配置与生成的登录态 | `runtime/config/<project>/`，或项目已有且被忽略的私有路径 | API Key 使用环境变量或 CI Secret；凭据文件不提交；已有约定路径的迁移单独核对引用，不能只改文档就搬文件 |
+| 编辑器运行与检查配置 | `.vscode/` 等既有工具目录 | 只放工具配置，不承载测试数据、业务配置或执行结果 |
+
+- “公共”表示不依赖任何具体产品的业务语义；多个产品碰巧复用同一段业务实现，不足以将它放进 `core/` 或根 `tests/`。
+- 修改已有实现前先沿用对应目录的职责；拆分文件按实际能力命名，不新增泛化的 `misc/`、`temp/` 或根级杂物文件来绕过分类。
+- 新增 Python 包目录补齐 `__init__.py`；迁移时同步修改导入、动态插件路径、模板、静态资源、文档和测试，不保留旧路径转发空壳。
+- 本表规定后续新增与迁移的归属，不自动授权启动服务、执行真实业务或搬迁历史凭据；这些操作仍遵守当前任务授权和项目运行约束。
+
+## 公共框架测试目录（强制）
+
+根 `tests/` 的唯一职责是证明公共框架能力正常，开源与公司仓库的这棵目录及内容应保持一致。它不是所有 pytest 文件的收纳目录，也不是业务回归的备用入口。
+
+允许验证的内容与放置位置：
+
+| 子目录 | 验证对象 |
+|---|---|
+| `architecture/` | 通用 Case 元数据和框架分层边界，不检查某个业务项目的具体文件数或场景清单 |
+| `runtime/` | 运行目录、输出配置、日志及历史产物迁移 |
+| `execution/` | 通用命令构建、项目发现、环境解析、结果解析、证据与脱敏 |
+| `data/` | 公共 Factory、Repository 基类和数据血缘，使用临时实体与内存数据库 |
+| `dal/` | 通用表达式、路径、运算符、Schema 及中文断言步骤；按 unit/integration/features 分类 |
+| `ui/` | 通用元素源、模型装配、提示词、自愈统计和浏览器生命周期；工作簿与产品映射由临时 Fixture 构造 |
+| `web_console/` | 通用控制台接口、收集、执行、报告和存储；使用模拟注册表及临时项目 |
+| `integration/ui/` | 需要真实浏览器或 AI 网关的公共框架验证，使用 `browser_e2e`、`ai_e2e`、`ai_smoke` 标记 |
+
+以下内容禁止放入根 `tests/`：
+
+- 具体产品的接口、UI、权限、租户隔离、合同、订单、字段同步等业务回归。
+- 业务代码的离线单元测试、模拟响应测试、业务 Workflow/Factory 测试、具体项目迁移门禁；即使不联网，它们仍属于业务项目。
+- 依赖某个产品真实工作簿、Case ID 清单、场景数量、项目配置类、账号或维护样本的检查。
+- 为公司仓库编写的合同适配版本，或为开源仓库编写的 Demo 适配版本。项目特有内容留在对应 `auto_tests/` 范围，不能让公共套件因仓库不同而改写。
+
+公共测试不直接导入 `auto_tests` 下的业务项目，不读取其私有配置或维护资产。项目注册表、工作簿、文件、响应和数据库使用临时样例及 Fixture；无法脱离具体产品构造前置时，应判定为项目专属测试。
+
+离线框架回归：
+
+```bash
+ENV=test .venv/bin/python -m pytest tests -m 'not ai_e2e and not ai_smoke and not browser_e2e' -q
+```
+
+框架分层门禁在 `tests/architecture/test_layer_boundaries.py` 中检查业务导入和控制台依赖边界，不得通过关闭门禁、增加忽略项或引入旧路径转发来规避。分类和执行说明见 `tests/README.md`。
+
+## Web Console 目录
+
+- `web_console/app.py` 只装配应用、生命周期和服务；HTTP 路由与依赖放 `api/`，请求模型放 `schemas/`，调度与报告逻辑放 `services/`，持久化放 `repositories/`，pytest 收集插件放 `plugins/`。
+- 页面模板放 `templates/pages/`；静态资源由 `static/js/app.js` 和 `static/css/app.css` 入口加载。JS 按 `common/pages/reports` 拆分并显式导入，只将模板事件处理函数注册到 `window`。
+- 路由不直接访问 SQLite、运行子进程或拼接产物路径；Service 不依赖 FastAPI。目录、调用关系和验证命令见 `web_console/README.md`。
+
 ## Available Fixtures
 
 | Fixture | Purpose |

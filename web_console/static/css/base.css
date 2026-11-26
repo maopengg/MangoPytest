@@ -1,0 +1,20 @@
+:root {
+  --bg: #f3f5f2;
+  --surface: #fff;
+  --ink: #17201b;
+  --muted: #6d776f;
+  --line: #dfe5df;
+  --green: #176b46;
+  --green2: #dff3e8;
+  --red: #b42318;
+  --shadow: 0 12px 30px rgba(23, 32, 27, 0.07);
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif;
+}

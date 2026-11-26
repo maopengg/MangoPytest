@@ -66,7 +66,7 @@ runtime/
 │   ├── junit.xml
 │   ├── summary.json
 │   └── allure-results/
-└── temp/web_console/
+└── cache/web_console/
     ├── web_console.sqlite3
     └── collections/
 ```

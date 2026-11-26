@@ -1,0 +1,110 @@
+.hero,
+.project-header,
+.run-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 34px;
+}
+.hero h1,
+.project-header h1,
+.run-heading h1 {
+  font-size: 34px;
+  margin: 4px 0 8px;
+  letter-spacing: -0.035em;
+}
+.hero p,
+.project-header p {
+  color: var(--muted);
+  margin: 0;
+}
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.project-card {
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 20px;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: var(--shadow);
+  transition: 0.18s;
+}
+.project-card:hover {
+  transform: translateY(-2px);
+  border-color: #a9c5b4;
+}
+.project-card.disabled {
+  opacity: 0.62;
+}
+.card-top,
+.card-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.project-card h3 {
+  margin: 22px 0 5px;
+  font-size: 19px;
+}
+.project-card p {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 0 0 22px;
+}
+.history {
+  margin-top: 38px;
+}
+.run-row {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr 1fr 1fr 80px;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+  align-items: center;
+  font-size: 13px;
+  text-decoration: none;
+  color: inherit;
+}
+.run-row:last-child {
+  border: 0;
+}
+@media (max-width: 800px) {
+  .project-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 800px) {
+  .hero,
+  .project-header,
+  .run-heading {
+    align-items: flex-start;
+    gap: 20px;
+    flex-direction: column;
+  }
+}
+@media (max-width: 800px) {
+  .run-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.run-history-scroll {
+  max-height: 520px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+.run-list-status {
+  padding: 13px 18px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
+  background: #fafbfa;
+}
+.run-history-scroll .run-row:last-of-type {
+  border-bottom: 1px solid var(--line);
+}
