@@ -81,8 +81,7 @@ mango_pytest/
 ├── runtime/                   # 本地运行产物，默认不提交
 ├── main.py                      # 命令行统一入口
 ├── pytest.ini
-├── requirements.txt
-└── requirements-local.txt
+└── requirements.txt
 ```
 
 ## 安装
@@ -108,18 +107,14 @@ python3.10 -m venv .venv
 
 ```bash
 .venv/bin/python -m pip install --upgrade pip
-.venv/bin/python -m pip install -r requirements.txt -r requirements-local.txt
+.venv/bin/python -m pip install -r requirements.txt
 ```
 
-`requirements.txt` 管理开源三方依赖；`requirements-local.txt` 只安装 `local_packages/` 中的 `mangotools` 和 `mangoautomation` wheel。请勿单独从 PyPI 安装这两个内部包，PyPI 上是旧实现。
+`requirements.txt` 是唯一依赖入口，统一安装第三方依赖、gRPC 代码生成工具，以及 `local_packages/` 中的 `mangotools` 和 `mangoautomation` wheel。请勿单独从 PyPI 安装这两个内部包，PyPI 上是旧实现。
 
 跨协议 API Demo 默认使用 `BASE_URL` 的主机和 gRPC `50051` 端口。部署使用其他映射端口时，通过 `MANGO_MOCK_GRPC_TARGET=主机:端口` 覆盖；HTTP 地址仍通过 `BASE_URL` 设置。
 
-`requirements-dev.txt` 单独管理 gRPC 代码生成工具，日常运行测试无需安装。需要修改 `.proto` 并重新生成代码时，再执行：
-
-```bash
-.venv/bin/python -m pip install -r requirements-dev.txt
-```
+gRPC 代码生成工具 `grpcio-tools` 已包含在统一依赖中，修改 `.proto` 时可直接使用，无需额外安装。
 
 首次运行 UI 自动化时，可安装 Playwright 浏览器：
 
@@ -264,7 +259,7 @@ GPL-3.0 本身不是“禁止商业用途”的许可证，收费分发也需要
 
 ### 运行与数据使用
 
-- 使用项目虚拟环境，并通过 `requirements.txt` 与 `requirements-local.txt` 安装配套依赖，不单独从 PyPI 安装旧版内部包。
+- 使用项目虚拟环境，并通过 `requirements.txt` 安装配套依赖，不单独从 PyPI 安装旧版内部包。
 - Demo 用于测试环境和测试数据。换成自己的服务前，请确认目标地址、账号、用例副作用及清理策略，不要直接对生产环境全量执行示例。
 - 密码、访问令牌、AI 密钥及真实业务数据不要提交到公开仓库；报告和原始日志也可能包含请求与响应，分享前请脱敏。
 - 需要升级或清理本地产物时，先备份自己的测试配置、长期维护的数据文件及需要保留的运行记录。

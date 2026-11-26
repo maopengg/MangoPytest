@@ -1,3 +1,0 @@
-# 开发工具；内部包仍通过 requirements-local.txt 安装
--r requirements.txt
-grpcio-tools==1.71.0

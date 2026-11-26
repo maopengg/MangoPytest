@@ -16,9 +16,9 @@ This file provides guidance to Codex (Codex.ai/code) when working with code in t
 | `/Users/mango/code/mango_automation` | `mangoautomation` | `2.1.0` |
 
 - `mangotools` 和 `mangoautomation` 禁止从 PyPI 安装；PyPI 版本是旧实现。
-- 公共三方依赖维护在 `requirements.txt`，内部包只维护在
-  `requirements-local.txt`，使用本项目 `local_packages/` 中与
-  `qfei-auto-platform` 一致的 wheel。
+- 第三方依赖、gRPC 生成工具和内部包统一维护在 `requirements.txt`；
+  内部包使用本项目 `local_packages/` 中与 `qfei-auto-platform` 一致的 wheel，
+  禁止改为 PyPI 包名安装，内部包关联提供的三方依赖不重复声明。
 - 只查看内部包源码时无需同步。若修改了内部包源码，必须先在对应源码仓库运行
   `sync_local_package.py`，再将生成的 wheel 同步到本项目 `local_packages/` 并更新版本声明。
 - `mangotools` 按职责从具体模块导入，例如 `data_processor`、`decorator`、
@@ -204,7 +204,7 @@ L1: SyncWebRuntime / 公共协议客户端 / 数据库 Gateway
 
 ```bash
 # 安装公共依赖和与 qfei-auto-platform 一致的本地内部包
-.venv/bin/python -m pip install -r requirements.txt -r requirements-local.txt
+.venv/bin/python -m pip install -r requirements.txt
 
 # 通过 main.py 执行完整测试
 ENV=test .venv/bin/python main.py --project pytest_api
