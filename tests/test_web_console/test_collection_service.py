@@ -35,7 +35,7 @@ def test_tree_maps_feature_to_exact_feature_execution_target(tmp_path: Path) -> 
     feature_file.write_text("功能: gRPC\n", encoding="utf-8")
     test_file.write_text("def test_ftapi_0140(): pass\n", encoding="utf-8")
     ignored_file.write_text("def test_ignored(): pass\n", encoding="utf-8")
-    settings = SimpleNamespace(artifacts_root=tmp_path / "artifacts")
+    settings = SimpleNamespace(runtime_root=tmp_path / "runtime")
     catalog = SimpleNamespace(get=lambda *args, **kwargs: SimpleNamespace(root=project_root))
     service = CollectionService(settings, catalog)
     service.cache_path("bdd_api").parent.mkdir(parents=True)
@@ -82,7 +82,7 @@ def test_tree_maps_feature_to_exact_feature_execution_target(tmp_path: Path) -> 
 
 
 def test_read_rejects_stale_collection_cache(tmp_path: Path) -> None:
-    settings = SimpleNamespace(artifacts_root=tmp_path / "artifacts")
+    settings = SimpleNamespace(runtime_root=tmp_path / "runtime")
     service = CollectionService(settings, SimpleNamespace())
     service.cache_path("demo").parent.mkdir(parents=True)
     service.cache_path("demo").write_text(

@@ -6,6 +6,7 @@ import re
 import shlex
 
 from core.execution.models import ProjectDescriptor, RunCommand, RunOptions, TargetKind
+from core.runtime import runtime_path
 
 _SAFE_EXPRESSION = re.compile(r"^[\w\s.():\[\]{}'\"=!<>&|,+\-/*]+$", re.UNICODE)
 
@@ -22,7 +23,8 @@ class CommandBuilder:
         environment = environment.lower()
         if environment not in {"dev", "test", "pre", "prod"}:
             raise ValueError(f"不支持的环境: {environment}")
-        argv = [self.python_executable, "-m", "pytest"]
+        argv = [self.python_executable, "-m", "pytest", "-o",
+                f"cache_dir={runtime_path('cache', 'pytest', project.id)}"]
         resolved_targets = self._validate_targets(project, target_kind, target, feature_nodes)
         argv.extend(resolved_targets)
         if options.collect_only:

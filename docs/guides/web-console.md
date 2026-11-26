@@ -59,7 +59,7 @@ API 请求体和响应体中的业务 JSON 保留原始 key 与原始层级；�
 ## 数据和产物
 
 ```text
-artifacts/
+runtime/
 ├── reports/runs/{run_id}/
 │   ├── stdout.log
 │   ├── events.ndjson
@@ -71,7 +71,7 @@ artifacts/
     └── collections/
 ```
 
-`artifacts/` 整体位于 `.gitignore`，历史记录仅保存在本地。
+`runtime/` 整体位于 `.gitignore`，历史记录仅保存在本地。
 
 ## 安全边界
 

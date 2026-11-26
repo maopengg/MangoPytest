@@ -49,7 +49,7 @@ class MockUIConfig(UIRuntimeConfig):
     ALLURE_HISTORY_DIR: str = Field(default=artifact_path("reports", "simple_ui", "history"), description="Allure历史记录目录")
 
     # 日志配置
-    LOG_DIR: str = Field(default=artifact_path("temp", "logs", "simple_ui"), description="日志目录")
+    LOG_DIR: str = Field(default=artifact_path("logs", "simple_ui"), description="日志目录")
     LOG_LEVEL: str = Field(default="INFO", description="日志级别")
 
     # 截图配置

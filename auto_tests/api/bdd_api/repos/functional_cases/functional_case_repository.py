@@ -18,14 +18,18 @@ class FunctionalCaseRepository:
         self.runtime = runtime
         self.base_url = runtime.base_url
         self.client = runtime.http
+        self._cleanup_tokens: dict[str, str] = {}
 
     @property
     def run_id(self) -> str:
         return self.runtime.run_id
 
     def close(self) -> None:
-        # HTTP 客户端归 CrossProtocolRepository 所有，由运行时统一关闭。
-        pass
+        # 本 Repository 负责子 Test Run，客户端由 CrossProtocolRepository 关闭。
+        for run_id in self._cleanup_tokens:
+            response = self.delete_test_run(run_id)
+            if response.status_code != 404:
+                response.raise_for_status()
 
     def headers(
         self,
@@ -93,15 +97,14 @@ class FunctionalCaseRepository:
         return self.request("POST", "/api/v1/reviews", json=payload)
 
     def create_test_run(self, name: str, ttl_minutes: int = 5) -> httpx.Response:
-        return self.client.request_raw(
-            "POST",
-            "/api/v1/test-runs",
-            json={
-                "name": name,
-                "tenant_id": "tenant-a",
-                "ttl_minutes": ttl_minutes,
-            },
+        response = self.client.request_raw(
+            "POST", "/api/v1/test-runs",
+            json={"name": name, "tenant_id": "tenant-a", "ttl_minutes": ttl_minutes},
         )
+        if response.status_code == 201:
+            data = self.data(response)
+            self._cleanup_tokens[data["id"]] = data.get("cleanup_token", "")
+        return response
 
     def login(
         self,
@@ -117,12 +120,17 @@ class FunctionalCaseRepository:
         )
 
     def delete_test_run(self, run_id: str) -> httpx.Response:
-        if not self.runtime.admin_token:
-            raise RuntimeError("未配置 MOCK_ADMIN_TOKEN，无法清理 Test Run")
+        cleanup_token = self._cleanup_tokens.get(run_id)
+        if run_id == self.run_id:
+            cleanup_token = self.runtime.cleanup_token
+        if cleanup_token:
+            headers = {"X-Cleanup-Token": cleanup_token}
+        elif self.runtime.admin_token:
+            headers = {"X-Admin-Token": self.runtime.admin_token}
+        else:
+            raise RuntimeError("未配置清理令牌，无法清理 Test Run")
         return self.client.request_raw(
-            "DELETE",
-            f"/api/v1/test-runs/{run_id}",
-            headers={"X-Admin-Token": self.runtime.admin_token},
+            "DELETE", f"/api/v1/test-runs/{run_id}", headers=headers,
         )
 
     def post_callback(
@@ -203,7 +211,7 @@ class FunctionalCaseRepository:
         else:
             url = f"{self.runtime.websocket.url}?test_run_id={self.run_id}&token=invalid"
         try:
-            with connect(url, open_timeout=5) as socket:
+            with connect(url, open_timeout=5, proxy=None) as socket:
                 socket.recv(timeout=2)
         except Exception:
             return True

@@ -172,13 +172,13 @@ APIClient 每次请求自动通过 `api_allure_logger` 装饰器将请求/响应
 报告生成：
 ```bash
 # 运行测试时自动生成 Allure 数据
-pytest ... --alluredir=./artifacts/reports/allure-results --clean-alluredir
+pytest ... --alluredir=./runtime/reports/allure-results --clean-alluredir
 
 # 生成 HTML 报告
-allure generate ./artifacts/reports/allure-results -o ./artifacts/reports/allure-html --clean
+allure generate ./runtime/reports/allure-results -o ./runtime/reports/allure-html --clean
 
 # 查看报告
-allure serve ./artifacts/reports/allure-results
+allure serve ./runtime/reports/allure-results
 ```
 
 ### 4.5 告警通知
@@ -223,7 +223,7 @@ MainRun(
         '-v',                                  # 详细结果
         '-W',
         'ignore:Module already imported:pytest.PytestWarning',  # 忽略重复导入警告
-        '--alluredir', './artifacts/reports/allure-results',         # Allure 输出目录
+        '--alluredir', './runtime/reports/allure-results',         # Allure 输出目录
         "--clean-alluredir",                   # 运行前清空
         '-n 3',                                # 3 进程并行
         '--dist=loadscope',                    # 按模块分配进程

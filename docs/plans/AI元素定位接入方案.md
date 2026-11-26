@@ -298,7 +298,7 @@ slot2/slot3 对 AI 完全无效（`semantic.py:82` 只在"动态元素"标记检
 1. `auto_tests/project_registry.py`：`AI_API_KEY` 的 `type` 由 `text` 改为 `password`；或在方案 A 下直接**从 `UI_RUNTIME_OPTIONS` 移除**，只保留环境变量注入。
 2. `web_console/run_service.py` / `repository.py`：落库前对 `runtime_overrides` 中的敏感键（`AI_API_KEY` 及未来的 `*_TOKEN` / `*_SECRET`）做**打码**（如 `sk-****abcd`）。
 3. `web_console/static/app.js`：详情页回显时同样打码；`app.js:32` 增加 `password` 类型的渲染分支。
-4. 清理已落库的历史明文 Key：迁移脚本或提示手动清理 `artifacts/temp/web_console/web_console.sqlite3`。
+4. 清理已落库的历史明文 Key：迁移脚本或提示手动清理 `runtime/cache/web_console/web_console.sqlite3`。
 5. 凭据准备：确定 AI 网关与模型，按 CI Secret 注入 `AI_API_KEY`。
 
 **验收**
@@ -328,7 +328,7 @@ slot2/slot3 对 AI 完全无效（`semantic.py:82` 只在"动态元素"标记检
 4. **新增提示词体检（lint）**，两层：
    - **加载期**：`core/sources/ui_elements.py` 在 `load_element_records()` 后调用体检。**错误级默认 fail fast**
      （避免"静默错误结果"流入测试），可通过配置开关降级为告警以应对紧急情况；警告级仅记日志。
-   - **可独立执行的批量脚本**（供元素维护者在提交前跑），输出报告到 `artifacts/`。
+   - **可独立执行的批量脚本**（供元素维护者在提交前跑），输出报告到 `runtime/`。
    规则分级（依据均为 §3.4.3 实证）：
 
    | 级别 | 规则 |

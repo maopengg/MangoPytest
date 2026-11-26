@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from functools import wraps
 import inspect
+import os
 from pathlib import Path
 import time
 from typing import Any
@@ -19,9 +20,18 @@ from core.execution.data_lineage import (
     stop_lineage,
 )
 from core.utils.artifacts import artifact_path
+from core.runtime import runtime_path
 
 
 _PATCHED = False
+
+
+def pytest_load_initial_conftests(early_config, parser, args):
+    """直接调用 pytest 时，缓存同样遵循自定义运行根目录。"""
+    if os.environ.get("MANGO_PYTEST_RUNTIME_DIR", "").strip():
+        repository = Path(__file__).resolve().parents[2]
+        project = "root" if early_config.rootpath == repository else early_config.rootpath.name
+        early_config.inicfg["cache_dir"] = runtime_path("cache", "pytest", project)
 
 _ELEMENT_SNAPSHOT_SCRIPT = """
 element => {
@@ -224,7 +234,7 @@ def _healing_summary_directory(config: pytest.Config) -> Path:
     """决定 AI 自愈汇总的落盘目录。
 
     优先写在 ``--alluredir`` 的同级（即控制台的运行产物目录），这样控制台能按运行
-    直接读取；直接跑 ``main.py`` 时回退到仓库 ``artifacts/reports``。
+    直接读取；直接跑 ``main.py`` 时回退到仓库 ``runtime/reports``。
     """
 
     allure_dir = getattr(config.option, "allure_report_dir", None)

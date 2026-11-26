@@ -108,7 +108,7 @@ AI 读到的「元素描述」来自 **`ElementModel.elements[0].prompt`**，它
 ### 4.2 整轮运行
 
 会话结束时会把统计写入运行产物目录（`--alluredir` 的同级；直接跑 `main.py` 时写入
-`artifacts/reports/`），文件名 `ai-healing-summary[-<worker>].json`，终端同时打印一行：
+`runtime/reports/`），文件名 `ai-healing-summary[-<worker>].json`，终端同时打印一行：
 
 ```text
 [AI 自愈] 操作 N 次 · 触发自愈 M 次（AI A / 本地 L）· 自愈成功 S · 自愈后仍失败 F

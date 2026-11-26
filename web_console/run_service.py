@@ -63,7 +63,7 @@ class RunService:
             feature_nodes=feature_nodes,
         )
         run_id = uuid.uuid4().hex
-        artifact_dir = (self.settings.artifacts_root / "reports" / "runs" / run_id).resolve()
+        artifact_dir = (self.settings.runtime_root / "reports" / "runs" / run_id).resolve()
         record = {
             "id": run_id, "project": project.id, "project_kind": project.kind,
             "environment": data.environment, "target_kind": target_kind.value, "target": data.target.id,

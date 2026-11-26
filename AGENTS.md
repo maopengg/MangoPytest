@@ -210,7 +210,7 @@ L1: SyncWebRuntime / 公共协议客户端 / 数据库 Gateway
 ENV=test .venv/bin/python main.py --project pytest_api
 
 # 生成 Allure 报告
-allure generate ./artifacts/reports/allure-results -o ./artifacts/reports/allure-html --clean
+allure generate ./runtime/reports/allure-results -o ./runtime/reports/allure-html --clean
 ```
 
 ## Available Fixtures
@@ -254,3 +254,10 @@ allure generate ./artifacts/reports/allure-results -o ./artifacts/reports/allure
 - ❌ 在测试用例中写数据清理逻辑
 - ❌ 在测试用例中定义配置常量
 - ❌ 不遵守五层架构
+
+
+## 本地运行产物
+
+- 所有运行产物通过 `core.runtime.runtime_root/runtime_path` 或 `artifact_path` 解析，默认写入 `runtime/`；禁止新建顶层 `artifacts/`、`logs/`、`report/` 等并行输出目录。
+- 日志固定为 `runtime/logs/` 下的五级 `*-log.log` 文件；控制台状态与收集缓存位于 `runtime/cache/web_console/`。
+- `MANGO_PYTEST_RUNTIME_DIR` 可覆盖运行根目录。测试数据、元素工作簿、模板属于维护资产，不放进运行目录。

@@ -12,7 +12,7 @@ def _build_settings(tmp_path: Path) -> WebConsoleSettings:
     return WebConsoleSettings(
         repository_root=repository_root,
         python_executable=repository_root / ".venv" / "bin" / "python",
-        artifacts_root=tmp_path / "artifacts",
+        runtime_root=tmp_path / "runtime",
         database_path=tmp_path / "web.sqlite3",
     )
 
@@ -44,7 +44,7 @@ def _client(settings: WebConsoleSettings):
 
 def test_ai_healing_endpoint_merges_worker_summaries(tmp_path: Path) -> None:
     settings = _build_settings(tmp_path)
-    artifact_dir = tmp_path / "artifacts" / "reports" / "runs" / "run-1"
+    artifact_dir = tmp_path / "runtime" / "reports" / "runs" / "run-1"
     _insert_run(settings, "run-1", artifact_dir, tmp_path)
     (artifact_dir / "ai-healing-summary-gw0.json").write_text(json.dumps({
         "operations": 5, "healed_operations": 2, "healed_successfully": 2,
@@ -78,7 +78,7 @@ def test_ai_healing_endpoint_merges_worker_summaries(tmp_path: Path) -> None:
 
 def test_ai_healing_endpoint_reports_unavailable_without_summary(tmp_path: Path) -> None:
     settings = _build_settings(tmp_path)
-    artifact_dir = tmp_path / "artifacts" / "reports" / "runs" / "run-2"
+    artifact_dir = tmp_path / "runtime" / "reports" / "runs" / "run-2"
     _insert_run(settings, "run-2", artifact_dir, tmp_path)
 
     with _client(settings) as client:

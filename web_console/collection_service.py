@@ -14,7 +14,7 @@ class CollectionService:
     def __init__(self, settings: WebConsoleSettings, catalog: ProjectCatalog) -> None:
         self.settings = settings
         self.catalog = catalog
-        self.cache_root = settings.artifacts_root / "temp" / "web_console" / "collections"
+        self.cache_root = settings.runtime_root / "cache" / "web_console" / "collections"
 
     def cache_path(self, project_id: str) -> Path:
         return self.cache_root / f"{project_id}.json"
@@ -41,6 +41,7 @@ class CollectionService:
         env["PYTHONPATH"] = os.pathsep.join(filter(None, (str(self.settings.repository_root), env.get("PYTHONPATH", ""))))
         process = await asyncio.create_subprocess_exec(
             str(self.settings.python_executable), "-m", "pytest", "--collect-only", "-q",
+            "-o", f"cache_dir={self.settings.runtime_root / 'cache/pytest' / project_id}",
             "-p", "web_console.pytest_plugin", f"--mango-collect-manifest={destination}",
             cwd=project.root, env=env, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT,
         )

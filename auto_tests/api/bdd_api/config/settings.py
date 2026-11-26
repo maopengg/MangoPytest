@@ -14,7 +14,7 @@ class BddApiMockConfig(APIRuntimeConfig):
     PROJECT_NAME: str = "BDD Mango Mock API 自动化测试"
     ALLURE_REPORT_DIR: str = artifact_path("reports", "bdd_api", "allure")
     ALLURE_HISTORY_DIR: str = artifact_path("reports", "bdd_api", "history")
-    LOG_DIR: str = artifact_path("temp", "logs", "bdd_api")
+    LOG_DIR: str = artifact_path("logs", "bdd_api")
 
 
 class DevConfig(BddApiMockConfig):

@@ -176,7 +176,7 @@ addopts = -v --tb=short --strict-markers
 
 ```bash
 # 生成 Allure 报告
-allure generate ./artifacts/reports/allure-results -o ./artifacts/reports/allure-html --clean
+allure generate ./runtime/reports/allure-results -o ./runtime/reports/allure-html --clean
 ```
 
 ---

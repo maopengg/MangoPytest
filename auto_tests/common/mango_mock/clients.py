@@ -174,7 +174,7 @@ class WebSocketProtocolClient:
         }):
             socket = connect(
                 f"{self.url}?test_run_id={run_id}&token={token}",
-                open_timeout=10, close_timeout=5,
+                open_timeout=10, close_timeout=5, proxy=None,
             )
             attach_json("响应信息", {"status": "connected"})
             return socket
@@ -449,6 +449,7 @@ class GrpcProtocolClient:
         self._channel = grpc.insecure_channel(
             host,
             options=(
+                ("grpc.enable_http_proxy", 0),
                 ("grpc.max_send_message_length", 32 * 1024 * 1024),
                 ("grpc.max_receive_message_length", 32 * 1024 * 1024),
             ),

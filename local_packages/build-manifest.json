@@ -1,0 +1,18 @@
+{
+  "packages": [
+    {
+      "package": "mangotools",
+      "wheel": "mangotools-2.0.8-py3-none-any.whl",
+      "source_repository": "mango_tools",
+      "source_commit": "bd788e395467346b2419f22d60db9f15af80ac30",
+      "sha256": "2f58e8cf5a1d17bfe5403016376edb540dd057addaa49f82850ff8c62cdf554f"
+    },
+    {
+      "package": "mangoautomation",
+      "wheel": "mangoautomation-2.1.0-py3-none-any.whl",
+      "source_repository": "mango_automation",
+      "source_commit": "c4fee502b378ccddeb99b3aa19052245667083e3",
+      "sha256": "a17a950b86b6b87cb57ed0cb2f54f7afdcb48da2b5172ce0e4f6c860f1842984"
+    }
+  ]
+}

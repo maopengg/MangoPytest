@@ -32,8 +32,9 @@ class CrossProtocolRepository:
         self.sse = SseProtocolClient(self.base_url, timeout=timeout)
         self.mcp = McpProtocolClient(self.base_url, timeout=timeout)
         host = urlparse(self.base_url).hostname or "127.0.0.1"
-        self.grpc = GrpcProtocolClient(f"{host}:50051")
+        self.grpc = GrpcProtocolClient(os.getenv("MANGO_MOCK_GRPC_TARGET", f"{host}:50051"))
         self.run_id = ""
+        self.cleanup_token = ""
         self.tokens: dict[str, str] = {}
         self.admin_token = admin_token
 
@@ -43,6 +44,7 @@ class CrossProtocolRepository:
         assert response.status_code == 201, response.body
         assert response.body.get("code") == 0, response.body
         self.run_id = response.data["id"]
+        self.cleanup_token = response.data.get("cleanup_token", "")
         log.info(f"创建隔离 Test Run: {self.run_id}")
         return self
 
@@ -54,16 +56,28 @@ class CrossProtocolRepository:
         return self.tokens[role]
 
     def close(self) -> None:
-        admin_token = self.admin_token or os.getenv("MANGO_MOCK_ADMIN_TOKEN")
-        if self.run_id and admin_token:
-            response = self.http.delete_run(self.run_id, admin_token)
-            if response.status_code != 200:
-                log.warning(f"Test Run 立即清理失败，将由 TTL 回收: {self.run_id}")
-        elif self.run_id:
-            log.debug(f"未配置管理员令牌，Test Run 将由 TTL 回收: {self.run_id}")
-        self.mcp.close()
-        self.grpc.close()
-        self.http.close()
+        try:
+            if self.run_id:
+                admin_token = self.admin_token or os.getenv("MANGO_MOCK_ADMIN_TOKEN")
+                if self.cleanup_token:
+                    response = self.http.delete_run_with_cleanup_token(
+                        self.run_id, self.cleanup_token
+                    )
+                elif admin_token:
+                    response = self.http.delete_run(self.run_id, admin_token)
+                else:
+                    log.debug(f"未配置清理令牌，Test Run 将由 TTL 回收: {self.run_id}")
+                    return
+                if response.status_code not in {200, 404}:
+                    log.warning(f"Test Run 立即清理失败，将由 TTL 回收: {self.run_id}")
+        finally:
+            try:
+                self.mcp.close()
+            finally:
+                try:
+                    self.grpc.close()
+                finally:
+                    self.http.close()
 
     def create_claim_http(self, payload: dict) -> dict:
         result = self.http.request(

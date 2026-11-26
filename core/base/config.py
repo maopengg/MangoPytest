@@ -5,8 +5,16 @@
 所有子项目的配置类都应该继承此类
 """
 
-from pydantic import Field, ConfigDict
+from pathlib import Path
+
+from pydantic import Field, ConfigDict, field_validator, model_validator
 from pydantic_settings import BaseSettings
+
+from core.runtime import runtime_path
+
+OUTPUT_DIRECTORY_FIELDS = (
+    "LOG_DIR", "ALLURE_REPORT_DIR", "ALLURE_HISTORY_DIR", "ARTIFACT_DIR", "SCREENSHOT_DIR",
+)
 
 
 class BaseConfig(BaseSettings):
@@ -32,6 +40,30 @@ class BaseConfig(BaseSettings):
         env_file_encoding="utf-8",
         extra="allow",
     )
+
+    @field_validator(*OUTPUT_DIRECTORY_FIELDS, mode="before", check_fields=False)
+    @classmethod
+    def resolve_output_directory(cls, value):
+        if not isinstance(value, str) or not value.strip():
+            return value
+        directory = Path(value).expanduser()
+        if directory.is_absolute():
+            return str(directory)
+        parts = directory.parts
+        if parts and parts[0] in {"artifacts", "runtime"}:
+            parts = parts[1:]
+        if parts[:2] in {("temp", "logs"), ("temp", "cache")}:
+            parts = parts[1:]
+        return runtime_path(*parts)
+
+    @model_validator(mode="after")
+    def resolve_extra_output_directories(self):
+        # 部分旧 .env 中的输出字段尚未在对应项目模型中声明。
+        extra = self.model_extra or {}
+        for name in OUTPUT_DIRECTORY_FIELDS:
+            if name in extra:
+                extra[name] = self.resolve_output_directory(extra[name])
+        return self
 
     # 环境标识
     ENV: str = Field(default="test", description="环境标识")

@@ -14,7 +14,7 @@ class PytestApiMockConfig(APIRuntimeConfig):
     PROJECT_NAME: str = "Pytest Mango Mock API 自动化测试"
     ALLURE_REPORT_DIR: str = artifact_path("reports", "pytest_api", "allure")
     ALLURE_HISTORY_DIR: str = artifact_path("reports", "pytest_api", "history")
-    LOG_DIR: str = artifact_path("temp", "logs", "pytest_api")
+    LOG_DIR: str = artifact_path("logs", "pytest_api")
 
 
 class DevConfig(PytestApiMockConfig):

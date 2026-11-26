@@ -1,12 +1,9 @@
-"""仓库级运行产物路径。"""
+"""测试产物统一存放在运行目录，保留业务侧的产物路径入口。"""
 
-from pathlib import Path
-
-
-ARTIFACT_ROOT = Path(__file__).resolve().parents[2] / "artifacts"
+from core.runtime import runtime_path
 
 
 def artifact_path(*parts: str) -> str:
-    """返回 ``artifacts/`` 下的绝对路径，避免受 pytest cwd 影响。"""
+    """返回 ``runtime/`` 下的绝对路径，避免受 pytest cwd 影响。"""
 
-    return str(ARTIFACT_ROOT.joinpath(*parts))
+    return runtime_path(*parts)

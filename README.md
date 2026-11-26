@@ -78,7 +78,7 @@ mango_pytest/
 ├── tests/                       # core 框架自身测试
 ├── docs/                        # 架构、指南、方案和长期维护资源
 ├── local_packages/              # 芒果内部 Python wheel
-├── artifacts/                   # 本地运行产物，默认不提交
+├── runtime/                   # 本地运行产物，默认不提交
 ├── main.py                      # 命令行统一入口
 ├── pytest.ini
 ├── requirements.txt
@@ -112,6 +112,8 @@ python3.10 -m venv .venv
 ```
 
 `requirements.txt` 管理开源三方依赖；`requirements-local.txt` 只安装 `local_packages/` 中的 `mangotools` 和 `mangoautomation` wheel。请勿单独从 PyPI 安装这两个内部包，PyPI 上是旧实现。
+
+跨协议 API Demo 默认使用 `BASE_URL` 的主机和 gRPC `50051` 端口。部署使用其他映射端口时，通过 `MANGO_MOCK_GRPC_TARGET=主机:端口` 覆盖；HTTP 地址仍通过 `BASE_URL` 设置。
 
 `requirements-dev.txt` 单独管理 gRPC 代码生成工具，日常运行测试无需安装。需要修改 `.proto` 并重新生成代码时，再执行：
 
@@ -190,10 +192,10 @@ ENV=test .venv/bin/python -m pytest
 
 ## 测试产物
 
-全部临时文件统一写入 `artifacts/`，该目录默认加入 `.gitignore`：
+全部临时文件统一写入 `runtime/`，该目录默认加入 `.gitignore`：
 
 ```text
-artifacts/
+runtime/
 ├── reports/
 │   └── runs/{run_id}/
 │       ├── stdout.log
@@ -207,9 +209,9 @@ artifacts/
 └── temp/
 ```
 
-Web 控制台的执行历史保存在 `artifacts/temp/web_console/web_console.sqlite3`，收集缓存位于同目录下的 `collections/`；本地历史不依赖 MySQL。删除 `artifacts/` 前，请先备份需要保留的报告、附件和历史记录。
+Web 控制台的执行历史保存在 `runtime/cache/web_console/web_console.sqlite3`，收集缓存位于同目录下的 `collections/`；本地历史不依赖 MySQL。删除 `runtime/` 前，请先备份需要保留的报告、附件和历史记录。
 
-需要长期维护的 Excel、图片或模板应放在项目约定的数据目录中，不要放入 `artifacts/`。当前 Demo 的共用元素表位于 `core/sources/workbooks/mock_ui/`；文档图片与二维码位于 `docs/assets/images/`。
+需要长期维护的 Excel、图片或模板应放在项目约定的数据目录中，不要放入 `runtime/`。当前 Demo 的共用元素表位于 `core/sources/workbooks/mock_ui/`；文档图片与二维码位于 `docs/assets/images/`。
 
 ## 接入芒果测试平台执行
 
@@ -298,3 +300,47 @@ GPL-3.0 本身不是“禁止商业用途”的许可证，收费分发也需要
 ---
 
 版权所有 © 2022–至今 芒果味。
+
+
+## 本地运行目录规范
+
+未提交的运行产物统一放在仓库根目录 `runtime/`，不受执行命令所在目录影响：
+
+```text
+runtime/
+├── logs/
+│   ├── debug-log.log
+│   ├── info-log.log
+│   ├── warning-log.log
+│   ├── error-log.log
+│   └── critical-log.log
+├── reports/             # Allure、JUnit、每次执行的 stdout 和 UI 现场
+├── cache/
+│   ├── pytest/          # pytest 收集与执行缓存
+│   └── web_console/     # web_console.sqlite3 和 collections/
+├── downloads/
+├── screenshots/
+├── generated_cases/
+├── config/              # 仅本地使用的运行配置（如限流探针凭据）
+└── temp/
+```
+
+日志采用执行器的分级文件格式，不采用后端服务的 `app.log/error.log/django.log` 分服务目录。设置 `MANGO_PYTEST_RUNTIME_DIR` 可以覆盖整个运行根目录，日志随之位于 `<运行根目录>/logs/`。相对值按仓库根目录解析，绝对值可用于容器挂载，例如 `/app/runtime`。无需复用其他应用的 `MANGO_ACTUATOR_RUNTIME_DIR`。
+
+旧目录迁移前应停止测试和控制台，然后执行：
+
+```bash
+.venv/bin/python scripts/migrate_runtime.py
+```
+
+脚本移动旧产物、整理缓存和日志，并更新控制台历史记录的报告路径；遇到同名文件冲突会停止，不覆盖已有文件。`runtime/` 已加入 Git 忽略，源代码、测试输入、元素工作簿和需要维护的模板继续保留在各自项目目录。
+
+
+## 数据工厂与数据库依赖
+
+统一采用 `factory-boy` 配合原生 pytest Fixture。Fixture 显式提供 Factory 或数据工厂对象，Repository 管理持久化和清理；不使用 `pytest-factoryboy` 自动生成字段级 Fixture。
+
+`Factory.build()` 只构建实体，`Factory.create()` 才通过项目配置的 SQLAlchemy Session 写库。MySQL 驱动 `pymysql` 由 `mangotools` 关联安装，数据库连接信息仍由各项目配置提供。
+
+
+主项目不重复声明内部子库已提供的第三方依赖：`pymysql`、`pydantic`、`openpyxl`、`deepdiff`，以及依赖链中的 `httpx`、`FastAPI`、`uvicorn`，均随本地 wheel 的依赖元数据安装。新版 `mangotools` 的图片/PDF 断言还会关联安装 NumPy、Pillow 和 PyMuPDF；普通 Excel 元素读取仍不依赖 pandas。

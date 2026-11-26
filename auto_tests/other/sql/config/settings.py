@@ -43,7 +43,7 @@ class ApiMockConfig(BaseConfig):
     ALLURE_HISTORY_DIR: str = Field(default=artifact_path("reports", "sql", "history"), description="Allure历史记录目录")
     
     # 日志配置
-    LOG_DIR: str = Field(default=artifact_path("temp", "logs", "sql"), description="日志目录")
+    LOG_DIR: str = Field(default=artifact_path("logs", "sql"), description="日志目录")
     LOG_LEVEL: str = Field(default="INFO", description="日志级别")
     
     model_config = ConfigDict(env_file_encoding="utf-8", extra="allow")

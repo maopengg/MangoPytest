@@ -14,7 +14,7 @@ class ApiMockConfig(APIRuntimeConfig):
     PROJECT_NAME: str = "Mango Mock API 轻量自动化测试"
     ALLURE_REPORT_DIR: str = artifact_path("reports", "simple_api", "allure")
     ALLURE_HISTORY_DIR: str = artifact_path("reports", "simple_api", "history")
-    LOG_DIR: str = artifact_path("temp", "logs", "simple_api")
+    LOG_DIR: str = artifact_path("logs", "simple_api")
 
 
 class DevConfig(ApiMockConfig):

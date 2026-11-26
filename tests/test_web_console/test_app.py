@@ -13,7 +13,7 @@ def test_project_api_and_pages(tmp_path) -> None:
     settings = WebConsoleSettings(
         repository_root=repository_root,
         python_executable=repository_root / ".venv" / "bin" / "python",
-        artifacts_root=tmp_path / "artifacts",
+        runtime_root=tmp_path / "runtime",
         database_path=tmp_path / "web.sqlite3",
     )
     with TestClient(create_app(settings)) as client:
